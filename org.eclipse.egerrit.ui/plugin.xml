@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.egerrit.ui.editors.ChangeDetailEditor"
+            default="false"
+            extensions="mpe"
+            icon="icons/view16/datasheet.gif"
+            id="org.eclipse.egerrit.ui.editors.ChangeDetailEditor"
+            name="ChangeDetail Editor">
+      </editor>
+   </extension>
+
+</plugin>

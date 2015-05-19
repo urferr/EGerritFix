@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.egerrit"
+      label="%featureName"
+      version="0.1.0.qualifier"
+      provider-name="%featureProvider">
+
+   <description url="http://www.example.com/description">
+      %featureDescription
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      %copyright
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      %license
+   </license>
+
+   <plugin
+         id="org.eclipse.egerrit.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.egerrit.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

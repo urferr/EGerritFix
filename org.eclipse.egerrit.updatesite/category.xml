@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.egerrit_0.1.0.qualifier.jar" id="org.eclipse.egerrit" version="0.1.0.qualifier">
+      <category name="org.eclipse.egerrit"/>
+   </feature>
+   <category-def name="org.eclipse.egerrit" label="EGerrit"/>
+</site>
