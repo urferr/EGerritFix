@@ -282,10 +282,11 @@
     <module>org.eclipse.egerrit.ui</module>
     <module>org.eclipse.egerrit.ui.tests</module>
     <module>org.eclipse.egerrit.ui.swtbot.tests</module>
-    <module>org.eclipse.egerrit</module>
     <module>org.eclipse.egerrit.dashboard.core</module>
     <module>org.eclipse.egerrit.dashboard.ui</module>
-    <!--  module>org.eclipse.egerrit.updatesite</module -->
+    
+    <module>org.eclipse.egerrit.feature</module>
+    <module>org.eclipse.egerrit.updatesite</module>
   </modules>
 
 </project>

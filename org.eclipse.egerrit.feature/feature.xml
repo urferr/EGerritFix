@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.egerrit.feature"
+      label="%featureName"
+      version="0.1.0.qualifier"
+      provider-name="%providerName"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
+
+   <description url="http://www.eclipse.org/egerrit">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <requires>
+      <import plugin="com.google.gson"/>
+      <import plugin="com.google.gerrit.common"/>
+      <import plugin="com.google.gerrit.prettify"/>
+      <import plugin="com.google.gerrit.reviewdb"/>
+      <import plugin="com.google.gwtorm"/>
+      <import plugin="com.google.gwtjsonrpc"/>
+      <import plugin="com.google.gwt.servlet"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.egerrit.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.egerrit.dashboard.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.egerrit.dashboard.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.egerrit.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
