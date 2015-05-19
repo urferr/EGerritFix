@@ -15,6 +15,7 @@ package org.eclipse.egerrit.core;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
@@ -171,6 +172,10 @@ public abstract class Gerrit {
 	 */
 	public GetCommitMsgCommand getCommitMsg(String change_id, String commit_id) {
 		return new GetCommitMsgCommand(fGerritRepository, change_id, commit_id);
+	}
+
+	public GetMergeableCommand getMergeable(String change_id, String revision_id) {
+		return new GetMergeableCommand(fGerritRepository, change_id, revision_id);
 	}
 
 }

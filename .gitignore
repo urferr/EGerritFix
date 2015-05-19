@@ -1,0 +1,5 @@
+*~
+bin/
+target/
+*/.settings/org.sonar.ide.eclipse.core.prefs
+*/.vagrant/*

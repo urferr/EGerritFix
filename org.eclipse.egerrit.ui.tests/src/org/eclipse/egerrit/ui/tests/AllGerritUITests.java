@@ -20,13 +20,9 @@ import org.junit.runners.Suite.SuiteClasses;
 //------------------------------------------------------------------------
 
 @RunWith(Suite.class)
-@SuiteClasses({
-	EGerritUIPluginTest.class,
-})
-
+@SuiteClasses({ EGerritUIPluginTest.class, })
 //------------------------------------------------------------------------
 //Constructor
 //------------------------------------------------------------------------
-
 public class AllGerritUITests {
 }

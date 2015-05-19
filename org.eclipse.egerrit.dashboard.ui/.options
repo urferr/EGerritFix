@@ -1,0 +1,10 @@
+#
+#  Gerrit Dashboard UI Debug options
+#
+org.eclipse.egerrit.dashboard.ui=true
+org.eclipse.egerrit.dashboard.ui/error=true
+org.eclipse.egerrit.dashboard.ui/warning=true
+org.eclipse.egerrit.dashboard.ui/info=true
+org.eclipse.egerrit.dashboard.ui/debug=true
+org.eclipse.egerrit.dashboard.ui/consoleLog=true
+org.eclipse.egerrit.dashboard.ui/logfile=test.log

@@ -264,6 +264,13 @@ public class ChangeInfo {
 	}
 
 	/**
+	 * Set The legacy numeric ID of the change.
+	 */
+	public void setNumber(int _number) {
+		firePropertyChange("_number", this._number, this._number = _number);
+	}
+
+	/**
 	 * @return The timestamp of when the change was created.
 	 */
 	public String getCreated() {

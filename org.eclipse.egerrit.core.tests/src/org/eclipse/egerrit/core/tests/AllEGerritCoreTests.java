@@ -16,6 +16,7 @@ import org.eclipse.egerrit.core.command.tests.GerritCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetChangeCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetCommitMsgCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetContentCommandTest;
+import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
 import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
 import org.eclipse.egerrit.core.rest.tests.AccountInfoTest;
 import org.eclipse.egerrit.core.rest.tests.ActionInfoTest;
@@ -39,20 +40,26 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-		// org.eclipse.egerrit.core
-		EGerritCorePluginTest.class, GerritRepositoryTest.class, GerritClientAuthenticationTest.class,
-		GerritFactoryTest.class,
-		GerritTest.class,
-		Gerrit_2_9Test.class,
+	// org.eclipse.egerrit.core
+	EGerritCorePluginTest.class,
+		GerritRepositoryTest.class,
+		GerritClientAuthenticationTest.class,
+	GerritFactoryTest.class,
+	GerritTest.class,
+	Gerrit_2_9Test.class,
 
-		// org.eclipse.egerrit.core.rest
-		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
-		ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
-		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
+	// org.eclipse.egerrit.core.rest
+	AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class,
+		ChangeInfoTest.class, ChangeMessageInfoTest.class,
+		CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
+	GitPersonInfoTest.class, LabelInfoTest.class,
+		ProblemInfoTest.class,
+		RevisionInfoTest.class,
 
-		// org.eclipse.egerrit.core.command
-		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
-		GetContentCommandTest.class, GetCommitMsgCommandTest.class })
+	// org.eclipse.egerrit.core.command
+	GerritCommandTest.class, QueryChangesCommandTest.class,
+		GetChangeCommandTest.class, GetContentCommandTest.class,
+		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------

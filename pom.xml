@@ -56,6 +56,9 @@
     <!-- Target platform -->
     <egerrit.target.artifact>org.eclipse.egerrit.target</egerrit.target.artifact>
     <egerrit.target.platform>eGerrit-Eclipse_4.4</egerrit.target.platform>
+ 
+   <!-- set gtk3 version-->
+    <SWT_GTK3>0</SWT_GTK3>
 
     <!-- Sonar -->
     <sonar.language>java</sonar.language>
@@ -64,6 +67,8 @@
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.host.url></sonar.host.url>
+    <base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
+    <base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
   </properties>
 
   <pluginRepositories>
@@ -203,6 +208,39 @@
       </plugin>
 
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.jacoco</groupId>
+    								<artifactId>
+    									jacoco-maven-plugin
+    								</artifactId>
+    								<versionRange>
+    									[0.7.2.201409121644,)
+    								</versionRange>
+    								<goals>
+    									<goal>prepare-agent</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
   </build>
 
   <profiles>
@@ -243,6 +281,7 @@
     <module>org.eclipse.egerrit.core.tests</module>
     <module>org.eclipse.egerrit.ui</module>
     <module>org.eclipse.egerrit.ui.tests</module>
+    <module>org.eclipse.egerrit.ui.swtbot.tests</module>
     <module>org.eclipse.egerrit</module>
     <module>org.eclipse.egerrit.dashboard.core</module>
     <module>org.eclipse.egerrit.dashboard.ui</module>

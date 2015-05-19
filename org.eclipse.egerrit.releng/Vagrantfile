@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.name = "EGerrit-Repositories"
     v.customize ["modifyvm", :id, "--memory", 2048]
+    v.customize ["modifyvm", :id, "--cpus", 2]
   end
 
 #Adjust the proxy if needed

@@ -8,10 +8,13 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 /**
@@ -27,151 +30,214 @@ import java.util.List;
  */
 public class CommitInfo {
 
-    // ------------------------------------------------------------------------
-    // The data structure
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// The data structure
+	// ------------------------------------------------------------------------
+	// used to fire events of registered properties
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
+			this);
 
-    // The commit ID.
-    private String commit;
+	// The commit ID.
+	private String commit;
 
-    // The parent commits of this commit. In each parent only the commit and
-    // subject fields are populated.
-    private List<CommitInfo> parents;
+	// The parent commits of this commit. In each parent only the commit and
+	// subject fields are populated.
+	private List<CommitInfo> parents;
 
-    // The author of the commit.
-    private GitPersonInfo author;
+	// The author of the commit.
+	private GitPersonInfo author;
 
-    // The committer of the commit.
-    private GitPersonInfo committer;
+	// The committer of the commit.
+	private GitPersonInfo committer;
 
-    // The subject of the commit (header line of the commit message).
-    private String subject;
+	// The subject of the commit (header line of the commit message).
+	private String subject;
 
-    // The commit message.
-    private String message;
+	// The commit message.
+	private String message;
 
-    // ------------------------------------------------------------------------
-    // The getters
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// The getters
+	// ------------------------------------------------------------------------
 
-    /**
-     * @return The commit ID.
-     */
-    public String getCommit() {
-        return commit;
-    }
+	/**
+	 * @return The commit ID.
+	 */
+	public String getCommit() {
+		return commit;
+	}
 
-    /**
-     * @return The parent commits of this commit. In each parent only the commit
-     *         and subject fields are populated.
-     */
-    public List<CommitInfo> getParents() {
-        return parents;
-    }
+	/**
+	 * @return The parent commits of this commit. In each parent only the commit
+	 *         and subject fields are populated.
+	 */
+	public List<CommitInfo> getParents() {
+		return parents;
+	}
 
-    /**
-     * @return The author of the commit.
-     */
-    public GitPersonInfo getAuthor() {
-        return author;
-    }
+	/**
+	 * @return The author of the commit.
+	 */
+	public GitPersonInfo getAuthor() {
+		return author;
+	}
 
-    /**
-     * @return The committer of the commit.
-     */
-    public GitPersonInfo getCommitter() {
-        return committer;
-    }
+	/**
+	 * @return The committer of the commit.
+	 */
+	public GitPersonInfo getCommitter() {
+		return committer;
+	}
 
-    /**
-     * @return The subject of the commit (header line of the commit message).
-     */
-    public String getSubject() {
-        return subject;
-    }
+	/**
+	 * @return The subject of the commit (header line of the commit message).
+	 */
+	public String getSubject() {
+		return subject;
+	}
 
-    /**
-     * @return The commit message.
-     */
-    public String getMessage() {
-        return message;
-    }
+	/**
+	 * @return The commit message.
+	 */
+	public String getMessage() {
+		return message;
+	}
 
-    // ------------------------------------------------------------------------
-    // Object
-    // ------------------------------------------------------------------------
+	public void setMessage(String message) {
+		firePropertyChange("message", this.message, this.message = message);
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((author == null) ? 0 : author.hashCode());
-        result = prime * result + ((commit == null) ? 0 : commit.hashCode());
-        result = prime * result
-                + ((committer == null) ? 0 : committer.hashCode());
-        result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((parents == null) ? 0 : parents.hashCode());
-        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
-        return result;
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CommitInfo other = (CommitInfo) obj;
-        if (author == null) {
-            if (other.author != null)
-                return false;
-        } else if (!author.equals(other.author))
-            return false;
-        if (commit == null) {
-            if (other.commit != null)
-                return false;
-        } else if (!commit.equals(other.commit))
-            return false;
-        if (committer == null) {
-            if (other.committer != null)
-                return false;
-        } else if (!committer.equals(other.committer))
-            return false;
-        if (message == null) {
-            if (other.message != null)
-                return false;
-        } else if (!message.equals(other.message))
-            return false;
-        if (parents == null) {
-            if (other.parents != null)
-                return false;
-        } else if (!parents.equals(other.parents))
-            return false;
-        if (subject == null) {
-            if (other.subject != null)
-                return false;
-        } else if (!subject.equals(other.subject))
-            return false;
-        return true;
-    }
+	public void setCommit(String commit) {
+		firePropertyChange("commit", this.commit, this.commit = commit);
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    @SuppressWarnings("nls")
-    public String toString() {
-        return "CommitInfo [commit=" + commit + ", parents=" + parents
-                + ", author=" + author + ", committer=" + committer
-                + ", subject=" + subject + ", message=" + message + "]";
-    }
+	public void setParents(List<CommitInfo> parents) {
+		firePropertyChange("parents", this.parents, this.parents = parents);
+	}
+
+	public void setAuthor(GitPersonInfo author) {
+		firePropertyChange("author", this.author, this.author = author);
+	}
+
+	public void setCommitter(GitPersonInfo committer) {
+		firePropertyChange("committer", this.committer,
+				this.committer = committer);
+	}
+
+	public void addPropertyChangeListener(String propertyName,
+			PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(String propertyName,
+			PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName,
+				listener);
+	}
+
+	protected void firePropertyChange(String propertyName, Object oldValue,
+			Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
+				newValue);
+	}
+
+	// ------------------------------------------------------------------------
+	// Object
+	// ------------------------------------------------------------------------
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((author == null) ? 0 : author.hashCode());
+		result = prime * result + ((commit == null) ? 0 : commit.hashCode());
+		result = prime * result
+				+ ((committer == null) ? 0 : committer.hashCode());
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((parents == null) ? 0 : parents.hashCode());
+		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		CommitInfo other = (CommitInfo) obj;
+		if (author == null) {
+			if (other.author != null) {
+				return false;
+			}
+		} else if (!author.equals(other.author)) {
+			return false;
+		}
+		if (commit == null) {
+			if (other.commit != null) {
+				return false;
+			}
+		} else if (!commit.equals(other.commit)) {
+			return false;
+		}
+		if (committer == null) {
+			if (other.committer != null) {
+				return false;
+			}
+		} else if (!committer.equals(other.committer)) {
+			return false;
+		}
+		if (message == null) {
+			if (other.message != null) {
+				return false;
+			}
+		} else if (!message.equals(other.message)) {
+			return false;
+		}
+		if (parents == null) {
+			if (other.parents != null) {
+				return false;
+			}
+		} else if (!parents.equals(other.parents)) {
+			return false;
+		}
+		if (subject == null) {
+			if (other.subject != null) {
+				return false;
+			}
+		} else if (!subject.equals(other.subject)) {
+			return false;
+		}
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	@SuppressWarnings("nls")
+	public String toString() {
+		return "CommitInfo [commit=" + commit + ", parents=" + parents
+				+ ", author=" + author + ", committer=" + committer
+				+ ", subject=" + subject + ", message=" + message + "]";
+	}
 
 }
