@@ -16,3 +16,4 @@ Export-Package: org.eclipse.egerrit.core,
  org.eclipse.egerrit.core.command,
  org.eclipse.egerrit.core.exception,
  org.eclipse.egerrit.core.rest
+Import-Package: com.google.gerrit.common.data

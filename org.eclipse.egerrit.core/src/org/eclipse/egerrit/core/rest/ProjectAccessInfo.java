@@ -14,8 +14,8 @@ package org.eclipse.egerrit.core.rest;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Map;
 import java.util.Set;
+
 //import org.eclipse.egerrit.core.gerrit.AccessSectionInfo;
 import com.google.gerrit.common.data.ProjectInfo;
 
@@ -47,10 +47,10 @@ public class ProjectAccessInfo {
 	// not set for the All-Project project
 	private ProjectInfo inherits_from;
 
-	AccessSectionInfo inf;
-	// The local access rights of the project as a map that maps the refs to
-	// AccessSectionInfo entities.
-	private Map<String, AccessSectionInfo> local;
+	// AccessSectionInfo inf;
+	// // The local access rights of the project as a map that maps the refs to
+	// // AccessSectionInfo entities.
+	// private Map<String, AccessSectionInfo> local;
 
 	// Whether the calling user owns this project.
 	// not set if false
@@ -112,20 +112,20 @@ public class ProjectAccessInfo {
 				this.inherits_from = inherits_from);
 	}
 
-	/**
-	 * @return the local
-	 */
-	public Map<String, AccessSectionInfo> getLocal() {
-		return local;
-	}
-
-	/**
-	 * @param local
-	 *            the local to set
-	 */
-	public void setLocal(Map<String, AccessSectionInfo> local) {
-		firePropertyChange("local", this.local, this.local = local);
-	}
+	// /**
+	// * @return the local
+	// */
+	// public Map<String, AccessSectionInfo> getLocal() {
+	// return local;
+	// }
+	//
+	// /**
+	// * @param local
+	// * the local to set
+	// */
+	// public void setLocal(Map<String, AccessSectionInfo> local) {
+	// firePropertyChange("local", this.local, this.local = local);
+	// }
 
 	/**
 	 * @return the is_owner
