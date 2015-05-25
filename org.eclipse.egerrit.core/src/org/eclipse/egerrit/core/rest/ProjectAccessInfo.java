@@ -16,7 +16,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Set;
 
-//import org.eclipse.egerrit.core.gerrit.AccessSectionInfo;
 import com.google.gerrit.common.data.ProjectInfo;
 
 /**

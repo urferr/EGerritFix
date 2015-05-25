@@ -53,6 +53,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
     public static final String STATE         = "STATE";         //$NON-NLS-1$
     public static final String STATUS        = "STATUS";        //$NON-NLS-1$
     public static final String TOPIC         = "TOPIC";         //$NON-NLS-1$
+    public static final String CONFLICTS     = "CONFLICTS";         //$NON-NLS-1$
 
 
     public static final String VISIBLETO     = "VISIBLETO";     //$NON-NLS-1$
@@ -111,9 +112,14 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
         while (parameters.hasNext()) {
             Iterator<String> values = fQueryParameters.get(parameters.next()).listIterator();
             while (values.hasNext()) {
-                sb.append(values.next());
+            	String buf = values.next();
+            	if (buf.indexOf("topic:") == 0 ) {
+            	int colon = buf.indexOf(':');
+            	    buf = buf.substring(0, colon + 1) + "\"" + buf.substring(colon + 1) +  "\"";
+            	}
+                sb.append(buf);
                 if (values.hasNext()) {
-                    sb.append("+"); //$NON-NLS-1$
+                    sb.append(" "); //$NON-NLS-1$
                 }
             }
             if (parameters.hasNext()) {

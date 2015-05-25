@@ -16,7 +16,10 @@ import org.eclipse.egerrit.core.command.tests.GerritCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetChangeCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetCommitMsgCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetContentCommandTest;
+import org.eclipse.egerrit.core.command.tests.GetIncludedInCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
+import org.eclipse.egerrit.core.command.tests.GetRelatedChangesCommandTest;
+import org.eclipse.egerrit.core.command.tests.ListReviewersCommandTest;
 import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
 import org.eclipse.egerrit.core.rest.tests.AccountInfoTest;
 import org.eclipse.egerrit.core.rest.tests.ActionInfoTest;
@@ -27,8 +30,13 @@ import org.eclipse.egerrit.core.rest.tests.CommitInfoTest;
 import org.eclipse.egerrit.core.rest.tests.FetchInfoTest;
 import org.eclipse.egerrit.core.rest.tests.FileInfoTest;
 import org.eclipse.egerrit.core.rest.tests.GitPersonInfoTest;
+import org.eclipse.egerrit.core.rest.tests.IncludedInInfoTest;
 import org.eclipse.egerrit.core.rest.tests.LabelInfoTest;
+import org.eclipse.egerrit.core.rest.tests.MergeableInfoTest;
 import org.eclipse.egerrit.core.rest.tests.ProblemInfoTest;
+import org.eclipse.egerrit.core.rest.tests.RelatedChangeAndCommitInfoTest;
+import org.eclipse.egerrit.core.rest.tests.RelatedChangesInfoTest;
+import org.eclipse.egerrit.core.rest.tests.ReviewerInfoTest;
 import org.eclipse.egerrit.core.rest.tests.RevisionInfoTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -40,26 +48,32 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	// org.eclipse.egerrit.core
-	EGerritCorePluginTest.class,
-		GerritRepositoryTest.class,
-		GerritClientAuthenticationTest.class,
-	GerritFactoryTest.class,
-	GerritTest.class,
-	Gerrit_2_9Test.class,
+		// org.eclipse.egerrit.core
+		EGerritCorePluginTest.class,
+	GerritRepositoryTest.class,
+	GerritClientAuthenticationTest.class,
+		GerritFactoryTest.class,
+		GerritTest.class,
+		Gerrit_2_9Test.class,
 
-	// org.eclipse.egerrit.core.rest
-	AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class,
-		ChangeInfoTest.class, ChangeMessageInfoTest.class,
-		CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
-	GitPersonInfoTest.class, LabelInfoTest.class,
-		ProblemInfoTest.class,
-		RevisionInfoTest.class,
+		// org.eclipse.egerrit.core.rest
+		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class,
+	ChangeInfoTest.class, ChangeMessageInfoTest.class,
+	CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
+		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class,
+	RevisionInfoTest.class,
+		ReviewerInfoTest.class,
+	MergeableInfoTest.class,
+	IncludedInInfoTest.class,
+	RelatedChangesInfoTest.class,
+	RelatedChangeAndCommitInfoTest.class,
 
-	// org.eclipse.egerrit.core.command
-	GerritCommandTest.class, QueryChangesCommandTest.class,
-		GetChangeCommandTest.class, GetContentCommandTest.class,
-		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class })
+		// org.eclipse.egerrit.core.command
+		GerritCommandTest.class, QueryChangesCommandTest.class,
+	GetChangeCommandTest.class, GetContentCommandTest.class,
+	GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
+	ListReviewersCommandTest.class, GetIncludedInCommandTest.class,
+	GetRelatedChangesCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------

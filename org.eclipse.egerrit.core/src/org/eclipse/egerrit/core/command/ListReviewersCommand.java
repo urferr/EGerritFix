@@ -21,27 +21,25 @@ import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.MergeableInfo;
+import org.eclipse.egerrit.core.rest.ReviewerInfo;
 
 /**
  * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mergeable-info"
- * >Get Mergeable</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#MergeableInfo"
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewer info"
+ * >List Reviewers</a> command. It returns a list <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ReviewerInfo"
  * ></a>
  * <p>
  *
  * @since 1.0
  */
-public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
+public class ListReviewersCommand extends QueryCommand<ReviewerInfo[]> {
 
 	// ------------------------------------------------------------------------
 	// Attributes
 	// ------------------------------------------------------------------------
 
 	private String fChange_id;
-
-	private String fRevision;
 
 	// ------------------------------------------------------------------------
 	// Constructor
@@ -57,23 +55,12 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 	 * @param revision
 	 *            revisions-id
 	 */
-	public GetMergeableCommand(GerritRepository gerritRepository, String id,
-			String revision) {
-		super(gerritRepository, MergeableInfo.class);
+	public ListReviewersCommand(GerritRepository gerritRepository, String id) {
+		super(gerritRepository, ReviewerInfo[].class);
 		this.setId(id);
-		this.setRevision(revision);
 
 	}
 
-	private void setRevision(String revision) {
-		fRevision = revision;
-
-	}
-
-	private String getRevision() {
-		return fRevision;
-
-	}
 
 	public String getId() {
 		return fChange_id;
@@ -103,8 +90,7 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath())
 			.append("/changes/").append(getId()) //$NON-NLS-1$
-			.append("/revisions/").append(getRevision())//$NON-NLS-1$
-			.append("/mergeable") //$NON-NLS-1$
+			.append("/reviewers") //$NON-NLS-1$
 			.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));

@@ -29,6 +29,7 @@ import org.apache.http.entity.BufferedHttpEntity;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.IncludedInInfo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -165,7 +166,9 @@ public abstract class GerritCommand<T> implements Callable<T> {
                 	JsonReader jReader = new JsonReader(reader);
                 	jReader.setLenient(true);
                 	try {
-                	String buf = gson.fromJson(jReader, String.class);
+//                	String buf = gson.fromJson(jReader, String.class);
+                        IncludedInInfo buf = gson.fromJson(jReader, IncludedInInfo.class);
+                		
                 	result1 = (T) buf;
                     reader.close();
                 	}

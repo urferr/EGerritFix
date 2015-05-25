@@ -15,7 +15,10 @@ package org.eclipse.egerrit.core;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
+import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
@@ -174,8 +177,64 @@ public abstract class Gerrit {
 		return new GetCommitMsgCommand(fGerritRepository, change_id, commit_id);
 	}
 
+	/**
+	 * Returns a command object to execute a {@code getCommitMSg} command
+	 * 
+	 * @param id
+	 * @param revision
+	 *
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's
+	 *         MergeableInfo from the Gerrit repository
+	 *         
+	 */
 	public GetMergeableCommand getMergeable(String change_id, String revision_id) {
 		return new GetMergeableCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Returns a command object to execute a {@code getCommitMSg} command
+	 * 
+	 * @param id
+	 *
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's
+	 *         ReviewersInfo from the Gerrit repository
+	 *         
+	 */
+	public ListReviewersCommand getReviewers(String change_id) {
+		return new ListReviewersCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Returns a command object to execute a {@code getCommitMSg} command
+	 * 
+	 * @param id
+	 *
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's
+	 *         IncludedInInfo from the Gerrit repository
+	 *         
+	 */
+	public GetIncludedInCommand getIncludedIn(String change_id) {
+		return new GetIncludedInCommand(fGerritRepository, change_id);
+	}
+	
+	
+	/**
+	 * Returns a command object to execute a {@code getContent} command
+	 * 
+	 * @param id
+	 * @param revision
+	 *
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's
+	 *         content  from the Gerrit repository
+	 *
+	 * @see <a href=
+	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-relatedchanges"
+	 *      >Gerrit REST API: Get Related Changes</a>
+	 */
+
+	public GetRelatedChangesCommand getRelatedChanges(String id,
+			String revision) {
+		return new GetRelatedChangesCommand(fGerritRepository, id, revision);
 	}
 
 }

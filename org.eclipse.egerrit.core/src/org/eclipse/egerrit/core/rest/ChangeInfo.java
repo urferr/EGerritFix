@@ -233,6 +233,14 @@ public class ChangeInfo {
 		firePropertyChange("updated", this.updated, this.updated = updated);
 	}
 
+
+	/**
+	 * @param current_revision the current_revision to set
+	 */
+	public void setCurrent_revision(String current_revision) {
+		firePropertyChange("current_revision", this.current_revision, this.current_revision = current_revision);
+	}
+
 	/**
 	 * @return The Change-Id of the change.
 	 */
@@ -247,6 +255,14 @@ public class ChangeInfo {
 		return subject;
 	}
 
+	/**
+	 * @param The subject of the change (header line of the commit message).
+	 */
+	public void setSubject(String subject) {
+		firePropertyChange("subject", this.subject, this.subject = subject);
+	}
+	
+	
 	/**
 	 * @return The status of the change (NEW, SUBMITTED, MERGED, ABANDONED,
 	 *         DRAFT).
@@ -270,6 +286,8 @@ public class ChangeInfo {
 		firePropertyChange("_number", this._number, this._number = _number);
 	}
 
+	
+	
 	/**
 	 * @return The timestamp of when the change was created.
 	 */

@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.TableColumn;
  *
  * @since 1.0
  */
-public class UIConflictWithTable {
+public class UIConflictsWithTable {
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
@@ -44,7 +44,7 @@ public class UIConflictWithTable {
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public UIConflictWithTable() {
+	public UIConflictsWithTable() {
 
 	}
 
@@ -195,6 +195,10 @@ public class UIConflictWithTable {
 		column.setMoveable(tableInfo.getMoveable());
 		return viewerColumn;
 
+	}
+
+	public TableViewer getViewer() {
+		return fViewer;
 	}
 
 }

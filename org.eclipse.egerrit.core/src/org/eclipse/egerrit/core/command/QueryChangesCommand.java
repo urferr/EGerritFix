@@ -109,6 +109,13 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
     }     
 
 
+    public QueryChangesCommand addConflicts(String conflicts) {
+        addParameter(CONFLICTS, "conflicts:" + conflicts); //$NON-NLS-1$
+        return this;
+    }     
+
+    
+    
     public QueryChangesCommand addReference(String ref) {
         addParameter(REF, "ref:" + ref); //$NON-NLS-1$
         return this;
@@ -224,7 +231,8 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
                 uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
             }
             // Create the URI but revert the escaped characters
-            uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
+ //           uri = new URI(URIUtil.toUnencodedString(uri1));
+            uri = uriBuilder.build();
 
         } catch (URISyntaxException e) {
             EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$

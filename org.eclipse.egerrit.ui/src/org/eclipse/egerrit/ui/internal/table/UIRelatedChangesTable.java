@@ -195,6 +195,10 @@ public class UIRelatedChangesTable {
 
 	}
 
+	public TableViewer getViewer() {
+		return fViewer;
+	}
+
 //	private final Listener mouseButtonListener = new Listener() {
 //		public void handleEvent(Event aEvent) {
 //			GerritUi.Ftracer.traceInfo("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
