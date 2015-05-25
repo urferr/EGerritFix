@@ -90,6 +90,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -125,8 +126,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private static ChangeDetailEditor chDetailEditor = null;
 
-//	private static Color RED = fDisplay.getSystemColor(SWT.COLOR_RED);
-//
+	private static Color RED;
+
 //	private static Color GREEN = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
 //	private final DataBindingContext m_bindingContext = null;
 
@@ -245,7 +246,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	public ChangeDetailEditor() {
 		super();
 		chDetailEditor = this;
-
 	}
 
 	private void createAdditionalToolbarActions() {
@@ -272,6 +272,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	@Override
 	public void createPartControl(final Composite parent) {
+		RED = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
+
 		createAdditionalToolbarActions();
 		fParent = parent;
 		GridLayout gl_parent = new GridLayout(1, false);
@@ -482,7 +484,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		Group grpGeneral = new Group(group, SWT.NONE);
 		grpGeneral.setText("General");
-		GridLayout gl_grpGeneral = new GridLayout(3, false);
+		GridLayout gl_grpGeneral = new GridLayout(5, false);
 		gl_grpGeneral.verticalSpacing = 10;
 		grpGeneral.setLayout(gl_grpGeneral);
 
@@ -499,22 +501,21 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		Point fontSize = computeFontSize(grpGeneral);
 
 		genProjectData = new Label(grpGeneral, SWT.NONE);
-		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-//		genProjectData.setText("lblProject");
+		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 
 		Label lblBranch = new Label(grpGeneral, SWT.RIGHT);
 		lblBranch.setText("Branch:");
 
 		genBranchData = new Label(grpGeneral, SWT.NONE);
-		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 
 		Label lblTopic = new Label(grpGeneral, SWT.RIGHT);
 		lblTopic.setText("Topic:");
 
 		genTopicData = new Text(grpGeneral, SWT.BORDER);
 
-		GridData gd_txtTopic = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		int numTopic = 25; //Max number of chars
+		GridData gd_txtTopic = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
+		int numTopic = 30; //Max number of chars
 		gd_txtTopic.widthHint = fontSize.x * numTopic;
 		genTopicData.setLayoutData(gd_txtTopic);
 
@@ -523,10 +524,11 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		btnSave.setText("Save");
 
 		Label lblStrategy = new Label(grpGeneral, SWT.RIGHT);
+		lblStrategy.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 		lblStrategy.setText("Strategy:");
 
 		genStrategyData = new Label(grpGeneral, SWT.NONE);
-		GridData gd_genStrategyData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
 		gd_genStrategyData.widthHint = 146;
 		genStrategyData.setLayoutData(gd_genStrategyData);
 		genStrategyData.addPaintListener(new PaintListener() {
@@ -538,39 +540,36 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 				if (latest.replace('_', ' ').compareToIgnoreCase(old) != 0) {
 					if (latest.compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
+						genStrategyData.setText("Merge if necessary");
 					} else if (latest.compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
+						genStrategyData.setText("Fast forward only");
 					} else if (latest.compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
+						genStrategyData.setText("Rebase if necessary");
 					} else if (latest.compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Merge always"); //$NON-NLS-1$
+						genStrategyData.setText("Merge always");
 					} else if (latest.compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
+						genStrategyData.setText("Cherry Pick");
 					}
 				}
 			}
 		});
 
 		genMessageData = new Label(grpGeneral, SWT.NONE);
+		GridData gd_genMessageData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		int numStrategy = 16; //Max number of chars
+		gd_genMessageData.widthHint = fontSize.x * numStrategy;
+		genMessageData.setLayoutData(gd_genMessageData);
+		genMessageData.setForeground(RED);
 		genMessageData.addPaintListener(new PaintListener() {
 
 			@Override
 			public void paintControl(PaintEvent e) {
 				String old = genMessageData.getText();
-				String oldVal;
-				oldVal = old.isEmpty() ? "" : "CANNOT MERGE"; //$NON-NLS-2$
 				Boolean latest = new Boolean(fMergeableInfo.isMergeable());
 				String latestVal;
 				latestVal = latest.booleanValue() ? "" : "CANNOT MERGE";
-//				fMergeableInfo.setMergeable(false);
-				if (latestVal.toString().compareTo(oldVal) != 0) {
-					if (fMergeableInfo.isMergeable()) {
-						genMessageData.setText(""); //$NON-NLS-1$
-					} else {
-						genMessageData.setText("CANNOT MERGE"); //$NON-NLS-1$
-					}
-
+				if (latestVal.toString().compareTo(old) != 0) {
+					genMessageData.setText(latestVal);
 				}
 			}
 		});
@@ -579,8 +578,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		lblUpdated.setText("Updated:");
 
 		genUpdatedData = new Label(grpGeneral, SWT.NONE);
-		genUpdatedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-//		genUpdatedData.setText("updated");
+		genUpdatedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		genUpdatedData.addPaintListener(new PaintListener() {
 
 			@Override
@@ -1264,20 +1262,26 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
 				changeInfo.getCurrentRevision(), new NullProgressMonitor());
-		fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-		if (mergeableInfo.getSubmit_type().compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-			genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
-		} else if (mergeableInfo.getSubmit_type().compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
-			genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
-		} else if (mergeableInfo.getSubmit_type().compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-			genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
-		} else if (mergeableInfo.getSubmit_type().compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
-			genStrategyData.setText("Merge always"); //$NON-NLS-1$
-		} else if (mergeableInfo.getSubmit_type().compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
-			genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
-		}
+		if (mergeableInfo != null) {
+			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
+			if (mergeableInfo.getSubmit_type().compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
+				genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
+			} else if (mergeableInfo.getSubmit_type().compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
+				genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
+			} else if (mergeableInfo.getSubmit_type().compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
+				genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
+			} else if (mergeableInfo.getSubmit_type().compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
+				genStrategyData.setText("Merge always"); //$NON-NLS-1$
+			} else if (mergeableInfo.getSubmit_type().compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
+				genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
+			}
 
-		fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
+			fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
+
+		} else {
+			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
+			fMergeableInfo.setMergeable(true);// Reset the filed to be empty
+		}
 
 		ReviewerInfo[] reviewers = listReviewers(gerritRepository, fChangeInfo.getChange_id(),
 				new NullProgressMonitor());

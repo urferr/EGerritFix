@@ -984,7 +984,6 @@ public class GerritTableView extends ViewPart {
 				command.addOption(ChangeOption.LABELS);
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_FILES);
-				command.addLimit(101);
 
 				setQuery(query, command);
 
