@@ -72,6 +72,7 @@ import org.eclipse.egerrit.ui.internal.table.UIPatchSetsTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
+import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
@@ -537,19 +538,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			public void paintControl(PaintEvent e) {
 				String old = genStrategyData.getText();
 				String latest = fMergeableInfo.getSubmit_type();
-
-				if (latest != null && latest.replace('_', ' ').compareToIgnoreCase(old) != 0) {
-					if (latest.compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Merge if necessary");
-					} else if (latest.compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Fast forward only");
-					} else if (latest.compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Rebase if necessary");
-					} else if (latest.compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Merge always");
-					} else if (latest.compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
-						genStrategyData.setText("Cherry Pick");
-					}
+				if (!latest.isEmpty() && latest.compareTo(SubmitType.getEnumName(old)) != 0) {
+					genStrategyData.setText(SubmitType.valueOf(latest).getValue());
 				}
 			}
 		});
@@ -1265,20 +1255,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 					changeInfo.getCurrentRevision(), new NullProgressMonitor());
 			if (mergeableInfo != null) {
 				fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-				if (mergeableInfo.getSubmit_type().compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-					genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
-				} else if (mergeableInfo.getSubmit_type().compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
-					genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
-				} else if (mergeableInfo.getSubmit_type().compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-					genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
-				} else if (mergeableInfo.getSubmit_type().compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
-					genStrategyData.setText("Merge always"); //$NON-NLS-1$
-				} else if (mergeableInfo.getSubmit_type().compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
-					genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
-				}
-
 				fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
-
 			} else {
 				fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
 				fMergeableInfo.setMergeable(true);// Reset the filed to be empty

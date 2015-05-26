@@ -58,6 +58,16 @@ public class Messages extends NLS {
 
 	public static String PatchSetsTableDefinition_author;
 
+	public static String MergeIfNecessary;
+
+	public static String FastForwardOnly;
+
+	public static String RebaseIfNecessary;
+
+	public static String MergeAlways;
+
+	public static String CherryPick;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
