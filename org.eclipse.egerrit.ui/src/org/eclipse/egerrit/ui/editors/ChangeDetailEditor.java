@@ -538,7 +538,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				String old = genStrategyData.getText();
 				String latest = fMergeableInfo.getSubmit_type();
 
-				if (latest.replace('_', ' ').compareToIgnoreCase(old) != 0) {
+				if (latest != null && latest.replace('_', ' ').compareToIgnoreCase(old) != 0) {
 					if (latest.compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
 						genStrategyData.setText("Merge if necessary");
 					} else if (latest.compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
@@ -1258,50 +1258,53 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 		}
-		fChangeInfo.setCurrent_revision(changeInfo.getCurrentRevision());
+		if (changeInfo != null) {
+			fChangeInfo.setCurrent_revision(changeInfo.getCurrentRevision());
 
-		MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
-				changeInfo.getCurrentRevision(), new NullProgressMonitor());
-		if (mergeableInfo != null) {
-			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-			if (mergeableInfo.getSubmit_type().compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-				genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
-			} else if (mergeableInfo.getSubmit_type().compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
-				genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
-			} else if (mergeableInfo.getSubmit_type().compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
-				genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
-			} else if (mergeableInfo.getSubmit_type().compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
-				genStrategyData.setText("Merge always"); //$NON-NLS-1$
-			} else if (mergeableInfo.getSubmit_type().compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
-				genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
+			MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
+					changeInfo.getCurrentRevision(), new NullProgressMonitor());
+			if (mergeableInfo != null) {
+				fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
+				if (mergeableInfo.getSubmit_type().compareTo("MERGE_IF_NECESSARY") == 0) { //$NON-NLS-1$
+					genStrategyData.setText("Merge if necessary"); //$NON-NLS-1$
+				} else if (mergeableInfo.getSubmit_type().compareTo("FAST_FORWARD_ONLY") == 0) { //$NON-NLS-1$
+					genStrategyData.setText("Fast forward only"); //$NON-NLS-1$
+				} else if (mergeableInfo.getSubmit_type().compareTo("REBASE_IF_NECESSARY") == 0) { //$NON-NLS-1$
+					genStrategyData.setText("Rebase if necessary"); //$NON-NLS-1$
+				} else if (mergeableInfo.getSubmit_type().compareTo("MERGE_ALWAYS") == 0) { //$NON-NLS-1$
+					genStrategyData.setText("Merge always"); //$NON-NLS-1$
+				} else if (mergeableInfo.getSubmit_type().compareTo("CHERRY_PICK") == 0) { //$NON-NLS-1$
+					genStrategyData.setText("Cherry Pick"); //$NON-NLS-1$
+				}
+
+				fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
+
+			} else {
+				fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
+				fMergeableInfo.setMergeable(true);// Reset the filed to be empty
 			}
-
-			fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
-
-		} else {
-			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
-			fMergeableInfo.setMergeable(true);// Reset the filed to be empty
 		}
 
 		ReviewerInfo[] reviewers = listReviewers(gerritRepository, fChangeInfo.getChange_id(),
 				new NullProgressMonitor());
 		fReviewers.clear();
-
-		//fReviewers = Arrays.asList(reviewers);
-		ListIterator<ReviewerInfo> litrRevInfo = Arrays.asList(reviewers).listIterator();
-		while (litrRevInfo.hasNext()) {
-			ReviewerInfo cur = litrRevInfo.next();
-			ReviewerInfo item = new ReviewerInfo();
-			item.setName(cur.getName());
-			item.set_account_id(cur.get_account_id());
-			item.setApprovals(cur.getApprovals());
-			item.setEmail(cur.getEmail());
-			fReviewers.add(item);
+		if (reviewers != null) {
+			//fReviewers = Arrays.asList(reviewers);
+			ListIterator<ReviewerInfo> litrRevInfo = Arrays.asList(reviewers).listIterator();
+			while (litrRevInfo.hasNext()) {
+				ReviewerInfo cur = litrRevInfo.next();
+				ReviewerInfo item = new ReviewerInfo();
+				item.setName(cur.getName());
+				item.set_account_id(cur.get_account_id());
+				item.setApprovals(cur.getApprovals());
+				item.setEmail(cur.getEmail());
+				fReviewers.add(item);
+			}
+			writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
+			tableReviewersViewer.setInput(writeInfoList);
 		}
-		writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
-		tableReviewersViewer.setInput(writeInfoList);
-
-/*	TODO fails during testing	try {
+//	TODO fails during testing
+		try {
 			IncludedInInfo includedIn = getIncludedIn(gerritRepository, fChangeInfo.getChange_id(),
 					new NullProgressMonitor());
 			if (includedIn != null) {
@@ -1311,7 +1314,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 		}
- */
 
 		RelatedChangesInfo relatedchangesinfo = getRelatedChanges(gerritRepository, fChangeInfo.getChange_id(),
 				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
@@ -1814,7 +1816,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
-		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches").observe(fIncludedIn);
+		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches").observe(
+				fIncludedIn.getBranches());
 		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
