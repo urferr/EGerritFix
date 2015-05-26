@@ -18,6 +18,8 @@ import static org.junit.Assert.fail;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
 import org.junit.After;
@@ -26,6 +28,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -40,11 +43,11 @@ public class IncludedInInfoTest {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private static final String BRANCHES = "branch1";
+	private static final List<String> BRANCHES = new LinkedList<String>();
 
-	private static final String TAGS = "tag1";
+	private static final List<String> TAGS = new LinkedList<String>();
 
-	private static final int HASH_CODE = -21855575;
+	private static final int HASH_CODE = 993;
 
 	private static final String TO_STRING = "IncludedInInfo [" + "branches="
 			+ BRANCHES + ", tags=" + TAGS + "]";
@@ -79,8 +82,10 @@ public class IncludedInInfoTest {
 	}
 
 	private void setAllFields() {
-		json.addProperty("branches", BRANCHES);
-		json.addProperty("tags", TAGS);
+		JsonArray branches = new JsonArray();
+		json.add("branches", branches);
+		JsonArray tags = new JsonArray();
+		json.add("tags", tags);
 	}
 
 	@After
@@ -97,7 +102,8 @@ public class IncludedInInfoTest {
 	 */
 	@Test
 	public void testGetBranches() {
-		json.addProperty("branches", BRANCHES);
+		JsonArray branches = new JsonArray();
+		json.add("branches", branches);
 		Reader reader = new StringReader(json.toString());
 		fIncludedInInfo = gson.fromJson(reader, IncludedInInfo.class);
 
@@ -111,7 +117,8 @@ public class IncludedInInfoTest {
 	 */
 	@Test
 	public void testGetTags() {
-		json.addProperty("tags", TAGS);
+		JsonArray tags = new JsonArray();
+		json.add("tags", tags);
 		Reader reader = new StringReader(json.toString());
 		fIncludedInInfo = gson.fromJson(reader, IncludedInInfo.class);
 

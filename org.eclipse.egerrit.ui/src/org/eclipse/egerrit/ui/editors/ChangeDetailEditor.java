@@ -135,9 +135,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 //	private Table tableReviewers;
 	private TableViewer tableReviewersViewer;
 
-	private Text incBranchData;
+	private Text incBranchesData;
 
-	private Text incTagData;
+	private Text includedInTagsData;
 
 	private Text genTopicData;
 
@@ -538,7 +538,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			public void paintControl(PaintEvent e) {
 				String old = genStrategyData.getText();
 				String latest = fMergeableInfo.getSubmit_type();
-				if (!latest.isEmpty() && latest.compareTo(SubmitType.getEnumName(old)) != 0) {
+				if (latest != null && !latest.isEmpty() && latest.compareTo(SubmitType.getEnumName(old)) != 0) {
 					genStrategyData.setText(SubmitType.valueOf(latest).getValue());
 				}
 			}
@@ -657,14 +657,39 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		Label lblBranches = new Label(grpIncludedIn, SWT.RIGHT);
 		lblBranches.setText("Branches:");
 
-		incBranchData = new Text(grpIncludedIn, SWT.BORDER);
-		incBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		incBranchesData = new Text(grpIncludedIn, SWT.BORDER);
+		incBranchesData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		incBranchesData.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = incBranchesData.getText();
+				String branches = fIncludedIn.getBranches().toString().replace('[', ' ').replace(']', ' ').trim();
+
+				if (branches.compareTo(old) != 0) {
+					incBranchesData.setText(branches);
+				}
+			}
+		});
 
 		Label lblTags = new Label(grpIncludedIn, SWT.RIGHT);
 		lblTags.setText("Tags:");
 
-		incTagData = new Text(grpIncludedIn, SWT.BORDER);
-		incTagData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		includedInTagsData = new Text(grpIncludedIn, SWT.BORDER);
+		includedInTagsData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+
+		includedInTagsData.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = includedInTagsData.getText();
+				String tags = fIncludedIn.getTags().toString().replace('[', ' ').replace(']', ' ').trim();
+
+				if (tags.compareTo(old) != 0) {
+					includedInTagsData.setText(tags);
+				}
+			}
+		});
 
 		//Set the binding for this section
 		sumIncludedDataBindings();
@@ -1184,6 +1209,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	public void setChangeInfo(GerritRepository gerritRepository, ChangeInfo element) {
 		this.fGerritRepository = gerritRepository;
+		ListIterator<ChangeInfo> litr;
+		WritableList writeInfoList;
 
 //		if (m_bindingContext == null) {
 //			m_bindingContext = initDataBindings();
@@ -1201,23 +1228,25 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		ChangeInfo[] sameTopicChangeInfo = null;
 		fSameTopicChangeInfo.clear();
-		try {
-			sameTopicChangeInfo = getSameTopic(gerritRepository, element.getTopic(), new NullProgressMonitor());
-		} catch (MalformedURLException e) {
-			EGerritCorePlugin.logError(e.getMessage());
-		}
-		ListIterator<ChangeInfo> litr = Arrays.asList(sameTopicChangeInfo).listIterator();
-		while (litr.hasNext()) {
-			ChangeInfo cur = litr.next();
-			if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
-				ChangeInfo item = new ChangeInfo();
-				item.setChange_id(cur.getChange_id());
-				item.setSubject(cur.getSubject());
-				fSameTopicChangeInfo.add(item);
+		if (element.getTopic() != null) {
+			try {
+				sameTopicChangeInfo = getSameTopic(gerritRepository, element.getTopic(), new NullProgressMonitor());
+			} catch (MalformedURLException e) {
+				EGerritCorePlugin.logError(e.getMessage());
 			}
+			litr = Arrays.asList(sameTopicChangeInfo).listIterator();
+			while (litr.hasNext()) {
+				ChangeInfo cur = litr.next();
+				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+					ChangeInfo item = new ChangeInfo();
+					item.setChange_id(cur.getChange_id());
+					item.setSubject(cur.getSubject());
+					fSameTopicChangeInfo.add(item);
+				}
+			}
+			writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
+			tableSameTopicViewer.setInput(writeInfoList);
 		}
-		WritableList writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
-		tableSameTopicViewer.setInput(writeInfoList);
 
 		ChangeInfo[] conflictsWithChangeInfo = null;
 		fConflictsWithChangeInfo.clear();
@@ -1250,15 +1279,16 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		}
 		if (changeInfo != null) {
 			fChangeInfo.setCurrent_revision(changeInfo.getCurrentRevision());
-
-			MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
-					changeInfo.getCurrentRevision(), new NullProgressMonitor());
-			if (mergeableInfo != null) {
-				fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-				fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
-			} else {
-				fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
-				fMergeableInfo.setMergeable(true);// Reset the filed to be empty
+			if (fChangeInfo.isMergeable()) {
+				MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
+						changeInfo.getCurrentRevision(), new NullProgressMonitor());
+				if (mergeableInfo != null) {
+					fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
+					fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
+				} else {
+					fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
+					fMergeableInfo.setMergeable(true);// Reset the filed to be empty
+				}
 			}
 		}
 
@@ -1280,7 +1310,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
 			tableReviewersViewer.setInput(writeInfoList);
 		}
-//	TODO fails during testing
 		try {
 			IncludedInInfo includedIn = getIncludedIn(gerritRepository, fChangeInfo.getChange_id(),
 					new NullProgressMonitor());
@@ -1792,14 +1821,21 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	protected DataBindingContext sumIncludedDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 
-		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
-		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches").observe(
-				fIncludedIn.getBranches());
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
-		//
-		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn);
-		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
+		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(incBranchesData);
+		ArrayList arrList = new ArrayList<String>();
+		arrList.add(0, "");
+		fIncludedIn.setBranches(arrList);
+		if (fIncludedIn != null && fIncludedIn.getBranches() != null && fIncludedIn.getBranches().get(0) != null) {
+			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches")
+					.observe(fIncludedIn);
+			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+					null);
+			//
+			IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text()
+					.observe(includedInTagsData);
+			IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn);
+			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
+		}
 		return bindingContext;
 	}
 

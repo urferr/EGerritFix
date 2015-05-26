@@ -13,6 +13,7 @@
 package org.eclipse.egerrit.core.command.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
@@ -160,10 +161,8 @@ public class GetRelatedChangesCommandTest {
 			fail(e.getMessage());
 		}
 
-		System.out.println(">" + "[]" + "<");
-		System.out.println(">" + result.getChanges() + "<");
 		// Verify result
-		assertEquals("[]", result.getChanges());
+		assertTrue("[]".equals(result.getChanges().toString()));
 
 	}
 

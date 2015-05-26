@@ -38,7 +38,7 @@ import org.junit.Test;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.command.QueryChangesCommand}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -157,11 +157,13 @@ public class GetChangeCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ChangeInfo.class, command.getReturnType());
+		assertEquals("Wrong return type", ChangeInfo.class,
+				command.getReturnType());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -177,12 +179,14 @@ public class GetChangeCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes/", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath()
+				+ "/changes/", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setOwner(java.lang.String)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setOwner(java.lang.String)}
 	 */
 	@Test
 	public void testSetOwner() {
@@ -198,7 +202,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setOwnerGroup(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setOwnerGroup(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetOwnerGroup() {
@@ -214,7 +220,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReviewer(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReviewer(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetReviewer() {
@@ -230,7 +238,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReviewerGroup(java.lang.String)} .
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReviewerGroup(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetReviewerGroup() {
@@ -246,7 +256,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setCommit(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setCommit(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetCommit() {
@@ -262,7 +274,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setProject(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setProject(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetProject() {
@@ -278,7 +292,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setParentProject(java.lang.String)} .
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setParentProject(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetParentProject() {
@@ -294,7 +310,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setPrefix(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setPrefix(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetPrefix() {
@@ -310,7 +328,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setBranch(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setBranch(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetBranch() {
@@ -326,11 +346,13 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setTopic(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setTopic(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetTopic() {
-		String EXPECTED_RESULT = "q=" + "topic:" + TOPIC;
+		String EXPECTED_RESULT = "q=" + "topic:" + "\"" + TOPIC + "\"";
 
 		// Run test
 		GetChangeCommand command = fGerrit.getChange("");
@@ -342,7 +364,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReference(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setReference(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetReference() {
@@ -358,7 +382,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setBug(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setBug(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetBug() {
@@ -374,7 +400,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setLabel(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setLabel(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetLabel() {
@@ -390,7 +418,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setMessage(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setMessage(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetMessage() {
@@ -406,7 +436,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setComment(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setComment(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetComment() {
@@ -422,7 +454,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setPath(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setPath(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetPath() {
@@ -438,7 +472,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setFile(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setFile(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetFile() {
@@ -478,7 +514,8 @@ public class GetChangeCommandTest {
 	 */
 	@Test
 	public void testSetStatus2() {
-		String EXPECTED_RESULT = "q=" + STATUS1.getValue() + "+" + STATUS2.getValue();
+		String EXPECTED_RESULT = "q=" + STATUS1.getValue() + "+"
+				+ STATUS2.getValue();
 
 		// Run test
 		GetChangeCommand command = fGerrit.getChange("");
@@ -515,7 +552,8 @@ public class GetChangeCommandTest {
 	 */
 	@Test
 	public void testSetState2() {
-		String EXPECTED_RESULT = "q=" + STATE1.getValue() + "+" + STATE2.getValue();
+		String EXPECTED_RESULT = "q=" + STATE1.getValue() + "+"
+				+ STATE2.getValue();
 
 		// Run test
 		GetChangeCommand command = fGerrit.getChange("");
@@ -528,7 +566,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setVisibleTo(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setVisibleTo(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetVisibleTo() {
@@ -544,7 +584,8 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setVisible()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setVisible()}.
 	 */
 	@Test
 	public void testSetVisible() {
@@ -560,7 +601,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setStarredBy(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setStarredBy(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetStarredBy() {
@@ -576,7 +619,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setWatchedBy(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setWatchedBy(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetWatchedBy() {
@@ -592,7 +637,9 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setDraftBy(java.lang.String)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setDraftBy(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testSetDraftBy() {
@@ -608,7 +655,8 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setLimit(int)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setLimit(int)}.
 	 */
 	@Test
 	public void testSetLimit() {
@@ -642,7 +690,8 @@ public class GetChangeCommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#setCount(int)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#setCount(int)}.
 	 */
 	@Test
 	public void testSetCount() {
@@ -701,15 +750,19 @@ public class GetChangeCommandTest {
 		// Verify result
 		String query = uri.getQuery();
 		assertTrue("Missing owner", query.contains("owner:" + OWNER));
-		assertTrue("Missing owner group", query.contains("ownerin:" + OWNER_GROUP));
+		assertTrue("Missing owner group",
+				query.contains("ownerin:" + OWNER_GROUP));
 		assertTrue("Missing reviewer", query.contains("reviewer:" + REVIEWER));
-		assertTrue("Missing reviewer group", query.contains("reviewerin:" + REVIEWER_GROUP));
+		assertTrue("Missing reviewer group",
+				query.contains("reviewerin:" + REVIEWER_GROUP));
 		assertTrue("Missing commit", query.contains("commit:" + COMMIT));
 		assertTrue("Missing project", query.contains("project:" + PROJECT));
-		assertTrue("Missing parent project", query.contains("parentproject:" + PARENT_PROJECT));
+		assertTrue("Missing parent project",
+				query.contains("parentproject:" + PARENT_PROJECT));
 		assertTrue("Missing prefix", query.contains("prefix:" + PREFIX));
 		assertTrue("Missing branch", query.contains("branch:" + BRANCH));
-		assertTrue("Missing topic", query.contains("topic:" + TOPIC));
+		assertTrue("Missing topic",
+				query.contains("topic:" + "\"" + TOPIC + "\""));
 		assertTrue("Missing reference", query.contains("ref:" + REFERENCE));
 		assertTrue("Missing bug", query.contains("bug:" + BUG));
 		assertTrue("Missing label", query.contains("label:" + LABEL));
@@ -719,10 +772,13 @@ public class GetChangeCommandTest {
 		assertTrue("Missing file", query.contains("file:" + FILE));
 		assertTrue("Missing status", query.contains(STATUS1.getValue()));
 		assertTrue("Missing state", query.contains(STATE1.getValue()));
-		assertTrue("Missing visibility to", query.contains("visibleto:" + VISIBLE_TO));
+		assertTrue("Missing visibility to",
+				query.contains("visibleto:" + VISIBLE_TO));
 		assertTrue("Missing visibility", query.contains("is:visible"));
-		assertTrue("Missing starred by", query.contains("starredby:" + STARRED_BY));
-		assertTrue("Missing watched by", query.contains("watchedby:" + WATCHED_BY));
+		assertTrue("Missing starred by",
+				query.contains("starredby:" + STARRED_BY));
+		assertTrue("Missing watched by",
+				query.contains("watchedby:" + WATCHED_BY));
 		assertTrue("Missing draft by", query.contains("draftby:" + DRAFT_BY));
 		assertTrue("Missing limit", query.contains("limit:" + LIMIT));
 
@@ -735,7 +791,8 @@ public class GetChangeCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -744,7 +801,8 @@ public class GetChangeCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java",
+					"Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();

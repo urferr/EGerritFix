@@ -13,6 +13,7 @@
 package org.eclipse.egerrit.core.command.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
@@ -117,11 +118,9 @@ public class GetIncludedInCommandTest {
 		assertEquals("Wrong scheme", Common.SCHEME, uri.getScheme());
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
-		System.out.println(fGerrit.getRepository().getPath()
-				+ "/changes//revisions//in");
-		System.out.println(uri.getPath());
+
 		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//revisions//in", uri.getPath());
+				+ "/changes//in", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -160,9 +159,8 @@ public class GetIncludedInCommandTest {
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
-
 		// Verify result
-		assertEquals("", result.getBranches());
+		assertTrue("[]".equals(result.getBranches().toString()));
 
 	}
 
