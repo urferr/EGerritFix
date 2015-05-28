@@ -77,7 +77,7 @@ public class NavigatetoCompareTest {
 //					secStorage.bot().textWithLabel("Confirm password:").setText("password");
 //				}
 //				} catch (WidgetNotFoundException e)
-//				{ 
+//				{
 //				}
 				bot.button("OK").click();
 			}
@@ -124,17 +124,16 @@ public class NavigatetoCompareTest {
 		bot.menu("Window").menu("Show View").click().menu("Other...").click();
 		SWTBotTree treeBot2 = bot.tree();
 		treeBot2.expandNode("Other", true);
-		SWTBotTreeItem treeItem2 = treeBot2.getTreeItem("Other").getNode("eGerrit Dashboard").doubleClick();
-
+		SWTBotTreeItem treeItem2 = treeBot2.getTreeItem("Other").getNode("EGerrit").doubleClick();
 		// secure storage screen
 //		try {
 //			SWTBotShell secStorage = bot.shell("Secure Storage");
 //			if (secStorage != null) {
 //				bot.shell("Secure Storage").activate();
 //				sleep();
-//			    bot.button("No").click();			
+//			    bot.button("No").click();
 //			}
-//		} catch (WidgetNotFoundException e) 
+//		} catch (WidgetNotFoundException e)
 //		{}
 
 		SWTBotView egerritDash = bot.viewById("org.eclipse.egerrit.dashboard.ui.views.GerritTableView");
@@ -170,7 +169,7 @@ public class NavigatetoCompareTest {
 			eventsEditor.doubleClick(rowIdx, 0);
 		}
 
-		assert(true);
+		assert (true);
 		return;
 
 	}
