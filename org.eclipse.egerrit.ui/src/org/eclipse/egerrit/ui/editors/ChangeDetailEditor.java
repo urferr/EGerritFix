@@ -53,11 +53,13 @@ import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.rest.GitPersonInfo;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
+import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
@@ -186,6 +188,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private Label genUpdatedData;
 
 	private Label genStrategyData;
+
+	private Label genVoteData;
 
 	private Label statusData;
 
@@ -629,14 +633,76 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		lblVoteSummary.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 4, 1));
 		lblVoteSummary.setText("Vote Summary:");
 
-		Label lblLblvote = new Label(grpReviewers, SWT.LEFT);
+		genVoteData = new Label(grpReviewers, SWT.LEFT);
 		GridData gd_lblLblvote = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1);
 		gd_lblLblvote.widthHint = 70;
-		lblLblvote.setLayoutData(gd_lblLblvote);
-		lblLblvote.setText("lblVote");
+		genVoteData.setLayoutData(gd_lblLblvote);
+		genVoteData.setText("lblVote");
+		genVoteData.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				if (fChangeInfo != null && genVoteData.getText().compareTo("INIT") == 0) {
+
+					String old = genVoteData.getText();
+					String codeReviewed;
+					int verifyState = 0;
+					int codeReviewState = 0;
+					Map<String, LabelInfo> labels = fChangeInfo.getLabels();
+					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+						if (entry.getKey().compareTo("Verified") == 0) {
+							LabelInfo labelInfo = entry.getValue();
+							for (ApprovalInfo it : labelInfo.getAll()) {
+								if (it.getValue() != null) {
+									verifyState = getStateValue(it.getValue(), verifyState);
+								}
+							}
+						} else if (entry.getKey().compareTo("Code-Review") == 0) {
+							LabelInfo labelInfo = entry.getValue();
+							for (ApprovalInfo it : labelInfo.getAll()) {
+								if (it.getValue() != null) {
+									codeReviewState = getStateValue(it.getValue(), codeReviewState);
+								}
+							}
+						}
+						String codeRev;
+						if (codeReviewState > 0) {
+							codeRev = "+" + Integer.toString(codeReviewState);
+						} else {
+							codeRev = Integer.toString(codeReviewState);
+						}
+						String verify;
+						if (verifyState > 0) {
+							verify = "+" + Integer.toString(verifyState);
+						} else {
+							verify = Integer.toString(verifyState);
+						}
+
+						codeReviewed = codeRev + "       " + verify;
+						if (codeReviewed.compareTo(old) != 0) {
+							genVoteData.setText(codeReviewed);
+						}
+					}
+				}
+
+			}
+		});
 
 		//Set the binding for this section
 		sumReviewerDataBindings();
+	}
+
+	private Integer getStateValue(Integer newState, Integer oldState) {
+		Integer state = 0;
+		if (newState < 0) {
+			state = Math.min(oldState, newState);
+		} else if (newState > 0) {
+			state = Math.max(oldState, newState);
+		} else {
+			state = oldState;
+		}
+
+		return state;
 	}
 
 	private void summaryIncluded(Group group) {
@@ -1211,6 +1277,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		this.fGerritRepository = gerritRepository;
 		ListIterator<ChangeInfo> litr;
 		WritableList writeInfoList;
+		genVoteData.setText("INIT");
 
 //		if (m_bindingContext == null) {
 //			m_bindingContext = initDataBindings();
@@ -1279,6 +1346,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		}
 		if (changeInfo != null) {
 			fChangeInfo.setCurrent_revision(changeInfo.getCurrentRevision());
+			fChangeInfo.setLabels(changeInfo.getLabels());
 			if (fChangeInfo.isMergeable()) {
 				MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
 						changeInfo.getCurrentRevision(), new NullProgressMonitor());
@@ -1813,6 +1881,17 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	protected DataBindingContext sumReviewerDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
+
+		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genVoteData);
+//		ArrayList arrList = new MapList<String, LabelInfo>();
+//		arrList.add(0, "");
+//		fChangeInfo.setLabels(arrList);
+		if (fChangeInfo != null && fChangeInfo.getLabels() != null && fChangeInfo.getLabels().get(0) != null) {
+			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("labels").observe(fChangeInfo);
+			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+					null);
+
+		}
 
 		//Fill the data binding
 		return bindingContext;

@@ -180,7 +180,7 @@ public class GetChangeCommandTest {
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
 		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes/", uri.getPath());
+				+ "/changes//detail", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 

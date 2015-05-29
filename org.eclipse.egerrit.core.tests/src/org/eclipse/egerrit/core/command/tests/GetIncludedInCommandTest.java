@@ -160,7 +160,8 @@ public class GetIncludedInCommandTest {
 			fail(e.getMessage());
 		}
 		// Verify result
-		assertTrue("[]".equals(result.getBranches().toString()));
+		String res = result.getBranches().toString();
+		assertTrue("[]".equals(res));
 
 	}
 

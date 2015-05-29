@@ -24,220 +24,217 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes"
- * >Get
- * Change</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info"
- * >ChangeInfo</a> structure.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
+ * command. It returns a <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a> structure.
  * <p>
  *
  * @since 1.0
  */
 public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 
-    // ------------------------------------------------------------------------
-    // Attributes
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------------------------
 
 	private String fChange_id;
 
-    // ------------------------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Constructor
+	// ------------------------------------------------------------------------
 
-    /**
-     * The constructor
-     *
-     * @param gerritRepository
-     *            the gerrit repository
-     */
-    public GetChangeCommand(GerritRepository gerritRepository, String id) {
-        super(gerritRepository, ChangeInfo.class);
-        this.setId(id);
+	/**
+	 * The constructor
+	 *
+	 * @param gerritRepository
+	 *            the gerrit repository
+	 */
+	public GetChangeCommand(GerritRepository gerritRepository, String id) {
+		super(gerritRepository, ChangeInfo.class);
+		this.setId(id);
 
-    }
+	}
 
-    // ------------------------------------------------------------------------
-    // Query fields
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Query fields
+	// ------------------------------------------------------------------------
 
-    public GetChangeCommand setOwner(String owner) {
-        addParameter(OWNER, "owner:" + owner); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setOwner(String owner) {
+		addParameter(OWNER, "owner:" + owner); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setOwnerGroup(String group) {
-        addParameter(OWNERIN, "ownerin:" + group); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setOwnerGroup(String group) {
+		addParameter(OWNERIN, "ownerin:" + group); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setReviewer(String reviewer) {
-        addParameter(REVIEWER, "reviewer:" + reviewer); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setReviewer(String reviewer) {
+		addParameter(REVIEWER, "reviewer:" + reviewer); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setReviewerGroup(String group) {
-        addParameter(REVIEWERIN, "reviewerin:" + group); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setReviewerGroup(String group) {
+		addParameter(REVIEWERIN, "reviewerin:" + group); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setCommit(String sha1) {
-        addParameter(COMMIT, "commit:" + sha1); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setCommit(String sha1) {
+		addParameter(COMMIT, "commit:" + sha1); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setProject(String project) {
-        addParameter(PROJECT, "project:" + project); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setProject(String project) {
+		addParameter(PROJECT, "project:" + project); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setParentProject(String project) {
-        addParameter(PARENTPROJECT, "parentproject:" + project); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setParentProject(String project) {
+		addParameter(PARENTPROJECT, "parentproject:" + project); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setPrefix(String prefix) {
-        addParameter(PREFIX, "prefix:" + prefix); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setPrefix(String prefix) {
+		addParameter(PREFIX, "prefix:" + prefix); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setBranch(String branch) {
-        addParameter(BRANCH, "branch:" + branch); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setBranch(String branch) {
+		addParameter(BRANCH, "branch:" + branch); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setTopic(String topic) {
-        addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setTopic(String topic) {
+		addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setReference(String ref) {
-        addParameter(REF, "ref:" + ref); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setReference(String ref) {
+		addParameter(REF, "ref:" + ref); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setBug(String bug) {
-        addParameter(BUG, "bug:" + bug); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setBug(String bug) {
+		addParameter(BUG, "bug:" + bug); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setLabel(String label) {
-        addParameter(LABEL, "label:" + label); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setLabel(String label) {
+		addParameter(LABEL, "label:" + label); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setMessage(String message) {
-        addParameter(MESSAGE, "message:" + message); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setMessage(String message) {
+		addParameter(MESSAGE, "message:" + message); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setComment(String comment) {
-        addParameter(COMMENT, "comment:" + comment); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setComment(String comment) {
+		addParameter(COMMENT, "comment:" + comment); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setPath(String path) {
-        addParameter(PATH, "path:" + path); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setPath(String path) {
+		addParameter(PATH, "path:" + path); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setFile(String file) {
-        addParameter(FILE, "file:" + file); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setFile(String file) {
+		addParameter(FILE, "file:" + file); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setStatus(ChangeStatus status) {
-        addParameter(STATUS, status.getValue());
-        return this;
-    }
+	public GetChangeCommand setStatus(ChangeStatus status) {
+		addParameter(STATUS, status.getValue());
+		return this;
+	}
 
-    public GetChangeCommand setState(ChangeState state) {
-        addParameter(STATE, state.getValue());
-        return this;
-    }
+	public GetChangeCommand setState(ChangeState state) {
+		addParameter(STATE, state.getValue());
+		return this;
+	}
 
-    // ------------------------------------------------------------------------
-    // Magical operators
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Magical operators
+	// ------------------------------------------------------------------------
 
-    public GetChangeCommand setVisibleTo(String userOrGroup) {
-        addParameter(VISIBLETO, "visibleto:" + userOrGroup); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setVisibleTo(String userOrGroup) {
+		addParameter(VISIBLETO, "visibleto:" + userOrGroup); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setVisible() {
-        addParameter(ISVISIBLE, "is:visible"); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setVisible() {
+		addParameter(ISVISIBLE, "is:visible"); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setStarredBy(String user) {
-        addParameter(STARREDBY, "starredby:" + user); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setStarredBy(String user) {
+		addParameter(STARREDBY, "starredby:" + user); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setWatchedBy(String user) {
-        addParameter(WATCHEDBY, "watchedby:" + user); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setWatchedBy(String user) {
+		addParameter(WATCHEDBY, "watchedby:" + user); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setDraftBy(String user) {
-        addParameter(DRAFTBY, "draftby:" + user); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setDraftBy(String user) {
+		addParameter(DRAFTBY, "draftby:" + user); //$NON-NLS-1$
+		return this;
+	}
 
-    public GetChangeCommand setLimit(int limit) {
-        addParameter(LIMIT, "limit:" + Integer.valueOf(limit).toString()); //$NON-NLS-1$
-        return this;
-    }
+	public GetChangeCommand setLimit(int limit) {
+		addParameter(LIMIT, "limit:" + Integer.valueOf(limit).toString()); //$NON-NLS-1$
+		return this;
+	}
 
-    // ------------------------------------------------------------------------
-    // Format the query
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Format the query
+	// ------------------------------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-     */
-    @Override
-    public HttpRequestBase formatRequest() {
+	/* (non-Javadoc)
+	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
+	 */
+	@Override
+	public HttpRequestBase formatRequest() {
 
-        // Get the generic URI
-        URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
+		// Get the generic URI
+		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
 
-        URI uri = null;
-        try {
-            // Set the path
-            String path = new StringBuilder(uriBuilder.getPath())
-                .append("/changes/").append(getId()) //$NON-NLS-1$;
-                .toString();
-            uriBuilder.setPath(path);
+		URI uri = null;
+		try {
+			// Set the path
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").append(getId()) //$NON-NLS-1$;
+					.append("/detail") //$NON-NLS-1$
+					.toString();
+			uriBuilder.setPath(path);
 
-            // Set the query
-            String params = buildParametersList();
-            if (params.length() > 0) {
-                uriBuilder.setParameter("q", buildParametersList()); //$NON-NLS-1$
-            }
+			// Set the query
+			String params = buildParametersList();
+			if (params.length() > 0) {
+				uriBuilder.setParameter("q", buildParametersList()); //$NON-NLS-1$
+			}
 
-            // Add the options
-            for (String option : fQueryOptions) {
-                uriBuilder.addParameter("o", option).build(); //$NON-NLS-1$
-            }
+			// Add the options
+			for (String option : fQueryOptions) {
+				uriBuilder.addParameter("o", option).build(); //$NON-NLS-1$
+			}
 
-            // Add count
-            if (fCount > 0) {
-                uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
-            }
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-        }
+			// Add count
+			if (fCount > 0) {
+				uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
+			}
+			uri = uriBuilder.build();
+		} catch (URISyntaxException e) {
+			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
+		}
 
-        return new HttpGet(uri);
-    }
+		return new HttpGet(uri);
+	}
 
-    // ------------------------------------------------------------------------
-    // Getters/setters
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Getters/setters
+	// ------------------------------------------------------------------------
 
 	public String getId() {
 		return fChange_id;

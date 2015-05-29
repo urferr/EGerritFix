@@ -18,12 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info"
- * >ChangeInfo</a> entity contains information about a change.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
+ * entity contains information about a change.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Francois Chouinard
@@ -34,8 +32,7 @@ public class ChangeInfo {
 	// The data structure
 	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The structure type.
 	// "gerritcodereview#change"
@@ -159,16 +156,14 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The ID of the change in the format
-	 *         "'<project>~<branch>~<Change-Id>'".
+	 * @return The ID of the change in the format "'<project>~<branch>~<Change-Id>'".
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
-	 * @return The ID of the change in the format
-	 *         "'<project>~<branch>~<Change-Id>'".
+	 * @return The ID of the change in the format "'<project>~<branch>~<Change-Id>'".
 	 */
 	public void setId(String id) {
 		firePropertyChange("id", this.id, this.id = id);
@@ -182,8 +177,7 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The name of the target branch (the 'refs/heads/' prefix is
-	 *         omitted).
+	 * @return The name of the target branch (the 'refs/heads/' prefix is omitted).
 	 */
 	public String getBranch() {
 		return branch;
@@ -208,8 +202,7 @@ public class ChangeInfo {
 	 * @return The Change-Id of the change.
 	 */
 	public void setChange_id(String change_id) {
-		firePropertyChange("change_id", this.change_id,
-				this.change_id = change_id);
+		firePropertyChange("change_id", this.change_id, this.change_id = change_id);
 	}
 
 	public void setProject(String project) {
@@ -218,27 +211,33 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The name of the target branch (the 'refs/heads/' prefix is
-	 *         omitted).
+	 * @return The name of the target branch (the 'refs/heads/' prefix is omitted).
 	 */
 	public void setBranch(String branch) {
 		firePropertyChange("branch", this.branch, this.branch = branch);
 	}
 
 	/**
-	 * @return The name of the target branch (the 'refs/heads/' prefix is
-	 *         omitted).
+	 * @return The name of the target branch (the 'refs/heads/' prefix is omitted).
 	 */
 	public void setUpdated(String updated) {
 		firePropertyChange("updated", this.updated, this.updated = updated);
 	}
 
-
 	/**
-	 * @param current_revision the current_revision to set
+	 * @param current_revision
+	 *            the current_revision to set
 	 */
 	public void setCurrent_revision(String current_revision) {
 		firePropertyChange("current_revision", this.current_revision, this.current_revision = current_revision);
+	}
+
+	/**
+	 * @param labels
+	 *            the labels to set
+	 */
+	public void setLabels(Map<String, LabelInfo> labels) {
+		firePropertyChange("labels", this.labels, this.labels = labels);
 	}
 
 	/**
@@ -256,24 +255,22 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @param The subject of the change (header line of the commit message).
+	 * @param The
+	 *            subject of the change (header line of the commit message).
 	 */
 	public void setSubject(String subject) {
 		firePropertyChange("subject", this.subject, this.subject = subject);
 	}
-	
-	
+
 	/**
-	 * @return The status of the change (NEW, SUBMITTED, MERGED, ABANDONED,
-	 *         DRAFT).
+	 * @return The status of the change (NEW, SUBMITTED, MERGED, ABANDONED, DRAFT).
 	 */
 	public String getStatus() {
 		return status;
 	}
 
 	/**
-	 * @return The status of the change (NEW, SUBMITTED, MERGED, ABANDONED,
-	 *         DRAFT).
+	 * @return The status of the change (NEW, SUBMITTED, MERGED, ABANDONED, DRAFT).
 	 */
 	public void setStatus(String status) {
 		firePropertyChange("status", this.status, this.status = status);
@@ -286,8 +283,6 @@ public class ChangeInfo {
 		firePropertyChange("_number", this._number, this._number = _number);
 	}
 
-	
-	
 	/**
 	 * @return The timestamp of when the change was created.
 	 */
@@ -359,8 +354,7 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The actions the caller might be able to perform on this revision.
-	 *         May be null.
+	 * @return The actions the caller might be able to perform on this revision. May be null.
 	 */
 	public Map<String, ActionInfo> getActions() {
 		return actions;
@@ -374,16 +368,14 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The map of the permitted labels and values allowed for each
-	 *         label. May be null.
+	 * @return The map of the permitted labels and values allowed for each label. May be null.
 	 */
 	public Map<String, String[]> getPermittedLabels() {
 		return permitted_labels;
 	}
 
 	/**
-	 * @return The reviewers that can be removed by the calling user. May be
-	 *         null.
+	 * @return The reviewers that can be removed by the calling user. May be null.
 	 */
 	public List<AccountInfo> getRemovableReviewers() {
 		return removable_reviewers;
@@ -397,16 +389,14 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return The commit ID of the current patch set of this change. May be
-	 *         null.
+	 * @return The commit ID of the current patch set of this change. May be null.
 	 */
 	public String getCurrentRevision() {
 		return current_revision;
 	}
 
 	/**
-	 * @return The commit ID:s of all the patch sets of this change. May be
-	 *         null.
+	 * @return The commit ID:s of all the patch sets of this change. May be null.
 	 */
 	public Map<String, RevisionInfo> getRevisions() {
 		return revisions;
@@ -427,28 +417,22 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return A {change-id} that identifies the base change for a create change
-	 *         operation. May be null.
+	 * @return A {change-id} that identifies the base change for a create change operation. May be null.
 	 */
 	public String getBaseChange() {
 		return base_change;
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
@@ -466,40 +450,27 @@ public class ChangeInfo {
 		int result = 1;
 		result = prime * result + (_more_changes ? 1231 : 1237);
 		result = prime * result + _number;
-		result = prime * result
-				+ ((_sortkey == null) ? 0 : _sortkey.hashCode());
+		result = prime * result + ((_sortkey == null) ? 0 : _sortkey.hashCode());
 		result = prime * result + ((actions == null) ? 0 : actions.hashCode());
-		result = prime * result
-				+ ((base_change == null) ? 0 : base_change.hashCode());
+		result = prime * result + ((base_change == null) ? 0 : base_change.hashCode());
 		result = prime * result + ((branch == null) ? 0 : branch.hashCode());
-		result = prime * result
-				+ ((change_id == null) ? 0 : change_id.hashCode());
+		result = prime * result + ((change_id == null) ? 0 : change_id.hashCode());
 		result = prime * result + ((created == null) ? 0 : created.hashCode());
-		result = prime
-				* result
-				+ ((current_revision == null) ? 0 : current_revision.hashCode());
+		result = prime * result + ((current_revision == null) ? 0 : current_revision.hashCode());
 		result = prime * result + deletions;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + insertions;
 		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
 		result = prime * result + ((labels == null) ? 0 : labels.hashCode());
 		result = prime * result + (mergeable ? 1231 : 1237);
-		result = prime * result
-				+ ((messages == null) ? 0 : messages.hashCode());
+		result = prime * result + ((messages == null) ? 0 : messages.hashCode());
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-		result = prime
-				* result
-				+ ((permitted_labels == null) ? 0 : permitted_labels.hashCode());
-		result = prime * result
-				+ ((problems == null) ? 0 : problems.hashCode());
+		result = prime * result + ((permitted_labels == null) ? 0 : permitted_labels.hashCode());
+		result = prime * result + ((problems == null) ? 0 : problems.hashCode());
 		result = prime * result + ((project == null) ? 0 : project.hashCode());
-		result = prime
-				* result
-				+ ((removable_reviewers == null) ? 0 : removable_reviewers
-						.hashCode());
+		result = prime * result + ((removable_reviewers == null) ? 0 : removable_reviewers.hashCode());
 		result = prime * result + (reviewed ? 1231 : 1237);
-		result = prime * result
-				+ ((revisions == null) ? 0 : revisions.hashCode());
+		result = prime * result + ((revisions == null) ? 0 : revisions.hashCode());
 		result = prime * result + (starred ? 1231 : 1237);
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
@@ -704,21 +675,14 @@ public class ChangeInfo {
 	@Override
 	@SuppressWarnings("nls")
 	public String toString() {
-		return "ChangeInfo [kind=" + kind + ", id=" + id + ", project="
-				+ project + ", branch=" + branch + ", topic=" + topic
-				+ ", change_id=" + change_id + ", subject=" + subject
-				+ ", status=" + status + ", created=" + created + ", updated="
-				+ updated + ", starred=" + starred + ", reviewed=" + reviewed
-				+ ", mergeable=" + mergeable + ", insertions=" + insertions
-				+ ", deletions=" + deletions + ", _sortkey=" + _sortkey
-				+ ", _number=" + _number + ", owner=" + owner + ", actions="
-				+ actions + ", labels=" + labels + ", permitted_labels="
-				+ permitted_labels + ", removable_reviewers="
-				+ removable_reviewers + ", messages=" + messages
-				+ ", current_revision=" + current_revision + ", revisions="
-				+ revisions + ", _more_changes=" + _more_changes
-				+ ", problems=" + problems + ", base_change=" + base_change
-				+ "]";
+		return "ChangeInfo [kind=" + kind + ", id=" + id + ", project=" + project + ", branch=" + branch + ", topic="
+				+ topic + ", change_id=" + change_id + ", subject=" + subject + ", status=" + status + ", created="
+				+ created + ", updated=" + updated + ", starred=" + starred + ", reviewed=" + reviewed + ", mergeable="
+				+ mergeable + ", insertions=" + insertions + ", deletions=" + deletions + ", _sortkey=" + _sortkey
+				+ ", _number=" + _number + ", owner=" + owner + ", actions=" + actions + ", labels=" + labels
+				+ ", permitted_labels=" + permitted_labels + ", removable_reviewers=" + removable_reviewers
+				+ ", messages=" + messages + ", current_revision=" + current_revision + ", revisions=" + revisions
+				+ ", _more_changes=" + _more_changes + ", problems=" + problems + ", base_change=" + base_change + "]";
 	}
 
 }
