@@ -24,11 +24,9 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mergeable-info"
- * >Get Mergeable</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#MergeableInfo"
- * ></a>
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mergeable-info" >Get
+ * Mergeable</a> command. It returns a <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#MergeableInfo" ></a>
  * <p>
  *
  * @since 1.0
@@ -57,8 +55,7 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 	 * @param revision
 	 *            revisions-id
 	 */
-	public GetMergeableCommand(GerritRepository gerritRepository, String id,
-			String revision) {
+	public GetMergeableCommand(GerritRepository gerritRepository, String id, String revision) {
 		super(gerritRepository, MergeableInfo.class);
 		this.setId(id);
 		this.setRevision(revision);
@@ -101,11 +98,11 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath())
-			.append("/changes/").append(getId()) //$NON-NLS-1$
-			.append("/revisions/").append(getRevision())//$NON-NLS-1$
-			.append("/mergeable") //$NON-NLS-1$
-			.toString();
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").append(getId()) //$NON-NLS-1$
+//			.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append("/revisions/current")//$NON-NLS-1$
+					.append("/mergeable") //$NON-NLS-1$
+					.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
 		} catch (URISyntaxException e) {

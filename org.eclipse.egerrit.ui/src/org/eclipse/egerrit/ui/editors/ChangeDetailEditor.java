@@ -108,7 +108,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -120,8 +119,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor extends EditorPart implements PropertyChangeListener {
-	private DataBindingContext m_bindingContext;
-
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -132,9 +129,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private static Color RED;
 
 //	private static Color GREEN = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
-//	private final DataBindingContext m_bindingContext = null;
-
-//	private Table tableReviewers;
 	private TableViewer tableReviewersViewer;
 
 	private Text incBranchesData;
@@ -143,19 +137,13 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private Text genTopicData;
 
-	private Table tableSameTopic;
-
 	private TableViewer tableRelatedChangesViewer;
 
 	private TableViewer tableSameTopicViewer;
 
 	private TableViewer tableConflictsWithViewer;
 
-	private Table tableConfictsWith;
-
-	private Text commitMessage;
-
-	private Table tablePatchSets;
+	private TableViewer tableFilesViewer;
 
 	private Table tableHistory;
 
@@ -172,8 +160,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private final MergeableInfo fMergeableInfo = new MergeableInfo();
 
 	private final RelatedChangesInfo fRelatedChangesInfo = new RelatedChangesInfo();
-
-	private final List<FileInfo> fileListInfo = new ArrayList<FileInfo>();
 
 	private final CommitInfo fCommitInfo = new CommitInfo();
 
@@ -194,12 +180,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private Label statusData;
 
 	private Label shortIdData;
-
-	private Table tableFileList;
-
-	private Table tableRelatedList;
-
-	private TableItem tableFileListItem;
 
 	private GerritRepository fGerritRepository;
 
@@ -229,17 +209,11 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private Composite compButton;
 
-	private TableViewer tableViewer;
-
-	private ChangeDetailEditorInput input;
-
 	private Label genMessageData;
 
 	private final List<ReviewerInfo> fReviewers = new ArrayList<ReviewerInfo>();
 
 	private final IncludedInInfo fIncludedIn = new IncludedInInfo();
-
-	private Table tableReviewersList;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -335,8 +309,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		scrollView.setMinSize(minimumWidth, minimumHeight);
 
-//		//Start to fill the data
-//		m_bindingContext = initDataBindings();
 	}
 
 	private Point computeFontSize(Composite composite) {
@@ -617,17 +589,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		uiReviewersTable.createTableViewerSection(grpReviewers, grid);
 
 		tableReviewersViewer = uiReviewersTable.getViewer();
-		tableReviewersList = tableReviewersViewer.getTable();
-
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableReviewersViewer.setContentProvider(contentProvider);
-		WritableList writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "name" }));
-
-		ViewerSupport.bind(tableReviewersViewer, writeInfoList, BeanProperties.values(new String[] { "name" }));
-		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(observeMaps));
 
 		Label lblVoteSummary = new Label(grpReviewers, SWT.RIGHT);
 		lblVoteSummary.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 4, 1));
@@ -637,13 +598,11 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		GridData gd_lblLblvote = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1);
 		gd_lblLblvote.widthHint = 70;
 		genVoteData.setLayoutData(gd_lblLblvote);
-		genVoteData.setText("lblVote");
 		genVoteData.addPaintListener(new PaintListener() {
 
 			@Override
 			public void paintControl(PaintEvent e) {
 				if (fChangeInfo != null && genVoteData.getText().compareTo("INIT") == 0) {
-
 					String old = genVoteData.getText();
 					String codeReviewed;
 					int verifyState = 0;
@@ -775,22 +734,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		tableUISameTopic.createTableViewerSection(grpSameTopic, grid);
 
 		tableSameTopicViewer = tableUISameTopic.getViewer();
-		//tableRelatedList = tableRelatedChangesViewer.getTable();
-
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableSameTopicViewer.setContentProvider(contentProvider);
-
-//		if (fSameTopicChangeInfo == null) {
-//			fSameTopicChangeInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-//		}
-
-		WritableList writeInfoList = new WritableList(fSameTopicChangeInfo, ChangeInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "change_id" }));
-
-		ViewerSupport.bind(tableSameTopicViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
-		tableSameTopicViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
 
 		//Set the binding for this section
 		sumSameTopicDataBindings();
@@ -810,22 +753,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges, grid);
 
 		tableRelatedChangesViewer = tableUIRelatedChanges.getViewer();
-		//tableRelatedList = tableRelatedChangesViewer.getTable();
-
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableRelatedChangesViewer.setContentProvider(contentProvider);
-
-		if (fRelatedChangesInfo.getChanges() == null) {
-			fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-		}
-
-		WritableList writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "changes" }));
-
-		ViewerSupport.bind(tableRelatedChangesViewer, writeInfoList, BeanProperties.values(new String[] { "changes" }));
-		tableRelatedChangesViewer.setLabelProvider(new RelatedChangesTableLabelProvider(observeMaps));
 
 		//Set the binding for this section
 		sumRelatedChandesDataBindings();
@@ -835,7 +762,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		new Label(summaryGroup, SWT.NONE);
 
 		Group grpConflictsWith = new Group(group, SWT.NONE);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, false, 5, 1);
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
 		grpConflictsWith.setLayoutData(grid);
 		grpConflictsWith.setText("Conflicts With ()");
 
@@ -847,22 +774,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		tableUIConflictsWith.createTableViewerSection(grpConflictsWith, grid);
 
 		tableConflictsWithViewer = tableUIConflictsWith.getViewer();
-		//tableRelatedList = tableRelatedChangesViewer.getTable();
-
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableConflictsWithViewer.setContentProvider(contentProvider);
-
-//		if (fSameTopicChangeInfo == null) {
-//			fSameTopicChangeInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-//		}
-
-		WritableList writeInfoList = new WritableList(fConflictsWithChangeInfo, ChangeInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "change_id" }));
-
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
-		tableConflictsWithViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
 
 		//Set the binding for this section
 		sumConflictWithDataBindings();
@@ -1091,24 +1002,13 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		tbtmFiles.setControl(scFilesTab);
 
-		UIFilesTable tableFilesViewer = new UIFilesTable();
-		tableFilesViewer.createTableViewerSection(filesGroup, grid);
+		UIFilesTable tableUIFiles = new UIFilesTable();
+		tableUIFiles.createTableViewerSection(filesGroup, grid);
 
-		tableViewer = tableFilesViewer.getViewer();
-		tableFileList = tableViewer.getTable();
+		tableFilesViewer = tableUIFiles.getViewer();
+		tableFilesViewer.getTable();
 
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableViewer.setContentProvider(contentProvider);
-
-		WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "old_path" }));
-
-		ViewerSupport.bind(tableViewer, writeInfoList, BeanProperties.values(new String[] { "old_path" }));
-		tableViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
-
-		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+		tableFilesViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 
@@ -1120,7 +1020,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 					Entry<String, RevisionInfo> entry = itr1.next();
 					System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
 							+ entry.getKey());
-					String resRight = getContent(fGerritRepository, fChangeInfo.getChange_id(), entry.getKey(),
+					String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(), entry.getKey(),
 							fileInfo.getold_path(), new NullProgressMonitor());
 					CompareInput ci = new CompareInput();
 					if (resRight != null) {
@@ -1133,8 +1033,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 						Entry<String, RevisionInfo> entryLeft = itr1.next();
 						System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
 								+ entryLeft.getKey());
-						String resLeft = getContent(fGerritRepository, fChangeInfo.getChange_id(), entryLeft.getKey(),
-								fileInfo.getold_path(), new NullProgressMonitor());
+						String resLeft = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
+								entryLeft.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
 						if (resLeft != null) {
 							ci.setLeft(StringUtils.newStringUtf8(Base64.decodeBase64(resLeft)));
 						} else {
@@ -1217,7 +1117,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		scFilesTab.setMinSize(filesGroup.getSize());
 
 		//Set the binding for this section
-//		filesTabDataBindings(tableViewer);
+		filesTabDataBindings(tableFilesViewer);
 	}
 
 	private void historyTab(TabFolder tabFolder) {
@@ -1275,15 +1175,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	public void setChangeInfo(GerritRepository gerritRepository, ChangeInfo element) {
 		this.fGerritRepository = gerritRepository;
-		ListIterator<ChangeInfo> litr;
-		WritableList writeInfoList;
 		genVoteData.setText("INIT");
 
-//		if (m_bindingContext == null) {
-//			m_bindingContext = initDataBindings();
-//			System.err.println("Need to init the DataBinding");
-//		}
-
+		//Fill the data structure
 		fChangeInfo.setNumber(element.getNumber());
 		fChangeInfo.setId(element.getId());
 		fChangeInfo.setChange_id(element.getChange_id());
@@ -1293,74 +1187,88 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		fChangeInfo.setUpdated(element.getUpdated());
 		fChangeInfo.setTopic(element.getTopic());
 
-		ChangeInfo[] sameTopicChangeInfo = null;
-		fSameTopicChangeInfo.clear();
-		if (element.getTopic() != null) {
-			try {
-				sameTopicChangeInfo = getSameTopic(gerritRepository, element.getTopic(), new NullProgressMonitor());
-			} catch (MalformedURLException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-			litr = Arrays.asList(sameTopicChangeInfo).listIterator();
-			while (litr.hasNext()) {
-				ChangeInfo cur = litr.next();
-				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
-					ChangeInfo item = new ChangeInfo();
-					item.setChange_id(cur.getChange_id());
-					item.setSubject(cur.getSubject());
-					fSameTopicChangeInfo.add(item);
-				}
-			}
-			writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
-			tableSameTopicViewer.setInput(writeInfoList);
+		//Queries to fill the Review tab data
+		setSameTopic(gerritRepository, element);
+
+		setConflictsWith(gerritRepository, element);
+
+		setMergeable(gerritRepository, element);
+
+		setReviewers(gerritRepository);
+		setIncludedIn(gerritRepository);
+
+		setCurrentRevisionAndMessageTab(gerritRepository, element.getChange_id());
+
+		//Need the current Revision set before setting the RelatedChanges
+		setRelatedChanges(gerritRepository);
+
+	}
+
+	/************************************************************* */
+	/*                                                             */
+	/* Section to SET the data structure                           */
+	/*                                                             */
+	/************************************************************* */
+
+	/**
+	 * @param gerritRepository
+	 * @param element
+	 */
+	private void setMergeable(GerritRepository gerritRepository, ChangeInfo element) {
+		MergeableInfo mergeableInfo = queryMergeable(gerritRepository, element.getChange_id(), "",
+				new NullProgressMonitor());
+		if (mergeableInfo != null) {
+			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
+			fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
+		} else {
+			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
+			fMergeableInfo.setMergeable(true);// Reset the filed to be empty
 		}
+		//fChangeInfo.setMergeable
+	}
 
-		ChangeInfo[] conflictsWithChangeInfo = null;
-		fConflictsWithChangeInfo.clear();
-
+	/**
+	 * @param gerritRepository
+	 */
+	private void setIncludedIn(GerritRepository gerritRepository) {
 		try {
-			conflictsWithChangeInfo = getConflictsWith(gerritRepository, element.getChange_id(),
+			IncludedInInfo includedIn = queryIncludedIn(gerritRepository, fChangeInfo.getChange_id(),
 					new NullProgressMonitor());
+			if (includedIn != null) {
+				fIncludedIn.setBranches(includedIn.getBranches());
+				fIncludedIn.setTags(includedIn.getTags());
+			}
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 		}
+	}
 
-		litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
-		while (litr.hasNext()) {
-			ChangeInfo cur = litr.next();
-			if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
-				ChangeInfo item = new ChangeInfo();
-				item.setChange_id(cur.getChange_id());
-				item.setSubject(cur.getSubject());
-				fConflictsWithChangeInfo.add(item);
+	/**
+	 * @param gerritRepository
+	 */
+	private void setRelatedChanges(GerritRepository gerritRepository) {
+		WritableList writeInfoList;
+		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritRepository, fChangeInfo.getChange_id(),
+				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
+		fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
+
+		if (relatedchangesinfo != null) {
+			if (relatedchangesinfo.getChanges() != null) {
+				fRelatedChangesInfo.setChanges(relatedchangesinfo.getChanges());
+			} else {
+				fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
 			}
 		}
-		writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
-		tableConflictsWithViewer.setInput(writeInfoList);
+		writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
+		tableRelatedChangesViewer.setInput(writeInfoList);
+	}
 
-		ChangeInfo changeInfo = null;
-		try {
-			changeInfo = performMessageQuery(gerritRepository, fChangeInfo.getChange_id(), new NullProgressMonitor());
-		} catch (MalformedURLException e) {
-			EGerritCorePlugin.logError(e.getMessage());
-		}
-		if (changeInfo != null) {
-			fChangeInfo.setCurrent_revision(changeInfo.getCurrentRevision());
-			fChangeInfo.setLabels(changeInfo.getLabels());
-			if (fChangeInfo.isMergeable()) {
-				MergeableInfo mergeableInfo = getMergeable(gerritRepository, element.getChange_id(),
-						changeInfo.getCurrentRevision(), new NullProgressMonitor());
-				if (mergeableInfo != null) {
-					fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-					fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
-				} else {
-					fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
-					fMergeableInfo.setMergeable(true);// Reset the filed to be empty
-				}
-			}
-		}
-
-		ReviewerInfo[] reviewers = listReviewers(gerritRepository, fChangeInfo.getChange_id(),
+	/**
+	 * @param gerritRepository
+	 */
+	private void setReviewers(GerritRepository gerritRepository) {
+		WritableList writeInfoList;
+		ReviewerInfo[] reviewers = queryReviewers(gerritRepository, fChangeInfo.getChange_id(),
 				new NullProgressMonitor());
 		fReviewers.clear();
 		if (reviewers != null) {
@@ -1378,71 +1286,72 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
 			tableReviewersViewer.setInput(writeInfoList);
 		}
-		try {
-			IncludedInInfo includedIn = getIncludedIn(gerritRepository, fChangeInfo.getChange_id(),
-					new NullProgressMonitor());
-			if (includedIn != null) {
-				fIncludedIn.setBranches(includedIn.getBranches());
-				fIncludedIn.setTags(includedIn.getTags());
+	}
+
+	/**
+	 * @param gerritRepository
+	 * @param element
+	 */
+	private void setSameTopic(GerritRepository gerritRepository, ChangeInfo element) {
+		ListIterator<ChangeInfo> litr;
+		WritableList writeInfoList;
+		ChangeInfo[] sameTopicChangeInfo = null;
+		fSameTopicChangeInfo.clear();
+		if (element.getTopic() != null) {
+			try {
+				sameTopicChangeInfo = querySameTopic(gerritRepository, element.getTopic(), new NullProgressMonitor());
+			} catch (MalformedURLException e) {
+				EGerritCorePlugin.logError(e.getMessage());
 			}
+			litr = Arrays.asList(sameTopicChangeInfo).listIterator();
+			while (litr.hasNext()) {
+				ChangeInfo cur = litr.next();
+				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+					ChangeInfo item = new ChangeInfo();
+					item.setChange_id(cur.getChange_id());
+					item.setSubject(cur.getSubject());
+					fSameTopicChangeInfo.add(item);
+				}
+			}
+			writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
+			tableSameTopicViewer.setInput(writeInfoList);
+		}
+		//writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
+		//tableSameTopicViewer = .setInput(writeInfoList);
+		//retrieveData(writeInfoList);
+	}
+
+	//retrieve info list
+
+	/**
+	 * @param gerritRepository
+	 * @param element
+	 */
+	private void setConflictsWith(GerritRepository gerritRepository, ChangeInfo element) {
+		ListIterator<ChangeInfo> litr;
+		WritableList writeInfoList;
+		ChangeInfo[] conflictsWithChangeInfo = null;
+		fConflictsWithChangeInfo.clear();
+
+		try {
+			conflictsWithChangeInfo = queryConflictsWith(gerritRepository, element.getChange_id(),
+					new NullProgressMonitor());
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 		}
 
-		RelatedChangesInfo relatedchangesinfo = getRelatedChanges(gerritRepository, fChangeInfo.getChange_id(),
-				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
-		fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-
-		if (relatedchangesinfo != null) {
-			if (relatedchangesinfo.getChanges() != null) {
-				fRelatedChangesInfo.setChanges(relatedchangesinfo.getChanges());
-			} else {
-				fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
+		litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
+		while (litr.hasNext()) {
+			ChangeInfo cur = litr.next();
+			if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+				ChangeInfo item = new ChangeInfo();
+				item.setChange_id(cur.getChange_id());
+				item.setSubject(cur.getSubject());
+				fConflictsWithChangeInfo.add(item);
 			}
 		}
-		writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
-		tableRelatedChangesViewer.setInput(writeInfoList);
-
-//		try {
-//			changeInfo = performFilesQuery(gerritRepository, fChangeInfo.getChange_id(), new NullProgressMonitor());
-//		} catch (MalformedURLException e) {
-//			EGerritCorePlugin.logError(e.getMessage());
-//		}
-
-	}
-
-	private IncludedInInfo getIncludedIn(GerritRepository gerritRepository, String change_id,
-			NullProgressMonitor monitor) throws MalformedURLException {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			// Create query
-			GetIncludedInCommand command = gerrit.getIncludedIn(change_id);
-/*			command.addOption(ChangeOption.ALL_FILES);
-			command.addOption(ChangeOption.CURRENT_REVISION);
-			command.addOption(ChangeOption.CURRENT_COMMIT);
- */
-			IncludedInInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			return res;
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
+		writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
+		tableConflictsWithViewer.setInput(writeInfoList);
 	}
 
 	/**
@@ -1450,162 +1359,183 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	 *
 	 * @param gerritRepository
 	 * @param change_id
+	 */
+	private void setCurrentRevisionAndMessageTab(GerritRepository gerritRepository, String change_id) {
+		ChangeInfo res = queryMessageTab(gerritRepository, change_id, new NullProgressMonitor());
+
+		if (res != null) {
+			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
+			fChangeInfo.setLabels(res.getLabels());
+			fRevisions = res.getRevisions();
+			fFiles = new HashMap<String, FileInfo>();
+			Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
+			while (itr1.hasNext()) {
+				Entry<String, RevisionInfo> entry = itr1.next();
+
+				fCommitInfo.setCommit(res.getCurrentRevision());
+
+				//	fCommitInfo = entry.getValue().getCommit();
+				//				fCommitInfo.addPropertyChangeListener("message", this);
+				fCommitInfo.setMessage(entry.getValue().getCommit().getMessage());
+				fCommitInfo.setParents(entry.getValue().getCommit().getParents());
+				fCommitInfo.setAuthor(entry.getValue().getCommit().getAuthor());
+				fCommitInfo.setCommitter(entry.getValue().getCommit().getCommitter());
+				//Store the files
+				fFiles.putAll(entry.getValue().getFiles());
+
+				entry.getValue().setFiles(entry.getValue().getFiles());
+
+				Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
+				while (itr2.hasNext()) {
+
+					Entry<String, FileInfo> entry1 = itr2.next();
+
+					entry1.getValue().addPropertyChangeListener("old_path", this);
+					entry1.getValue().setOld_path(entry1.getKey());
+				}
+			}
+
+			WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
+			tableFilesViewer.setInput(writeInfoList);
+			tableFilesViewer.refresh();
+		}
+	}
+
+	/**
+	 * @param gerritRepository
+	 * @return
+	 */
+	private Gerrit setGerritServer(GerritRepository gerritRepository) {
+		Gerrit gerrit = null;
+		try {
+			gerrit = GerritFactory.create(gerritRepository);
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+		}
+		return gerrit;
+	}
+
+	/************************************************************* */
+	/*                                                             */
+	/* Section to QUERY the data structure                         */
+	/*                                                             */
+	/************************************************************* */
+
+	private MergeableInfo queryMergeable(GerritRepository gerritRepository, String change_id, String revision_id,
+			IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			Gerrit gerrit = setGerritServer(gerritRepository);
+
+			// Create query
+			if (gerrit != null) {
+				GetMergeableCommand command = gerrit.getMergeable(change_id, revision_id);
+
+				MergeableInfo res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				}
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
+
+	}
+
+	/**
+	 * @param gerritRepository
+	 * @param change_id
 	 * @param monitor
-	 * @return ChangeInfo
+	 * @return
 	 * @throws MalformedURLException
 	 */
-	public ChangeInfo performMessageQuery(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor)
-			throws MalformedURLException {
+	private IncludedInInfo queryIncludedIn(GerritRepository gerritRepository, String change_id,
+			NullProgressMonitor monitor) throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			// Create query
-			GetChangeCommand command = gerrit.getChange(change_id);
-			command.addOption(ChangeOption.ALL_FILES);
+			if (gerrit != null) {
+				GetIncludedInCommand command = gerrit.getIncludedIn(change_id);
+/*			command.addOption(ChangeOption.ALL_FILES);
 			command.addOption(ChangeOption.CURRENT_REVISION);
 			command.addOption(ChangeOption.CURRENT_COMMIT);
-
-			ChangeInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			if (res != null) {
-				fRevisions = res.getRevisions();
-				fFiles = new HashMap<String, FileInfo>();
-				Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-				while (itr1.hasNext()) {
-					Entry<String, RevisionInfo> entry = itr1.next();
-
-					fCommitInfo.setCommit(res.getCurrentRevision());
-
-					//	fCommitInfo = entry.getValue().getCommit();
-					fCommitInfo.addPropertyChangeListener("message", this);
-					fCommitInfo.setMessage(entry.getValue().getCommit().getMessage());
-					fCommitInfo.setParents(entry.getValue().getCommit().getParents());
-					fCommitInfo.setAuthor(entry.getValue().getCommit().getAuthor());
-					fCommitInfo.setCommitter(entry.getValue().getCommit().getCommitter());
-					//Store the files
-					fFiles.putAll(entry.getValue().getFiles());
-
-					entry.getValue().setFiles(entry.getValue().getFiles());
-
-					Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
-					while (itr2.hasNext()) {
-
-						Entry<String, FileInfo> entry1 = itr2.next();
-
-						entry1.getValue().addPropertyChangeListener("old_path", this);
-						entry1.getValue().setOld_path(entry1.getKey());
-					}
+ */
+				IncludedInInfo res = null;
+				try {
+					res = command.call();
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
 				}
 
-				WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
-				tableViewer.setInput(writeInfoList);
-				tableViewer.refresh();
+				return res;
 			}
-
-			tableFileList.setFocus();
-			tableFileList.setVisible(true);
-			return res;
 		} catch (UnsupportedClassVersionError e) {
 			return null;
 		} finally {
 			monitor.done();
 		}
+		return null;
 
 	}
 
-	public ChangeInfo performFilesQuery(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor)
-			throws MalformedURLException {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			// Create query
-			GetChangeCommand command = gerrit.getChange(change_id);
-			command.addOption(ChangeOption.ALL_FILES);
-			command.addOption(ChangeOption.ALL_REVISIONS);
+			if (gerrit != null) {
+				GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
 
-			ChangeInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			if (res != null) {
-				fRevisions = res.getRevisions();
-				fFiles = new HashMap<String, FileInfo>();
-				Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-				while (itr1.hasNext()) {
-					Entry<String, RevisionInfo> entry = itr1.next();
-					fFiles.putAll(entry.getValue().getFiles());
-
-					entry.getValue().setFiles(entry.getValue().getFiles());
-
-					Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
-					while (itr2.hasNext()) {
-
-						Entry<String, FileInfo> entry1 = itr2.next();
-
-						entry1.getValue().addPropertyChangeListener("old_path", this);
-						entry1.getValue().setOld_path(entry1.getKey());
-					}
+				String res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
 				}
-
-				WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
-				tableViewer.setInput(writeInfoList);
-				tableViewer.refresh();
 			}
-
-			tableFileList.setFocus();
-			tableFileList.setVisible(true);
-			return res;
 		} catch (UnsupportedClassVersionError e) {
 			return null;
 		} finally {
 			monitor.done();
 		}
 
+		return null;
+
 	}
 
-	public RelatedChangesInfo getRelatedChanges(GerritRepository gerritRepository, String change_id,
+	private RelatedChangesInfo queryRelatedChanges(GerritRepository gerritRepository, String change_id,
 			String revision_id, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			// Create query
-			GetRelatedChangesCommand command = gerrit.getRelatedChanges(change_id, revision_id);
+			if (gerrit != null) {
+				GetRelatedChangesCommand command = gerrit.getRelatedChanges(change_id, revision_id);
 
-			RelatedChangesInfo res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				RelatedChangesInfo res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -1617,27 +1547,23 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	public String getContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			// Create query
-			GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
+			if (gerrit != null) {
+				ListReviewersCommand command = gerrit.getReviewers(change_id);
 
-			String res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				ReviewerInfo[] res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -1649,82 +1575,12 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	public MergeableInfo getMergeable(GerritRepository gerritRepository, String change_id, String revision_id,
-			IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			// Create query
-			GetMergeableCommand command = gerrit.getMergeable(change_id, revision_id);
-
-			MergeableInfo res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	public ReviewerInfo[] listReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-
-			// Create query
-			ListReviewersCommand command = gerrit.getReviewers(change_id);
-
-			ReviewerInfo[] res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	public ChangeInfo[] getSameTopic(GerritRepository gerritRepository, String topic, IProgressMonitor monitor)
+	private ChangeInfo[] querySameTopic(GerritRepository gerritRepository, String topic, IProgressMonitor monitor)
 			throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-//				String message = "Server: " + gerritRepository.getURIBuilder(false) + "\n" + e.getLocalizedMessage();
-//				Utils.displayInformation(null, TITLE, message);
-				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			ChangeInfo[] res = null;
 			if (gerrit != null) {
@@ -1763,19 +1619,12 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		}
 	}
 
-	public ChangeInfo[] getConflictsWith(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor)
-			throws MalformedURLException {
+	private ChangeInfo[] queryConflictsWith(GerritRepository gerritRepository, String change_id,
+			IProgressMonitor monitor) throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-//				String message = "Server: " + gerritRepository.getURIBuilder(false) + "\n" + e.getLocalizedMessage();
-//				Utils.displayInformation(null, TITLE, message);
-				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-			}
+			Gerrit gerrit = setGerritServer(gerritRepository);
 
 			ChangeInfo[] res = null;
 			if (gerrit != null) {
@@ -1813,6 +1662,48 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			monitor.done();
 		}
 	}
+
+	/**
+	 * @param gerritRepository
+	 * @param change_id
+	 * @param monitor
+	 * @return
+	 */
+	private ChangeInfo queryMessageTab(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+		try {
+
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			Gerrit gerrit = setGerritServer(gerritRepository);
+
+			// Create query
+			if (gerrit != null) {
+				GetChangeCommand command = gerrit.getChange(change_id);
+				command.addOption(ChangeOption.ALL_FILES);
+				command.addOption(ChangeOption.CURRENT_REVISION);
+				command.addOption(ChangeOption.CURRENT_COMMIT);
+
+				ChangeInfo res = null;
+				try {
+					res = command.call();
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				}
+				return res;
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+		return null;
+	}
+
+	/************************************************************* */
+	/*                                                             */
+	/* Section adjust the DATA binding                             */
+	/*                                                             */
+	/************************************************************* */
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -1879,22 +1770,25 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		return bindingContext;
 	}
 
-	protected DataBindingContext sumReviewerDataBindings() {
+	protected void sumReviewerDataBindings() {
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableReviewersViewer.setContentProvider(contentProvider);
+		WritableList writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
+
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genVoteData);
-//		ArrayList arrList = new MapList<String, LabelInfo>();
-//		arrList.add(0, "");
-//		fChangeInfo.setLabels(arrList);
 		if (fChangeInfo != null && fChangeInfo.getLabels() != null && fChangeInfo.getLabels().get(0) != null) {
 			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("labels").observe(fChangeInfo);
 			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
 					null);
-
 		}
 
-		//Fill the data binding
-		return bindingContext;
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "name" }));
+
+		ViewerSupport.bind(tableReviewersViewer, writeInfoList, BeanProperties.values(new String[] { "name" }));
+		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(observeMaps));
 	}
 
 	protected DataBindingContext sumIncludedDataBindings() {
@@ -1918,43 +1812,47 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		return bindingContext;
 	}
 
-	protected DataBindingContext sumSameTopicDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
+	protected void sumSameTopicDataBindings() {
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableSameTopicViewer.setContentProvider(contentProvider);
 
-//		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
-//		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
-//		//
-//		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-		return bindingContext;
+		WritableList writeInfoList = new WritableList(fSameTopicChangeInfo, ChangeInfo.class);
+
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "change_id" }));
+
+		ViewerSupport.bind(tableSameTopicViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
+		tableSameTopicViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
 	}
 
-	protected DataBindingContext sumRelatedChandesDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
+	protected void sumRelatedChandesDataBindings() {
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableRelatedChangesViewer.setContentProvider(contentProvider);
 
-//		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(r);
-//		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
-//		//
-//		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-		return bindingContext;
+		if (fRelatedChangesInfo.getChanges() == null) {
+			fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
+		}
+
+		WritableList writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
+
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "changes" }));
+
+		ViewerSupport.bind(tableRelatedChangesViewer, writeInfoList, BeanProperties.values(new String[] { "changes" }));
+		tableRelatedChangesViewer.setLabelProvider(new RelatedChangesTableLabelProvider(observeMaps));
 	}
 
-	protected DataBindingContext sumConflictWithDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
+	protected void sumConflictWithDataBindings() {
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableConflictsWithViewer.setContentProvider(contentProvider);
 
-//		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
-//		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
-//		//
-//		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-		return bindingContext;
+		WritableList writeInfoList = new WritableList(fConflictsWithChangeInfo, ChangeInfo.class);
+
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "change_id" }));
+
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
+		tableConflictsWithViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
 	}
 
 	protected DataBindingContext msgTabDataBindings() {
@@ -1988,31 +1886,17 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		return bindingContext;
 	}
 
-	protected DataBindingContext filesTabDataBindings(TableViewer tableViewer) {
-		DataBindingContext bindingContext = new DataBindingContext();
-//		IObservableValue observeTextTableItemObserveWidget = WidgetProperties.text().observe(
-//				tableViewer.getColumnProperties());
-//		IObservableValue emptyFFilesObserveValue = BeanProperties.value("old_path").observe(fileListInfo);
-//		bindingContext.bindValue(observeTextTableItemObserveWidget, emptyFFilesObserveValue, null, null);
+	protected void filesTabDataBindings(TableViewer tableViewer) {
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableViewer.setContentProvider(contentProvider);
 
-//		IObservableValue observeTextTableItemObserveWidget = WidgetProperties.text().observe(tableFileListItem);
-//		IObservableValue emptyFFilesObserveValue = BeanProperties.value("old_path").observe(fFiles);
-//		bindingContext.bindValue(observeTextTableItemObserveWidget, emptyFFilesObserveValue, null, null);
+		WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
 
-		//
-//	IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
-//	IObservableValue idFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null, null);
-//	//
-//	IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//	IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-//	//
-//	IObservableValue observeTextLblStatusObserveWidget = WidgetProperties.text().observe(statusData);
-//	IObservableValue statusFChangeInfoObserveValue = BeanProperties.value("status").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblStatusObserveWidget, statusFChangeInfoObserveValue, null, null);
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "old_path" }));
 
-		return bindingContext;
+		ViewerSupport.bind(tableViewer, writeInfoList, BeanProperties.values(new String[] { "old_path" }));
+		tableViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
 	}
 
 	protected DataBindingContext hisTabDataBindings() {
@@ -2107,7 +1991,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		if (!(input instanceof ChangeDetailEditorInput)) {
 			System.err.println("Input is not a ChangeDetailEditorInput");
 		}
-		this.input = (ChangeDetailEditorInput) input;
 		setSite(site);
 		setInput(input);
 

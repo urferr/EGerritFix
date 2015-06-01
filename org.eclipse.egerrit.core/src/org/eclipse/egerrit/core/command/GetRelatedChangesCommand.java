@@ -13,10 +13,8 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -24,15 +22,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content"
- * >Get
- * Content</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String"
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Get Content</a>
+ * command. It returns a <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String"
  * ></a> base64 encoded.
  * <p>
  *
@@ -40,42 +34,41 @@ import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
  */
 public class GetRelatedChangesCommand extends QueryCommand<RelatedChangesInfo> {
 
-    // ------------------------------------------------------------------------
-    // Attributes
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------------------------
 
 	private String fChange_id;
 
 	private String fRevision;
 
+	// ------------------------------------------------------------------------
+	// Constructor
+	// ------------------------------------------------------------------------
 
-    // ------------------------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------------------------
+	/**
+	 * The constructor
+	 *
+	 * @param gerritRepository
+	 *            the gerrit repository
+	 * @param id
+	 *            the change-id
+	 * @param revision
+	 *            revisions-id
+	 */
+	public GetRelatedChangesCommand(GerritRepository gerritRepository, String id, String revision) {
+		super(gerritRepository, RelatedChangesInfo.class);
+		this.setId(id);
+		this.setRevision(revision);
 
-    /**
-     * The constructor
-     *
-     * @param gerritRepository   the gerrit repository
-     * @param id the change-id
-     * @param revision revisions-id
-     */
-    public GetRelatedChangesCommand(GerritRepository gerritRepository, String id, String revision) {
-        super(gerritRepository, RelatedChangesInfo.class);
-        this.setId(id);
-        this.setRevision(revision);
-
-
-
-    }
-
+	}
 
 	private void setRevision(String revision) {
 		fRevision = revision;
 
 	}
 
-    private String getRevision() {
+	private String getRevision() {
 		return fRevision;
 
 	}
@@ -88,35 +81,33 @@ public class GetRelatedChangesCommand extends QueryCommand<RelatedChangesInfo> {
 		this.fChange_id = change_id;
 	}
 
-
 	// ------------------------------------------------------------------------
 	// Format the query
 	// ------------------------------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-     */
-    @Override
-    public HttpRequestBase formatRequest() {
+	/* (non-Javadoc)
+	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
+	 */
+	@Override
+	public HttpRequestBase formatRequest() {
 
-        // Get the generic URI
-        URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
+		// Get the generic URI
+		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
 
-        URI uri = null;
-        try {
-            // Set the path
-            String path = new StringBuilder(uriBuilder.getPath())
-                    .append("/changes/").append(getId()) //$NON-NLS-1$
-                    .append("/revisions/").append(getRevision())//$NON-NLS-1$
-                    .append("/related") //$NON-NLS-1$
-                    .toString();
-            uriBuilder.setPath(path);
-            uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-        } catch (URISyntaxException  e) {
-            EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-        }
+		URI uri = null;
+		try {
+			// Set the path
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").append(getId()) //$NON-NLS-1$
+					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append("/related") //$NON-NLS-1$
+					.toString();
+			uriBuilder.setPath(path);
+			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
+		} catch (URISyntaxException e) {
+			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
+		}
 
-        return new HttpGet(uri);
-    }
+		return new HttpGet(uri);
+	}
 
 }
