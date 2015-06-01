@@ -14,5 +14,79 @@
 
 	<name>EGerrit Update site</name>
 	<artifactId>org.eclipse.egerrit.updatesite</artifactId>
-	<packaging>eclipse-update-site</packaging>
+	<packaging>eclipse-repository</packaging>
+
+	<properties>
+		<repoOnServer>${download-publish-path}</repoOnServer>
+		<repoBuilt>${project.build.directory}/repository</repoBuilt>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>publish</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-repository-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<compress>false</compress>
+						</configuration>
+					</plugin>					
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-eclipserun-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<!-- IMPORTANT: DO NOT split the arg line -->
+							<appArgLine>-application org.eclipse.ant.core.antRunner -buildfile composite-repo.xml p2.composite.add -Dsite.composite.name=EGerrit -Dsource.repository=${repoBuilt} -Dtarget.repository=${download-publish-path} -Dtarget.child.repository.relativePath=${buildId}</appArgLine>
+							<repositories>
+								<repository>
+									<id>luna</id>
+									<layout>p2</layout>
+									<url>http://download.eclipse.org/releases/luna</url>
+								</repository>
+							</repositories>
+							<dependencies>
+								<dependency>
+									<artifactId>org.eclipse.ant.core</artifactId>
+									<type>eclipse-plugin</type>
+								</dependency>
+								<dependency>
+									<artifactId>org.apache.ant</artifactId>
+									<type>eclipse-plugin</type>
+								</dependency>
+								<dependency>
+									<artifactId>org.eclipse.equinox.p2.repository.tools</artifactId>
+									<type>eclipse-plugin</type>
+								</dependency>
+								<dependency>
+									<artifactId>org.eclipse.equinox.p2.core.feature</artifactId>
+									<type>eclipse-feature</type>
+								</dependency>
+								<dependency>
+									<artifactId>org.eclipse.equinox.p2.extras.feature</artifactId>
+									<type>eclipse-feature</type>
+								</dependency>
+								<dependency>
+									<artifactId>org.eclipse.equinox.ds</artifactId>
+									<type>eclipse-plugin</type>
+								</dependency>
+							</dependencies>
+						</configuration>
+						<executions>
+							<execution>
+								<id>add-p2-composite-repository</id>
+								<phase>install</phase>
+								<goals>
+									<goal>eclipse-run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>				
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

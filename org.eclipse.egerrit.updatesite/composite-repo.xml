@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<project name="project">
+
+	<target name="p2.composite.add">
+		<!-- The path of the repo to merge -->
+		<property name="source.repository" location="${project.build.directory}/repository"/>
+		
+		<!-- The path to the composite repository -->
+		<property name="target.repository" value=""/> 
+		<!-- The path of the child repo relative to the composite repo -->
+		<property name="target.child.repository.relativePath" value=""/>
+		<!-- The path to where we want the child repo to be added -->
+		<property name="target.child.repository" value="${target.repository}/${target.child.repository.relativePath}"/>
+		
+		<echo message="Source repository path: ${source.repository}" />
+		<echo message="Target repository: ${target.repository}" />
+		<echo message="Target child repository: ${target.child.repository}" />
+			
+		<echo message="Copying new repository to server"/>
+		<copy includeemptydirs="false" todir="${target.child.repository}">
+			<fileset dir="${source.repository}">
+				<include name="**" />
+			</fileset>
+		</copy>
+		
+		<add.composite.repository.internal
+			composite.repository.location="${target.repository}"
+			composite.repository.name="${site.composite.name}"
+			composite.repository.child="${target.child.repository.relativePath}" />
+
+	</target>
+
+	<!-- = = = = = = = = = = = = = = = = = macrodef: add.composite.repository.internal 
+		= = = = = = = = = = = = = = = = = -->
+	<macrodef name="add.composite.repository.internal">
+		<attribute name="composite.repository.location" />
+		<attribute name="composite.repository.name" />
+		<attribute name="composite.repository.child" />
+		<sequential>
+
+			<echo message=" " />
+			<echo message="Composite repository       : @{composite.repository.location}" />
+			<echo message="Composite name             : @{composite.repository.name}" />
+			<echo message="Adding child repository    : @{composite.repository.child}" />
+
+			<p2.composite.repository>
+				<repository compressed="false" location="@{composite.repository.location}"
+					name="@{composite.repository.name}" />
+				<add>
+					<repository location="@{composite.repository.child}" />
+				</add>
+			</p2.composite.repository>
+
+			<echo file="@{composite.repository.location}/p2.index">version=1
+				metadata.repository.factory.order=compositeContent.xml,\!
+				artifact.repository.factory.order=compositeArtifacts.xml,\!
+			</echo>
+
+		</sequential>
+	</macrodef>
+
+
+</project>

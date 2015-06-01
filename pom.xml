@@ -44,7 +44,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <tycho.version>0.22.0</tycho.version>
-
+	<antrun.version>1.8</antrun.version>
+	
     <!-- EGerrit info -->
     <egerrit.groupId>org.eclipse.egerrit</egerrit.groupId>
     <egerrit.version>0.1.0-SNAPSHOT</egerrit.version>
@@ -69,6 +70,8 @@
     <sonar.host.url></sonar.host.url>
     <base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
     <base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
+    
+    <download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
   </properties>
 
   <pluginRepositories>
