@@ -119,7 +119,7 @@ public class GetMergeableCommandTest {
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
 		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//revisions//mergeable", uri.getPath());
+				+ "/changes//revisions/current/mergeable", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 

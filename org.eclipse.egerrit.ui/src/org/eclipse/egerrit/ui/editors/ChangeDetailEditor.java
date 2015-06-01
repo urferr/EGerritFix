@@ -16,18 +16,15 @@ package org.eclipse.egerrit.ui.editors;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -65,6 +62,7 @@ import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
@@ -214,6 +212,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private final List<ReviewerInfo> fReviewers = new ArrayList<ReviewerInfo>();
 
 	private final IncludedInInfo fIncludedIn = new IncludedInInfo();
+
+	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a");
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -550,7 +550,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			@Override
 			public void paintControl(PaintEvent e) {
 				if (fChangeInfo != null) {
-					String st = formatDate(fChangeInfo.getUpdated());
+					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
 					String old = genUpdatedData.getText();
 					if (st.compareTo(old) != 0) {
 						System.err.println("Date update: " + st);
@@ -849,7 +849,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			public void paintControl(PaintEvent e) {
 				GitPersonInfo authorInfo = fCommitInfo.getAuthor();
 				if (authorInfo != null) {
-					String st = formatDate(authorInfo.getDate());
+					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
 					String old = msgDatePushData.getText();
 					if (st.compareTo(old) != 0) {
 						msgDatePushData.setText(st);
@@ -894,7 +894,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			public void paintControl(PaintEvent e) {
 				GitPersonInfo committerInfo = fCommitInfo.getCommitter();
 				if (committerInfo != null) {
-					String st = formatDate(committerInfo.getDate());
+					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
 					String old = msgDatecommitterData.getText();
 					if (st.compareTo(old) != 0) {
 						msgDatecommitterData.setText(st);
@@ -963,22 +963,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		//Set the binding for this section
 		msgTabDataBindings();
-	}
-
-	private String formatDate(String inDate) {
-
-		SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.");
-		SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a");
-
-		Date dateNew = null;
-
-		try {
-			formatIn.setTimeZone(TimeZone.getTimeZone("UTC"));
-			dateNew = formatIn.parse(inDate);
-		} catch (ParseException ex) {
-			EGerritCorePlugin.logError(ex.getMessage());
-		}
-		return formatTimeOut.format(dateNew).toString();
 	}
 
 	private void filesTab(TabFolder tabFolder) {

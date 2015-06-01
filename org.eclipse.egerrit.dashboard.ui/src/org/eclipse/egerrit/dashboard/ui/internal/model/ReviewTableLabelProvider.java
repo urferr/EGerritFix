@@ -14,14 +14,12 @@
 
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -42,6 +40,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
+
+	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private static final String VERIFIED = "Verified";
 
@@ -225,17 +225,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				}
 				return branch;
 			case 7: {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String dateStr = reviewSummary.getUpdated().toString();
-				Date dateNew = null;
-				try {
-					dateNew = format.parse(dateStr);
-				} catch (ParseException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-
-				}
-
-				return format.format(dateNew).toString();
+				return Utils.formatDate(reviewSummary.getUpdated(), formatTimeOut);
 			}
 			case 8: {
 				Map<String, LabelInfo> labels = reviewSummary.getLabels();
