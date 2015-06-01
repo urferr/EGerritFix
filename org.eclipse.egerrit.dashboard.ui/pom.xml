@@ -12,10 +12,10 @@
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-source-plugin</artifactId>
-      </plugin>
+<!--       <plugin> -->
+<!--         <groupId>org.eclipse.tycho</groupId> -->
+<!--         <artifactId>tycho-source-plugin</artifactId> -->
+<!--       </plugin> -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
