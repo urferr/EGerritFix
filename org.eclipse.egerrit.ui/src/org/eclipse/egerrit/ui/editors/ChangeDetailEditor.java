@@ -52,6 +52,7 @@ import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.rest.GitPersonInfo;
@@ -68,12 +69,14 @@ import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
 import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
+import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.UIPatchSetsTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
@@ -104,8 +107,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -141,9 +142,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private TableViewer tableConflictsWithViewer;
 
-	private TableViewer tableFilesViewer;
+	private TableViewer tableHistoryViewer;
 
-	private Table tableHistory;
+	private TableViewer tableFilesViewer;
 
 	private final ChangeInfo fChangeInfo = new ChangeInfo();
 
@@ -779,6 +780,28 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		sumConflictWithDataBindings();
 	}
 
+	private void historyTab(TabFolder tabFolder) {
+		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
+		tbtmHistory.setText("History");
+
+		Group group = new Group(tabFolder, SWT.NONE);
+		tbtmHistory.setControl(group);
+
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		group.setLayoutData(grid);
+		group.setLayout(new GridLayout(1, false));
+
+		Point fontSize = computeFontSize(group);
+
+		UIHistoryTable tableUIHistory = new UIHistoryTable();
+		tableUIHistory.createTableViewerSection(group, grid);
+
+		tableHistoryViewer = tableUIHistory.getViewer();
+
+		//Set the binding for this section
+		hisTabDataBindings();
+	}
+
 	private void messagesTab(final TabFolder tabFolder, int minWidth) {
 
 		final TabItem tabMessages = new TabItem(tabFolder, SWT.NONE);
@@ -1104,55 +1127,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		filesTabDataBindings(tableFilesViewer);
 	}
 
-	private void historyTab(TabFolder tabFolder) {
-		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
-		tbtmHistory.setText("History");
-
-		Group group = new Group(tabFolder, SWT.NONE);
-		tbtmHistory.setControl(group);
-
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		group.setLayout(new GridLayout(1, false));
-
-		Point fontSize = computeFontSize(group);
-
-		TableViewer historyViewer = new TableViewer(group, SWT.BORDER | SWT.FULL_SELECTION);
-		GridData gd_historyViewer = new GridData(SWT.FILL, SWT.TOP, true, true);
-		int minNumLines = 10;
-		int minWidth = 40;
-		gd_historyViewer.heightHint = minNumLines * fontSize.y;
-		gd_historyViewer.minimumHeight = minNumLines * fontSize.y;
-		gd_historyViewer.minimumWidth = minWidth * fontSize.x;
-		historyViewer.getTable().setLayoutData(gd_historyViewer);
-
-		tableHistory = historyViewer.getTable();
-
-		tableHistory.setHeaderVisible(true);
-		tableHistory.setLinesVisible(true);
-
-		TableColumn tblclmnDate_1 = new TableColumn(tableHistory, SWT.NONE);
-		tblclmnDate_1.setWidth(100);
-		tblclmnDate_1.setText("Date");
-
-		TableColumn tblclmnAuthor = new TableColumn(tableHistory, SWT.NONE);
-		tblclmnAuthor.setWidth(160);
-		tblclmnAuthor.setText("Author");
-
-		TableColumn tblclmnMessage = new TableColumn(tableHistory, SWT.NONE);
-		tblclmnMessage.setWidth(100);
-		tblclmnMessage.setText("Message");
-
-		tableHistory.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				tableHistory.setSize(tableHistory.getParent().getSize());
-			}
-		});
-
-		//Set the binding for this section
-		hisTabDataBindings();
-	}
-
 	@Override
 	public void setFocus() {
 	}
@@ -1350,6 +1324,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		if (res != null) {
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
 			fChangeInfo.setLabels(res.getLabels());
+			fChangeInfo.setMessages(res.getMessages());
 			fRevisions = res.getRevisions();
 			fFiles = new HashMap<String, FileInfo>();
 			Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
@@ -1382,6 +1357,10 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
 			tableFilesViewer.setInput(writeInfoList);
 			tableFilesViewer.refresh();
+
+			writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
+			tableHistoryViewer.setInput(writeInfoList);
+			tableHistoryViewer.refresh();
 		}
 	}
 
@@ -1666,6 +1645,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				command.addOption(ChangeOption.ALL_FILES);
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_COMMIT);
+				command.addOption(ChangeOption.MESSAGES);
 
 				ChangeInfo res = null;
 				try {
@@ -1883,23 +1863,23 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		tableViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
 	}
 
-	protected DataBindingContext hisTabDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
+	protected void hisTabDataBindings() {
 
-		//
-//	IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
-//	IObservableValue idFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null, null);
-//	//
-//	IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//	IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-//	//
-//	IObservableValue observeTextLblStatusObserveWidget = WidgetProperties.text().observe(statusData);
-//	IObservableValue statusFChangeInfoObserveValue = BeanProperties.value("status").observe(fChangeInfo);
-//	bindingContext.bindValue(observeTextLblStatusObserveWidget, statusFChangeInfoObserveValue, null, null);
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableHistoryViewer.setContentProvider(contentProvider);
 
-		return bindingContext;
+		if (fChangeInfo.getMessages() == null) {
+			fChangeInfo.setMessages(new ArrayList<ChangeMessageInfo>());
+		}
+
+		WritableList writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
+
+		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "messages" }));
+
+		ViewerSupport.bind(tableHistoryViewer, writeInfoList, BeanProperties.values(new String[] { "messages" }));
+		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(observeMaps));
+
 	}
 
 	public static ChangeDetailEditor getActiveEditor() {

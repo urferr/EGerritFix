@@ -68,6 +68,12 @@ public class Messages extends NLS {
 
 	public static String CherryPick;
 
+	public static String HistoryTableModel_date;
+
+	public static String HistoryTableModel_author;
+
+	public static String HistoryTableModel_message;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

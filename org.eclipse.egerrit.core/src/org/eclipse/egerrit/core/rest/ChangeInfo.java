@@ -284,6 +284,13 @@ public class ChangeInfo {
 	}
 
 	/**
+	 * @return Set the messages associated with the change.
+	 */
+	public void setMessages(List<ChangeMessageInfo> messages) {
+		firePropertyChange("messages", this.messages, this.messages = messages);
+	}
+
+	/**
 	 * @return The timestamp of when the change was created.
 	 */
 	public String getCreated() {
