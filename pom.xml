@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-   Copyright (C) 2011, Red Hat, Inc.
-
-   All rights reserved. This program and the accompanying materials
-   are made available under the terms of the Eclipse Public License v1.0
-   which accompanies this distribution, and is available at
-   http://www.eclipse.org/legal/epl-v10.html
--->
+<!-- Copyright (C) 2015, Ericsson, Inc. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	Eclipse Public License v1.0 which accompanies this distribution, and is available 
+	at http://www.eclipse.org/legal/epl-v10.html -->
 
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
 
-  <licenses>
-    <license>
-      <name>Eclipse Public License v1.0</name>
-      <comments>
+	<licenses>
+		<license>
+			<name>Eclipse Public License v1.0</name>
+			<comments>
        All rights reserved.
 
        This program and the accompanying materials are made
@@ -30,277 +25,278 @@
        which accompanies this distribution, and is available at
        http://www.eclipse.org/legal/epl-v10.htm
       </comments>
-    </license>
-  </licenses>
+		</license>
+	</licenses>
 
-  <name>EGerrit Parent</name>
-  <groupId>org.eclipse.egerrit</groupId>
-  <artifactId>org.eclipse.egerrit.parent</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+	<name>EGerrit Parent</name>
+	<groupId>org.eclipse.egerrit</groupId>
+	<artifactId>org.eclipse.egerrit.parent</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-  <properties>
-    <!-- General -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <tycho.version>0.22.0</tycho.version>
-	<antrun.version>1.8</antrun.version>
-	
-    <!-- EGerrit info -->
-    <egerrit.groupId>org.eclipse.egerrit</egerrit.groupId>
-    <egerrit.version>0.1.0-SNAPSHOT</egerrit.version>
+	<properties>
+		<!-- General -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<tycho.version>0.22.0</tycho.version>
+		<antrun.version>1.8</antrun.version>
 
-    <!-- Eclipse repository -->
-    <eclipse.version>eclipse-luna</eclipse.version>
-    <eclipse-repo.url>http://download.eclipse.org/releases/luna</eclipse-repo.url>
+		<!-- EGerrit info -->
+		<egerrit.groupId>org.eclipse.egerrit</egerrit.groupId>
+		<egerrit.version>0.1.0-SNAPSHOT</egerrit.version>
 
-    <!-- Target platform -->
-    <egerrit.target.artifact>org.eclipse.egerrit.target</egerrit.target.artifact>
-    <egerrit.target.platform>eGerrit-Eclipse_4.4</egerrit.target.platform>
- 
-   <!-- set gtk3 version-->
-    <SWT_GTK3>0</SWT_GTK3>
+		<!-- Eclipse repository -->
+		<eclipse.version>eclipse-luna</eclipse.version>
+		<eclipse-repo.url>http://download.eclipse.org/releases/luna</eclipse-repo.url>
 
-    <!-- Sonar -->
-    <sonar.language>java</sonar.language>
-    <sonar.java.source>1.7</sonar.java.source>
-    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
-    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-    <sonar.host.url></sonar.host.url>
-    <base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
-    <base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
-    
-    <download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
-  </properties>
+		<!-- Target platform -->
+		<egerrit.target.artifact>org.eclipse.egerrit.target</egerrit.target.artifact>
+		<egerrit.target.platform>eGerrit-Eclipse_4.4</egerrit.target.platform>
 
-  <pluginRepositories>
+		<!-- set gtk3 version -->
+		<SWT_GTK3>0</SWT_GTK3>
 
-    <pluginRepository>
-      <name>Eclipse Repository</name>
-      <id>${eclipse.version}</id>
-      <url>${eclipse-repo.url}</url>
-      <layout>p2</layout>
-    </pluginRepository>
+		<!-- Sonar -->
+		<sonar.language>java</sonar.language>
+		<sonar.java.source>1.7</sonar.java.source>
+		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.host.url></sonar.host.url>
+		<base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
+		<base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
 
-    <pluginRepository>
-      <name>Central Repository</name>
-      <id>central</id>
-      <url>http://repo.maven.apache.org/maven2</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
+		<download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
+	</properties>
 
-  </pluginRepositories>
+	<pluginRepositories>
 
-  <build>
-    <plugins>
+		<pluginRepository>
+			<name>Eclipse Repository</name>
+			<id>${eclipse.version}</id>
+			<url>${eclipse-repo.url}</url>
+			<layout>p2</layout>
+		</pluginRepository>
 
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <extensions>true</extensions>
-      </plugin>
+		<pluginRepository>
+			<name>Central Repository</name>
+			<id>central</id>
+			<url>http://repo.maven.apache.org/maven2</url>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
 
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <target>
-            <artifact>
-              <groupId>${egerrit.groupId}</groupId>
-              <artifactId>${egerrit.target.artifact}</artifactId>
-              <classifier>${egerrit.target.platform}</classifier>
-              <version>${egerrit.version}</version>
-            </artifact>
-          </target>
-          <environments>
-            <environment>
-              <os>linux</os>
-              <ws>gtk</ws>
-              <arch>x86</arch>
-            </environment>
-            <environment>
-              <os>linux</os>
-              <ws>gtk</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>macosx</os>
-              <ws>cocoa</ws>
-              <arch>x86_64</arch>
-            </environment>
-          </environments>
-        </configuration>
-      </plugin>
+	</pluginRepositories>
 
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-source-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <executions>
-          <execution>
-            <id>plugin-source</id>
-            <goals>
-              <goal>plugin-source</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+	<build>
+		<plugins>
 
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-source-feature-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <includeBinaryFeature>false</includeBinaryFeature>
-        </configuration>
-        <executions>
-          <execution>
-            <id>source-feature</id>
-            <phase>package</phase>
-            <goals>
-              <goal>source-feature</goal>
-            </goals>
-            <configuration>
-            	<excludes>
-            		<plugin id="com.google.gson"/>
-                    <plugin id="com.google.gerrit.common"/>
-                    <plugin id="com.google.gerrit.prettify"/>
-                    <plugin id="com.google.gerrit.reviewdb"/>
-                    <plugin id="com.google.gwtorm"/>
-                    <plugin id="com.google.gwtjsonrpc"/>
-                    <plugin id="com.google.gwt.servlet"/>
-            	</excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
 
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.2.201409121644</version>
-        <configuration>
-          <includes>
-            <include>org.eclipse.egerrit.*</include>
-          </includes>
-          <destFile>${project.basedir}/../target/jacoco.exec</destFile>
-        </configuration>
-        <executions>
-          <execution>
-            <id>pre-test</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-            <configuration>
-              <!-- Where to put jacoco coverage report -->
-              <destFile>${sonar.jacoco.reportPath}</destFile>
-              <includes>
-                <include>org.eclipse.egerrit.*</include>
-              </includes>
-              <append>true</append>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<target>
+						<artifact>
+							<groupId>${egerrit.groupId}</groupId>
+							<artifactId>${egerrit.target.artifact}</artifactId>
+							<classifier>${egerrit.target.platform}</classifier>
+							<version>${egerrit.version}</version>
+						</artifact>
+					</target>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
 
-    </plugins>
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.jacoco</groupId>
-    								<artifactId>
-    									jacoco-maven-plugin
-    								</artifactId>
-    								<versionRange>
-    									[0.7.2.201409121644,)
-    								</versionRange>
-    								<goals>
-    									<goal>prepare-agent</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
-  </build>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-  <profiles>
-    <profile>
-      <id>test-coverage</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.codehaus.sonar-plugins.java</groupId>
-          <artifactId>sonar-jacoco-listeners</artifactId>
-          <version>2.3</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-surefire-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <configuration>
-              <properties>
-                <property>
-                  <name>listener</name>
-                  <value>org.sonar.java.jacoco.JUnitListener</value>
-                </property>
-              </properties>
-              <argLine>${argLine}</argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<includeBinaryFeature>false</includeBinaryFeature>
+				</configuration>
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<plugin id="com.google.gson" />
+								<plugin id="com.google.gerrit.common" />
+								<plugin id="com.google.gerrit.prettify" />
+								<plugin id="com.google.gerrit.reviewdb" />
+								<plugin id="com.google.gwtorm" />
+								<plugin id="com.google.gwtjsonrpc" />
+								<plugin id="com.google.gwt.servlet" />
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-  <modules>
-    <module>org.eclipse.egerrit.target</module>
-    <module>org.eclipse.egerrit.core</module>
-<!--     <module>org.eclipse.egerrit.core.tests</module> -->
-    <module>org.eclipse.egerrit.ui</module>
-<!--     <module>org.eclipse.egerrit.ui.tests</module> -->
-<!--     <module>org.eclipse.egerrit.ui.swtbot.tests</module> -->
-    <module>org.eclipse.egerrit.dashboard.core</module>
-    <module>org.eclipse.egerrit.dashboard.ui</module>
-    
-    <module>org.eclipse.egerrit.feature</module>
-    <module>org.eclipse.egerrit.updatesite</module>
-  </modules>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.2.201409121644</version>
+				<configuration>
+					<includes>
+						<include>org.eclipse.egerrit.*</include>
+					</includes>
+					<destFile>${project.basedir}/../target/jacoco.exec</destFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>pre-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Where to put jacoco coverage report -->
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+							<includes>
+								<include>org.eclipse.egerrit.*</include>
+							</includes>
+							<append>true</append>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jacoco</groupId>
+										<artifactId>
+											jacoco-maven-plugin
+										</artifactId>
+										<versionRange>
+											[0.7.2.201409121644,)
+										</versionRange>
+										<goals>
+											<goal>prepare-agent</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>test-coverage</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.codehaus.sonar-plugins.java</groupId>
+					<artifactId>sonar-jacoco-listeners</artifactId>
+					<version>2.3</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<properties>
+								<property>
+									<name>listener</name>
+									<value>org.sonar.java.jacoco.JUnitListener</value>
+								</property>
+							</properties>
+							<argLine>${argLine}</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<modules>
+		<module>org.eclipse.egerrit.target</module>
+		<module>org.eclipse.egerrit.core</module>
+<!-- 		<module>org.eclipse.egerrit.core.tests</module> -->
+		<module>org.eclipse.egerrit.ui</module>
+<!-- 		<module>org.eclipse.egerrit.ui.tests</module> -->
+<!-- 		<module>org.eclipse.egerrit.ui.swtbot.tests</module> -->
+		<module>org.eclipse.egerrit.dashboard.core</module>
+		<module>org.eclipse.egerrit.dashboard.ui</module>
+
+		<module>org.eclipse.egerrit.feature</module>
+		<module>org.eclipse.egerrit.updatesite</module>
+	</modules>
 
 </project>
