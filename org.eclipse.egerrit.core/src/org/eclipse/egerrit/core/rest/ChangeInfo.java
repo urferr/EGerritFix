@@ -144,6 +144,12 @@ public class ChangeInfo {
 	// operation. Only used for the CreateChange endpoint.
 	private String base_change;
 
+	// a calculated compilation of the codeReview values for this review (not part of the REST structure)
+	private int codeReviewedTally;
+
+	// a calculated compilation of the verify values for this review (not part of the REST structure)
+	private int verifiedTally;
+
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
@@ -284,10 +290,44 @@ public class ChangeInfo {
 	}
 
 	/**
-	 * @return Set the messages associated with the change.
+	 * Set the messages associated with the change.
+	 *
+	 * @param list
+	 *            of changeMessageInfo
+	 * @return void
 	 */
 	public void setMessages(List<ChangeMessageInfo> messages) {
 		firePropertyChange("messages", this.messages, this.messages = messages);
+	}
+
+	/**
+	 * @param codeReviewedTally
+	 *            the codeReviewedTally to set
+	 */
+	public void setCodeReviewedTally(int codeReviewedTally) {
+		this.codeReviewedTally = codeReviewedTally;
+	}
+
+	/**
+	 * @param verifiedTally
+	 *            the verifiedTally to set
+	 */
+	public void setVerifiedTally(int verifiedTally) {
+		this.verifiedTally = verifiedTally;
+	}
+
+	/**
+	 * @return the codeReviewedTally
+	 */
+	public int getCodeReviewedTally() {
+		return codeReviewedTally;
+	}
+
+	/**
+	 * @return the verifiedTally
+	 */
+	public int getVerifiedTally() {
+		return verifiedTally;
 	}
 
 	/**

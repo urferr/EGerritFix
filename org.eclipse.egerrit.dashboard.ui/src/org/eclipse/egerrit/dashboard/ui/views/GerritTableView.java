@@ -981,7 +981,7 @@ public class GerritTableView extends ViewPart {
 			if (gerrit != null) {
 				// Create query
 				QueryChangesCommand command = gerrit.queryChanges();
-				command.addOption(ChangeOption.LABELS);
+				command.addOption(ChangeOption.DETAILED_LABELS);
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_FILES);
 

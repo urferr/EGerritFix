@@ -29,7 +29,7 @@ public class Utils {
 	 *
 	 * @param inDate
 	 * @param formatOut
-	 * @return
+	 * @return String
 	 */
 	public static String formatDate(String inDate, SimpleDateFormat formatOut) {
 
@@ -44,6 +44,26 @@ public class Utils {
 			EGerritCorePlugin.logError(ex.getMessage());
 		}
 		return formatOut.format(dateNew).toString();
+	}
+
+	/**
+	 * Determines the right value for voting tally
+	 *
+	 * @param newState
+	 * @param oldState
+	 * @return Integer
+	 */
+	public static Integer getStateValue(Integer newState, Integer oldState) {
+		Integer state = 0;
+		if (newState < 0) {
+			state = Math.min(oldState, newState);
+		} else if (newState > 0) {
+			state = Math.max(oldState, newState);
+		} else {
+			state = oldState;
+		}
+
+		return state;
 	}
 
 }

@@ -87,22 +87,11 @@ public class ReviewTableSorter extends ViewerSorter {
 				}
 				break;
 			case 8: // Code Review
-				val1 = task1.getStatus();
-				val2 = task2.getStatus();
-				if (val1 != null && val2 != null) {
-					Integer v1 = new Integer(val1);
-					Integer v2 = new Integer(val2);
-					result = v2 - v1;
-				}
+
+				result = task2.getCodeReviewedTally() - task1.getCodeReviewedTally();
 				break;
 			case 9: // Verify
-				val1 = new Boolean(task1.isReviewed()).toString();
-				val2 = new Boolean(task2.isReviewed()).toString();
-				if (val1 != null && val2 != null) {
-					Integer v1 = new Integer(val1);
-					Integer v2 = new Integer(val2);
-					result = v2 - v1;
-				}
+				result = task2.getVerifiedTally() - task1.getVerifiedTally();
 				break;
 			case 10: // IPLog Clean
 			default:

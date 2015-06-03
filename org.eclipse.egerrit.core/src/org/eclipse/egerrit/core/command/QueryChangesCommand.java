@@ -218,7 +218,7 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 
 			// Add the options
 			for (String option : fQueryOptions) {
-				uriBuilder.setParameter("o", option); //$NON-NLS-1$
+				uriBuilder.addParameter("o", option); //$NON-NLS-1$
 			}
 
 			// Add count

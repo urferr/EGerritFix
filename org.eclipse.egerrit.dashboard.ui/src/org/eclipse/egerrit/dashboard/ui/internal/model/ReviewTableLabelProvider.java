@@ -17,6 +17,7 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.utils.Utils;
@@ -48,6 +49,10 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+
+	private int fVerifyState;
+
+	private int fCodeReviewState;
 
 	// +2 Names of images used to represent review-checked
 	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
@@ -228,14 +233,26 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				return Utils.formatDate(reviewSummary.getUpdated(), formatTimeOut);
 			}
 			case 8: {
+				int codeReviewState = 0;
 				Map<String, LabelInfo> labels = reviewSummary.getLabels();
-				if (labels != null && labels.get(CODE_REVIEW) != null) {
-					String value = (labels.get(CODE_REVIEW)).getValue();
 
-					if (null != value && !value.equals(EMPTY_STRING)) {
-						return formatValue(value);
+				if (labels != null && labels.get(CODE_REVIEW) != null) {
+					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+						if (entry.getKey() != null && entry.getKey().compareTo(CODE_REVIEW) == 0) {
+							LabelInfo labelInfo = entry.getValue();
+							if (labelInfo.getAll() != null) {
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
+									}
+								}
+							}
+						}
 					}
+					fCodeReviewState = codeReviewState;
+					reviewSummary.setCodeReviewedTally(codeReviewState);
 				}
+				return EMPTY_STRING;
 			}
 //			case 8:
 //				value = reviewSummary.getAttribute(GerritTask.REVIEW_STATE);
@@ -243,13 +260,25 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 //					return formatValue (value);
 //				}
 			case 9: {
+
+				int verifyState = 0;
 				Map<String, LabelInfo> labels = reviewSummary.getLabels();
 				if (labels != null && labels.get(VERIFIED) != null) {
-					String value = (labels.get(VERIFIED)).getValue();
-
-					if (null != value && !value.equals(EMPTY_STRING)) {
-						return formatValue(value);
+					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+						if (entry.getKey() != null && entry.getKey().compareTo(VERIFIED) == 0) {
+							LabelInfo labelInfo = entry.getValue();
+							if (labelInfo.getAll() != null) {
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										verifyState = Utils.getStateValue(it.getValue(), verifyState);
+									}
+								}
+							}
+						}
 					}
+					fVerifyState = verifyState;
+					reviewSummary.setVerifiedTally(verifyState);
+
 				}
 
 				return EMPTY_STRING;
@@ -334,21 +363,9 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				}
 				break;
 			case 8:
-//				value = reviewSummary.getAttribute(GerritTask.IS_IPCLEAN);
-//
-//				if (null != value && !value.equals(EMPTY_STRING)) {
-//					int val = Integer.parseInt(value);
-//					return getReviewSate(val);
-//				}
-//				break;
-//			case 9:
-//				value = reviewSummary.getAttribute(GerritTask.VERIFY_STATE);
-
-				if (null != value && !value.equals(EMPTY_STRING)) {
-					int val = Integer.parseInt(value);
-					return getVerifyStateImage(val);
-				}
-				break;
+				return getReviewStateImage(fCodeReviewState);
+			case 9:
+				return getVerifyStateImage(fVerifyState);
 			default:
 				return image;
 			}

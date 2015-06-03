@@ -614,14 +614,14 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 							LabelInfo labelInfo = entry.getValue();
 							for (ApprovalInfo it : labelInfo.getAll()) {
 								if (it.getValue() != null) {
-									verifyState = getStateValue(it.getValue(), verifyState);
+									verifyState = Utils.getStateValue(it.getValue(), verifyState);
 								}
 							}
 						} else if (entry.getKey().compareTo("Code-Review") == 0) {
 							LabelInfo labelInfo = entry.getValue();
 							for (ApprovalInfo it : labelInfo.getAll()) {
 								if (it.getValue() != null) {
-									codeReviewState = getStateValue(it.getValue(), codeReviewState);
+									codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
 								}
 							}
 						}
@@ -650,19 +650,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		//Set the binding for this section
 		sumReviewerDataBindings();
-	}
-
-	private Integer getStateValue(Integer newState, Integer oldState) {
-		Integer state = 0;
-		if (newState < 0) {
-			state = Math.min(oldState, newState);
-		} else if (newState > 0) {
-			state = Math.max(oldState, newState);
-		} else {
-			state = oldState;
-		}
-
-		return state;
 	}
 
 	private void summaryIncluded(Group group) {
