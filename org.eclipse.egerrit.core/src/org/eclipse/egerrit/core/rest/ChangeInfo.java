@@ -14,6 +14,7 @@ package org.eclipse.egerrit.core.rest;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -732,4 +733,21 @@ public class ChangeInfo {
 				+ ", _more_changes=" + _more_changes + ", problems=" + problems + ", base_change=" + base_change + "]";
 	}
 
+	/**
+	 * This method is used to reset all data fields we display.
+	 */
+	public void reset() {
+		setId(""); //$NON-NLS-1$
+		setTopic(""); //$NON-NLS-1$
+		setChange_id(""); //$NON-NLS-1$
+		setProject(""); //$NON-NLS-1$
+		setBranch(""); //$NON-NLS-1$
+		setUpdated(""); //$NON-NLS-1$
+		setCurrent_revision(""); //$NON-NLS-1$
+		setLabels(null);
+		setSubject(""); //$NON-NLS-1$
+		setStatus(""); //$NON-NLS-1$
+		setNumber(-1);
+		setMessages(new ArrayList<ChangeMessageInfo>());
+	}
 }

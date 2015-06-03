@@ -202,7 +202,10 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 			case 0:
 				return changeMessageInfo.getDate();
 			case 1:
-				return changeMessageInfo.getAuthor().getName();
+				if (changeMessageInfo.getAuthor() != null) {
+					return changeMessageInfo.getAuthor().getName();
+				}
+				break;
 			case 2:
 				return changeMessageInfo.getMessage().replaceAll("[\\t\\n\\r]", " ");
 //			case 3:

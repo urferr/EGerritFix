@@ -16,12 +16,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#file-info"
- * >FileInfo</a> entity contains information about a file in a patch set.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#file-info" >FileInfo</a>
+ * entity contains information about a file in a patch set.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Francois Chouinard
@@ -33,8 +31,7 @@ public class FileInfo {
 	// ------------------------------------------------------------------------
 
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The status of the file (“A”=Added, “D”=Deleted, “R”=Renamed, “C”=Copied,
 	// “W”=Rewritten). Not set if the file was Modified (“M”).
@@ -59,12 +56,15 @@ public class FileInfo {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @return The status of the file (“A”=Added, “D”=Deleted, “R”=Renamed,
-	 *         “C”=Copied, “W”=Rewritten). Not set if the file was Modified
-	 *         (“M”).
+	 * @return The status of the file (“A”=Added, “D”=Deleted, “R”=Renamed, “C”=Copied, “W”=Rewritten). Not set if the
+	 *         file was Modified (“M”).
 	 */
 	public String getStatus() {
-		return status;
+		if (status == null) {
+			return "M";//if not set, the default is "M"; //$NON-NLS-1$
+		} else {
+			return status;
+		}
 	}
 
 	/**
@@ -99,21 +99,16 @@ public class FileInfo {
 		return lines_deleted;
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
@@ -122,7 +117,7 @@ public class FileInfo {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -132,15 +127,14 @@ public class FileInfo {
 		result = prime * result + (binary ? 1231 : 1237);
 		result = prime * result + lines_deleted;
 		result = prime * result + lines_inserted;
-		result = prime * result
-				+ ((old_path == null) ? 0 : old_path.hashCode());
+		result = prime * result + ((old_path == null) ? 0 : old_path.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -183,14 +177,13 @@ public class FileInfo {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	@SuppressWarnings("nls")
 	public String toString() {
-		return "FileInfo [status=" + status + ", binary=" + binary
-				+ ", old_path=" + old_path + ", lines_inserted="
+		return "FileInfo [status=" + status + ", binary=" + binary + ", old_path=" + old_path + ", lines_inserted="
 				+ lines_inserted + ", lines_deleted=" + lines_deleted + "]";
 	}
 

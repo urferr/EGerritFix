@@ -15,15 +15,14 @@ package org.eclipse.egerrit.core.rest;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info"
- * >CommitInfo</a> entity contains information about the commit.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info" >CommitInfo</a>
+ * entity contains information about the commit.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Francois Chouinard
@@ -34,8 +33,7 @@ public class CommitInfo {
 	// The data structure
 	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The commit ID.
 	private String commit;
@@ -68,78 +66,138 @@ public class CommitInfo {
 	}
 
 	/**
-	 * @return The parent commits of this commit. In each parent only the commit
-	 *         and subject fields are populated.
+	 * @return List. The parent commits of this commit. In each parent only the commit and subject fields are populated.
 	 */
 	public List<CommitInfo> getParents() {
 		return parents;
 	}
 
 	/**
-	 * @return The author of the commit.
+	 * @return GitPersonInfo The author of the commit.
 	 */
 	public GitPersonInfo getAuthor() {
 		return author;
 	}
 
 	/**
-	 * @return The committer of the commit.
+	 * @return GitPersonInfo The committer of the commit.
 	 */
 	public GitPersonInfo getCommitter() {
 		return committer;
 	}
 
 	/**
-	 * @return The subject of the commit (header line of the commit message).
+	 * @return String The subject of the commit (header line of the commit message).
 	 */
 	public String getSubject() {
 		return subject;
 	}
 
 	/**
-	 * @return The commit message.
+	 * @return String The commit message.
 	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * Set the subject field
+	 *
+	 * @param String
+	 *            subject
+	 */
+	public void setSubject(String subject) {
+		firePropertyChange("subject", this.subject, this.subject = subject); //$NON-NLS-1$
+
+	}
+
+	/**
+	 * Set the message field
+	 *
+	 * @param String
+	 *            message
+	 */
 	public void setMessage(String message) {
-		firePropertyChange("message", this.message, this.message = message);
+		firePropertyChange("message", this.message, this.message = message); //$NON-NLS-1$
 
 	}
 
+	/**
+	 * Set the commit field
+	 *
+	 * @param String
+	 *            commit
+	 */
 	public void setCommit(String commit) {
-		firePropertyChange("commit", this.commit, this.commit = commit);
+		firePropertyChange("commit", this.commit, this.commit = commit); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the list of parent for this commit info
+	 *
+	 * @param List
+	 *            <CommitInfo> parents
+	 */
 	public void setParents(List<CommitInfo> parents) {
-		firePropertyChange("parents", this.parents, this.parents = parents);
+		firePropertyChange("parents", this.parents, this.parents = parents); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the author structure
+	 *
+	 * @param GitPersonInfo
+	 *            author
+	 */
 	public void setAuthor(GitPersonInfo author) {
-		firePropertyChange("author", this.author, this.author = author);
+		firePropertyChange("author", this.author, this.author = author); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the committer structure
+	 *
+	 * @param GitPersonInfo
+	 *            committer
+	 */
 	public void setCommitter(GitPersonInfo committer) {
-		firePropertyChange("committer", this.committer,
-				this.committer = committer);
+		firePropertyChange("committer", this.committer, this.committer = committer); //$NON-NLS-1$
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	/**
+	 * Allow to add a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param PropertyChangeListener
+	 *            listener
+	 */
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	/**
+	 * Allow to remove a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param PropertyChangeListener
+	 *            listener
+	 */
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	/**
+	 * Initiate a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param Object
+	 *            oldValue
+	 * @param Object
+	 *            newValue
+	 */
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
@@ -157,8 +215,7 @@ public class CommitInfo {
 		int result = 1;
 		result = prime * result + ((author == null) ? 0 : author.hashCode());
 		result = prime * result + ((commit == null) ? 0 : commit.hashCode());
-		result = prime * result
-				+ ((committer == null) ? 0 : committer.hashCode());
+		result = prime * result + ((committer == null) ? 0 : committer.hashCode());
 		result = prime * result + ((message == null) ? 0 : message.hashCode());
 		result = prime * result + ((parents == null) ? 0 : parents.hashCode());
 		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
@@ -235,9 +292,19 @@ public class CommitInfo {
 	@Override
 	@SuppressWarnings("nls")
 	public String toString() {
-		return "CommitInfo [commit=" + commit + ", parents=" + parents
-				+ ", author=" + author + ", committer=" + committer
-				+ ", subject=" + subject + ", message=" + message + "]";
+		return "CommitInfo [commit=" + commit + ", parents=" + parents + ", author=" + author + ", committer="
+				+ committer + ", subject=" + subject + ", message=" + message + "]";
 	}
 
+	/**
+	 * Reset the data fields used in a display
+	 */
+	public void reset() {
+		setCommit(""); //$NON-NLS-1$
+		setParents(new ArrayList<CommitInfo>());
+		setAuthor(new GitPersonInfo());
+		setCommitter(new GitPersonInfo());
+		setMessage(""); //$NON-NLS-1$
+		setSubject(""); //$NON-NLS-1$
+	}
 }

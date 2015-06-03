@@ -75,6 +75,7 @@ import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
+import org.eclipse.egerrit.ui.internal.table.provider.ConflictWithTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
@@ -1009,39 +1010,40 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				Object element = sel.getFirstElement();
 				if (element instanceof FileInfo) {
 					FileInfo fileInfo = (FileInfo) element;
-					Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-					itr1.hasNext();
-					Entry<String, RevisionInfo> entry = itr1.next();
-					System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
-							+ entry.getKey());
-					String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(), entry.getKey(),
-							fileInfo.getold_path(), new NullProgressMonitor());
-					CompareInput ci = new CompareInput();
-					if (resRight != null) {
-						ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
-					} else {
-						ci.setRight("Could not parse response");
-					}
-
-					if (itr1.hasNext()) {
-						Entry<String, RevisionInfo> entryLeft = itr1.next();
+					if (fRevisions != null) {
+						Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
+						itr1.hasNext();
+						Entry<String, RevisionInfo> entry = itr1.next();
 						System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
-								+ entryLeft.getKey());
-						String resLeft = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
-								entryLeft.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
-						if (resLeft != null) {
-							ci.setLeft(StringUtils.newStringUtf8(Base64.decodeBase64(resLeft)));
+								+ entry.getKey());
+						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
+								entry.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
+						CompareInput ci = new CompareInput();
+						if (resRight != null) {
+							ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
 						} else {
-							ci.setLeft("Could not parse response");
+							ci.setRight("Could not parse response");
 						}
-					} else {
-						ci.setLeft("no file");
 
+						if (itr1.hasNext()) {
+							Entry<String, RevisionInfo> entryLeft = itr1.next();
+							System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id()
+									+ "/revisionid: " + entryLeft.getKey());
+							String resLeft = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
+									entryLeft.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
+							if (resLeft != null) {
+								ci.setLeft(StringUtils.newStringUtf8(Base64.decodeBase64(resLeft)));
+							} else {
+								ci.setLeft("Could not parse response");
+							}
+						} else {
+							ci.setLeft("no file");
+
+						}
+
+						CompareUI.openCompareEditor(ci);
+						fParent.pack(true);
 					}
-
-					CompareUI.openCompareEditor(ci);
-					fParent.pack(true);
-
 				}
 			}
 		});
@@ -1121,6 +1123,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	public void setChangeInfo(GerritRepository gerritRepository, ChangeInfo element) {
 		this.fGerritRepository = gerritRepository;
 		genVoteData.setText("INIT");
+		fChangeInfo.reset();
 
 		//Fill the data structure
 		fChangeInfo.setNumber(element.getNumber());
@@ -1182,6 +1185,10 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			if (includedIn != null) {
 				fIncludedIn.setBranches(includedIn.getBranches());
 				fIncludedIn.setTags(includedIn.getTags());
+			} else {
+				//Reset the fields if they don't exist
+				fIncludedIn.setBranches(new ArrayList<String>());
+				fIncludedIn.setTags(new ArrayList<String>());
 			}
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -1285,15 +1292,20 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			EGerritCorePlugin.logError(e.getMessage());
 		}
 
-		litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
-		while (litr.hasNext()) {
-			ChangeInfo cur = litr.next();
-			if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
-				ChangeInfo item = new ChangeInfo();
-				item.setChange_id(cur.getChange_id());
-				item.setSubject(cur.getSubject());
-				fConflictsWithChangeInfo.add(item);
+		if (conflictsWithChangeInfo.length > 0) {
+			litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
+			while (litr.hasNext()) {
+				ChangeInfo cur = litr.next();
+				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+					ChangeInfo item = new ChangeInfo();
+					item.setChange_id(cur.getChange_id());
+					item.setSubject(cur.getSubject());
+					fConflictsWithChangeInfo.add(item);
+				}
 			}
+		} else {
+			//Need to reset that structure
+			System.err.println("Need to reset that structure fConflictsWithChangeInfo");
 		}
 		writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
 		tableConflictsWithViewer.setInput(writeInfoList);
@@ -1308,12 +1320,18 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private void setCurrentRevisionAndMessageTab(GerritRepository gerritRepository, String change_id) {
 		ChangeInfo res = queryMessageTab(gerritRepository, change_id, new NullProgressMonitor());
 
+		//Need to initialise the variables first
+		fFiles = new HashMap<String, FileInfo>();
+		fCommitInfo.reset();
+		if (fRevisions != null) {
+			fRevisions.clear();
+		}
+
 		if (res != null) {
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
 			fChangeInfo.setLabels(res.getLabels());
 			fChangeInfo.setMessages(res.getMessages());
 			fRevisions = res.getRevisions();
-			fFiles = new HashMap<String, FileInfo>();
 			Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
 			while (itr1.hasNext()) {
 				Entry<String, RevisionInfo> entry = itr1.next();
@@ -1803,7 +1821,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				BeanProperties.values(new String[] { "change_id" }));
 
 		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
-		tableConflictsWithViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
+		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 
 	protected DataBindingContext msgTabDataBindings() {
