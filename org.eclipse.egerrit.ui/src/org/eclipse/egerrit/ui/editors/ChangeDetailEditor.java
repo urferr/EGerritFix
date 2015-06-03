@@ -54,6 +54,7 @@ import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
+import org.eclipse.egerrit.core.rest.FetchInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.rest.GitPersonInfo;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
@@ -93,6 +94,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -410,6 +413,25 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		checkout.setText("Checkout");
 
 		Button pull = new Button(c, SWT.PUSH);
+		pull.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if (fRevisions != null) {
+					Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
+					itr1.hasNext();
+					Entry<String, RevisionInfo> entry = itr1.next();
+					System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "commands: "
+							+ entry.getValue().getFetch());
+					for (Map.Entry<String, FetchInfo> entry1 : entry.getValue().getFetch().entrySet()) {
+						System.out.println("protocol : " + entry1.getKey());
+						for (Map.Entry<String, String> entry3 : entry1.getValue().getCommands().entrySet()) {
+							System.out.println(entry3.getKey() + "/" + entry3.getValue());
+						}
+					}
+
+				}
+			}
+		});
 		pull.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		pull.setText("Pull");
 
@@ -1651,6 +1673,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_COMMIT);
 				command.addOption(ChangeOption.MESSAGES);
+				command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
 
 				ChangeInfo res = null;
 				try {

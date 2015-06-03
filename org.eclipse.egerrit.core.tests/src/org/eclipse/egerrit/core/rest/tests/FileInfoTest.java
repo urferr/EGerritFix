@@ -31,7 +31,7 @@ import com.google.gson.JsonObject;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.rest.FileInfo}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -53,8 +53,10 @@ public class FileInfoTest {
 
 	private static final int HASH_CODE = 1049234446;
 
-	private static final String TO_STRING = "FileInfo [" + "status=" + STATUS + ", binary=" + BINARY + ", old_path="
-			+ OLD_PATH + ", lines_inserted=" + LINES_INSERTED + ", lines_deleted=" + LINES_DELETED + "]";
+	private static final String TO_STRING = "FileInfo [" + "status=" + STATUS
+			+ ", binary=" + BINARY + ", old_path=" + OLD_PATH
+			+ ", lines_inserted=" + LINES_INSERTED + ", lines_deleted="
+			+ LINES_DELETED + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -102,7 +104,8 @@ public class FileInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getStatus()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.rest.FileInfo#getStatus()}.
 	 */
 	@Test
 	public void testGetStatus() {
@@ -118,7 +121,8 @@ public class FileInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#isBinary()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#isBinary()}
+	 * .
 	 */
 	@Test
 	public void testIsBinary() {
@@ -126,15 +130,17 @@ public class FileInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
-		assertNull("Wrong status", fFileInfo.getStatus());
-		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
+		assertEquals("Wrong status", "M", fFileInfo.getStatus());
+		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY),
+				fFileInfo.isBinary());
 		assertNull("Wrong old_path", fFileInfo.getold_path());
 		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
 		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getOld_Path()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.rest.FileInfo#getOld_Path()}.
 	 */
 	@Test
 	public void testGetOldPath() {
@@ -142,7 +148,7 @@ public class FileInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
-		assertNull("Wrong status", fFileInfo.getStatus());
+		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
 		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
 		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
@@ -150,7 +156,8 @@ public class FileInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesInserted()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesInserted()}.
 	 */
 	@Test
 	public void testGetLinesInserted() {
@@ -158,15 +165,18 @@ public class FileInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
-		assertNull("Wrong status", fFileInfo.getStatus());
+		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
 		assertNull("Wrong old_path", fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
+		assertEquals("Wrong lines_inserted",
+				(int) Integer.valueOf(LINES_INSERTED),
+				fFileInfo.getLinesInserted());
 		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesDeleted()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesDeleted()}.
 	 */
 	@Test
 	public void testGetLinesDeleted() {
@@ -174,11 +184,13 @@ public class FileInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
-		assertNull("Wrong status", fFileInfo.getStatus());
+		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
 		assertNull("Wrong old_path", fFileInfo.getold_path());
 		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertEquals("Wrong lines_deleted",
+				(int) Integer.valueOf(LINES_DELETED),
+				fFileInfo.getLinesDeleted());
 	}
 
 	// ------------------------------------------------------------------------
@@ -195,10 +207,15 @@ public class FileInfoTest {
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
 		assertEquals("Wrong status", STATUS, fFileInfo.getStatus());
-		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
+		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY),
+				fFileInfo.isBinary());
 		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertEquals("Wrong lines_inserted",
+				(int) Integer.valueOf(LINES_INSERTED),
+				fFileInfo.getLinesInserted());
+		assertEquals("Wrong lines_deleted",
+				(int) Integer.valueOf(LINES_DELETED),
+				fFileInfo.getLinesDeleted());
 	}
 
 	/**
@@ -212,10 +229,15 @@ public class FileInfoTest {
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
 		assertEquals("Wrong status", STATUS, fFileInfo.getStatus());
-		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
+		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY),
+				fFileInfo.isBinary());
 		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertEquals("Wrong lines_inserted",
+				(int) Integer.valueOf(LINES_INSERTED),
+				fFileInfo.getLinesInserted());
+		assertEquals("Wrong lines_deleted",
+				(int) Integer.valueOf(LINES_DELETED),
+				fFileInfo.getLinesDeleted());
 	}
 
 	// ------------------------------------------------------------------------
@@ -223,7 +245,8 @@ public class FileInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#hashCode()}
+	 * .
 	 */
 	@Test
 	public void testHashCode() {
@@ -235,15 +258,17 @@ public class FileInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#equals(java.lang.Object)}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.rest.FileInfo#equals(java.lang.Object)}.
 	 */
-//    @Test
+	// @Test
 	public void testEqualsObject() {
 		fail("Not yet implemented");
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#toString()}
+	 * .
 	 */
 	@Test
 	public void testToString() {
