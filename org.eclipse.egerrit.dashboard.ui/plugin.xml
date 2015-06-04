@@ -13,7 +13,7 @@
       </category>
       <view
             name="%view.name"
-            icon="icons/view16/gerrit.png"
+            icon="icons/view16/EGerritcolor16.png"
             category="org.eclipse.egerrit.ui"
             class="org.eclipse.egerrit.dashboard.ui.views.GerritTableView"
             id="org.eclipse.egerrit.dashboard.ui.views.GerritTableView">
@@ -32,7 +32,7 @@
                 label="Gerrit Dashboard">
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"
-                icon="icons/view16/gerrit.png"
+                icon="icons/view16/EGerritcolor16.png"
                 id="GerritDashboard.dropdown.toolbar.initiateGerrit"
                 label="Gerrit Dashboard"
                 style="pulldown">
