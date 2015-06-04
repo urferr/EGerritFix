@@ -100,13 +100,11 @@ public class GetContentCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ChangeInfo.class,
-				command.getReturnType());
+		assertEquals("Wrong return type", ChangeInfo.class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -121,9 +119,7 @@ public class GetContentCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path",
-				fGerrit.getRepository().getPath() + "/changes/" + "/detail",
-				uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes/" + "/detail", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -132,8 +128,7 @@ public class GetContentCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 * 
 	 * @throws Exception
 	 */
@@ -144,16 +139,14 @@ public class GetContentCommandTest {
 		GitAccess gAccess = new GitAccess();
 		Git git = gAccess.getGitProject();
 
-		gAccess.addFile("EGerritTestReviewFile.java",
-				"Hello reviewers {community} !");
+		gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers {community} !");
 		gAccess.pushFile();
 
 		change_id = gAccess.getChangeId();
 		commit_id = gAccess.getCommitId();
 
 		// Run test
-		GetContentCommand command = fGerrit.getContent(change_id, commit_id,
-				"EGerritTestReviewFile.java");
+		GetContentCommand command = fGerrit.getContent(change_id, commit_id, "EGerritTestReviewFile.java");
 		String result = null;
 		try {
 			result = command.call();
@@ -162,8 +155,7 @@ public class GetContentCommandTest {
 		}
 
 		// Verify result
-		assertEquals("Hello reviewers {community} !",
-				StringUtils.newStringUtf8(Base64.decodeBase64(result)));
+		assertEquals("Hello reviewers {community} !", StringUtils.newStringUtf8(Base64.decodeBase64(result)));
 
 	}
 

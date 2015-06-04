@@ -17,8 +17,9 @@ import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#includedin-info"
- * >IncludedInInfo</a> entity describes a REST API call the client can make to manipulate a resource.
+ * The
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#includedin-info" >IncludedInInfo
+ * </a> entity describes a REST API call the client can make to manipulate a resource.
  * <p>
  * TThe IncludedInInfo entity contains information about the branches a change was merged into and tags it was tagged
  * with

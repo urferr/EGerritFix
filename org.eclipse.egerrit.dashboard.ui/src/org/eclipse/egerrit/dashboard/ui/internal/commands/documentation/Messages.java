@@ -24,6 +24,7 @@ public class Messages extends NLS {
 	public static String RestAPIHandler_selectedServer;
 
 	public static String RestAPIHandler_serverTooOld;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -132,7 +132,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getReviewStateImage(int aState) {
@@ -156,7 +157,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getVerifyStateImage(int aState) {
@@ -197,7 +199,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return String text associated to the column
 	 */
 	@SuppressWarnings("restriction")
@@ -323,7 +326,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return Image Image according to the selected column
 	 */
 	@SuppressWarnings("restriction")
@@ -379,7 +383,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *
 	 * @param Object
 	 *            ReviewTableListItem
-	 * @param int columnIndex
+	 * @param int
+	 *            columnIndex
 	 */
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {

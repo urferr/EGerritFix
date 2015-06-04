@@ -31,8 +31,8 @@ import org.eclipse.swt.SWT;
 public enum RelatedChangesTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	ID(Messages.RelatedChangesTableDefinition_id, 80, false, true, SWT.LEFT), //
-	HEADLINE(Messages.RelatedChangesTableDefinition_headline, 200, true, true, SWT.LEFT), FLAG(
-			Messages.RelatedChangesTableDefinition_flag, 100, false, true, SWT.LEFT);
+	HEADLINE(Messages.RelatedChangesTableDefinition_headline, 200, true, true,
+			SWT.LEFT), FLAG(Messages.RelatedChangesTableDefinition_flag, 100, false, true, SWT.LEFT);
 
 	private final String fHeader;
 

@@ -24,11 +24,9 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info"
- * >Get Content</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#CommitInfo"
- * ></a>
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info" >Get Content</a>
+ * command. It returns a
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#CommitInfo" ></a>
  * <p>
  *
  * @since 1.0
@@ -57,8 +55,7 @@ public class GetCommitMsgCommand extends QueryCommand<CommitInfo> {
 	 * @param revision
 	 *            revisions-id
 	 */
-	public GetCommitMsgCommand(GerritRepository gerritRepository, String id,
-			String revision) {
+	public GetCommitMsgCommand(GerritRepository gerritRepository, String id, String revision) {
 		super(gerritRepository, CommitInfo.class);
 		this.setId(id);
 		this.setRevision(revision);
@@ -101,11 +98,12 @@ public class GetCommitMsgCommand extends QueryCommand<CommitInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath())
-			.append("/changes/").append(getId()) //$NON-NLS-1$
-			.append("/revisions/").append(getRevision())//$NON-NLS-1$
-			.append("/commit") //$NON-NLS-1$
-			.toString();
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId())
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
+					.append("/commit") //$NON-NLS-1$
+					.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
 		} catch (URISyntaxException e) {

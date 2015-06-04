@@ -47,21 +47,28 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	private static final boolean DRAFT = true;
+
 	private static final boolean HAS_DRAFT_COMMENTS = true;
+
 	private static final int NUMBER = 5;
+
 	private static final String REF = "/refs/changes/10/12345/1";
+
 	private static final Map<String, FetchInfo> FETCH = new LinkedHashMap<String, FetchInfo>();
+
 	private static final CommitInfo COMMIT = new CommitInfo();
+
 	private static final Map<String, FileInfo> FILES = new LinkedHashMap<String, FileInfo>();
+
 	private static final Map<String, ActionInfo> ACTIONS = new LinkedHashMap<String, ActionInfo>();
+
 	private static final Boolean REVIEWED = true;
 
 	private static final int HASH_CODE = 1397094371;
-	private static final String TO_STRING = "RevisionInfo [" + "draft=" + DRAFT
-			+ ", has_draft_comments=" + HAS_DRAFT_COMMENTS + ", _number="
-			+ NUMBER + ", ref=" + REF + ", fetch=" + FETCH + ", commit="
-			+ COMMIT + ", files=" + FILES + ", actions=" + ACTIONS
-			+ ", reviewed=" + REVIEWED + "]";
+
+	private static final String TO_STRING = "RevisionInfo [" + "draft=" + DRAFT + ", has_draft_comments="
+			+ HAS_DRAFT_COMMENTS + ", _number=" + NUMBER + ", ref=" + REF + ", fetch=" + FETCH + ", commit=" + COMMIT
+			+ ", files=" + FILES + ", actions=" + ACTIONS + ", reviewed=" + REVIEWED + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -117,8 +124,7 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#isDraft()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#isDraft()}.
 	 */
 	@Test
 	public void testIsDraft() {
@@ -127,8 +133,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertTrue("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -139,8 +144,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#hasDraftComments()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#hasDraftComments()}.
 	 */
 	@Test
 	public void testHasDraftComments() {
@@ -160,8 +164,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getNumber()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getNumber()}.
 	 */
 	@Test
 	public void testGetNumber() {
@@ -170,8 +173,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", NUMBER, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -182,8 +184,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getRef()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getRef()}.
 	 */
 	@Test
 	public void testGetRef() {
@@ -192,8 +193,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertEquals("Wrong ref", REF, fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -204,8 +204,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFetch()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFetch()}.
 	 */
 	@Test
 	public void testGetFetch() {
@@ -215,8 +214,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertEquals("Wrong fetch", FETCH, fRevisionInfo.getFetch());
@@ -227,8 +225,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getCommit()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getCommit()}.
 	 */
 	@Test
 	public void testGetCommit() {
@@ -238,8 +235,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -250,8 +246,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFiles()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFiles()}.
 	 */
 	@Test
 	public void testGetFiles() {
@@ -261,8 +256,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -273,8 +267,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getActions()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getActions()}.
 	 */
 	@Test
 	public void testGetActions() {
@@ -284,8 +277,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -296,8 +288,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#getReviewed()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getReviewed()}.
 	 */
 	@Test
 	public void testGetReviewed() {
@@ -306,8 +297,7 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments",
-				fRevisionInfo.hasDraftComments());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
 		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
@@ -367,8 +357,7 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -380,9 +369,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#equals(java.lang.Object)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -390,8 +377,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RevisionInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

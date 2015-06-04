@@ -52,8 +52,7 @@ public class RelatedChangesInfoTest {
 
 	private static final int HASH_CODE = 32;
 
-	private static final String TO_STRING = "RelatedChangesInfo [" + "changes="
-			+ CHANGES + "]";
+	private static final String TO_STRING = "RelatedChangesInfo [" + "changes=" + CHANGES + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -100,8 +99,7 @@ public class RelatedChangesInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.LabelInfo#getChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getChanges()}.
 	 */
 	@Test
 	public void testGetChanges() {
@@ -135,21 +133,18 @@ public class RelatedChangesInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.LabelInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
 		setAllFields();
 		Reader reader = new StringReader(json.toString());
 		fRelatedChangesInfo = gson.fromJson(reader, RelatedChangesInfo.class);
-		assertEquals("Wrong hash code", HASH_CODE,
-				fRelatedChangesInfo.hashCode());
+		assertEquals("Wrong hash code", HASH_CODE, fRelatedChangesInfo.hashCode());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.LabelInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -157,8 +152,7 @@ public class RelatedChangesInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.LabelInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

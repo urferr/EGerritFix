@@ -98,13 +98,11 @@ public class GetIncludedInCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", IncludedInInfo.class,
-				command.getReturnType());
+		assertEquals("Wrong return type", IncludedInInfo.class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GetIncludedInCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.GetIncludedInCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -119,8 +117,7 @@ public class GetIncludedInCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//in", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes//in", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -129,8 +126,7 @@ public class GetIncludedInCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -140,8 +136,7 @@ public class GetIncludedInCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();

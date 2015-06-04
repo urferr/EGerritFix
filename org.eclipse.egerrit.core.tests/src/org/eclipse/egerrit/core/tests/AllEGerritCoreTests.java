@@ -49,31 +49,20 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 		// org.eclipse.egerrit.core
-		EGerritCorePluginTest.class,
-	GerritRepositoryTest.class,
-	GerritClientAuthenticationTest.class,
-		GerritFactoryTest.class,
-		GerritTest.class,
-		Gerrit_2_9Test.class,
+		EGerritCorePluginTest.class, GerritRepositoryTest.class, GerritClientAuthenticationTest.class,
+		GerritFactoryTest.class, GerritTest.class, Gerrit_2_9Test.class,
 
 		// org.eclipse.egerrit.core.rest
-		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class,
-	ChangeInfoTest.class, ChangeMessageInfoTest.class,
-	CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
-		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class,
-	RevisionInfoTest.class,
-		ReviewerInfoTest.class,
-	MergeableInfoTest.class,
-	IncludedInInfoTest.class,
-	RelatedChangesInfoTest.class,
-	RelatedChangeAndCommitInfoTest.class,
+		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
+		ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
+		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
+		ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class, RelatedChangesInfoTest.class,
+		RelatedChangeAndCommitInfoTest.class,
 
 		// org.eclipse.egerrit.core.command
-		GerritCommandTest.class, QueryChangesCommandTest.class,
-	GetChangeCommandTest.class, GetContentCommandTest.class,
-	GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
-	ListReviewersCommandTest.class, GetIncludedInCommandTest.class,
-	GetRelatedChangesCommandTest.class })
+		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class, GetContentCommandTest.class,
+		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class, ListReviewersCommandTest.class,
+		GetIncludedInCommandTest.class, GetRelatedChangesCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------

@@ -61,6 +61,7 @@ public class Messages extends NLS {
 	public static String Tracer_logFile;
 
 	public static String Tracer_warning;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

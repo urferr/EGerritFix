@@ -17,77 +17,75 @@ import java.beans.PropertyChangeSupport;
 import java.util.Map;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info"
- * >AccountInfo</a> entity contains information about an account.
+ * The
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info" >AccountInfo</a>
+ * entity contains information about an account.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
  */
 public class ReviewerInfo {
 
-    // ------------------------------------------------------------------------
-    // The data structure
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// The data structure
+	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
-    // The numeric ID of the account
-    private int _account_id = -1;
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    // The full name of the user.
-    // Only set if detailed account information was requested.
-    private String name;
+	// The numeric ID of the account
+	private int _account_id = -1;
 
-    // The email address the user prefers to be contacted through.
-    // Only set if detailed account information was requested.
-    private String email;
+	// The full name of the user.
+	// Only set if detailed account information was requested.
+	private String name;
 
-    // The userID of the user.
-    // Only set if detailed account information was requested.
-    private String username;
+	// The email address the user prefers to be contacted through.
+	// Only set if detailed account information was requested.
+	private String email;
 
-    // The approvals of the reviewer as a map that maps the label 
-    // names to the approval values ("-2", "-1", "0", "+1", "+2").
-    private Map<String, String> approvals;
-    
-    // ------------------------------------------------------------------------
-    // The getters
-    // ------------------------------------------------------------------------
+	// The userID of the user.
+	// Only set if detailed account information was requested.
+	private String username;
 
-    /**
-     * @return The numeric ID of the account
-     */
-    public int getAccountId() {
-        return _account_id;
-    }
+	// The approvals of the reviewer as a map that maps the label 
+	// names to the approval values ("-2", "-1", "0", "+1", "+2").
+	private Map<String, String> approvals;
 
-    /**
-     * @return The full name of the user. May be null.
-     */
-    public String getName() {
-        return name;
-    }
+	// ------------------------------------------------------------------------
+	// The getters
+	// ------------------------------------------------------------------------
 
-    /**
-     * @return The preferred e-mail address of the user. May be null.
-     */
-    public String getEmail() {
-        return email;
-    }
+	/**
+	 * @return The numeric ID of the account
+	 */
+	public int getAccountId() {
+		return _account_id;
+	}
 
-    /**
-     * @return The userID of the user. May be null.
-     */
-    public String getUsername() {
-        return username;
-    }
+	/**
+	 * @return The full name of the user. May be null.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    
-    /**
+	/**
+	 * @return The preferred e-mail address of the user. May be null.
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @return The userID of the user. May be null.
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
 	 * @return the _account_id
 	 */
 	public int get_account_id() {
@@ -95,121 +93,122 @@ public class ReviewerInfo {
 	}
 
 	/**
-	 * @param _account_id the _account_id to set
+	 * @param _account_id
+	 *            the _account_id to set
 	 */
 	public void set_account_id(int _account_id) {
 		firePropertyChange("_account_id", this._account_id, this._account_id = _account_id);
 	}
 
 	/**
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		firePropertyChange("name", this.name, this.name = name);
 	}
 
 	/**
-	 * @param email the email to set
+	 * @param email
+	 *            the email to set
 	 */
 	public void setEmail(String email) {
 		firePropertyChange("email", this.email, this.email = email);
 	}
 
 	/**
-	 * @param username the username to set
+	 * @param username
+	 *            the username to set
 	 */
 	public void setUsername(String username) {
 		firePropertyChange("username", this.username, this.username = username);
 	}
 
 	/**
-	 * @param approvals the approvals to set
+	 * @param approvals
+	 *            the approvals to set
 	 */
 	public void setApprovals(Map<String, String> approvals) {
 		this.approvals = approvals;
 	}
 
 	/**
-     * @return The approvals of the reviewer as a map that maps the 
-     * label names to the approval values ("-2", "-1", "0", "+1", "+2").
-     */
-    public Map<String, String> getApprovals() {
-        return approvals;
-    }    
-    // ------------------------------------------------------------------------
-    // Object
-    // ------------------------------------------------------------------------
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	 * @return The approvals of the reviewer as a map that maps the label names to the approval values ("-2", "-1", "0",
+	 *         "+1", "+2").
+	 */
+	public Map<String, String> getApprovals() {
+		return approvals;
+	}
+
+	// ------------------------------------------------------------------------
+	// Object
+	// ------------------------------------------------------------------------
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + _account_id;
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result
-                + ((username == null) ? 0 : username.hashCode());
-        return result;
-    }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ReviewerInfo other = (ReviewerInfo) obj;
-        if (_account_id != other._account_id)
-            return false;
-        if (email == null) {
-            if (other.email != null)
-                return false;
-        } else if (!email.equals(other.email))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
-        return true;
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _account_id;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    @SuppressWarnings("nls")
-    public String toString() {
-        return "AccountInfo [_account_id=" + _account_id + ", name=" + name
-                + ", email=" + email + ", username=" + username + "]";
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReviewerInfo other = (ReviewerInfo) obj;
+		if (_account_id != other._account_id)
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	@SuppressWarnings("nls")
+	public String toString() {
+		return "AccountInfo [_account_id=" + _account_id + ", name=" + name + ", email=" + email + ", username="
+				+ username + "]";
+	}
 
 }

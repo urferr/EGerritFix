@@ -12,45 +12,41 @@
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#action-info"
- * >ActionInfo</a> entity describes a REST API call the client can make to
- * manipulate a resource.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#action-info" >ActionInfo</a>
+ * entity describes a REST API call the client can make to manipulate a resource.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
  */
 public class MergeableInfo {
 
-    // ------------------------------------------------------------------------
-    // The data structure
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// The data structure
+	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
-    // Submit type used for this change, can be MERGE_IF_NECESSARY, 
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+	// Submit type used for this change, can be MERGE_IF_NECESSARY, 
 	// FAST_FORWARD_ONLY, REBASE_IF_NECESSARY, MERGE_ALWAYS or CHERRY_PICK.
-    private String submit_type;
+	private String submit_type;
 
-    // A list of other branch names where this change could merge cleanly
-    private String mergeable_into;
+	// A list of other branch names where this change could merge cleanly
+	private String mergeable_into;
 
-    // true if this change is cleanly mergeable, false otherwise
-    private boolean mergeable = false;
+	// true if this change is cleanly mergeable, false otherwise
+	private boolean mergeable = false;
 
-    // ------------------------------------------------------------------------
-    // The getters
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// The getters
+	// ------------------------------------------------------------------------
 
-
-    /**
+	/**
 	 * @return the submit_type
 	 */
 	public String getSubmit_type() {
@@ -58,11 +54,12 @@ public class MergeableInfo {
 	}
 
 	/**
-	 * @param submit_type the submit_type to set
+	 * @param submit_type
+	 *            the submit_type to set
 	 */
 	public void setSubmit_type(String submit_type) {
 		firePropertyChange("submit_type", this.submit_type, this.submit_type = submit_type);
-		
+
 	}
 
 	/**
@@ -73,7 +70,8 @@ public class MergeableInfo {
 	}
 
 	/**
-	 * @param mergeable_into the mergeable_into to set
+	 * @param mergeable_into
+	 *            the mergeable_into to set
 	 */
 	public void setMergeable_into(String mergeable_into) {
 		firePropertyChange("mergeable_into", this.mergeable_into, this.mergeable_into = mergeable_into);
@@ -87,33 +85,29 @@ public class MergeableInfo {
 	}
 
 	/**
-	 * @param mergeable the mergeable to set
+	 * @param mergeable
+	 *            the mergeable to set
 	 */
 	public void setMergeable(boolean mergeable) {
 		firePropertyChange("mergeable", this.mergeable, this.mergeable = mergeable);
 	}
 
 	// ------------------------------------------------------------------------
-    // Object
-    // ------------------------------------------------------------------------
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	// Object
+	// ------------------------------------------------------------------------
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -122,8 +116,7 @@ public class MergeableInfo {
 		int result = 1;
 		result = prime * result + ((mergeable_into == null) ? 0 : mergeable_into.hashCode());
 		result = prime * result + (mergeable ? 1231 : 1237);
-		result = prime * result
-				+ ((submit_type == null) ? 0 : submit_type.hashCode());
+		result = prime * result + ((submit_type == null) ? 0 : submit_type.hashCode());
 		return result;
 	}
 
@@ -159,10 +152,8 @@ public class MergeableInfo {
 	 */
 	@Override
 	public String toString() {
-		return "MergeableInfo [submit_type=" + submit_type + ", mergeable_into=" + mergeable_into
-				+ ", mergeable=" + mergeable + "]";
+		return "MergeableInfo [submit_type=" + submit_type + ", mergeable_into=" + mergeable_into + ", mergeable="
+				+ mergeable + "]";
 	}
-
-
 
 }

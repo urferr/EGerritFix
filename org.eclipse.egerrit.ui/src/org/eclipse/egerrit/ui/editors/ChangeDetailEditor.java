@@ -1038,8 +1038,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 						Entry<String, RevisionInfo> entry = itr1.next();
 						System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
 								+ entry.getKey());
-						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
-								entry.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
+						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(), entry.getKey(),
+								fileInfo.getold_path(), new NullProgressMonitor());
 						CompareInput ci = new CompareInput();
 						if (resRight != null) {
 							ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
@@ -1479,8 +1479,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1537,7 +1537,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1728,7 +1729,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+				null);
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -1747,8 +1749,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		bindingContext.bindValue(observeTextLblUpdated_1ObserveWidget, updatedFChangeInfoObserveValue, null, null);
 		//
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
-		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe(
-				fMergeableInfo);
+		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type")
+				.observe(fMergeableInfo);
 		bindingContext.bindValue(observeTextGenStrategyDataObserveWidget, bytesMergeableinfogetSubmit_typeObserveValue,
 				null, null);
 		//
@@ -1799,7 +1801,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text()
 					.observe(includedInTagsData);
 			IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn);
-			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
+			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null,
+					null);
 		}
 		return bindingContext;
 	}
@@ -1843,7 +1846,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" }));
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
+				BeanProperties.values(new String[] { "change_id" }));
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 

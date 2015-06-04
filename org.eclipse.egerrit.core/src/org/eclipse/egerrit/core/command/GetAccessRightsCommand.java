@@ -24,12 +24,10 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ProjectAccessInfo;
 
 /**
- * The <a href=
- * "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info"
- * >Get Content</a> command. It returns a <a href=
- * "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info"
- * ></a> The command: 'GET /access/?project={project-name}' or Request: GET
- * /access/?project=MyProject&project=All-Projects HTTP/1.0
+ * The <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info" >Get Content</a>
+ * command. It returns a
+ * <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info" ></a> The command: 'GET
+ * /access/?project={project-name}' or Request: GET /access/?project=MyProject&project=All-Projects HTTP/1.0
  * <p>
  *
  * @since 1.0
@@ -58,8 +56,7 @@ public class GetAccessRightsCommand extends QueryCommand<ProjectAccessInfo> {
 	 * @param revision
 	 *            revisions-id
 	 */
-	public GetAccessRightsCommand(GerritRepository gerritRepository, String id,
-			String revision) {
+	public GetAccessRightsCommand(GerritRepository gerritRepository, String id, String revision) {
 		super(gerritRepository, ProjectAccessInfo.class);
 		this.setId(id);
 		this.setRevision(revision);
@@ -102,9 +99,10 @@ public class GetAccessRightsCommand extends QueryCommand<ProjectAccessInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath())
-					.append("/changes/").append(getId()) //$NON-NLS-1$
-					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId())
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
 					.append("/commit") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);

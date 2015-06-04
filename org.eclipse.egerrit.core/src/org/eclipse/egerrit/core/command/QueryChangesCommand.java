@@ -27,8 +27,9 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Query
- * Changes</a> command. It returns a list of <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a> structures.
+ * Changes</a> command. It returns a list of
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
+ * structures.
  * <p>
  * By default, it will return the list of opened changes.
  *

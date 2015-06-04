@@ -27,8 +27,8 @@ import org.eclipse.swt.widgets.Display;
  *
  * @since 1.0
  */
-public class ConflictWithTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider,
-ITableColorProvider {
+public class ConflictWithTableLabelProvider extends ObservableMapLabelProvider
+		implements ITableLabelProvider, ITableColorProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -60,7 +60,8 @@ ITableColorProvider {
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getReviewStateImage(int aState) {
@@ -72,7 +73,8 @@ ITableColorProvider {
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getVerifyStateImage(int aState) {
@@ -88,7 +90,8 @@ ITableColorProvider {
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return String text associated to the column
 	 */
 	@Override
@@ -117,7 +120,8 @@ ITableColorProvider {
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return Image Image according to the selected column
 	 */
 	@Override
@@ -153,7 +157,8 @@ ITableColorProvider {
 	 *
 	 * @param Object
 	 *            ReviewTableListItem
-	 * @param int columnIndex
+	 * @param int
+	 *            columnIndex
 	 */
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {

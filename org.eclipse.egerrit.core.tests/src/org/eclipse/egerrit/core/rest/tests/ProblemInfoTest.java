@@ -48,8 +48,8 @@ public class ProblemInfoTest {
 
 	private static final int HASH_CODE = -1272391851;
 
-	private static final String TO_STRING = "ProblemInfo [" + "message=" + MESSAGE + ", status=" + STATUS
-			+ ", outcome=" + OUTCOME + "]";
+	private static final String TO_STRING = "ProblemInfo [" + "message=" + MESSAGE + ", status=" + STATUS + ", outcome="
+			+ OUTCOME + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes

@@ -51,7 +51,8 @@ public class GerritServerTableLabelProvider extends LabelProvider implements ITa
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return String text associated to the column
 	 */
 	public String getColumnText(Object aObj, int aIndex) {
@@ -78,7 +79,8 @@ public class GerritServerTableLabelProvider extends LabelProvider implements ITa
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return Image Image according to the selected column
 	 */
 	public Image getColumnImage(Object aObj, int aIndex) {

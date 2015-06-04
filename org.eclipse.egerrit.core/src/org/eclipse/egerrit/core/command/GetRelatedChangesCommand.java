@@ -26,8 +26,8 @@ import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Get Content</a>
- * command. It returns a <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String"
- * ></a> base64 encoded.
+ * command. It returns a
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String" ></a> base64 encoded.
  * <p>
  *
  * @since 1.0
@@ -97,8 +97,10 @@ public class GetRelatedChangesCommand extends QueryCommand<RelatedChangesInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").append(getId()) //$NON-NLS-1$
-					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId())
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
 					.append("/related") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);

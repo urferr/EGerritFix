@@ -38,8 +38,7 @@ import org.osgi.framework.Version;
 /**
  * A GerritRepository represents the interface to a gerrit repository.
  * <p>
- * In this implementation, the gerrit repository is accessible through HTTP(S)
- * for the REST operations.
+ * In this implementation, the gerrit repository is accessible through HTTP(S) for the REST operations.
  *
  * @since 1.0
  */
@@ -234,8 +233,7 @@ public class GerritRepository {
 	 */
 	public GerritHttpClient getHttpClient() {
 		if (fHttpClient == null) {
-			GerritHttpClient client = new GerritHttpClient(this,
-					fAcceptSelfSignedCerts, fCredentials);
+			GerritHttpClient client = new GerritHttpClient(this, fAcceptSelfSignedCerts, fCredentials);
 			if (client.authenticate()) {
 				fHttpClient = client;
 			}
@@ -244,8 +242,8 @@ public class GerritRepository {
 	}
 
 	/**
-	 * Construct a base URI of the form "<prot>://<host>:<port>/<path>" which
-	 * can then be augmented by the interested parties.
+	 * Construct a base URI of the form "<prot>://<host>:<port>/<path>" which can then be augmented by the interested
+	 * parties.
 	 *
 	 * @return the generic URI to access the repository for REST operations
 	 */
@@ -258,8 +256,7 @@ public class GerritRepository {
 		}
 		String path = sb.toString();
 
-		URIBuilder builder = new URIBuilder().setScheme(fScheme)
-				.setHost(fHostname).setPath(path);
+		URIBuilder builder = new URIBuilder().setScheme(fScheme).setHost(fHostname).setPath(path);
 		if (fPort > 0) {
 			builder.setPort(fPort);
 		}
@@ -272,35 +269,31 @@ public class GerritRepository {
 	// ------------------------------------------------------------------------
 
 	private static final String VERSION_REQUEST = "/config/server/version"; //$NON-NLS-1$
+
 	private static final String JSON_NON_EXECUTABLE_PREFIX = ")]}'\n"; //$NON-NLS-1$
 
 	public Version queryVersion() {
 		Version version = null;
 		try {
 			URIBuilder builder = getURIBuilder(false);
-			String path = new StringBuilder(builder.getPath()).append(
-					VERSION_REQUEST).toString();
+			String path = new StringBuilder(builder.getPath()).append(VERSION_REQUEST).toString();
 			URI uri = builder.setPath(path).build();
 			HttpUriRequest request = new HttpGet(uri);
 			EGerritCorePlugin.logInfo("Request: " + uri.toString()); //$NON-NLS-1$
 
 			ResponseHandler<String> rh = new ResponseHandler<String>() {
 				@Override
-				public String handleResponse(final HttpResponse response)
-						throws IOException {
+				public String handleResponse(final HttpResponse response) throws IOException {
 					String result = null;
 					StatusLine statusLine = response.getStatusLine();
-					EGerritCorePlugin
-							.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+					EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
 					int status = statusLine.getStatusCode();
 					if (status < 200 || status >= 300) {
-						throw new ClientProtocolException(
-								"Unexpected response status: " + status); //$NON-NLS-1$
+						throw new ClientProtocolException("Unexpected response status: " + status); //$NON-NLS-1$
 					}
 					HttpEntity entity = response.getEntity();
 					if (entity == null) {
-						throw new ClientProtocolException(
-								"Response has no content"); //$NON-NLS-1$
+						throw new ClientProtocolException("Response has no content"); //$NON-NLS-1$
 					}
 					// The response has the general form:
 					// ")]}'\n\"<version>\"\n"
@@ -310,8 +303,7 @@ public class GerritRepository {
 					// feed.
 					int prefixLength = JSON_NON_EXECUTABLE_PREFIX.length();
 					String rawResult = EntityUtils.toString(entity);
-					result = rawResult.substring(prefixLength + 1,
-							rawResult.length() - 2);
+					result = rawResult.substring(prefixLength + 1, rawResult.length() - 2);
 					return result;
 				}
 			};
@@ -340,10 +332,10 @@ public class GerritRepository {
 		return version;
 	}
 
-	private static final Pattern MAJOR_MINOR_MICRO_VERSION_PATTERN = Pattern
-			.compile("(\\d+)\\.(\\d+)(\\.\\d+)?"); //$NON-NLS-1$
-	private static final Pattern MAJOR_MINOR_QUALIFIER_VERSION_PATTERN = Pattern
-			.compile("(\\d+)\\.(\\d+)-(\\w+).*"); //$NON-NLS-1$
+	private static final Pattern MAJOR_MINOR_MICRO_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?"); //$NON-NLS-1$
+
+	private static final Pattern MAJOR_MINOR_QUALIFIER_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)-(\\w+).*"); //$NON-NLS-1$
+
 	private static final Pattern MAJOR_MINOR_MICRO_QUALIFIER_VERSION_PATTERN = Pattern
 			.compile("(\\d+)\\.(\\d+).(\\d+)-(\\w+).*"); //$NON-NLS-1$
 
@@ -359,16 +351,14 @@ public class GerritRepository {
 
 		matcher = MAJOR_MINOR_QUALIFIER_VERSION_PATTERN.matcher(rawVersion);
 		if (matcher.matches()) {
-			return new Version(Integer.parseInt(matcher.group(1)),
-					Integer.parseInt(matcher.group(2)), 0, matcher.group(3));
+			return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)), 0,
+					matcher.group(3));
 
 		}
 
-		matcher = MAJOR_MINOR_MICRO_QUALIFIER_VERSION_PATTERN
-				.matcher(rawVersion);
+		matcher = MAJOR_MINOR_MICRO_QUALIFIER_VERSION_PATTERN.matcher(rawVersion);
 		if (matcher.matches()) {
-			return new Version(Integer.parseInt(matcher.group(1)),
-					Integer.parseInt(matcher.group(2)),
+			return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
 					Integer.parseInt(matcher.group(3)), matcher.group(4));
 
 		}

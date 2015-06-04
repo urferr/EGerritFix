@@ -97,13 +97,11 @@ public class ListReviewersCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ReviewerInfo[].class,
-				command.getReturnType());
+		assertEquals("Wrong return type", ReviewerInfo[].class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -118,8 +116,7 @@ public class ListReviewersCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//reviewers", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes//reviewers", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -128,8 +125,7 @@ public class ListReviewersCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -139,8 +135,7 @@ public class ListReviewersCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();
@@ -160,7 +155,7 @@ public class ListReviewersCommandTest {
 		}
 
 		// Verify result
-		assert (true);
+		assert(true);
 
 	}
 

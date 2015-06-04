@@ -160,13 +160,11 @@ public class QueryChangesCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ChangeInfo[].class,
-				command.getReturnType());
+		assertEquals("Wrong return type", ChangeInfo[].class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -186,8 +184,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setOwner(java.lang.String)}
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setOwner(java.lang.String)}
 	 */
 	@Test
 	public void testSetOwner() {
@@ -203,9 +200,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setOwnerGroup(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setOwnerGroup(java.lang.String)} .
 	 */
 	@Test
 	public void testSetOwnerGroup() {
@@ -221,9 +216,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReviewer(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReviewer(java.lang.String)} .
 	 */
 	@Test
 	public void testSetReviewer() {
@@ -239,9 +232,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReviewerGroup(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReviewerGroup(java.lang.String)} .
 	 */
 	@Test
 	public void testSetReviewerGroup() {
@@ -257,9 +248,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setCommit(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setCommit(java.lang.String)} .
 	 */
 	@Test
 	public void testSetCommit() {
@@ -275,9 +264,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setProject(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setProject(java.lang.String)} .
 	 */
 	@Test
 	public void testSetProject() {
@@ -293,9 +280,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setParentProject(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setParentProject(java.lang.String)} .
 	 */
 	@Test
 	public void testSetParentProject() {
@@ -311,9 +296,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setPrefix(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setPrefix(java.lang.String)} .
 	 */
 	@Test
 	public void testSetPrefix() {
@@ -329,9 +312,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setBranch(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setBranch(java.lang.String)} .
 	 */
 	@Test
 	public void testSetBranch() {
@@ -347,9 +328,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setTopic(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setTopic(java.lang.String)} .
 	 */
 	@Test
 	public void testSetTopic() {
@@ -365,9 +344,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReference(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setReference(java.lang.String)} .
 	 */
 	@Test
 	public void testSetReference() {
@@ -383,9 +360,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setBug(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setBug(java.lang.String)} .
 	 */
 	@Test
 	public void testSetBug() {
@@ -401,9 +376,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setLabel(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setLabel(java.lang.String)} .
 	 */
 	@Test
 	public void testSetLabel() {
@@ -419,9 +392,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setMessage(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setMessage(java.lang.String)} .
 	 */
 	@Test
 	public void testSetMessage() {
@@ -437,9 +408,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setComment(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setComment(java.lang.String)} .
 	 */
 	@Test
 	public void testSetComment() {
@@ -455,9 +424,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setPath(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setPath(java.lang.String)} .
 	 */
 	@Test
 	public void testSetPath() {
@@ -473,9 +440,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setFile(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setFile(java.lang.String)} .
 	 */
 	@Test
 	public void testSetFile() {
@@ -515,8 +480,7 @@ public class QueryChangesCommandTest {
 	 */
 	@Test
 	public void testSetStatus2() {
-		String EXPECTED_RESULT = "q=" + STATUS1.getValue() + "+"
-				+ STATUS2.getValue();
+		String EXPECTED_RESULT = "q=" + STATUS1.getValue() + "+" + STATUS2.getValue();
 
 		// Run test
 		QueryChangesCommand command = fGerrit.queryChanges();
@@ -553,8 +517,7 @@ public class QueryChangesCommandTest {
 	 */
 	@Test
 	public void testSetState2() {
-		String EXPECTED_RESULT = "q=" + STATE1.getValue() + "+"
-				+ STATE2.getValue();
+		String EXPECTED_RESULT = "q=" + STATE1.getValue() + "+" + STATE2.getValue();
 
 		// Run test
 		QueryChangesCommand command = fGerrit.queryChanges();
@@ -567,9 +530,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setVisibleTo(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setVisibleTo(java.lang.String)} .
 	 */
 	@Test
 	public void testSetVisibleTo() {
@@ -585,9 +546,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setVisible()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setVisible()} .
 	 */
 	@Test
 	public void testSetVisible() {
@@ -603,9 +562,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setStarredBy(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setStarredBy(java.lang.String)} .
 	 */
 	@Test
 	public void testSetStarredBy() {
@@ -621,9 +578,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setWatchedBy(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setWatchedBy(java.lang.String)} .
 	 */
 	@Test
 	public void testSetWatchedBy() {
@@ -639,9 +594,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setDraftBy(java.lang.String)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setDraftBy(java.lang.String)} .
 	 */
 	@Test
 	public void testSetDraftBy() {
@@ -657,9 +610,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setLimit(int)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setLimit(int)} .
 	 */
 	@Test
 	public void testSetLimit() {
@@ -693,9 +644,7 @@ public class QueryChangesCommandTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setCount(int)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#setCount(int)} .
 	 */
 	@Test
 	public void testSetCount() {
@@ -754,19 +703,15 @@ public class QueryChangesCommandTest {
 		// Verify result
 		String query = uri.getQuery();
 		assertTrue("Missing owner", query.contains("owner:" + OWNER));
-		assertTrue("Missing owner group",
-				query.contains("ownerin:" + OWNER_GROUP));
+		assertTrue("Missing owner group", query.contains("ownerin:" + OWNER_GROUP));
 		assertTrue("Missing reviewer", query.contains("reviewer:" + REVIEWER));
-		assertTrue("Missing reviewer group",
-				query.contains("reviewerin:" + REVIEWER_GROUP));
+		assertTrue("Missing reviewer group", query.contains("reviewerin:" + REVIEWER_GROUP));
 		assertTrue("Missing commit", query.contains("commit:" + COMMIT));
 		assertTrue("Missing project", query.contains("project:" + PROJECT));
-		assertTrue("Missing parent project",
-				query.contains("parentproject:" + PARENT_PROJECT));
+		assertTrue("Missing parent project", query.contains("parentproject:" + PARENT_PROJECT));
 		assertTrue("Missing prefix", query.contains("prefix:" + PREFIX));
 		assertTrue("Missing branch", query.contains("branch:" + BRANCH));
-		assertTrue("Missing topic",
-				query.contains("topic:" + "\"" + TOPIC + "\""));
+		assertTrue("Missing topic", query.contains("topic:" + "\"" + TOPIC + "\""));
 		assertTrue("Missing reference", query.contains("ref:" + REFERENCE));
 		assertTrue("Missing bug", query.contains("bug:" + BUG));
 		assertTrue("Missing label", query.contains("label:" + LABEL));
@@ -776,13 +721,10 @@ public class QueryChangesCommandTest {
 		assertTrue("Missing file", query.contains("file:" + FILE));
 		assertTrue("Missing status", query.contains(STATUS1.getValue()));
 		assertTrue("Missing state", query.contains(STATE1.getValue()));
-		assertTrue("Missing visibility to",
-				query.contains("visibleto:" + VISIBLE_TO));
+		assertTrue("Missing visibility to", query.contains("visibleto:" + VISIBLE_TO));
 		assertTrue("Missing visibility", query.contains("is:visible"));
-		assertTrue("Missing starred by",
-				query.contains("starredby:" + STARRED_BY));
-		assertTrue("Missing watched by",
-				query.contains("watchedby:" + WATCHED_BY));
+		assertTrue("Missing starred by", query.contains("starredby:" + STARRED_BY));
+		assertTrue("Missing watched by", query.contains("watchedby:" + WATCHED_BY));
 		assertTrue("Missing draft by", query.contains("draftby:" + DRAFT_BY));
 		assertTrue("Missing limit", query.contains("limit:" + LIMIT));
 
@@ -795,8 +737,7 @@ public class QueryChangesCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	@SuppressWarnings("unused")
@@ -806,8 +747,7 @@ public class QueryChangesCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();
@@ -829,8 +769,7 @@ public class QueryChangesCommandTest {
 		List<ChangeInfo> listChangeInfo = Arrays.asList(result);
 		boolean isFound = false;
 
-		for (ListIterator<ChangeInfo> iter = listChangeInfo.listIterator(); iter
-				.hasNext();) {
+		for (ListIterator<ChangeInfo> iter = listChangeInfo.listIterator(); iter.hasNext();) {
 			ChangeInfo element = iter.next();
 			if (element.getChange_id().equals(change_id)) {
 				isFound = true;

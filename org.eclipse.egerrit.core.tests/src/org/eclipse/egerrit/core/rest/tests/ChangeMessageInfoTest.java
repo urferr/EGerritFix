@@ -53,8 +53,8 @@ public class ChangeMessageInfoTest {
 
 	private static final int HASH_CODE = -122151328;
 
-	private static final String TO_STRING = "ChangeMessageInfo [" + "id=" + ID + ", author=" + AUTHOR + ", date="
-			+ DATE + ", message=" + MESSAGE + ", _revision_number=" + REVISION_NUMBER + "]";
+	private static final String TO_STRING = "ChangeMessageInfo [" + "id=" + ID + ", author=" + AUTHOR + ", date=" + DATE
+			+ ", message=" + MESSAGE + ", _revision_number=" + REVISION_NUMBER + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes

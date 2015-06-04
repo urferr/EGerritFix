@@ -22,14 +22,11 @@ import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
-import org.eclipse.egerrit.core.rest.MergeableInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedIn-info"
- * >Get IncludedIn</a> command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedInInfo"
- * ></a>
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedIn-info" >Get
+ * IncludedIn</a> command. It returns a
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedInInfo" ></a>
  * <p>
  *
  * @since 1.0
@@ -60,7 +57,6 @@ public class GetIncludedInCommand extends QueryCommand<IncludedInInfo> {
 
 	}
 
-
 	public String getId() {
 		return fChange_id;
 	}
@@ -87,10 +83,10 @@ public class GetIncludedInCommand extends QueryCommand<IncludedInInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath())
-			.append("/changes/").append(getId()) //$NON-NLS-1$
-			.append("/in") //$NON-NLS-1$
-			.toString();
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId())
+					.append("/in") //$NON-NLS-1$
+					.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
 		} catch (URISyntaxException e) {

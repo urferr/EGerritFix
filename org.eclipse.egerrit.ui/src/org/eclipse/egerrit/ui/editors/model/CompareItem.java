@@ -26,35 +26,35 @@ import org.eclipse.core.runtime.CoreException;
 public class CompareItem implements IStreamContentAccessor, ITypedElement, IModificationDate {
 	private final String contents, name;
 
-private final long time;
+	private final long time;
 
-CompareItem(String name, String contents, long time) {
-	this.name = name;
-	this.contents = contents;
-	this.time = time;
-}
+	CompareItem(String name, String contents, long time) {
+		this.name = name;
+		this.contents = contents;
+		this.time = time;
+	}
 
-public InputStream getContents() throws CoreException {
-	return new ByteArrayInputStream(contents.getBytes());
-}
+	public InputStream getContents() throws CoreException {
+		return new ByteArrayInputStream(contents.getBytes());
+	}
 
-public org.eclipse.swt.graphics.Image getImage() {
-	return null;
-}
+	public org.eclipse.swt.graphics.Image getImage() {
+		return null;
+	}
 
-public long getModificationDate() {
-	return time;
-}
+	public long getModificationDate() {
+		return time;
+	}
 
-public String getName() {
-	return name;
-}
+	public String getName() {
+		return name;
+	}
 
-public String getString() {
-	return contents;
-}
+	public String getString() {
+		return contents;
+	}
 
-public String getType() {
-	return ITypedElement.TEXT_TYPE;
-}
+	public String getType() {
+		return ITypedElement.TEXT_TYPE;
+	}
 }

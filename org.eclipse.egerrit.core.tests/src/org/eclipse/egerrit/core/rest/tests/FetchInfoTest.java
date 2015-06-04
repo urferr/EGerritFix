@@ -49,12 +49,12 @@ public class FetchInfoTest {
 	private static final String[] KEYS = new String[] { "checkout", "cherry pick" };
 
 	private static final Map<String, String> COMMANDS;
+
 	static {
 		COMMANDS = new LinkedHashMap<String, String>();
 		COMMANDS.put(KEYS[0],
 				"git fetch https://git.eclispe.org/gitroot/org.eclipse.egerrit refs/changes/10/12345/1 && git checkout FETCH_HEAD");
-		COMMANDS.put(
-				KEYS[1],
+		COMMANDS.put(KEYS[1],
 				"git fetch git://git.eclipse.org/gitroot/platform/eclipse.platform.ui refs/changes/10/12345/1 && git cherry-pick FETCH_HEAD");
 	}
 

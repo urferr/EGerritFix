@@ -51,9 +51,8 @@ public class MergeableInfoTest {
 	// true if this change is cleanly mergeable, false otherwise
 	private final static boolean MERGEABLE = false;
 
-	private static final String TO_STRING = "MergeableInfo [" + "submit_type="
-			+ SUBMIT_TYPE + ", mergeable_into=" + MERGEABLE_INTO
-			+ ", mergeable=" + MERGEABLE + "]";
+	private static final String TO_STRING = "MergeableInfo [" + "submit_type=" + SUBMIT_TYPE + ", mergeable_into="
+			+ MERGEABLE_INTO + ", mergeable=" + MERGEABLE + "]";
 
 	private static final int HASH_CODE = -1584385742;
 
@@ -102,8 +101,7 @@ public class MergeableInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.MergeableInfo#getSubmitType()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#getSubmitType()}.
 	 */
 	@Test
 	public void testGetSubmitType() {
@@ -111,15 +109,13 @@ public class MergeableInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fMergeableInfo = gson.fromJson(reader, MergeableInfo.class);
 
-		assertEquals("Wrong submit_type", SUBMIT_TYPE,
-				fMergeableInfo.getSubmit_type());
+		assertEquals("Wrong submit_type", SUBMIT_TYPE, fMergeableInfo.getSubmit_type());
 		assertNull("Wrong mergeable_into", fMergeableInfo.getMergeable_into());
 		assertFalse("Wrong mergeable", fMergeableInfo.isMergeable());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.MergeableInfo#getMergeable_into()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#getMergeable_into()}.
 	 */
 	@Test
 	public void testGetMergeableInto() {
@@ -128,15 +124,13 @@ public class MergeableInfoTest {
 		fMergeableInfo = gson.fromJson(reader, MergeableInfo.class);
 
 		assertNull("Wrong submit_type", fMergeableInfo.getSubmit_type());
-		assertEquals("Wrong mergeable_into", MERGEABLE_INTO,
-				fMergeableInfo.getMergeable_into());
+		assertEquals("Wrong mergeable_into", MERGEABLE_INTO, fMergeableInfo.getMergeable_into());
 		assertFalse("Wrong mergeable", fMergeableInfo.isMergeable());
 
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.MergeableInfo#isMergeable()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#isMergeable()}.
 	 */
 	@Test
 	public void testGetMergeable() {
@@ -162,10 +156,8 @@ public class MergeableInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fMergeableInfo = gson.fromJson(reader, MergeableInfo.class);
 
-		assertEquals("Wrong submit_type", SUBMIT_TYPE,
-				fMergeableInfo.getSubmit_type());
-		assertEquals("Wrong mergeable_into", MERGEABLE_INTO,
-				fMergeableInfo.getMergeable_into());
+		assertEquals("Wrong submit_type", SUBMIT_TYPE, fMergeableInfo.getSubmit_type());
+		assertEquals("Wrong mergeable_into", MERGEABLE_INTO, fMergeableInfo.getMergeable_into());
 		assertEquals("Wrong mergeable", MERGEABLE, fMergeableInfo.isMergeable());
 	}
 
@@ -179,10 +171,8 @@ public class MergeableInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fMergeableInfo = gson.fromJson(reader, MergeableInfo.class);
 
-		assertEquals("Wrong submit_type", SUBMIT_TYPE,
-				fMergeableInfo.getSubmit_type());
-		assertEquals("Wrong mergeable_into", MERGEABLE_INTO,
-				fMergeableInfo.getMergeable_into());
+		assertEquals("Wrong submit_type", SUBMIT_TYPE, fMergeableInfo.getSubmit_type());
+		assertEquals("Wrong mergeable_into", MERGEABLE_INTO, fMergeableInfo.getMergeable_into());
 		assertEquals("Wrong mergeable", MERGEABLE, fMergeableInfo.isMergeable());
 
 	}
@@ -192,8 +182,7 @@ public class MergeableInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.MergeableInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -205,9 +194,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -215,8 +202,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.MergeableInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

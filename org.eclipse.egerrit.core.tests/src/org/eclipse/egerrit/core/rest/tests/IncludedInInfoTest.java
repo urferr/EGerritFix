@@ -49,8 +49,7 @@ public class IncludedInInfoTest {
 
 	private static final int HASH_CODE = 993;
 
-	private static final String TO_STRING = "IncludedInInfo [" + "branches="
-			+ BRANCHES + ", tags=" + TAGS + "]";
+	private static final String TO_STRING = "IncludedInInfo [" + "branches=" + BRANCHES + ", tags=" + TAGS + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -97,8 +96,7 @@ public class IncludedInInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getBranches()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getBranches()}.
 	 */
 	@Test
 	public void testGetBranches() {
@@ -112,8 +110,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getTags()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getTags()}.
 	 */
 	@Test
 	public void testGetTags() {
@@ -162,8 +159,7 @@ public class IncludedInInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.IncludedInInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -175,9 +171,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.IncludedInInfo#equals(java.lang.Object)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -185,8 +179,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.ProblemInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

@@ -19,12 +19,11 @@ import java.util.Set;
 import com.google.gerrit.common.data.ProjectInfo;
 
 /**
- * The <a href=
- * "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info"
- * >ProjectAccessInfo</a> entity contains information about the project access.
+ * The
+ * <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info" >ProjectAccessInfo</a>
+ * entity contains information about the project access.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  */
@@ -34,8 +33,7 @@ public class ProjectAccessInfo {
 	// The data structure
 	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The revision of the refs/meta/config branch from which the access rights
 	// were loaded.
@@ -107,8 +105,7 @@ public class ProjectAccessInfo {
 	 *            the inherits_from to set
 	 */
 	public void setInherits_from(ProjectInfo inherits_from) {
-		firePropertyChange("inherits_from", this.inherits_from,
-				this.inherits_from = inherits_from);
+		firePropertyChange("inherits_from", this.inherits_from, this.inherits_from = inherits_from);
 	}
 
 	// /**
@@ -168,8 +165,7 @@ public class ProjectAccessInfo {
 	 *            the can_upload to set
 	 */
 	public void setCan_upload(Boolean can_upload) {
-		firePropertyChange("can_upload", this.can_upload,
-				this.can_upload = can_upload);
+		firePropertyChange("can_upload", this.can_upload, this.can_upload = can_upload);
 	}
 
 	/**
@@ -199,25 +195,19 @@ public class ProjectAccessInfo {
 	 *            the config_visible to set
 	 */
 	public void setConfig_visible(Boolean config_visible) {
-		firePropertyChange("config_visible", this.config_visible,
-				this.config_visible = config_visible);
+		firePropertyChange("config_visible", this.config_visible, this.config_visible = config_visible);
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
@@ -229,15 +219,11 @@ public class ProjectAccessInfo {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((can_add == null) ? 0 : can_add.hashCode());
-		result = prime * result
-				+ ((can_upload == null) ? 0 : can_upload.hashCode());
-		result = prime * result
-				+ ((config_visible == null) ? 0 : config_visible.hashCode());
-		result = prime * result
-				+ ((is_owner == null) ? 0 : is_owner.hashCode());
+		result = prime * result + ((can_upload == null) ? 0 : can_upload.hashCode());
+		result = prime * result + ((config_visible == null) ? 0 : config_visible.hashCode());
+		result = prime * result + ((is_owner == null) ? 0 : is_owner.hashCode());
 		result = prime * result + ((ownerOf == null) ? 0 : ownerOf.hashCode());
-		result = prime * result
-				+ ((revision == null) ? 0 : revision.hashCode());
+		result = prime * result + ((revision == null) ? 0 : revision.hashCode());
 		return result;
 	}
 
@@ -300,10 +286,8 @@ public class ProjectAccessInfo {
 
 	@Override
 	public String toString() {
-		return "ProjectAccessInfo [revision=" + revision + ", is_owner="
-				+ is_owner + ", ownerOf=" + ownerOf + ", can_upload="
-				+ can_upload + ", can_add=" + can_add + ", config_visible="
-				+ config_visible + "]";
+		return "ProjectAccessInfo [revision=" + revision + ", is_owner=" + is_owner + ", ownerOf=" + ownerOf
+				+ ", can_upload=" + can_upload + ", can_add=" + can_add + ", config_visible=" + config_visible + "]";
 	}
 
 }

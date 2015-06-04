@@ -30,8 +30,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for
- * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}
+ * Test suite for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}
  *
  * @since 1.0
  */
@@ -57,11 +56,9 @@ public class RelatedChangeAndCommitInfoTest {
 
 	private static final int HASH_CODE = 619378875;
 
-	private static final String TO_STRING = "RelatedChangeAndCommitInfo ["
-			+ "change_id=" + CHANGE_ID + ", commit=" + COMMIT
-			+ ", _change_number=" + _CHANGE_NUMBER + ", _revision_number="
-			+ _REVISION_NUMBER + ", _current_revision_number="
-			+ _CURRENT_REVISION_NUMBER + "]";
+	private static final String TO_STRING = "RelatedChangeAndCommitInfo [" + "change_id=" + CHANGE_ID + ", commit="
+			+ COMMIT + ", _change_number=" + _CHANGE_NUMBER + ", _revision_number=" + _REVISION_NUMBER
+			+ ", _current_revision_number=" + _CURRENT_REVISION_NUMBER + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -110,120 +107,84 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getChange_id()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getChange_id()} .
 	 */
 	@Test
 	public void testGetChangeId() {
 		json.addProperty("change_id", CHANGE_ID);
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertEquals("Wrong change_id", CHANGE_ID,
-				fRelatedChangeAndCommitInfo.getChange_id());
+		assertEquals("Wrong change_id", CHANGE_ID, fRelatedChangeAndCommitInfo.getChange_id());
 		assertNull("Wrong commit", fRelatedChangeAndCommitInfo.getCommit());
-		assertNull("Wrong _change_number",
-				fRelatedChangeAndCommitInfo.get_change_number());
-		assertNull("Wrong _revision_number",
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertNull("Wrong _current_revision_number",
-				fRelatedChangeAndCommitInfo.get_current_revision_number());
+		assertNull("Wrong _change_number", fRelatedChangeAndCommitInfo.get_change_number());
+		assertNull("Wrong _revision_number", fRelatedChangeAndCommitInfo.get_revision_number());
+		assertNull("Wrong _current_revision_number", fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getCommit()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getCommit()} .
 	 */
 	@Test
 	public void testGetCommit() {
 		JsonObject commit = new JsonObject();
 		json.add("commit", commit);
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertNull("Wrong change_id",
-				fRelatedChangeAndCommitInfo.getChange_id());
-		assertEquals("Wrong commit", COMMIT,
-				fRelatedChangeAndCommitInfo.getCommit());
-		assertNull("Wrong _change_number",
-				fRelatedChangeAndCommitInfo.get_change_number());
-		assertNull("Wrong _revision_number",
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertNull("Wrong _current_revision_number",
-				fRelatedChangeAndCommitInfo.get_current_revision_number());
+		assertNull("Wrong change_id", fRelatedChangeAndCommitInfo.getChange_id());
+		assertEquals("Wrong commit", COMMIT, fRelatedChangeAndCommitInfo.getCommit());
+		assertNull("Wrong _change_number", fRelatedChangeAndCommitInfo.get_change_number());
+		assertNull("Wrong _revision_number", fRelatedChangeAndCommitInfo.get_revision_number());
+		assertNull("Wrong _current_revision_number", fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_change_number()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_change_number()} .
 	 */
 	@Test
 	public void testGet_Change_Number() {
 		json.addProperty("_change_number", _CHANGE_NUMBER);
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertNull("Wrong change_id",
-				fRelatedChangeAndCommitInfo.getChange_id());
+		assertNull("Wrong change_id", fRelatedChangeAndCommitInfo.getChange_id());
 		assertNull("Wrong commit", fRelatedChangeAndCommitInfo.getCommit());
-		assertEquals("Wrong _change_number", _CHANGE_NUMBER,
-				fRelatedChangeAndCommitInfo.get_change_number());
-		assertNull("Wrong _revision_number",
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertNull("Wrong _current_revision_number",
-				fRelatedChangeAndCommitInfo.get_current_revision_number());
+		assertEquals("Wrong _change_number", _CHANGE_NUMBER, fRelatedChangeAndCommitInfo.get_change_number());
+		assertNull("Wrong _revision_number", fRelatedChangeAndCommitInfo.get_revision_number());
+		assertNull("Wrong _current_revision_number", fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_revision_number()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_revision_number()} .
 	 */
 	@Test
 	public void testGet_Revision_Number() {
 		json.addProperty("_revision_number", _REVISION_NUMBER);
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertNull("Wrong change_id",
-				fRelatedChangeAndCommitInfo.getChange_id());
+		assertNull("Wrong change_id", fRelatedChangeAndCommitInfo.getChange_id());
 		assertNull("Wrong commit", fRelatedChangeAndCommitInfo.getCommit());
-		assertNull("Wrong _change_number",
-				fRelatedChangeAndCommitInfo.get_change_number());
-		assertEquals("Wrong _revision_number", _REVISION_NUMBER,
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertNull("Wrong _current_revision_number",
-				fRelatedChangeAndCommitInfo.get_current_revision_number());
+		assertNull("Wrong _change_number", fRelatedChangeAndCommitInfo.get_change_number());
+		assertEquals("Wrong _revision_number", _REVISION_NUMBER, fRelatedChangeAndCommitInfo.get_revision_number());
+		assertNull("Wrong _current_revision_number", fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_current_revision_number()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_current_revision_number()} .
 	 */
 	@Test
 	public void testGet_Current_Revision_Number() {
 		json.addProperty("_current_revision_number", _CURRENT_REVISION_NUMBER);
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertNull("Wrong change_id",
-				fRelatedChangeAndCommitInfo.getChange_id());
+		assertNull("Wrong change_id", fRelatedChangeAndCommitInfo.getChange_id());
 		assertNull("Wrong commit", fRelatedChangeAndCommitInfo.getCommit());
-		assertNull("Wrong _change_number",
-				fRelatedChangeAndCommitInfo.get_change_number());
-		assertNull("Wrong _revision_number",
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertEquals("Wrong _current_revision_number",
-				_CURRENT_REVISION_NUMBER,
+		assertNull("Wrong _change_number", fRelatedChangeAndCommitInfo.get_change_number());
+		assertNull("Wrong _revision_number", fRelatedChangeAndCommitInfo.get_revision_number());
+		assertEquals("Wrong _current_revision_number", _CURRENT_REVISION_NUMBER,
 				fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
@@ -232,49 +193,37 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
 	 */
 	@Test
 	public void testAllFields() {
 		setAllFields();
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertEquals("Wrong change_id", CHANGE_ID,
-				fRelatedChangeAndCommitInfo.getChange_id());
-		assertEquals("Wrong _change_number", _CHANGE_NUMBER,
-				fRelatedChangeAndCommitInfo.get_change_number());
+		assertEquals("Wrong change_id", CHANGE_ID, fRelatedChangeAndCommitInfo.getChange_id());
+		assertEquals("Wrong _change_number", _CHANGE_NUMBER, fRelatedChangeAndCommitInfo.get_change_number());
 
-		assertEquals("Wrong _revision_number", _REVISION_NUMBER,
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertEquals("Wrong _current_revision_number",
-				_CURRENT_REVISION_NUMBER,
+		assertEquals("Wrong _revision_number", _REVISION_NUMBER, fRelatedChangeAndCommitInfo.get_revision_number());
+		assertEquals("Wrong _current_revision_number", _CURRENT_REVISION_NUMBER,
 				fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
 	 */
 	@Test
 	public void testExtraField() {
 		setAllFields();
 		json.addProperty("extra", "extra_property");
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 
-		assertEquals("Wrong change_id", CHANGE_ID,
-				fRelatedChangeAndCommitInfo.getChange_id());
-		assertEquals("Wrong _change_number", _CHANGE_NUMBER,
-				fRelatedChangeAndCommitInfo.get_change_number());
+		assertEquals("Wrong change_id", CHANGE_ID, fRelatedChangeAndCommitInfo.getChange_id());
+		assertEquals("Wrong _change_number", _CHANGE_NUMBER, fRelatedChangeAndCommitInfo.get_change_number());
 
-		assertEquals("Wrong _revision_number", _REVISION_NUMBER,
-				fRelatedChangeAndCommitInfo.get_revision_number());
-		assertEquals("Wrong _current_revision_number",
-				_CURRENT_REVISION_NUMBER,
+		assertEquals("Wrong _revision_number", _REVISION_NUMBER, fRelatedChangeAndCommitInfo.get_revision_number());
+		assertEquals("Wrong _current_revision_number", _CURRENT_REVISION_NUMBER,
 				fRelatedChangeAndCommitInfo.get_current_revision_number());
 	}
 
@@ -283,24 +232,18 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#hashCode()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
 		setAllFields();
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
-		assertEquals("Wrong hash code", HASH_CODE,
-				fRelatedChangeAndCommitInfo.hashCode());
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
+		assertEquals("Wrong hash code", HASH_CODE, fRelatedChangeAndCommitInfo.hashCode());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#equals(java.lang.Object)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -308,20 +251,16 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#toString()}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {
 		setAllFields();
 		Reader reader = new StringReader(json.toString());
-		fRelatedChangeAndCommitInfo = gson.fromJson(reader,
-				RelatedChangeAndCommitInfo.class);
+		fRelatedChangeAndCommitInfo = gson.fromJson(reader, RelatedChangeAndCommitInfo.class);
 		System.out.println(TO_STRING);
 		System.out.println(fRelatedChangeAndCommitInfo.toString());
-		assertEquals("Wrong string", TO_STRING,
-				fRelatedChangeAndCommitInfo.toString());
+		assertEquals("Wrong string", TO_STRING, fRelatedChangeAndCommitInfo.toString());
 	}
 
 }

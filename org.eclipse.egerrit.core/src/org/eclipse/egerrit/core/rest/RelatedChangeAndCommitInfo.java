@@ -14,16 +14,13 @@ package org.eclipse.egerrit.core.rest;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.List;
-import java.util.Map;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchangeandcommit-info"
- * >RelatedChangeAndCommitInfo</a> entity contains information about a change.
+ * The
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchangeandcommit-info" >
+ * RelatedChangeAndCommitInfo</a> entity contains information about a change.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
@@ -34,27 +31,24 @@ public class RelatedChangeAndCommitInfo {
 	// The data structure
 	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
-
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The Change-Id of the change.
 	// e.g. "I4982a3771051891899528a94fb47baeeb70582ae"
 	private String change_id;
 
 	// The commit as a CommitInfo entity.
-    private CommitInfo commit;
-    
-    //The change number.
-    private String _change_number;
-    
-    //The revision number.
-    private String _revision_number;
-    
-    // The current revision number.
-    private String _current_revision_number;
+	private CommitInfo commit;
 
-    
+	//The change number.
+	private String _change_number;
+
+	//The revision number.
+	private String _revision_number;
+
+	// The current revision number.
+	private String _current_revision_number;
+
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
@@ -67,7 +61,8 @@ public class RelatedChangeAndCommitInfo {
 	}
 
 	/**
-	 * @param change_id the change_id to set
+	 * @param change_id
+	 *            the change_id to set
 	 */
 	public void setChange_id(String change_id) {
 		firePropertyChange("change_id", this.change_id, this.change_id = change_id);
@@ -81,7 +76,8 @@ public class RelatedChangeAndCommitInfo {
 	}
 
 	/**
-	 * @param commit the commit to set
+	 * @param commit
+	 *            the commit to set
 	 */
 	public void setCommit(CommitInfo commit) {
 		firePropertyChange("commit", this.commit, this.commit = commit);
@@ -95,7 +91,8 @@ public class RelatedChangeAndCommitInfo {
 	}
 
 	/**
-	 * @param _change_number the _change_number to set
+	 * @param _change_number
+	 *            the _change_number to set
 	 */
 	public void set_change_number(String _change_number) {
 		firePropertyChange("_change_number", this._change_number, this._change_number = _change_number);
@@ -109,7 +106,8 @@ public class RelatedChangeAndCommitInfo {
 	}
 
 	/**
-	 * @param _revision_number the _revision_number to set
+	 * @param _revision_number
+	 *            the _revision_number to set
 	 */
 	public void set_revision_number(String _revision_number) {
 		firePropertyChange("_revision_number", this._revision_number, this._revision_number = _revision_number);
@@ -123,32 +121,29 @@ public class RelatedChangeAndCommitInfo {
 	}
 
 	/**
-	 * @param _current_revision_number the _current_revision_number to set
+	 * @param _current_revision_number
+	 *            the _current_revision_number to set
 	 */
 	public void set_current_revision_number(String _current_revision_number) {
-		firePropertyChange("_current_revision_number", this._current_revision_number, this._current_revision_number = _current_revision_number);
+		firePropertyChange("_current_revision_number", this._current_revision_number,
+				this._current_revision_number = _current_revision_number);
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
-		// Object
-		// ------------------------------------------------------------------------
+	// Object
+	// ------------------------------------------------------------------------
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -157,18 +152,11 @@ public class RelatedChangeAndCommitInfo {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((_change_number == null) ? 0 : _change_number.hashCode());
-		result = prime
-				* result
-				+ ((_revision_number == null) ? 0 : _revision_number.hashCode());
-		result = prime * result
-				+ ((change_id == null) ? 0 : change_id.hashCode());
+		result = prime * result + ((_change_number == null) ? 0 : _change_number.hashCode());
+		result = prime * result + ((_revision_number == null) ? 0 : _revision_number.hashCode());
+		result = prime * result + ((change_id == null) ? 0 : change_id.hashCode());
 		result = prime * result + ((commit == null) ? 0 : commit.hashCode());
-		result = prime
-				* result
-				+ ((_current_revision_number == null) ? 0
-						: _current_revision_number.hashCode());
+		result = prime * result + ((_current_revision_number == null) ? 0 : _current_revision_number.hashCode());
 		return result;
 	}
 
@@ -207,8 +195,7 @@ public class RelatedChangeAndCommitInfo {
 		if (_current_revision_number == null) {
 			if (other._current_revision_number != null)
 				return false;
-		} else if (!_current_revision_number
-				.equals(other._current_revision_number))
+		} else if (!_current_revision_number.equals(other._current_revision_number))
 			return false;
 		return true;
 	}
@@ -218,14 +205,9 @@ public class RelatedChangeAndCommitInfo {
 	 */
 	@Override
 	public String toString() {
-		return "RelatedChangeAndCommitInfo [change_id=" + change_id
-				+ ", commit=" + commit + ", _change_number=" + _change_number
-				+ ", _revision_number=" + _revision_number
-				+ ", _current_revision_number=" + _current_revision_number + "]";
+		return "RelatedChangeAndCommitInfo [change_id=" + change_id + ", commit=" + commit + ", _change_number="
+				+ _change_number + ", _revision_number=" + _revision_number + ", _current_revision_number="
+				+ _current_revision_number + "]";
 	}
-	
-
-
-	
 
 }

@@ -52,8 +52,7 @@ public class GitAccess {
 	public Git getGitProject() throws Exception {
 
 		if (fGit == null) {
-			fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT
-					+ Common.PATH + "/" + Common.TEST_PROJECT;
+			fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/" + Common.TEST_PROJECT;
 
 			CloneCommand cloneCmd = Git.cloneRepository();
 			cloneCmd.setGitDir(createTempFolder("egerrit")).setURI(fUrl);
@@ -102,28 +101,24 @@ public class GitAccess {
 		Authenticator.setDefault(null);
 		CommitCommand command = fGit.commit();
 		String refSpec = "HEAD:refs/for/master";
-		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(
-				Common.USER, Common.PASSWORD);
+		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD);
 		System.out.println("isInteractive: " + creds.isInteractive());
-		RevCommit call = command
-				.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
+		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
 				.setCommitter(Common.USER, Common.EMAIL)
-				.setInsertChangeId(true).setMessage("Test commit message")
+				.setInsertChangeId(true)
+				.setMessage("Test commit message")
 				.call();
 		int cid = call.getFullMessage().indexOf("Change-Id: ");
-		fChange_id = call.getFullMessage()
-				.substring(cid + "Change-Id: ".length()).trim();
-		Iterable<PushResult> result = fGit.push().setCredentialsProvider(creds)
-				.setRefSpecs(new RefSpec(refSpec)).call();
+		fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
+		Iterable<PushResult> result = fGit.push()
+				.setCredentialsProvider(creds)
+				.setRefSpecs(new RefSpec(refSpec))
+				.call();
 
-		Collection<RemoteRefUpdate> crru = result.iterator().next()
-				.getRemoteUpdates();
+		Collection<RemoteRefUpdate> crru = result.iterator().next().getRemoteUpdates();
 		RemoteRefUpdate rru = crru.iterator().next();
-		fCommit_id = rru
-				.getNewObjectId()
-				.toString()
-				.substring("AnyObjectId[".length(),
-						rru.getNewObjectId().toString().length() - 1);
+		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
+				rru.getNewObjectId().toString().length() - 1);
 
 	}
 

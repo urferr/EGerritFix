@@ -50,9 +50,8 @@ public class ReviewerInfoTest {
 
 	private static final int HASH_CODE = 1026051886;
 
-	private static final String TO_STRING = "AccountInfo [" + "_account_id="
-			+ ACCOUNT_ID + ", name=" + NAME + ", email=" + EMAIL
-			+ ", username=" + USER_NAME + "]";
+	private static final String TO_STRING = "AccountInfo [" + "_account_id=" + ACCOUNT_ID + ", name=" + NAME
+			+ ", email=" + EMAIL + ", username=" + USER_NAME + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -99,8 +98,7 @@ public class ReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#getAccountId()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getAccountId()}.
 	 */
 	@Test
 	public void testGetAccountId() {
@@ -108,16 +106,14 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID),
-				fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
 		assertNull("Wrong name", fReviewerInfo.getName());
 		assertNull("Wrong email", fReviewerInfo.getEmail());
 		assertNull("Wrong user_name", fReviewerInfo.getUsername());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#getName()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getName()}.
 	 */
 	@Test
 	public void testGetName() {
@@ -132,8 +128,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#getEmail()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getEmail()}.
 	 */
 	@Test
 	public void testGetEmail() {
@@ -148,8 +143,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#getUsername()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getUsername()}.
 	 */
 	@Test
 	public void testGetUsername() {
@@ -176,8 +170,7 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID),
-				fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
 		assertEquals("Wrong name", NAME, fReviewerInfo.getName());
 		assertEquals("Wrong email", EMAIL, fReviewerInfo.getEmail());
 		assertEquals("Wrong user_name", USER_NAME, fReviewerInfo.getUsername());
@@ -193,8 +186,7 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID),
-				fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
 		assertEquals("Wrong name", NAME, fReviewerInfo.getName());
 		assertEquals("Wrong email", EMAIL, fReviewerInfo.getEmail());
 		assertEquals("Wrong user_name", USER_NAME, fReviewerInfo.getUsername());
@@ -205,8 +197,7 @@ public class ReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -218,9 +209,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)}
-	 * .
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -228,8 +217,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.rest.AccountInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

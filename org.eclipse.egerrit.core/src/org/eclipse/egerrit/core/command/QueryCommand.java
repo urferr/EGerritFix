@@ -25,7 +25,6 @@ import org.eclipse.egerrit.core.GerritRepository;
  *
  * @param <T>
  *            the return type which is expected from {@link #call()}
- *
  * @since 1.0
  */
 public abstract class QueryCommand<T> extends GerritCommand<T> {
@@ -35,31 +34,55 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 	// ------------------------------------------------------------------------
 
 	public static final String BRANCH = "BRANCH"; //$NON-NLS-1$
+
 	public static final String BUG = "BUG"; //$NON-NLS-1$
+
 	public static final String COMMENT = "COMMENT"; //$NON-NLS-1$
+
 	public static final String COMMIT = "COMMIT"; //$NON-NLS-1$
+
 	public static final String FILE = "FILE"; //$NON-NLS-1$
+
 	public static final String LABEL = "LABEL"; //$NON-NLS-1$
+
 	public static final String MESSAGE = "MESSAGE"; //$NON-NLS-1$
+
 	public static final String OWNER = "OWNER"; //$NON-NLS-1$
+
 	public static final String OWNERIN = "OWNERIN"; //$NON-NLS-1$
+
 	public static final String PARENTPROJECT = "PARENTPROJECT"; //$NON-NLS-1$
+
 	public static final String PATH = "PATH"; //$NON-NLS-1$
+
 	public static final String PREFIX = "PREFIX"; //$NON-NLS-1$
+
 	public static final String PROJECT = "PROJECT"; //$NON-NLS-1$
+
 	public static final String REF = "REF"; //$NON-NLS-1$
+
 	public static final String REVIEWER = "REVIEWER"; //$NON-NLS-1$
+
 	public static final String REVIEWERIN = "REVIEWERIN"; //$NON-NLS-1$
+
 	public static final String STATE = "STATE"; //$NON-NLS-1$
+
 	public static final String STATUS = "STATUS"; //$NON-NLS-1$
+
 	public static final String TOPIC = "TOPIC"; //$NON-NLS-1$
+
 	public static final String CONFLICTS = "CONFLICTS"; //$NON-NLS-1$
 
 	public static final String VISIBLETO = "VISIBLETO"; //$NON-NLS-1$
+
 	public static final String ISVISIBLE = "ISVISIBLE"; //$NON-NLS-1$
+
 	public static final String STARREDBY = "STARREDBY"; //$NON-NLS-1$
+
 	public static final String WATCHEDBY = "WATCHEDBY"; //$NON-NLS-1$
+
 	public static final String DRAFTBY = "DRAFTBY"; //$NON-NLS-1$
+
 	public static final String LIMIT = "LIMIT"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
@@ -79,8 +102,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 	// Attributes
 	// ------------------------------------------------------------------------
 
-	protected QueryCommand(GerritRepository gerritRepository,
-			Class<T> returnType) {
+	protected QueryCommand(GerritRepository gerritRepository, Class<T> returnType) {
 		super(gerritRepository, returnType);
 	}
 
@@ -110,14 +132,12 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 		StringBuilder sb = new StringBuilder();
 		Iterator<String> parameters = fQueryParameters.keySet().iterator();
 		while (parameters.hasNext()) {
-			Iterator<String> values = fQueryParameters.get(parameters.next())
-					.listIterator();
+			Iterator<String> values = fQueryParameters.get(parameters.next()).listIterator();
 			while (values.hasNext()) {
 				String buf = values.next();
 				if (buf.indexOf("topic:") == 0) {
 					int colon = buf.indexOf(':');
-					buf = buf.substring(0, colon + 1) + "\""
-							+ buf.substring(colon + 1) + "\"";
+					buf = buf.substring(0, colon + 1) + "\"" + buf.substring(colon + 1) + "\"";
 				}
 				sb.append(buf);
 				if (values.hasNext()) {

@@ -97,13 +97,11 @@ public class GetMergeableCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", MergeableInfo.class,
-				command.getReturnType());
+		assertEquals("Wrong return type", MergeableInfo.class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
@@ -118,8 +116,8 @@ public class GetMergeableCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//revisions/current/mergeable", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes//revisions/current/mergeable",
+				uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -128,8 +126,7 @@ public class GetMergeableCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -139,8 +136,7 @@ public class GetMergeableCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();
@@ -151,8 +147,7 @@ public class GetMergeableCommandTest {
 			e1.printStackTrace();
 		}
 		// Run test
-		GetMergeableCommand command = fGerrit
-				.getMergeable(change_id, commit_id);
+		GetMergeableCommand command = fGerrit.getMergeable(change_id, commit_id);
 		MergeableInfo result = null;
 		try {
 			result = command.call();

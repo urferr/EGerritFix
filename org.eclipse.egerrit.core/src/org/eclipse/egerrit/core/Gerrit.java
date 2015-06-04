@@ -23,27 +23,23 @@ import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
 /**
- * Provides an API to interact with a Gerrit repository using its REST API. The
- * set of available commands is based on Gerrit v2.9.
+ * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
+ * Gerrit v2.9.
  * <p>
- * The Gerrit REST commands are described in the <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html">
- * Gerrit Documentation</a>.
+ * The Gerrit REST commands are described in the
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
  * <p>
- * This class only offers methods to construct so-called command classes. Each
- * Gerrit REST command is represented by one such command class.
+ * This class only offers methods to construct so-called command classes. Each Gerrit REST command is represented by one
+ * such command class.
  * <p>
  * <u>Example</u>:
  * <p>
- * This class provides a {@code queryChanges()} method returning an instance of
- * the {@code QueryChangesCommand} class. The {@code QueryChangesCommand} class
- * has setters for all its arguments and options. The
- * {@code QueryChangesCommand} base class ({@code GerritCommand}) provides the
- * {@code call()} method which actually performs the request to the Gerrit
- * server.
+ * This class provides a {@code queryChanges()} method returning an instance of the {@code QueryChangesCommand} class.
+ * The {@code QueryChangesCommand} class has setters for all its arguments and options. The {@code QueryChangesCommand}
+ * base class ({@code GerritCommand}) provides the {@code call()} method which actually performs the request to the
+ * Gerrit server.
  * <p>
- * The following code shows how to fetch the list of open changes watched by the
- * caller:
+ * The following code shows how to fetch the list of open changes watched by the caller:
  *
  * <pre>
  * GerritRepository gerritRepository = new GerritRepository(...);
@@ -55,18 +51,15 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  *                              .call();
  * </pre>
  *
- * All mandatory parameters for a given command have to be specified as
- * arguments on this class' corresponding command 'factory'. The optional
- * parameters are supplied by using setter methods of the xxxCommand class.
- *
+ * All mandatory parameters for a given command have to be specified as arguments on this class' corresponding command
+ * 'factory'. The optional parameters are supplied by using setter methods of the xxxCommand class.
  * <p>
  * Notes:
  * <p>
- * - Each Gerrit concrete class must provide its version string (GERRIT_VERSION)
- * where [major], [minor] and [micro] are mandatory (@see Gerrit_2_9)
+ * - Each Gerrit concrete class must provide its version string (GERRIT_VERSION) where [major], [minor] and [micro] are
+ * mandatory (@see Gerrit_2_9)
  * <p>
- * - GerritFactory must be aware of each concrete class extending Gerrit to do
- * its job.
+ * - GerritFactory must be aware of each concrete class extending Gerrit to do its job.
  *
  * @since 1.0
  */
@@ -84,13 +77,11 @@ public abstract class Gerrit {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Constructs a new {@link Gerrit} object which can interact with the
-	 * specified Gerrit repository. All command classes returned by methods of
-	 * this class will always interact with this Gerrit repository.
+	 * Constructs a new {@link Gerrit} object which can interact with the specified Gerrit repository. All command
+	 * classes returned by methods of this class will always interact with this Gerrit repository.
 	 *
 	 * @param gerritRepository
-	 *            The gerrit repository this class interacts with ({@code null}
-	 *            is not allowed)
+	 *            The gerrit repository this class interacts with ({@code null} is not allowed)
 	 */
 	protected Gerrit(GerritRepository gerritRepository) throws EGerritException {
 		if (gerritRepository == null) {
@@ -117,12 +108,9 @@ public abstract class Gerrit {
 	/**
 	 * Returns a command object to execute a {@code queryChanges} command
 	 *
-	 * @return a default {@link QueryChangesCommand} used to retrieve a list of
-	 *         ChangeInfo:s from the Gerrit repository
-	 *
-	 * @see <a href=
-	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes"
-	 *      >Gerrit REST API: Query Changes</a>
+	 * @return a default {@link QueryChangesCommand} used to retrieve a list of ChangeInfo:s from the Gerrit repository
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Gerrit
+	 *      REST API: Query Changes</a>
 	 */
 	public QueryChangesCommand queryChanges() {
 		return new QueryChangesCommand(fGerritRepository);
@@ -131,12 +119,9 @@ public abstract class Gerrit {
 	/**
 	 * Returns a command object to execute a {@code getChange} command
 	 *
-	 * @return a default {@link QueryChangesCommand} used to retrieve a
-	 *         ChangeInfo:s from the Gerrit repository
-	 *
-	 * @see <a href=
-	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes"
-	 *      >Gerrit REST API: Query Changes</a>
+	 * @return a default {@link QueryChangesCommand} used to retrieve a ChangeInfo:s from the Gerrit repository
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Gerrit
+	 *      REST API: Query Changes</a>
 	 */
 	public GetChangeCommand getChange(String id) {
 		return new GetChangeCommand(fGerritRepository, id);
@@ -148,13 +133,10 @@ public abstract class Gerrit {
 	 * @param id
 	 * @param revision
 	 * @param file
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a file's
-	 *         content as String:s from the Gerrit repository
-	 *
-	 * @see <a href=
-	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content"
-	 *      >Gerrit REST API: Get Content</a>
+	 * @return a default {@link GetChangeCommand} used to retrieve a file's content as String:s from the Gerrit
+	 *         repository
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Gerrit
+	 *      REST API: Get Content</a>
 	 */
 	public GetContentCommand getContent(String id, String revision, String file) {
 		return new GetContentCommand(fGerritRepository, id, revision, file);
@@ -165,13 +147,9 @@ public abstract class Gerrit {
 	 * 
 	 * @param id
 	 * @param revision
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a change's
-	 *         commitInfo from the Gerrit repository
-	 *
-	 * @see <a href=
-	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-commit"
-	 *      >Gerrit REST API: Get Commit</a>
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's commitInfo from the Gerrit repository
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-commit" >Gerrit REST
+	 *      API: Get Commit</a>
 	 */
 	public GetCommitMsgCommand getCommitMsg(String change_id, String commit_id) {
 		return new GetCommitMsgCommand(fGerritRepository, change_id, commit_id);
@@ -182,10 +160,7 @@ public abstract class Gerrit {
 	 * 
 	 * @param id
 	 * @param revision
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a change's
-	 *         MergeableInfo from the Gerrit repository
-	 *         
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's MergeableInfo from the Gerrit repository
 	 */
 	public GetMergeableCommand getMergeable(String change_id, String revision_id) {
 		return new GetMergeableCommand(fGerritRepository, change_id, revision_id);
@@ -195,10 +170,7 @@ public abstract class Gerrit {
 	 * Returns a command object to execute a {@code getCommitMSg} command
 	 * 
 	 * @param id
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a change's
-	 *         ReviewersInfo from the Gerrit repository
-	 *         
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's ReviewersInfo from the Gerrit repository
 	 */
 	public ListReviewersCommand getReviewers(String change_id) {
 		return new ListReviewersCommand(fGerritRepository, change_id);
@@ -208,32 +180,23 @@ public abstract class Gerrit {
 	 * Returns a command object to execute a {@code getCommitMSg} command
 	 * 
 	 * @param id
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a change's
-	 *         IncludedInInfo from the Gerrit repository
-	 *         
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's IncludedInInfo from the Gerrit repository
 	 */
 	public GetIncludedInCommand getIncludedIn(String change_id) {
 		return new GetIncludedInCommand(fGerritRepository, change_id);
 	}
-	
-	
+
 	/**
 	 * Returns a command object to execute a {@code getContent} command
 	 * 
 	 * @param id
 	 * @param revision
-	 *
-	 * @return a default {@link GetChangeCommand} used to retrieve a change's
-	 *         content  from the Gerrit repository
-	 *
-	 * @see <a href=
-	 *      "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-relatedchanges"
-	 *      >Gerrit REST API: Get Related Changes</a>
+	 * @return a default {@link GetChangeCommand} used to retrieve a change's content from the Gerrit repository
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-relatedchanges" >
+	 *      Gerrit REST API: Get Related Changes</a>
 	 */
 
-	public GetRelatedChangesCommand getRelatedChanges(String id,
-			String revision) {
+	public GetRelatedChangesCommand getRelatedChanges(String id, String revision) {
 		return new GetRelatedChangesCommand(fGerritRepository, id, revision);
 	}
 

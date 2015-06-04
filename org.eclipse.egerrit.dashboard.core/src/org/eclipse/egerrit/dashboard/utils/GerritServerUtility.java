@@ -219,7 +219,8 @@ public class GerritServerUtility {
 					EGerritCorePlugin.logError(e1.getMessage());
 				}
 				if (gerritInfo != null) {
-					ISecurePreferences serverPreference = securePref.node(EncodingUtils.encodeSlashes(gerritInfo.getServerURI()));
+					ISecurePreferences serverPreference = securePref
+							.node(EncodingUtils.encodeSlashes(gerritInfo.getServerURI()));
 					String user;
 					try {
 						user = serverPreference.get(gerritInfo.getUserLabel(), ""); //$NON-NLS-1$

@@ -29,8 +29,8 @@ import org.eclipse.swt.widgets.Display;
  *
  * @since 1.0
  */
-public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider,
-		ITableColorProvider {
+public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
+		implements ITableLabelProvider, ITableColorProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -122,7 +122,8 @@ public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getReviewStateImage(int aState) {
@@ -146,7 +147,8 @@ public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
 	/**
 	 * Return an image representing the state of the object
 	 *
-	 * @param int aState
+	 * @param int
+	 *            aState
 	 * @return Image
 	 */
 	private Image getVerifyStateImage(int aState) {
@@ -187,7 +189,8 @@ public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return String text associated to the column
 	 */
 	@Override
@@ -251,7 +254,8 @@ public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
 	 *
 	 * @param Object
 	 *            structure of the table
-	 * @param int column index
+	 * @param int
+	 *            column index
 	 * @return Image Image according to the selected column
 	 */
 	@Override
@@ -320,7 +324,8 @@ public class RelatedChangesTableLabelProvider extends ObservableMapLabelProvider
 	 *
 	 * @param Object
 	 *            ReviewTableListItem
-	 * @param int columnIndex
+	 * @param int
+	 *            columnIndex
 	 */
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {

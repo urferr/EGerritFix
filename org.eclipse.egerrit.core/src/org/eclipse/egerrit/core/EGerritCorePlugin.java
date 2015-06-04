@@ -26,177 +26,171 @@ import org.osgi.framework.BundleContext;
  */
 public class EGerritCorePlugin extends Plugin {
 
-    // ------------------------------------------------------------------------
-    // Attributes
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------------------------
 
-    /** The plug-in ID */
-    public static final String PLUGIN_ID = "org.eclipse.egerrit.core"; //$NON-NLS-1$
+	/** The plug-in ID */
+	public static final String PLUGIN_ID = "org.eclipse.egerrit.core"; //$NON-NLS-1$
 
-    /** The shared instance */
-    private static EGerritCorePlugin fPlugin;
+	/** The shared instance */
+	private static EGerritCorePlugin fPlugin;
 
-    // ------------------------------------------------------------------------
-    // Constructors
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Constructors
+	// ------------------------------------------------------------------------
 
-    /**
-     * The constructor
-     */
-    public EGerritCorePlugin() {
-        setDefault(this);
-    }
+	/**
+	 * The constructor
+	 */
+	public EGerritCorePlugin() {
+		setDefault(this);
+	}
 
-    // ------------------------------------------------------------------------
-    // Accessors
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Accessors
+	// ------------------------------------------------------------------------
 
-    /**
-     * Returns the plug-in instance.
-     *
-     * @return the shared instance
-     */
-    public static EGerritCorePlugin getDefault() {
-        return fPlugin;
-    }
+	/**
+	 * Returns the plug-in instance.
+	 *
+	 * @return the shared instance
+	 */
+	public static EGerritCorePlugin getDefault() {
+		return fPlugin;
+	}
 
-    // Sets plug-in instance
-    private static void setDefault(EGerritCorePlugin plugin) {
-        fPlugin = plugin;
-    }
+	// Sets plug-in instance
+	private static void setDefault(EGerritCorePlugin plugin) {
+		fPlugin = plugin;
+	}
 
-    // ------------------------------------------------------------------------
-    // Plugin
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Plugin
+	// ------------------------------------------------------------------------
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
-     * )
-     */
-    @Override
-    public void start(BundleContext context) throws Exception {
-        super.start(context);
-        setDefault(this);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
+	 * )
+	 */
+	@Override
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		setDefault(this);
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-     */
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        setDefault(null);
-        super.stop(context);
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+	 */
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		setDefault(null);
+		super.stop(context);
+	}
 
-    // ------------------------------------------------------------------------
-    // Logging
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Logging
+	// ------------------------------------------------------------------------
 
-    /**
-     * Log an IStatus object directly
-     *
-     * @param status
-     *            The status to log
-     */
-    public static void log(IStatus status) {
-        if (fPlugin != null) {
-            fPlugin.getLog().log(status);
-        } else {
-            System.out.println(status);
-        }
-    }
+	/**
+	 * Log an IStatus object directly
+	 *
+	 * @param status
+	 *            The status to log
+	 */
+	public static void log(IStatus status) {
+		if (fPlugin != null) {
+			fPlugin.getLog().log(status);
+		} else {
+			System.out.println(status);
+		}
+	}
 
-    /**
-     *
-     * @param status
-     * @param message
-     * @param exception
-     */
-    private static void log(int status, String message, Throwable exception) {
-        log(new Status(status, PLUGIN_ID, message, exception));
-    }
+	/**
+	 * @param status
+	 * @param message
+	 * @param exception
+	 */
+	private static void log(int status, String message, Throwable exception) {
+		log(new Status(status, PLUGIN_ID, message, exception));
+	}
 
-    // LogInfo
+	// LogInfo
 
-    /**
-     * Logs a message with severity INFO in the runtime log of the plug-in.
-     *
-     * @param message
-     *            The message to log
-     */
-    public static void logInfo(String message) {
-        logInfo(message, null);
-    }
+	/**
+	 * Logs a message with severity INFO in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 */
+	public static void logInfo(String message) {
+		logInfo(message, null);
+	}
 
-    /**
-     * Logs a message and exception with severity INFO in the runtime log of the
-     * plug-in.
-     *
-     * @param message
-     *            The message to log
-     * @param exception
-     *            The corresponding exception
-     */
-    public static void logInfo(String message, Throwable exception) {
-        log(IStatus.INFO, message, exception);
-    }
+	/**
+	 * Logs a message and exception with severity INFO in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 * @param exception
+	 *            The corresponding exception
+	 */
+	public static void logInfo(String message, Throwable exception) {
+		log(IStatus.INFO, message, exception);
+	}
 
-    // LogWarning
+	// LogWarning
 
-    /**
-     * Logs a message and exception with severity WARNING in the runtime log of
-     * the plug-in.
-     *
-     * @param message
-     *            The message to log
-     */
-    public static void logWarning(String message) {
-        logWarning(message, null);
-    }
+	/**
+	 * Logs a message and exception with severity WARNING in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 */
+	public static void logWarning(String message) {
+		logWarning(message, null);
+	}
 
-    /**
-     * Logs a message and exception with severity WARNING in the runtime log of
-     * the plug-in.
-     *
-     * @param message
-     *            The message to log
-     * @param exception
-     *            The corresponding exception
-     */
-    public static void logWarning(String message, Throwable exception) {
-        log(IStatus.WARNING, message, exception);
-    }
+	/**
+	 * Logs a message and exception with severity WARNING in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 * @param exception
+	 *            The corresponding exception
+	 */
+	public static void logWarning(String message, Throwable exception) {
+		log(IStatus.WARNING, message, exception);
+	}
 
-    // LogError
+	// LogError
 
-    /**
-     * Logs a message and exception with severity ERROR in the runtime log of
-     * the plug-in.
-     *
-     * @param message
-     *            The message to log
-     */
-    public static void logError(String message) {
-        logError(message, null);
-    }
+	/**
+	 * Logs a message and exception with severity ERROR in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 */
+	public static void logError(String message) {
+		logError(message, null);
+	}
 
-    /**
-     * Logs a message and exception with severity ERROR in the runtime log of
-     * the plug-in.
-     *
-     * @param message
-     *            The message to log
-     * @param exception
-     *            The corresponding exception
-     */
-    public static void logError(String message, Throwable exception) {
-        log(IStatus.ERROR, message, exception);
-    }
+	/**
+	 * Logs a message and exception with severity ERROR in the runtime log of the plug-in.
+	 *
+	 * @param message
+	 *            The message to log
+	 * @param exception
+	 *            The corresponding exception
+	 */
+	public static void logError(String message, Throwable exception) {
+		log(IStatus.ERROR, message, exception);
+	}
 
 }

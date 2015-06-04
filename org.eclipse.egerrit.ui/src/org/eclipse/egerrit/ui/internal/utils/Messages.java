@@ -27,6 +27,7 @@ public class Messages extends NLS {
 	public static String UIUtils_methodNotReady;
 
 	public static String UIUtils_notImplemented;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

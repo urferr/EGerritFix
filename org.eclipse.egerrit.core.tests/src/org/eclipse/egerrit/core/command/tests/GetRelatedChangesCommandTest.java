@@ -98,8 +98,7 @@ public class GetRelatedChangesCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", RelatedChangesInfo.class,
-				command.getReturnType());
+		assertEquals("Wrong return type", RelatedChangesInfo.class, command.getReturnType());
 	}
 
 	/**
@@ -119,8 +118,7 @@ public class GetRelatedChangesCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes//revisions//related", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes//revisions//related", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -129,8 +127,7 @@ public class GetRelatedChangesCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -140,8 +137,7 @@ public class GetRelatedChangesCommandTest {
 			GitAccess gAccess = new GitAccess();
 			Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
 			gAccess.pushFile();
 
 			change_id = gAccess.getChangeId();
@@ -152,8 +148,7 @@ public class GetRelatedChangesCommandTest {
 			e1.printStackTrace();
 		}
 		// Run test
-		GetRelatedChangesCommand command = fGerrit.getRelatedChanges(change_id,
-				commit_id);
+		GetRelatedChangesCommand command = fGerrit.getRelatedChanges(change_id, commit_id);
 		RelatedChangesInfo result = null;
 		try {
 			result = command.call();

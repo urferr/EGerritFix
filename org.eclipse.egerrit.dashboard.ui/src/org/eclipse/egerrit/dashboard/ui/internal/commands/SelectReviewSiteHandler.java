@@ -88,8 +88,8 @@ public class SelectReviewSiteHandler extends AbstractHandler {
 					try {
 						handlerService.executeCommand(UIConstants.ADD_GERRIT_SITE_COMMAND_ID, null);
 					} catch (Exception ex) {
-						GerritPlugin.Ftracer.traceError(NLS.bind(Messages.SelectReviewSiteHandler_exception,
-								ex.toString()));
+						GerritPlugin.Ftracer
+								.traceError(NLS.bind(Messages.SelectReviewSiteHandler_exception, ex.toString()));
 //					      GerritUi.getDefault().logError("Exception: ", ex);
 						//  throw new RuntimeException("org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSite not found");
 

@@ -25,8 +25,9 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
- * command. It returns a <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a> structure.
+ * command. It returns a
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
+ * structure.
  * <p>
  *
  * @since 1.0
@@ -204,7 +205,8 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").append(getId()) //$NON-NLS-1$;
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId()) //;
 					.append("/detail") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);

@@ -15,15 +15,12 @@ package org.eclipse.egerrit.core.rest;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
-import java.util.Map;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchanges-info"
- * >RelatedChangesInfo</a> entity contains information related to a change.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchanges-info" >
+ * RelatedChangesInfo</a> entity contains information related to a change.
  * <p>
- * This structure is filled by GSON when parsing the corresponding JSON
- * structure in an HTTP response.
+ * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
@@ -34,19 +31,16 @@ public class RelatedChangesInfo {
 	// The data structure
 	// ------------------------------------------------------------------------
 	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// A list of RelatedChangeAndCommitInfo entities describing the related changes. 
 	// Sorted by git commit order, newest to oldest. Empty if there are no related changes
 	private List<RelatedChangeAndCommitInfo> changes;
 
-	
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
 
-	
 	/**
 	 * @return the changes
 	 */
@@ -55,33 +49,29 @@ public class RelatedChangesInfo {
 	}
 
 	/**
-	 * @param changes the changes to set
+	 * @param changes
+	 *            the changes to set
 	 */
 	public void setChanges(List<RelatedChangeAndCommitInfo> changes) {
 		firePropertyChange("changes", this.changes, this.changes = changes);
 	}
 
-	public void addPropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
-	public void removePropertyChangeListener(String propertyName,
-			PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName,
-				listener);
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
 	}
 
-	protected void firePropertyChange(String propertyName, Object oldValue,
-			Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-				newValue);
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -92,7 +82,6 @@ public class RelatedChangesInfo {
 		result = prime * result + ((changes == null) ? 0 : changes.hashCode());
 		return result;
 	}
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -121,10 +110,5 @@ public class RelatedChangesInfo {
 	public String toString() {
 		return "RelatedChangesInfo [changes=" + changes + "]";
 	}
-
-
-
-	
-	
 
 }

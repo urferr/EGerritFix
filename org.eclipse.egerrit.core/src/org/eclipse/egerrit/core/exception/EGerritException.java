@@ -19,23 +19,23 @@ package org.eclipse.egerrit.core.exception;
  */
 public class EGerritException extends Exception {
 
-    // ------------------------------------------------------------------------
-    // Attributes
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Attributes
+	// ------------------------------------------------------------------------
 
 	/** The unique UID */
 	private static final long serialVersionUID = 6095759214041370311L;
 
-    // ------------------------------------------------------------------------
-    // Constructors
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Constructors
+	// ------------------------------------------------------------------------
 
-    public EGerritException(String message) {
-        super(message);
-    }
+	public EGerritException(String message) {
+		super(message);
+	}
 
-    public EGerritException(Exception exception) {
-        this(exception.getMessage());
-    }
+	public EGerritException(Exception exception) {
+		this(exception.getMessage());
+	}
 
 }

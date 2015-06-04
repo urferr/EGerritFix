@@ -35,9 +35,10 @@ public class UIUtils {
 	 * @param String
 	 */
 	public static void notInplementedDialog(String aSt) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, NLS.bind(
-				Messages.UIUtils_methodNotReady, aSt), new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0,
-				Messages.UIUtils_notImplemented, null), IStatus.INFO);
+		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info,
+				NLS.bind(Messages.UIUtils_methodNotReady, aSt),
+				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, Messages.UIUtils_notImplemented, null),
+				IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();
@@ -55,8 +56,8 @@ public class UIUtils {
 	 *            reason
 	 */
 	public static void showErrorDialog(String aMsg, String aReason) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, aMsg, new Status(IStatus.INFO,
-				EGerritUIPlugin.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
+		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, aMsg,
+				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();

@@ -26,15 +26,19 @@ public class GerritCredentials {
 	private Credentials fCredentials = null;
 
 	private boolean fIsOpenIdAuthenticated = false;
+
 	private String fOpenIdProvider = null;
 
 	private boolean fIsHttpAuthenticated = false;
+
 	private Credentials fHttpCredentials = null;
 
 	private final boolean fIsProxied = false;
+
 	private final HttpHost fProxy = null;
 
 	private final boolean fIsProxyAuthenticated = false;
+
 	private final Credentials fProxyCredentials = null;
 
 	// ------------------------------------------------------------------------

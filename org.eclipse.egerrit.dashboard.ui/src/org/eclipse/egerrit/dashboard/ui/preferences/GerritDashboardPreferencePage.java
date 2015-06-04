@@ -122,8 +122,8 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 		final GridLayout prefsLayout = new GridLayout(3, false);
 		prefsContainer.setLayout(prefsLayout);
 
-		final Table entriesTable = new Table(prefsContainer, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL
-				| SWT.FULL_SELECTION);
+		final Table entriesTable = new Table(prefsContainer,
+				SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
 		entriesTable.setHeaderVisible(true);
 		entriesTable.setLinesVisible(true);
 		entriesTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 4));
@@ -177,8 +177,8 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 		//Get the preference store
 		if (list == null) {
 			IPreferenceStore store = GerritPlugin.getDefault().getPreferenceStore();
-			listInfo = GerritServerUtility.getInstance().createGerritServerInfo(
-					store.getString(PreferenceConstants.P_GERRIT_LISTS));
+			listInfo = GerritServerUtility.getInstance()
+					.createGerritServerInfo(store.getString(PreferenceConstants.P_GERRIT_LISTS));
 		} else {
 			listInfo = list;
 		}
@@ -238,8 +238,8 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 					if (obj instanceof GerritServerInformation) {
 						processDialogueInfo((GerritServerInformation) obj, selectedIndex);
 					} else {
-						Utils.displayInformation(prefsContainer.getShell(), TITLE, SELECTION_MESSAGE
-								+ ((Button) e.widget).getText());
+						Utils.displayInformation(prefsContainer.getShell(), TITLE,
+								SELECTION_MESSAGE + ((Button) e.widget).getText());
 					}
 				}
 			}

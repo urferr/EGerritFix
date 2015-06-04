@@ -75,8 +75,8 @@ public class LabelInfoTest {
 
 	private static final String TO_STRING = "LabelInfo [" + "optional=" + OPTIONAL + ", approved=" + APPROVED
 			+ ", rejected=" + REJECTED + ", recommended=" + RECOMMENDED + ", disliked=" + DISLIKED + ", blocking="
-			+ BLOCKING + ", value=" + VALUE + ", default_value=" + DEFAULT_VALUE + ", all=" + ALL + ", values="
-			+ VALUES + "]";
+			+ BLOCKING + ", value=" + VALUE + ", default_value=" + DEFAULT_VALUE + ", all=" + ALL + ", values=" + VALUES
+			+ "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes

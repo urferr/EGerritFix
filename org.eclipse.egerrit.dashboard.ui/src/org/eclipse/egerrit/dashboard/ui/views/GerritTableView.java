@@ -437,7 +437,8 @@ public class GerritTableView extends ViewPart {
 				}
 				Object element = structuredSelection.getFirstElement();
 				if (element instanceof ChangeInfo) {
-					System.err.println("Command deactivated HERE in GerritTableview.makeactions() Could use convertGerritInfoToTaskRepository () temporary");
+					System.err.println(
+							"Command deactivated HERE in GerritTableview.makeactions() Could use convertGerritInfoToTaskRepository () temporary");
 					ChangeDetailEditor cDE = ChangeDetailEditor.getActiveEditor();
 
 					cDE.setChangeInfo(gerritRepository, (ChangeInfo) element);
@@ -717,8 +718,8 @@ public class GerritTableView extends ViewPart {
 								//Record the custom query
 								setSearchText(getSearchText());
 //								}
-								System.out.println("defaultServerInfo.getServerURL() is "
-										+ defaultServerInfo.getServerURI());
+								System.out.println(
+										"defaultServerInfo.getServerURL() is " + defaultServerInfo.getServerURI());
 //								if (gerritClient == null) {
 //									gerritClient = new GerritClient(null, new TaskRepositoryLocation(
 //											new TaskRepository(TaskRepository.CATEGORY_REVIEW,
@@ -997,7 +998,8 @@ public class GerritTableView extends ViewPart {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
-						setRepositoryVersionLabel(defaultServerInfo.getName(), gerritRepository.getVersion().toString());
+						setRepositoryVersionLabel(defaultServerInfo.getName(),
+								gerritRepository.getVersion().toString());
 						fSearchRequestText.setText(queryText);
 
 					}

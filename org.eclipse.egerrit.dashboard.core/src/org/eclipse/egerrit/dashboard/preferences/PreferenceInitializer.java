@@ -48,7 +48,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 //		store.setDefault(PreferenceConstants.P_GERRIT_LISTS, PreferenceConstants.P_GERRIT_ECLIPSE_SERVER);
 		//Secure Begin
 		ISecurePreferences securePref = SecurePreferencesFactory.getDefault();
-		ISecurePreferences serverPreference = securePref.node(EncodingUtils.encodeSlashes(PreferenceConstants.P_GERRIT_ECLIPSE_SERVER));
+		ISecurePreferences serverPreference = securePref
+				.node(EncodingUtils.encodeSlashes(PreferenceConstants.P_GERRIT_ECLIPSE_SERVER));
 		try {
 //			serverPreference.put(PreferenceConstants.P_USER, PreferenceConstants.P_ANONYMOUS, true);
 			serverPreference.put(PreferenceConstants.P_USER, "", true); //$NON-NLS-1$

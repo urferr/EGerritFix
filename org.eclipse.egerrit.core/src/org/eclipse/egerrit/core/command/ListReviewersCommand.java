@@ -24,11 +24,9 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
 
 /**
- * The <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewer info"
- * >List Reviewers</a> command. It returns a list <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ReviewerInfo"
- * ></a>
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewer info" >List
+ * Reviewers</a> command. It returns a list
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ReviewerInfo" ></a>
  * <p>
  *
  * @since 1.0
@@ -61,7 +59,6 @@ public class ListReviewersCommand extends QueryCommand<ReviewerInfo[]> {
 
 	}
 
-
 	public String getId() {
 		return fChange_id;
 	}
@@ -88,10 +85,10 @@ public class ListReviewersCommand extends QueryCommand<ReviewerInfo[]> {
 		URI uri = null;
 		try {
 			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath())
-			.append("/changes/").append(getId()) //$NON-NLS-1$
-			.append("/reviewers") //$NON-NLS-1$
-			.toString();
+			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
+					.append(getId())
+					.append("/reviewers") //$NON-NLS-1$
+					.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
 		} catch (URISyntaxException e) {

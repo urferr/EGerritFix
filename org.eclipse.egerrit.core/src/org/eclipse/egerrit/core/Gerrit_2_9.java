@@ -21,26 +21,27 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  */
 public class Gerrit_2_9 extends Gerrit {
 
-    /**
-     * This gerrit version
-     */
-    public static final String GERRIT_VERSION = "2.9.0"; //$NON-NLS-1$
+	/**
+	 * This gerrit version
+	 */
+	public static final String GERRIT_VERSION = "2.9.0"; //$NON-NLS-1$
 
-    // ------------------------------------------------------------------------
-    // Constructors
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Constructors
+	// ------------------------------------------------------------------------
 
-    /**
-     * The constructor
-     *
-     * @param gerritRepository the gerrit repository
-     */
-    public Gerrit_2_9(GerritRepository gerritRepository) throws EGerritException {
-        super(gerritRepository);
-    }
+	/**
+	 * The constructor
+	 *
+	 * @param gerritRepository
+	 *            the gerrit repository
+	 */
+	public Gerrit_2_9(GerritRepository gerritRepository) throws EGerritException {
+		super(gerritRepository);
+	}
 
-    // ------------------------------------------------------------------------
-    // Overridden repository queries (i.e. version variants)
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Overridden repository queries (i.e. version variants)
+	// ------------------------------------------------------------------------
 
 }
