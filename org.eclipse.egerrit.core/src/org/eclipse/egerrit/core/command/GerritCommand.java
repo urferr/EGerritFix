@@ -12,6 +12,7 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
@@ -147,6 +148,12 @@ public abstract class GerritCommand<T> implements Callable<T> {
 					if (entity == null) {
 						throw new ClientProtocolException("Response has no content"); //$NON-NLS-1$
 					}
+					if (!GerritCommand.this.expectsJson()) {
+						try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+							myEntity.writeTo(os);
+							return (T) os.toString();
+						}
+					}
 					Gson gson = new GsonBuilder().create();
 					InputStreamReader reader = new InputStreamReader(myEntity.getContent());
 
@@ -181,6 +188,10 @@ public abstract class GerritCommand<T> implements Callable<T> {
 		}
 
 		return result;
+	}
+
+	protected boolean expectsJson() {
+		return true;
 	}
 
 }

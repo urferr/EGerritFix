@@ -121,8 +121,9 @@ public class GetContentCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath()
-				+ "/changes/" + "/detail", uri.getPath());
+		assertEquals("Wrong path",
+				fGerrit.getRepository().getPath() + "/changes/" + "/detail",
+				uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -133,26 +134,23 @@ public class GetContentCommandTest {
 	/**
 	 * Test method for
 	 * {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * 
+	 * @throws Exception
 	 */
 	@Test
-	public void testCall() {
+	public void testCall() throws Exception {
 
 		String commit_id = null, change_id = null;
-		try {
-			GitAccess gAccess = new GitAccess();
-			Git git = gAccess.getGitProject();
+		GitAccess gAccess = new GitAccess();
+		Git git = gAccess.getGitProject();
 
-			gAccess.addFile("EGerritTestReviewFile.java",
-					"Hello reviewers community !");
-			gAccess.pushFile();
+		gAccess.addFile("EGerritTestReviewFile.java",
+				"Hello reviewers {community} !");
+		gAccess.pushFile();
 
-			change_id = gAccess.getChangeId();
-			commit_id = gAccess.getCommitId();
+		change_id = gAccess.getChangeId();
+		commit_id = gAccess.getCommitId();
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		// Run test
 		GetContentCommand command = fGerrit.getContent(change_id, commit_id,
 				"EGerritTestReviewFile.java");
@@ -164,7 +162,7 @@ public class GetContentCommandTest {
 		}
 
 		// Verify result
-		assertEquals("Hello reviewers community !",
+		assertEquals("Hello reviewers {community} !",
 				StringUtils.newStringUtf8(Base64.decodeBase64(result)));
 
 	}
