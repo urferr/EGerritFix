@@ -39,7 +39,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
-import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
@@ -1391,20 +1390,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		}
 	}
 
-	/**
-	 * @param gerritRepository
-	 * @return
-	 */
-	private Gerrit setGerritServer(GerritRepository gerritRepository) {
-		Gerrit gerrit = null;
-		try {
-			gerrit = GerritFactory.create(gerritRepository);
-		} catch (EGerritException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-		}
-		return gerrit;
-	}
-
 	/************************************************************* */
 	/*                                                             */
 	/* Section to QUERY the data structure                         */
@@ -1416,7 +1401,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {
@@ -1452,7 +1437,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {
@@ -1484,7 +1469,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {
@@ -1513,7 +1498,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {
@@ -1542,7 +1527,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {
@@ -1571,7 +1556,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			ChangeInfo[] res = null;
 			if (gerrit != null) {
@@ -1615,7 +1600,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			ChangeInfo[] res = null;
 			if (gerrit != null) {
@@ -1665,7 +1650,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = setGerritServer(gerritRepository);
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
 			// Create query
 			if (gerrit != null) {

@@ -365,4 +365,13 @@ public class GerritRepository {
 		return Version.emptyVersion;
 	}
 
+	public Gerrit instantiateGerrit() {
+		Gerrit gerrit = null;
+		try {
+			gerrit = GerritFactory.create(this);
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+		}
+		return gerrit;
+	}
 }
