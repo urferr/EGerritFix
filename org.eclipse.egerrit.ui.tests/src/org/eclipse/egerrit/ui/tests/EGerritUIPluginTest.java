@@ -19,7 +19,7 @@ import org.junit.Test;
 
 /**
  * Test the EGerrit UI plug-in activator
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -40,7 +40,7 @@ public class EGerritUIPluginTest {
 	 * Test the plugin ID.
 	 */
 	@Test
-	public void testTmfCorePluginId() {
+	public void testEGerritUIPluginId() {
 		assertEquals("Plugin ID", "org.eclipse.egerrit.ui", EGerritUIPlugin.PLUGIN_ID);
 	}
 
