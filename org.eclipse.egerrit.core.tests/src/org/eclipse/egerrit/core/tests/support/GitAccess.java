@@ -22,7 +22,6 @@ import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -44,52 +43,82 @@ public class GitAccess {
 
 	private String fCommit_id;
 
-	private String fUrl;
+	private File checkoutFolder;
+
+	private final String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
+			+ Common.TEST_PROJECT;
 
 	/**
 	 * instantiates a Git object connected to the server.
 	 */
 	public Git getGitProject() throws Exception {
-
 		if (fGit == null) {
-			fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/" + Common.TEST_PROJECT;
-
-			CloneCommand cloneCmd = Git.cloneRepository();
-			cloneCmd.setGitDir(createTempFolder("egerrit")).setURI(fUrl);
-
-			fGit = cloneCmd.call();
-
+			cloneRepo();
 		}
 		return fGit;
 	}
 
+	private void cloneRepo() throws Exception {
+		CloneCommand cloneCmd = Git.cloneRepository();
+		checkoutFolder = createTempFolder("egerrit");
+		System.out.println(checkoutFolder);
+		cloneCmd.setGitDir(new File(checkoutFolder, ".git")).setURI(fUrl).setDirectory(checkoutFolder);
+		cloneCmd.setBare(false).setBranch("master").setNoCheckout(false);
+		fGit = cloneCmd.call();
+	}
+
 	/**
-	 * Creates a file in preparation for a push to Gerrit server
+	 * Creates a file and stage it
+	 *
+	 * @param fileName,
+	 *            the path relative to the root of repo
+	 * @param content
+	 * @return
+	 */
+	public void addFile(String fileName, String content) throws Exception {
+		new File(checkoutFolder, fileName).getParentFile().mkdirs();
+		try (Writer writer = new FileWriter(new File(checkoutFolder, fileName))) {
+			writer.write(content.toString());
+		}
+		fGit.add().addFilepattern(fileName).call();
+	}
+
+	/**
+	 * Modify a file and stage it
 	 *
 	 * @param fileName
 	 * @param content
 	 * @return
 	 */
-	public void addFile(String fileName, String content) throws Exception {
+	public void modifyFile(String fileName, String newContent) throws Exception {
+		File gitDir = fGit.getRepository().getDirectory();
+		new File(gitDir, fileName).delete();
+		addFile(fileName, newContent);
+	}
+//
+//	@Test
+//	public void doSomething() throws Exception {
+//		getGitProject();
+//		addFile("gerritDemoProject/b.txt", "a file called b");
+//		commitAndPush("new file");
+//		modifyFile("gerritDemoProject/b.txt", "file content modified");
+//		pushFile();
+//	}
 
-		CloneCommand cloneCmd = Git.cloneRepository();
-		cloneCmd.setGitDir(createTempFolder("egerrit")).setURI(fUrl);
-
-		Writer writer = new FileWriter(fileName);
-		try {
-			writer.write(content.toString());
-		} finally {
-			try {
-				writer.close();
-			} catch (IOException e) {
-				// don't need to catch this
-			}
-		}
-
-		fGit = cloneCmd.call();
-
-		DirCache dc = fGit.add().addFilepattern(fileName).call();
-
+	/**
+	 * Commit the staged changes to the git repository.
+	 *
+	 * @param commitMessage
+	 * @throws Exception
+	 */
+	public void commitAndPush(String commitMessage) throws Exception {
+		fGit.commit()
+				.setCommitter(Common.USER, Common.EMAIL)
+				.setMessage(commitMessage == null ? "a commit" : commitMessage)
+				.call();
+		fGit.push()
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
+				.call();
 	}
 
 	/**
@@ -129,14 +158,16 @@ public class GitAccess {
 		return location;
 	}
 
+	/**
+	 * Return the changed id of the last commit changed pushed to gerrit
+	 *
+	 * @return change id
+	 */
 	public String getChangeId() {
-
 		return fChange_id;
-
 	}
 
 	public String getCommitId() {
 		return fCommit_id;
 	}
-
 }
