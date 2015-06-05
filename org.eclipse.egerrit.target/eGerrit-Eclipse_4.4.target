@@ -4,7 +4,7 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="com.google.gerrit.reviewdb" version="2.1.5.v201112241444"/>
 <unit id="com.google.gerrit.common" version="2.1.5.v201112241444"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20150316021154/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
