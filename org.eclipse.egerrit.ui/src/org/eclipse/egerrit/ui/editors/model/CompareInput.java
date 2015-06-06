@@ -27,9 +27,9 @@ public class CompareInput extends CompareEditorInput {
 		super(new CompareConfiguration());
 	}
 
-	public String left = "";
+	public String left = ""; //$NON-NLS-1$
 
-	public String right = "";
+	public String right = ""; //$NON-NLS-1$
 
 	public void setLeft(String left) {
 		this.left = left;
@@ -53,5 +53,21 @@ public class CompareInput extends CompareEditorInput {
 		CompareItem left = new CompareItem("Left", getLeft(), 0);
 		CompareItem right = new CompareItem("Right", getRight(), 0);
 		return new DiffNode(null, Differencer.ADDITION, ancestor, left, right);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof CompareInput)) {
+			return false;
+		}
+		if (((CompareInput) obj).getLeft().equals(getLeft()) && ((CompareInput) obj).getRight().equals(getRight())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "left: " + left + "\nright: " + right; //$NON-NLS-1$//$NON-NLS-2$
 	}
 }

@@ -179,7 +179,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 					return result1;
 				}
 			};
-			result = fGerritRepository.getHttpClient().execute(request, rh);
+			result = postProcessResult(fGerritRepository.getHttpClient().execute(request, rh));
 
 		} catch (ClientProtocolException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
@@ -194,4 +194,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 		return true;
 	}
 
+	protected T postProcessResult(T result) {
+		return result;
+	}
 }

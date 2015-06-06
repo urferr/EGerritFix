@@ -1370,14 +1370,14 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 				entry.getValue().setFiles(entry.getValue().getFiles());
 
-				Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
-				while (itr2.hasNext()) {
-
-					Entry<String, FileInfo> entry1 = itr2.next();
-
-					entry1.getValue().addPropertyChangeListener("old_path", this);
-					entry1.getValue().setOld_path(entry1.getKey());
-				}
+//				Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
+//				while (itr2.hasNext()) {
+//
+//					Entry<String, FileInfo> entry1 = itr2.next();
+//
+//					entry1.getValue().addPropertyChangeListener("old_path", this);
+//					entry1.getValue().setOld_path(entry1.getKey());
+//				}
 			}
 
 			WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);

@@ -15,6 +15,9 @@ package org.eclipse.egerrit.core.command;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -22,6 +25,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.core.rest.RevisionInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
@@ -246,4 +251,18 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 		this.fChange_id = change_id;
 	}
 
+	@Override
+	protected ChangeInfo postProcessResult(ChangeInfo changeInfo) {
+		Iterator<Map.Entry<String, RevisionInfo>> revisions = changeInfo.getRevisions().entrySet().iterator();
+		while (revisions.hasNext()) {
+			RevisionInfo aRevision = revisions.next().getValue();
+
+			Iterator<Map.Entry<String, FileInfo>> files = aRevision.getFiles().entrySet().iterator();
+			while (files.hasNext()) {
+				Entry<String, FileInfo> aFile = files.next();
+				aFile.getValue().setOld_path(aFile.getKey());
+			}
+		}
+		return changeInfo;
+	}
 }

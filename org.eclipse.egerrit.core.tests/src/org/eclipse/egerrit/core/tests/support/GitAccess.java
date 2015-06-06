@@ -18,10 +18,23 @@ import java.io.Writer;
 import java.net.Authenticator;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritCredentials;
+import org.eclipse.egerrit.core.GerritFactory;
+import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.command.ChangeOption;
+import org.eclipse.egerrit.core.command.GetChangeCommand;
+import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -43,15 +56,25 @@ public class GitAccess {
 
 	private String fCommit_id;
 
+	private String lastCommitId;
+
 	private File checkoutFolder;
+
+	private GerritRepository gerritRepo;
+
+	private Gerrit gerrit;
 
 	private final String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
 			+ Common.TEST_PROJECT;
 
 	/**
-	 * instantiates a Git object connected to the server.
+	 * Instantiates a local git repo connected to the server.
 	 */
 	public Git getGitProject() throws Exception {
+		gerritRepo = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
+		//TODO DEAL WITH HTTPS AND SUCH
+		gerritRepo.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
+		gerrit = GerritFactory.create(gerritRepo);
 		if (fGit == null) {
 			cloneRepo();
 		}
@@ -95,27 +118,20 @@ public class GitAccess {
 		new File(gitDir, fileName).delete();
 		addFile(fileName, newContent);
 	}
-//
-//	@Test
-//	public void doSomething() throws Exception {
-//		getGitProject();
-//		addFile("gerritDemoProject/b.txt", "a file called b");
-//		commitAndPush("new file");
-//		modifyFile("gerritDemoProject/b.txt", "file content modified");
-//		pushFile();
-//	}
 
 	/**
 	 * Commit the staged changes to the git repository.
 	 *
 	 * @param commitMessage
+	 *            or null
 	 * @throws Exception
 	 */
 	public void commitAndPush(String commitMessage) throws Exception {
-		fGit.commit()
+		RevCommit commitId = fGit.commit()
 				.setCommitter(Common.USER, Common.EMAIL)
 				.setMessage(commitMessage == null ? "a commit" : commitMessage)
 				.call();
+		lastCommitId = ObjectId.toString(commitId.getId());
 		fGit.push()
 				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
 				.call();
@@ -123,8 +139,6 @@ public class GitAccess {
 
 	/**
 	 * Commits and pushes to gerrit server
-	 *
-	 * @return
 	 */
 	public void pushFile() throws Exception {
 		Authenticator.setDefault(null);
@@ -159,7 +173,7 @@ public class GitAccess {
 	}
 
 	/**
-	 * Return the changed id of the last commit changed pushed to gerrit
+	 * Returns the changed id of the last commit changed pushed to gerrit
 	 *
 	 * @return change id
 	 */
@@ -167,7 +181,124 @@ public class GitAccess {
 		return fChange_id;
 	}
 
+	/**
+	 * Returns the last commit id
+	 *
+	 * @return string of the commit id
+	 */
 	public String getCommitId() {
 		return fCommit_id;
+	}
+
+	/**
+	 * Add git repo to the list of repositories known by egit
+	 */
+	public void addToGitView() {
+		RepositoryUtil repoUtil = Activator.getDefault().getRepositoryUtil();
+		repoUtil.addConfiguredRepository(fGit.getRepository().getDirectory());
+	}
+
+	/**
+	 * Remove git repo from the list of repositories known by egit
+	 */
+	public void removeFromGitView() {
+		RepositoryUtil repoUtil = Activator.getDefault().getRepositoryUtil();
+		repoUtil.removeDir(fGit.getRepository().getDirectory());
+	}
+
+	/**
+	 * Import the path as a project in the workspace
+	 *
+	 * @param projectFilePath
+	 * @throws CoreException
+	 */
+	public void importProject(String projectFilePath) throws CoreException {
+		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(
+				new org.eclipse.core.runtime.Path(new File(checkoutFolder, projectFilePath).getAbsolutePath()));
+		if (description != null) {
+			String projectName = description.getName();
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			if (project.exists() == true) {
+				if (project.isOpen() == false) {
+					project.open(IResource.BACKGROUND_REFRESH, new NullProgressMonitor());
+				}
+			} else {
+				project.create(description, new NullProgressMonitor());
+				project.open(IResource.BACKGROUND_REFRESH, new NullProgressMonitor());
+			}
+		}
+	}
+
+	/**
+	 * Remove a project from the file system but w/o deleting the underlying files
+	 *
+	 * @param projectFilePath
+	 * @throws CoreException
+	 */
+	public void removeProject(String projectName) throws CoreException {
+		ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).delete(false, true, new NullProgressMonitor());
+	}
+
+	/**
+	 * Remove file from the git repository
+	 *
+	 * @param filename
+	 *            relative filepath to remove
+	 * @throws Exception
+	 */
+	public void removeFile(String filename) throws Exception {
+		fGit.rm().addFilepattern(filename).call();
+	}
+
+	/**
+	 * Get the object representing the gerrit server.
+	 *
+	 * @return
+	 */
+	public GerritRepository getGerritRepo() {
+		return gerritRepo;
+	}
+
+	/**
+	 * Return the id of the last commit done locally
+	 *
+	 * @return the commit id
+	 */
+	public String getLastLocalCommitId() {
+		return lastCommitId;
+	}
+
+	/**
+	 * Reset the local repository to the given commit id
+	 *
+	 * @param commitId
+	 * @throws Exception
+	 */
+	public void resetTo(String commitId) throws Exception {
+		fGit.reset().setMode(ResetType.HARD).setRef(commitId).call();
+	}
+
+	/**
+	 * Get a ChangeInfo object from a given changeID
+	 *
+	 * @param changeId
+	 * @return a fully populated ChangeInfo
+	 * @throws Exception
+	 */
+	public ChangeInfo getChange(String changeId) throws Exception {
+		GetChangeCommand command = gerrit.getChange(changeId);
+		command.addOption(ChangeOption.ALL_FILES);
+		command.addOption(ChangeOption.CURRENT_REVISION);
+		command.addOption(ChangeOption.CURRENT_COMMIT);
+		command.addOption(ChangeOption.MESSAGES);
+		command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+
+		ChangeInfo res = null;
+		try {
+			res = command.call();
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(e.getMessage());
+		}
+		return res;
 	}
 }
