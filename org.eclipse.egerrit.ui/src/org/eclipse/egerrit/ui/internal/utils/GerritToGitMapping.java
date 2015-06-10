@@ -70,7 +70,46 @@ public class GerritToGitMapping {
 		inPushRepos = true;
 		addressOfSearchedRepo = buildSearchedAddress(false);
 		findMatchingRepository();
+		if (match != null) {
+			return match;
+		}
+		findByName();
 		return match;
+	}
+
+	private void findByName() throws IOException {
+		RepositoryUtil repoUtil = getRepositoryUtil();
+		RepositoryCache repoCache = getRepositoryCache();
+		for (String dirs : repoUtil.getConfiguredRepositories()) {
+			match = repoCache.lookupRepository(new File(dirs));
+			RemoteConfig remote = findRemoteByName();
+			if (remote != null) {
+				return;
+			}
+		}
+		match = null;
+	}
+
+	private RemoteConfig findRemoteByName() {
+		Assert.isNotNull(match);
+		List<RemoteConfig> remotes;
+		try {
+			remotes = RemoteConfig.getAllRemoteConfigs(match.getConfig());
+		} catch (URISyntaxException e) {
+			//TODO We should probably log something
+			remotes = new ArrayList<RemoteConfig>(0);
+		}
+		for (RemoteConfig remote : remotes) {
+			List<URIish> remoteURIs = new ArrayList<URIish>();
+			remoteURIs.addAll(remote.getPushURIs());
+			remoteURIs.addAll(remote.getURIs());
+			for (URIish remoteURI : remoteURIs) {
+				if (getInterestingSegments(remoteURI).endsWith(gerritProject)) {
+					return remote;
+				}
+			}
+		}
+		return null;
 	}
 
 	//Build an approximation of the URI we are looking for
