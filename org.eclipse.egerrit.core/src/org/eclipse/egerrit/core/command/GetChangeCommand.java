@@ -30,9 +30,8 @@ import org.eclipse.egerrit.core.rest.RevisionInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
- * command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
- * structure.
+ * command. It returns a <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a> structure.
  * <p>
  *
  * @since 1.0
@@ -211,7 +210,8 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 		try {
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId()) //;
+					.append(getId())
+					//;
 					.append("/detail") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);
@@ -253,14 +253,19 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 
 	@Override
 	protected ChangeInfo postProcessResult(ChangeInfo changeInfo) {
-		Iterator<Map.Entry<String, RevisionInfo>> revisions = changeInfo.getRevisions().entrySet().iterator();
-		while (revisions.hasNext()) {
-			RevisionInfo aRevision = revisions.next().getValue();
+		Map<String, RevisionInfo> map = changeInfo.getRevisions();
+		if (map != null) {
+			Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
+			while (revisions.hasNext()) {
+				RevisionInfo aRevision = revisions.next().getValue();
 
-			Iterator<Map.Entry<String, FileInfo>> files = aRevision.getFiles().entrySet().iterator();
-			while (files.hasNext()) {
-				Entry<String, FileInfo> aFile = files.next();
-				aFile.getValue().setOld_path(aFile.getKey());
+				Iterator<Map.Entry<String, FileInfo>> files = aRevision.getFiles().entrySet().iterator();
+				while (files.hasNext()) {
+					Entry<String, FileInfo> aFile = files.next();
+//					aFile.getValue().setOld_path(aFile.getKey());
+					System.err.println("Cannot set the OLD_PATH IN GetChangeCommand.postProcessResult() path: "
+							+ aFile.getKey());
+				}
 			}
 		}
 		return changeInfo;

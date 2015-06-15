@@ -12,10 +12,13 @@
 
 package org.eclipse.egerrit.ui.internal.table.provider;
 
+import java.text.SimpleDateFormat;
+
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.utils.DisplayFileInfo;
+import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -30,8 +33,8 @@ import org.eclipse.swt.widgets.Display;
  * @since 1.0
  */
 
-public class FileTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider,
-ITableColorProvider {
+public class FilePatchSetTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider,
+		ITableColorProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -71,6 +74,10 @@ ITableColorProvider {
 //
 	//Color used depending on the review state
 	private static Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+
+	private static Color GREEN = fDisplay.getSystemColor(SWT.COLOR_GREEN);
+
+	private static Color BLACK = fDisplay.getSystemColor(SWT.COLOR_BLACK);
 
 //
 ////	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
@@ -112,7 +119,7 @@ ITableColorProvider {
 //		super(iObservableMaps);
 //	}
 
-	public FileTableLabelProvider(IObservableMap[] iObservableMaps) {
+	public FilePatchSetTableLabelProvider(IObservableMap[] iObservableMaps) {
 		super(iObservableMaps);
 	}
 
@@ -196,30 +203,47 @@ ITableColorProvider {
 	public String getColumnText(Object aObj, int aIndex) {
 		// GerritPlugin.Ftracer.traceWarning("getColumnText object: " + aObj
 		// + "\tcolumn: " + aIndex);
-		if (aObj instanceof DisplayFileInfo) {
-			DisplayFileInfo fileInfo = (DisplayFileInfo) aObj;
+		if (aObj instanceof RevisionInfo) {
+			RevisionInfo revisionInfo = (RevisionInfo) aObj;
 //			String value = null;
 			switch (aIndex) {
 			case 0:
-				return "";
+				return Boolean.toString(revisionInfo.hasDraftComments());
 			case 1:
-				return fileInfo.getStatus();
+				return Integer.toString(revisionInfo.getNumber());
 			case 2:
-				return fileInfo.getold_path();
-			case 3:
-				if (fileInfo.getComments() != null) {
-					return Integer.toString(fileInfo.getComments().size()); //Missing also the line added
+				if (revisionInfo.getCommit() != null) {
+					return revisionInfo.getCommit().getCommit();
 				} else {
-					return "";
+					return "Commit Id not set";
+				}
+			case 3:
+				if (revisionInfo.getCommit() != null) {
+					return Utils.formatDate(revisionInfo.getCommit().getCommitter().getDate(), new SimpleDateFormat(
+							"MMM dd, yyyy hh:mm a"));
+				} else {
+					return "CommitInfo empty";
 				}
 			case 4:
 				StringBuilder sb = new StringBuilder();
-				sb.append("+");
-				sb.append(Integer.toString(fileInfo.getLinesInserted()));
-				sb.append("/");
-				sb.append("-");
-				sb.append(Integer.toString(fileInfo.getLinesDeleted()));
-				return sb.toString();
+				if (revisionInfo.getCommit() != null) {
+					if (revisionInfo.getCommit().getAuthor() != null) {
+						//Use the Author
+						sb.append(revisionInfo.getCommit().getAuthor().getName());
+					}
+					if (!revisionInfo.getCommit()
+							.getAuthor()
+							.getName()
+							.equals(revisionInfo.getCommit().getCommitter().getName())) {
+						//Add the committer if different than the Author
+						sb.append("/");
+						sb.append(revisionInfo.getCommit().getCommitter().getName());
+					}
+					return sb.toString();
+
+				} else {
+					return "CommitInfo Author null";
+				}
 //				return Integer.toString(fileInfo.getLinesInserted()); //?? not the right field
 //			case 8: {
 //				Map<String, LabelInfo> labels = fileInfo.getLabels();
@@ -332,8 +356,19 @@ ITableColorProvider {
 	 */
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {
-		if (aElement instanceof ChangeInfo) {
-			int value = 0;
+		if (aElement instanceof RevisionInfo) {
+			RevisionInfo revisionInfo = (RevisionInfo) aElement;
+//			String value = null;
+			switch (aColumnIndex) {
+			case 0:
+				if (revisionInfo.hasDraftComments()) {
+					return GREEN;
+				} else {
+					return BLACK;
+				}
+			}
+//			if (aElement instanceof ChangeInfo) {
+//			int value = 0;
 //			if (aColumnIndex == ReviewTableDefinition.CR.ordinal()
 ////					|| aColumnIndex == ReviewTableDefinition.IC.ordinal()
 //					|| aColumnIndex == ReviewTableDefinition.VERIFY.ordinal()) {

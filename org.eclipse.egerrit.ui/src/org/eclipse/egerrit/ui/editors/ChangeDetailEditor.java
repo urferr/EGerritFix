@@ -19,6 +19,8 @@ import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +35,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -46,12 +49,14 @@ import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
+import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FetchInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
@@ -63,6 +68,7 @@ import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.utils.DisplayFileInfo;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
@@ -76,6 +82,7 @@ import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
 import org.eclipse.egerrit.ui.internal.table.provider.ConflictWithTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.table.provider.FilePatchSetTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
@@ -87,7 +94,9 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -149,15 +158,17 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private TableViewer tableFilesViewer;
 
+	private TableViewer tablePatchSetsViewer;
+
 	private final ChangeInfo fChangeInfo = new ChangeInfo();
 
 	private final List<ChangeInfo> fSameTopicChangeInfo = new ArrayList<ChangeInfo>();
 
 	private final List<ChangeInfo> fConflictsWithChangeInfo = new ArrayList<ChangeInfo>();
 
-	private Map<String, RevisionInfo> fRevisions;
+	private Map<String, RevisionInfo> fRevisions = new HashMap<String, RevisionInfo>();;
 
-	private Map<String, FileInfo> fFiles = new HashMap<String, FileInfo>();
+	private final Map<String, DisplayFileInfo> fFilesDisplay = new HashMap<String, DisplayFileInfo>();
 
 	private final MergeableInfo fMergeableInfo = new MergeableInfo();
 
@@ -182,6 +193,14 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private Label statusData;
 
 	private Label shortIdData;
+
+	private Label lblDrafts;
+
+	private Label lblComments;
+
+	private Label lblTotal;
+
+	private Combo comboDiffAgainst;
 
 	private GerritRepository fGerritRepository;
 
@@ -625,45 +644,49 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 			@Override
 			public void paintControl(PaintEvent e) {
+				String codeReviewed = null;
 				if (fChangeInfo != null && genVoteData.getText().compareTo("INIT") == 0) {
 					String old = genVoteData.getText();
-					String codeReviewed;
 					int verifyState = 0;
 					int codeReviewState = 0;
 					Map<String, LabelInfo> labels = fChangeInfo.getLabels();
-					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-						if (entry.getKey().compareTo("Verified") == 0) {
-							LabelInfo labelInfo = entry.getValue();
-							for (ApprovalInfo it : labelInfo.getAll()) {
-								if (it.getValue() != null) {
-									verifyState = Utils.getStateValue(it.getValue(), verifyState);
+					if (labels != null) {
+						for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+							if (entry.getKey().compareTo("Verified") == 0) {
+								LabelInfo labelInfo = entry.getValue();
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										verifyState = Utils.getStateValue(it.getValue(), verifyState);
+									}
+								}
+							} else if (entry.getKey().compareTo("Code-Review") == 0) {
+								LabelInfo labelInfo = entry.getValue();
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
+									}
 								}
 							}
-						} else if (entry.getKey().compareTo("Code-Review") == 0) {
-							LabelInfo labelInfo = entry.getValue();
-							for (ApprovalInfo it : labelInfo.getAll()) {
-								if (it.getValue() != null) {
-									codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
-								}
+							String codeRev;
+							if (codeReviewState > 0) {
+								codeRev = "+" + Integer.toString(codeReviewState);
+							} else {
+								codeRev = Integer.toString(codeReviewState);
 							}
-						}
-						String codeRev;
-						if (codeReviewState > 0) {
-							codeRev = "+" + Integer.toString(codeReviewState);
-						} else {
-							codeRev = Integer.toString(codeReviewState);
-						}
-						String verify;
-						if (verifyState > 0) {
-							verify = "+" + Integer.toString(verifyState);
-						} else {
-							verify = Integer.toString(verifyState);
-						}
+							String verify;
+							if (verifyState > 0) {
+								verify = "+" + Integer.toString(verifyState);
+							} else {
+								verify = Integer.toString(verifyState);
+							}
 
-						codeReviewed = codeRev + "       " + verify;
-						if (codeReviewed.compareTo(old) != 0) {
-							genVoteData.setText(codeReviewed);
+							codeReviewed = codeRev + "       " + verify;
 						}
+					} else {
+						codeReviewed = "";
+					}
+					if (codeReviewed.compareTo(old) != 0) {
+						genVoteData.setText(codeReviewed);
 					}
 				}
 
@@ -1037,8 +1060,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 						Entry<String, RevisionInfo> entry = itr1.next();
 						System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
 								+ entry.getKey());
-						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(), entry.getKey(),
-								fileInfo.getold_path(), new NullProgressMonitor());
+						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
+								entry.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
 						CompareInput ci = new CompareInput();
 						if (resRight != null) {
 							ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
@@ -1075,23 +1098,81 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		lblSummary.setLayoutData(gd_lblSummary);
 		lblSummary.setText("Summary:");
 
-		Label lblDrafts = new Label(filesGroup, SWT.NONE);
+		lblDrafts = new Label(filesGroup, SWT.NONE);
 		GridData gd_lblDrafts = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
 		gd_lblDrafts.horizontalSpan = 1;
 		lblDrafts.setLayoutData(gd_lblDrafts);
 		lblDrafts.setText("drafts:");
 
-		Label lblComments = new Label(filesGroup, SWT.NONE);
+		lblComments = new Label(filesGroup, SWT.NONE);
 		GridData gd_lblComments = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
 		gd_lblComments.horizontalSpan = 1;
 		lblComments.setLayoutData(gd_lblComments);
 		lblComments.setText("comments:");
+		lblComments.addPaintListener(new PaintListener() {
 
-		Label lblTotal = new Label(filesGroup, SWT.NONE);
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblComments.getText();
+				String newCount = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
+				sb.append("comments:");
+
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					int numComment = 0;
+					while (itr1.hasNext()) {
+						DisplayFileInfo displayFileInfo = itr1.next();
+						if (displayFileInfo.getComments() != null) {
+							numComment += displayFileInfo.getComments().size();
+						}
+					}
+					if (numComment > 0) {
+						sb.append(Integer.toString(numComment));
+					}
+				}
+				newCount = sb.toString();
+				if (!old.equals(newCount)) {
+					lblComments.setText(newCount);
+					lblComments.pack();
+				}
+			}
+		});
+
+		lblTotal = new Label(filesGroup, SWT.NONE);
 		GridData gd_lblTotal = new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1);
 		gd_lblTotal.horizontalSpan = 2;
 		lblTotal.setLayoutData(gd_lblTotal);
 		lblTotal.setText("total");
+		lblTotal.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblTotal.getText();
+				String newCount = ""; //$NON-NLS-1$
+				int lineInserted = 0;
+				int lineDeleted = 0;
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					while (itr1.hasNext()) {
+						DisplayFileInfo fileInfo = itr1.next();
+						lineInserted += fileInfo.getLinesInserted();
+						lineDeleted += fileInfo.getLinesDeleted();
+					}
+					StringBuilder sb = new StringBuilder();
+					sb.append("+"); //$NON-NLS-1$
+					sb.append(Integer.toString(lineInserted));
+					sb.append("/"); //$NON-NLS-1$
+					sb.append("-"); //$NON-NLS-1$
+					sb.append(Integer.toString(lineDeleted));
+					newCount = sb.toString();
+				}
+				if (!old.equals(newCount)) {
+					lblTotal.setText(newCount);
+					lblTotal.pack();
+				}
+			}
+		});
 
 		Button btnOpenAll = new Button(filesGroup, SWT.NONE);
 		GridData gd_btnOpenAll = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
@@ -1105,15 +1186,18 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		lblDiffAgainst.setLayoutData(gd_DiffAgainst);
 		lblDiffAgainst.setText("Diff against:");
 
-		Combo combo = new Combo(filesGroup, SWT.NONE);
+		comboDiffAgainst = new Combo(filesGroup, SWT.NONE);
 		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 2, 1);
 		gd_combo.verticalIndent = 5;
 		int numChar = 15;
-		Point pt = computeFontSize(combo);
+		Point pt = computeFontSize(comboDiffAgainst);
 		gd_combo.minimumWidth = numChar * pt.x;
-		gd_combo.horizontalSpan = 2;
-		combo.setLayoutData(gd_combo);
+		gd_combo.horizontalSpan = 1;
+		comboDiffAgainst.setLayoutData(gd_combo);
 		System.err.println("Combo mini width = " + (numChar * pt.x));
+		String[] items = { "Base", "Workspace" };
+		comboDiffAgainst.setItems(items);
+		comboDiffAgainst.select(0);//Select the Workspace to compare with by default
 
 		Button btnPublish = new Button(filesGroup, SWT.NONE);
 		GridData gd_btnPublish = new GridData(SWT.RIGHT, SWT.TOP, false, false, 3, 1);
@@ -1127,14 +1211,77 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		btnDelete.setLayoutData(gd_btnDelete);
 		btnDelete.setText("Delete");
 
-		UIPatchSetsTable tablePatchSetsViewer = new UIPatchSetsTable();
-		tablePatchSetsViewer.createTableViewerSection(filesGroup, new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
+		UIPatchSetsTable tableUIPatchSetsTable = new UIPatchSetsTable();
+		tableUIPatchSetsTable.createTableViewerSection(filesGroup, new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
+
+		tablePatchSetsViewer = tableUIPatchSetsTable.getViewer();
+		patchSetSelection();
 
 		filesGroup.pack();
 		scFilesTab.setMinSize(filesGroup.getSize());
 
 		//Set the binding for this section
-		filesTabDataBindings(tableFilesViewer);
+		filesTabDataBindings(tableFilesViewer, tablePatchSetsViewer);
+	}
+
+	/**
+	 *
+	 */
+	private void patchSetSelection() {
+		tablePatchSetsViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+
+				Object element = sel.getFirstElement();
+				if (element instanceof RevisionInfo) {
+					RevisionInfo selInfo = (RevisionInfo) element;
+					fillFiles(selInfo.getFiles());
+
+					setListCommentsPerPatchSet(fGerritRepository, fChangeInfo.getId(), selInfo.getCommit().getCommit());
+					displayFilesTable();
+					setDiffAgainstCombo();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Fill the combo box with all patch set to compare with except the selected one. Also, add the Base and the
+	 * Workspace which is the default one
+	 */
+	private void setDiffAgainstCombo() {
+		List<String> listPatch = new ArrayList<String>();
+		//Always start the list with the following items
+		listPatch.add("Workspace");
+		listPatch.add("Base");
+		//Find the current Patchset selection
+		ISelection selected = tablePatchSetsViewer.getSelection();
+		if (!selected.isEmpty()) {
+			int psSelected = -1;
+			if (selected instanceof StructuredSelection) {
+				Object element = ((IStructuredSelection) selected).getFirstElement();
+				if (element instanceof RevisionInfo) {
+					RevisionInfo selectInfo = (RevisionInfo) element;
+					psSelected = selectInfo.getNumber();
+				}
+			}
+			//Display the list of patchset without the current one
+			List<RevisionInfo> listRevision = new ArrayList<RevisionInfo>(fRevisions.values());
+
+			Iterator<RevisionInfo> it = listRevision.iterator();
+			while (it.hasNext()) {
+				RevisionInfo rev = it.next();
+				if (rev.getNumber() != psSelected) {
+					listPatch.add(Integer.toString(rev.getNumber()));
+				}
+			}
+
+			comboDiffAgainst.setItems(listPatch.toArray(new String[0]));
+			comboDiffAgainst.select(0);//Select the Workspace to compare with by default
+
+		}
 	}
 
 	@Override
@@ -1178,6 +1325,33 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	/* Section to SET the data structure                           */
 	/*                                                             */
 	/************************************************************* */
+
+	/**
+	 * @param string2
+	 * @param string
+	 */
+
+	private void setListCommentsPerPatchSet(GerritRepository gerritRepository, String changeId, String revisionId) {
+
+		Iterator<DisplayFileInfo> displayFile = fFilesDisplay.values().iterator();
+		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritRepository, changeId, revisionId,
+				new NullProgressMonitor());
+
+		//Fill the Files table
+		while (displayFile.hasNext()) {
+			DisplayFileInfo displayFileInfo = displayFile.next();
+			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
+			while (commentIter.hasNext()) {
+				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
+				//Add comments associated to the file
+				if (displayFileInfo.getold_path().equals(entryComment.getKey())) {
+					displayFileInfo.setComments(entryComment.getValue());
+					break;
+				}
+			}
+		}
+
+	}
 
 	/**
 	 * @param gerritRepository
@@ -1289,12 +1463,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
 			tableSameTopicViewer.setInput(writeInfoList);
 		}
-		//writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
-		//tableSameTopicViewer = .setInput(writeInfoList);
-		//retrieveData(writeInfoList);
 	}
-
-	//retrieve info list
 
 	/**
 	 * @param gerritRepository
@@ -1341,9 +1510,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private void setCurrentRevisionAndMessageTab(GerritRepository gerritRepository, String change_id) {
 		ChangeInfo res = queryMessageTab(gerritRepository, change_id, new NullProgressMonitor());
 
-		//Need to initialise the variables first
-		fFiles = new HashMap<String, FileInfo>();
-		fCommitInfo.reset();
+		//Need to initialize the variables first
 		if (fRevisions != null) {
 			fRevisions.clear();
 		}
@@ -1353,48 +1520,175 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			fChangeInfo.setLabels(res.getLabels());
 			fChangeInfo.setMessages(res.getMessages());
 			fRevisions = res.getRevisions();
-			Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-			while (itr1.hasNext()) {
-				Entry<String, RevisionInfo> entry = itr1.next();
+			//Fill the commitID for each revisions and sort it
+			setPatchSetCommitId();
 
-				fCommitInfo.setCommit(res.getCurrentRevision());
+			//Set the Files tab data structure
+			fillFiles(res.getRevisions().get(res.getCurrentRevision()).getFiles());
+			setAllPatchSet();
+			setCurentCommitInfo(res.getCurrentRevision());
 
-				//	fCommitInfo = entry.getValue().getCommit();
-				//				fCommitInfo.addPropertyChangeListener("message", this);
+			//Display the History tab
+			WritableList writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
+			tableHistoryViewer.setInput(writeInfoList);
+			tableHistoryViewer.refresh();
+
+		}
+
+	}
+
+	/**
+	 * This method fills the commit Id into the RevisionInfo structure since only the current revision patchset is set.
+	 */
+	private void setPatchSetCommitId() {
+		Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
+		while (itr1.hasNext()) {
+			Entry<String, RevisionInfo> entry = itr1.next();
+			if (entry.getValue().getCommit() != null) {
+				entry.getValue().getCommit().setCommit(entry.getKey());
+			}
+		}
+	}
+
+	/**
+	 * Set the data structure according to the selected revision. It could be the current revision or any path set
+	 * revision. It will trigger the update for the message tab structure
+	 *
+	 * @param String
+	 *            revision
+	 */
+	private void setCurentCommitInfo(String revision) {
+		//Need to initialize the variables first
+		fCommitInfo.reset();
+
+		Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
+		while (itr1.hasNext()) {
+			Entry<String, RevisionInfo> entry = itr1.next();
+
+			//Keep the current revision to display
+			if (entry.getKey().equals(revision)) {
+				fCommitInfo.setCommit(revision);
 				fCommitInfo.setMessage(entry.getValue().getCommit().getMessage());
 				fCommitInfo.setParents(entry.getValue().getCommit().getParents());
 				fCommitInfo.setAuthor(entry.getValue().getCommit().getAuthor());
 				fCommitInfo.setCommitter(entry.getValue().getCommit().getCommitter());
-				//Store the files
-				fFiles.putAll(entry.getValue().getFiles());
 
-				entry.getValue().setFiles(entry.getValue().getFiles());
-
-//				Iterator<Map.Entry<String, FileInfo>> itr2 = fFiles.entrySet().iterator();
-//				while (itr2.hasNext()) {
-//
-//					Entry<String, FileInfo> entry1 = itr2.next();
-//
-//					entry1.getValue().addPropertyChangeListener("old_path", this);
-//					entry1.getValue().setOld_path(entry1.getKey());
-//				}
 			}
-
-			WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
-			tableFilesViewer.setInput(writeInfoList);
-			tableFilesViewer.refresh();
-
-			writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
-			tableHistoryViewer.setInput(writeInfoList);
-			tableHistoryViewer.refresh();
 		}
 	}
 
-	/************************************************************* */
+	/**
+	 * Fill the Files table
+	 */
+	private void displayFilesTable() {
+		WritableList writeInfoList;
+//					entry1.getValue().addPropertyChangeListener("old_path", this);
+		Iterator<Entry<String, DisplayFileInfo>> itrFileDisplay = fFilesDisplay.entrySet().iterator();
+		while (itrFileDisplay.hasNext()) {
+			Entry<String, DisplayFileInfo> entry1 = itrFileDisplay.next();
+
+			entry1.getValue().addPropertyChangeListener("fileInfo", this);
+			entry1.getValue().setOld_path(entry1.getKey());
+		}
+
+		//Set the data fields in the Files Tab
+		setFileTabFields();
+
+		writeInfoList = new WritableList(fFilesDisplay.values(), DisplayFileInfo.class);
+		tableFilesViewer.setInput(writeInfoList);
+		tableFilesViewer.refresh();
+	}
+
+	/**
+	 * @param map
+	 */
+	private void fillFiles(Map<String, FileInfo> map) {
+		fFilesDisplay.clear();
+		//Store the files
+
+		//Fill the Files table
+		Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
+		while (fileIter.hasNext()) {
+			Entry<String, FileInfo> entryFile = fileIter.next();
+			DisplayFileInfo displayFileInfo = new DisplayFileInfo(entryFile.getValue());
+			displayFileInfo.setOld_path(entryFile.getKey());
+			fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
+		}
+	}
+
+	/**
+	 * Set the data structure to fill the patch set table and display it.
+	 */
+	private void setAllPatchSet() {
+		WritableList writeInfoList;
+
+		List<RevisionInfo> listRevision = new ArrayList<RevisionInfo>(fRevisions.values());
+		Collections.sort(listRevision, new Comparator<RevisionInfo>() {
+
+			@Override
+			public int compare(RevisionInfo rev1, RevisionInfo rev2) {
+				return rev2.getNumber() - rev1.getNumber();
+			}
+		});
+		writeInfoList = new WritableList(listRevision, List.class);
+
+		tablePatchSetsViewer.setInput(writeInfoList);
+		//If we have a patch set, we need to select the current which is the top one
+		if (!listRevision.isEmpty()) {
+			tablePatchSetsViewer.getTable().setSelection(0);
+			setDiffAgainstCombo();
+			setListCommentsPerPatchSet(fGerritRepository, fChangeInfo.getId(), listRevision.get(0)
+					.getCommit()
+					.getCommit());
+			displayFilesTable();
+		}
+
+		tablePatchSetsViewer.refresh();
+	}
+
+	/**
+	 * Fill the data fields included in the Files Tab
+	 */
+	private void setFileTabFields() {
+		lblDrafts.redraw();
+		lblComments.redraw();
+		lblTotal.redraw();
+	}
+
+	/***************************************************************/
 	/*                                                             */
 	/* Section to QUERY the data structure                         */
 	/*                                                             */
 	/************************************************************* */
+
+	private Map<String, ArrayList<CommentInfo>> queryComments(GerritRepository gerritRepository, String change_id,
+			String revision_id, IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
+
+			// Create query
+			if (gerrit != null) {
+				ListCommentsCommand command = gerrit.getListComments(change_id, revision_id);
+
+				Map<String, ArrayList<CommentInfo>> res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				}
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
+
+	}
 
 	private MergeableInfo queryMergeable(GerritRepository gerritRepository, String change_id, String revision_id,
 			IProgressMonitor monitor) {
@@ -1442,10 +1736,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			// Create query
 			if (gerrit != null) {
 				GetIncludedInCommand command = gerrit.getIncludedIn(change_id);
-/*			command.addOption(ChangeOption.ALL_FILES);
-			command.addOption(ChangeOption.CURRENT_REVISION);
-			command.addOption(ChangeOption.CURRENT_COMMIT);
- */
 				IncludedInInfo res = null;
 				try {
 					res = command.call();
@@ -1464,8 +1754,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1522,8 +1812,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id,
-			IProgressMonitor monitor) {
+	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1568,23 +1857,12 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 //				command.addLimit(101);
 				command.addTopic(topic);
 
-//				setQuery(query, command);
-
 				try {
 					res = command.call();
 				} catch (EGerritException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				final String queryText = query;
-//				Display.getDefault().syncExec(new Runnable() {
-//					@Override
-//					public void run() {
-//						setRepositoryVersionLabel(defaultServerInfo.getName(), gerritRepository.getVersion().toString());
-//						fSearchRequestText.setText(queryText);
-//
-//					}
-//				});
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -1606,29 +1884,13 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			if (gerrit != null) {
 				// Create query
 				QueryChangesCommand command = gerrit.queryChanges();
-//				command.addOption(ChangeOption.LABELS);
-//				command.addOption(ChangeOption.CURRENT_REVISION);
-//				command.addOption(ChangeOption.CURRENT_FILES);
-//				command.addLimit(101);
 				command.addConflicts(change_id);
-
-//				setQuery(query, command);
 
 				try {
 					res = command.call();
 				} catch (EGerritException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//				final String queryText = query;
-//				Display.getDefault().syncExec(new Runnable() {
-//					@Override
-//					public void run() {
-//						setRepositoryVersionLabel(defaultServerInfo.getName(), gerritRepository.getVersion().toString());
-//						fSearchRequestText.setText(queryText);
-//
-//					}
-//				});
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -1656,8 +1918,10 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			if (gerrit != null) {
 				GetChangeCommand command = gerrit.getChange(change_id);
 				command.addOption(ChangeOption.ALL_FILES);
-				command.addOption(ChangeOption.CURRENT_REVISION);
-				command.addOption(ChangeOption.CURRENT_COMMIT);
+				command.addOption(ChangeOption.ALL_REVISIONS);
+				command.addOption(ChangeOption.ALL_COMMITS);
+				command.addOption(ChangeOption.DRAFT_COMMENTS);
+				command.addOption(ChangeOption.REVIEWED);
 				command.addOption(ChangeOption.MESSAGES);
 				command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
 
@@ -1694,7 +1958,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		//
 		IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
-//		IObservableValue idFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
 		IObservableValue idFChangeInfoObserveValue = BeanProperties.value("_number").observe(fChangeInfo);
 		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null, null);
 		//
@@ -1714,8 +1977,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-				null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -1734,8 +1996,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		bindingContext.bindValue(observeTextLblUpdated_1ObserveWidget, updatedFChangeInfoObserveValue, null, null);
 		//
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
-		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type")
-				.observe(fMergeableInfo);
+		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe(
+				fMergeableInfo);
 		bindingContext.bindValue(observeTextGenStrategyDataObserveWidget, bytesMergeableinfogetSubmit_typeObserveValue,
 				null, null);
 		//
@@ -1786,8 +2048,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text()
 					.observe(includedInTagsData);
 			IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn);
-			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null,
-					null);
+			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
 		}
 		return bindingContext;
 	}
@@ -1831,8 +2092,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" }));
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
-				BeanProperties.values(new String[] { "change_id" }));
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 
@@ -1867,17 +2127,33 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		return bindingContext;
 	}
 
-	protected void filesTabDataBindings(TableViewer tableViewer) {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableViewer.setContentProvider(contentProvider);
+	protected void filesTabDataBindings(TableViewer tableFilesViewer, TableViewer tablePatchSetsViewer) {
+		//Set the PatchSetViewer
+		ObservableListContentProvider contentPatchSetProvider = new ObservableListContentProvider();
+		tablePatchSetsViewer.setContentProvider(contentPatchSetProvider);
+		WritableMap writeInfoMap = new WritableMap();
+		writeInfoMap.putAll(fRevisions);
+		WritableList writeInfoList = new WritableList(writeInfoMap.values(), Map.class);
 
-		WritableList writeInfoList = new WritableList(fFiles.values(), FileInfo.class);
+		IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
+				BeanProperties.values(new String[] { "_number", "commit" }));
+
+		ViewerSupport.bind(tablePatchSetsViewer, writeInfoList, BeanProperties.values(new String[] { "commit" }));
+		tablePatchSetsViewer.setLabelProvider(new FilePatchSetTableLabelProvider(observePatchSetMaps));
+
+		//Set the FilesViewer
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableFilesViewer.setContentProvider(contentProvider);
+
+		writeInfoList = new WritableList(fFilesDisplay.values(), DisplayFileInfo.class);
 
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "old_path" }));
+				BeanProperties.values(new String[] { "fileInfo", "comments" }));
 
-		ViewerSupport.bind(tableViewer, writeInfoList, BeanProperties.values(new String[] { "old_path" }));
-		tableViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+		ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
+
+		tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+
 	}
 
 	protected void hisTabDataBindings() {

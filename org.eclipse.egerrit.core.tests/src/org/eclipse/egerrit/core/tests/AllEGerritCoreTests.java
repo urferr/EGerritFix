@@ -19,6 +19,7 @@ import org.eclipse.egerrit.core.command.tests.GetContentCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetIncludedInCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetRelatedChangesCommandTest;
+import org.eclipse.egerrit.core.command.tests.ListCommentsCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListReviewersCommandTest;
 import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
 import org.eclipse.egerrit.core.rest.tests.AccountInfoTest;
@@ -48,21 +49,28 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-		// org.eclipse.egerrit.core
-		EGerritCorePluginTest.class, GerritRepositoryTest.class, GerritClientAuthenticationTest.class,
-		GerritFactoryTest.class, GerritTest.class, Gerrit_2_9Test.class,
+	// org.eclipse.egerrit.core
+	EGerritCorePluginTest.class,
+		GerritRepositoryTest.class,
+		GerritClientAuthenticationTest.class,
+	GerritFactoryTest.class,
+		GerritTest.class,
+		Gerrit_2_9Test.class,
 
-		// org.eclipse.egerrit.core.rest
-		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
-		ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
-		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
-		ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class, RelatedChangesInfoTest.class,
-		RelatedChangeAndCommitInfoTest.class,
+	// org.eclipse.egerrit.core.rest
+	AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
+	ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
+	GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
+	ReviewerInfoTest.class, MergeableInfoTest.class,
+		IncludedInInfoTest.class,
+		RelatedChangesInfoTest.class,
+	RelatedChangeAndCommitInfoTest.class,
 
-		// org.eclipse.egerrit.core.command
-		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class, GetContentCommandTest.class,
-		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class, ListReviewersCommandTest.class,
-		GetIncludedInCommandTest.class, GetRelatedChangesCommandTest.class })
+	// org.eclipse.egerrit.core.command
+	GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
+		GetContentCommandTest.class, GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
+		ListReviewersCommandTest.class, ListCommentsCommandTest.class, GetIncludedInCommandTest.class,
+		GetRelatedChangesCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------

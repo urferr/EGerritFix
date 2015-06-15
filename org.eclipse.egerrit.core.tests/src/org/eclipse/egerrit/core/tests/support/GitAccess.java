@@ -18,6 +18,10 @@ import java.io.Writer;
 import java.net.Authenticator;
 import java.util.Collection;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
@@ -30,6 +34,8 @@ import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.tests.Common;
+import org.eclipse.egit.core.Activator;
+import org.eclipse.egit.core.RepositoryUtil;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
@@ -93,8 +99,8 @@ public class GitAccess {
 	/**
 	 * Creates a file and stage it
 	 *
-	 * @param fileName,
-	 *            the path relative to the root of repo
+	 * @param fileName
+	 *            , the path relative to the root of repo
 	 * @param content
 	 * @return
 	 */
@@ -133,8 +139,8 @@ public class GitAccess {
 				.call();
 		lastCommitId = ObjectId.toString(commitId.getId());
 		fGit.push()
-				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
-				.call();
+		.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
+		.call();
 	}
 
 	/**
@@ -160,8 +166,9 @@ public class GitAccess {
 
 		Collection<RemoteRefUpdate> crru = result.iterator().next().getRemoteUpdates();
 		RemoteRefUpdate rru = crru.iterator().next();
-		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
-				rru.getNewObjectId().toString().length() - 1);
+		fCommit_id = rru.getNewObjectId()
+				.toString()
+				.substring("AnyObjectId[".length(), rru.getNewObjectId().toString().length() - 1);
 
 	}
 

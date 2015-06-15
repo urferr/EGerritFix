@@ -56,6 +56,31 @@ public class FileInfo {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Constructor to fill the data structure
+	 *
+	 * @param FileInfo
+	 *            fileInfo
+	 */
+	public FileInfo(FileInfo fileInfo) {
+		setAllFields(fileInfo);
+	}
+
+	/**
+	 * Fill the current structure with already defined data
+	 *
+	 * @param FileInfo
+	 *            fileInfo
+	 */
+	public void setAllFields(FileInfo fileInfo) {
+		status = fileInfo.getStatus();
+		binary = fileInfo.binary;
+		old_path = fileInfo.getold_path();
+		lines_inserted = fileInfo.getLinesInserted();
+		lines_deleted = fileInfo.getLinesDeleted();
+
+	}
+
+	/**
 	 * @return The status of the file (“A”=Added, “D”=Deleted, “R”=Renamed, “C”=Copied, “W”=Rewritten). Not set if the
 	 *         file was Modified (“M”).
 	 */
