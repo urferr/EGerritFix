@@ -258,13 +258,15 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 			Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
 			while (revisions.hasNext()) {
 				RevisionInfo aRevision = revisions.next().getValue();
-
-				Iterator<Map.Entry<String, FileInfo>> files = aRevision.getFiles().entrySet().iterator();
-				while (files.hasNext()) {
-					Entry<String, FileInfo> aFile = files.next();
-//					aFile.getValue().setOld_path(aFile.getKey());
-					System.err.println("Cannot set the OLD_PATH IN GetChangeCommand.postProcessResult() path: "
-							+ aFile.getKey());
+				Map<String, FileInfo> filesMap = aRevision.getFiles();
+				if (filesMap != null) {
+					Iterator<Map.Entry<String, FileInfo>> files = filesMap.entrySet().iterator();
+					while (files.hasNext()) {
+						Entry<String, FileInfo> aFile = files.next();
+//						aFile.getValue().setOld_path(aFile.getKey());
+						System.err.println("Cannot set the OLD_PATH IN GetChangeCommand.postProcessResult() path: "
+								+ aFile.getKey());
+					}
 				}
 			}
 		}

@@ -1606,13 +1606,16 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		fFilesDisplay.clear();
 		//Store the files
 
-		//Fill the Files table
-		Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
-		while (fileIter.hasNext()) {
-			Entry<String, FileInfo> entryFile = fileIter.next();
-			DisplayFileInfo displayFileInfo = new DisplayFileInfo(entryFile.getValue());
-			displayFileInfo.setOld_path(entryFile.getKey());
-			fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
+		if (map != null) {
+			//Fill the Files table
+			Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
+			while (fileIter.hasNext()) {
+				Entry<String, FileInfo> entryFile = fileIter.next();
+				DisplayFileInfo displayFileInfo = new DisplayFileInfo(entryFile.getValue());
+				displayFileInfo.setOld_path(entryFile.getKey());
+				fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
+			}
+
 		}
 	}
 
