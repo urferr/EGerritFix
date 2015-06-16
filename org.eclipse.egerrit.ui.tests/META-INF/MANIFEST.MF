@@ -6,17 +6,15 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: org.eclipse.egerrit.ui.tests.EGerritUITestsPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.junit;bundle-version="4.11.0",
- org.eclipse.egerrit.ui;bundle-version="0.1.0",
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.swtbot.eclipse.finder;bundle-version="2.2.1",
  org.eclipse.swtbot.go;bundle-version="2.2.1",
  org.eclipse.egerrit.core;bundle-version="0.1.0",
  org.eclipse.egerrit.core.tests;bundle-version="0.1.0",
- org.eclipse.compare;bundle-version="3.5.501"
+ org.eclipse.compare;bundle-version="3.5.501",
+ org.eclipse.egerrit.ui;bundle-version="0.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.egerrit.core.tests.support,
- org.eclipse.egerrit.ui.editors.model,
- org.eclipse.jgit.api;version="4.0.0",
+Import-Package: org.eclipse.jgit.api;version="4.0.0",
  org.eclipse.ui.internal.ide

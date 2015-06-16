@@ -15,18 +15,22 @@ package org.eclipse.egerrit.ui.editors;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -39,7 +43,9 @@ import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -88,16 +94,22 @@ import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -117,6 +129,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -127,6 +140,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor extends EditorPart implements PropertyChangeListener {
@@ -429,27 +443,66 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		checkout.setText("Checkout");
-
-		Button pull = new Button(c, SWT.PUSH);
-		pull.addMouseListener(new MouseAdapter() {
+		checkout.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (fRevisions != null) {
-					Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-					itr1.hasNext();
-					Entry<String, RevisionInfo> entry = itr1.next();
-					System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "commands: "
-							+ entry.getValue().getFetch());
-					for (Map.Entry<String, FetchInfo> entry1 : entry.getValue().getFetch().entrySet()) {
-						System.out.println("protocol : " + entry1.getKey());
-						for (Map.Entry<String, String> entry3 : entry1.getValue().getCommands().entrySet()) {
-							System.out.println(entry3.getKey() + "/" + entry3.getValue());
+
+				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				GerritToGitMapping gTGM = null;
+				try {
+					gTGM = new GerritToGitMapping(new URIish(fGerritRepository.getURIBuilder(false).toString()),
+							genProjectData.getText());
+				} catch (URISyntaxException e2) {
+					EGerritCorePlugin.logError(e2.getMessage());
+				}
+				Repository repo = null;
+				try {
+					repo = gTGM.find();
+				} catch (IOException e2) {
+					EGerritCorePlugin.logError(e2.getMessage());
+				}
+				final Set<Repository> repositories = new HashSet();
+				repositories.add(repo);
+
+				if (!repositories.contains(null)) {
+					//Find the current selected Patchset in the table
+					ISelection selected = tablePatchSetsViewer.getSelection();
+					if (!selected.isEmpty()) {
+						String psSelected = "";
+						if (selected instanceof StructuredSelection) {
+							Object element = ((IStructuredSelection) selected).getFirstElement();
+							if (element instanceof RevisionInfo) {
+								RevisionInfo selectInfo = (RevisionInfo) element;
+								Map<String, FetchInfo> fetchInfoMap = selectInfo.getFetch();
+								FetchInfo fetchInfo = fetchInfoMap.get("git");
+								if (fetchInfo != null) {
+									psSelected = fetchInfo.getRef().toString();
+								}
+							}
+						}
+						if ((psSelected != null) && !psSelected.isEmpty()) {
+							FetchGerritChangeWizard fetchOp = new FetchGerritChangeWizard(repo, psSelected);
+							fetchOp.addPages();
+							WizardDialog wizardDialog = new WizardDialog(parent.getShell(), fetchOp);
+							wizardDialog.create();
+							wizardDialog.open();
+						} else {
+							Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
+									"No patchset selected");
+							ErrorDialog.openError(shell, "Error", "Operation could not be performed", status);
 						}
 					}
 
+				} else {
+					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repositories found");
+					ErrorDialog.openError(shell, "Error", "Operation could not be performed", status);
 				}
+
 			}
+
 		});
+
+		Button pull = new Button(c, SWT.PUSH);
 		pull.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		pull.setText("Pull");
 
@@ -1321,9 +1374,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/************************************************************* */
-	/*                                                             */
-	/* Section to SET the data structure                           */
-	/*                                                             */
+/*                                                             */
+/* Section to SET the data structure                           */
+/*                                                             */
 	/************************************************************* */
 
 	/**
@@ -1659,9 +1712,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/***************************************************************/
-	/*                                                             */
-	/* Section to QUERY the data structure                         */
-	/*                                                             */
+/*                                                             */
+/* Section to QUERY the data structure                         */
+/*                                                             */
 	/************************************************************* */
 
 	private Map<String, ArrayList<CommentInfo>> queryComments(GerritRepository gerritRepository, String change_id,
@@ -1945,9 +1998,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/************************************************************* */
-	/*                                                             */
-	/* Section adjust the DATA binding                             */
-	/*                                                             */
+/*                                                             */
+/* Section adjust the DATA binding                             */
+/*                                                             */
 	/************************************************************* */
 
 	@Override

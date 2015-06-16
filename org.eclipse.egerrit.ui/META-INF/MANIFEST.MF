@@ -17,7 +17,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jgit;bundle-version="4.0.0",
  org.eclipse.core.resources;bundle-version="3.9.1",
  org.apache.httpcomponents.httpclient,
- org.slf4j.api;bundle-version="1.7.2"
+ org.slf4j.api;bundle-version="1.7.2",
+ org.eclipse.egit.ui;bundle-version="4.1.0",
+ org.eclipse.swt
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
@@ -25,4 +27,5 @@ Export-Package: org.eclipse.egerrit.ui,
  org.eclipse.egerrit.ui.editors,
  org.eclipse.egerrit.ui.editors.model,
  org.eclipse.egerrit.ui.internal.utils
-Import-Package: org.apache.commons.codec.binary
+Import-Package: org.apache.commons.codec.binary,
+ org.apache.http.client.utils;version="4.3.6"
