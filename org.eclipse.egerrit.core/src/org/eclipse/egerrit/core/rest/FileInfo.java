@@ -51,6 +51,8 @@ public class FileInfo {
 	// deleted.
 	private int lines_deleted;
 
+	private RevisionInfo containedIn;
+
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
@@ -77,7 +79,7 @@ public class FileInfo {
 		old_path = fileInfo.getold_path();
 		lines_inserted = fileInfo.getLinesInserted();
 		lines_deleted = fileInfo.getLinesDeleted();
-
+		containedIn = fileInfo.getContainingRevisionInfo();
 	}
 
 	/**
@@ -110,6 +112,14 @@ public class FileInfo {
 		firePropertyChange("old_path", this.old_path, this.old_path = old_path);
 	}
 
+	public void setContainingRevision(RevisionInfo revision) {
+		containedIn = revision;
+	}
+
+	public RevisionInfo getContainingRevisionInfo() {
+		return containedIn;
+	}
+
 	/**
 	 * @return Number of inserted lines. 0 for binary files.
 	 */
@@ -125,15 +135,21 @@ public class FileInfo {
 	}
 
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+		}
 	}
 
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+		}
 	}
 
 	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -154,6 +170,7 @@ public class FileInfo {
 		result = prime * result + lines_inserted;
 		result = prime * result + ((old_path == null) ? 0 : old_path.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((containedIn == null) ? 0 : containedIn.hashCode());
 		return result;
 	}
 
@@ -188,6 +205,13 @@ public class FileInfo {
 				return false;
 			}
 		} else if (!old_path.equals(other.old_path)) {
+			return false;
+		}
+		if (containedIn == null) {
+			if (other.containedIn != null) {
+				return false;
+			}
+		} else if (!containedIn.equals(other.containedIn)) {
 			return false;
 		}
 		if (status == null) {

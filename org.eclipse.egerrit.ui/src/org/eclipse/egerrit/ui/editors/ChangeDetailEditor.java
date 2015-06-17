@@ -31,9 +31,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
-import org.eclipse.compare.CompareUI;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -76,7 +73,6 @@ import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.DisplayFileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
-import org.eclipse.egerrit.ui.editors.model.CompareInput;
 import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
@@ -100,6 +96,7 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -145,6 +142,10 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor";
+
+	private static final String BASE = "Base"; //$NON-NLS-1$
+
+	private static final String WORKSPACE = "Workspace"; //$NON-NLS-1$
 
 	private static ChangeDetailEditor chDetailEditor = null;
 
@@ -845,43 +846,15 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		tableFilesViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-
 				Object element = sel.getFirstElement();
 				if (element instanceof FileInfo) {
-					FileInfo fileInfo = (FileInfo) element;
-					if (fRevisions != null) {
-						Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-						itr1.hasNext();
-						Entry<String, RevisionInfo> entry = itr1.next();
-						System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id() + "/revisionid: "
-								+ entry.getKey());
-						String resRight = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
-								entry.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
-						CompareInput ci = new CompareInput();
-						if (resRight != null) {
-							ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
-						} else {
-							ci.setRight("Could not parse response");
-						}
-
-						if (itr1.hasNext()) {
-							Entry<String, RevisionInfo> entryLeft = itr1.next();
-							System.out.println(">>>>>>>>>>>>>>>changeid: " + fChangeInfo.getChange_id()
-									+ "/revisionid: " + entryLeft.getKey());
-							String resLeft = getFilesContent(fGerritRepository, fChangeInfo.getChange_id(),
-									entryLeft.getKey(), fileInfo.getold_path(), new NullProgressMonitor());
-							if (resLeft != null) {
-								ci.setLeft(StringUtils.newStringUtf8(Base64.decodeBase64(resLeft)));
-							} else {
-								ci.setLeft("Could not parse response");
-							}
-						} else {
-							ci.setLeft("no file");
-
-						}
-
-						CompareUI.openCompareEditor(ci);
-						fParent.pack(true);
+					OpenCompareEditor compareEditor = new OpenCompareEditor(fGerritRepository, fChangeInfo);
+					String diffSource = comboDiffAgainst.getText();
+					if (diffSource.equals(WORKSPACE)) {
+						compareEditor.compareAgainstWorkspace((FileInfo) element);
+					} else {
+						MessageDialog.openError(null, "Can not open compare editor",
+								"The compare editor can not yet show difference with " + diffSource);
 					}
 				}
 			}
@@ -990,7 +963,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		gd_combo.horizontalSpan = 1;
 		comboDiffAgainst.setLayoutData(gd_combo);
 		System.err.println("Combo mini width = " + (numChar * pt.x));
-		String[] items = { "Base", "Workspace" };
+		String[] items = { BASE, WORKSPACE };
 		comboDiffAgainst.setItems(items);
 		comboDiffAgainst.select(0);//Select the Workspace to compare with by default
 
@@ -1049,8 +1022,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private void setDiffAgainstCombo() {
 		List<String> listPatch = new ArrayList<String>();
 		//Always start the list with the following items
-		listPatch.add("Workspace");
-		listPatch.add("Base");
+		listPatch.add(WORKSPACE);
+		listPatch.add(BASE);
 		//Find the current Patchset selection
 		ISelection selected = tablePatchSetsViewer.getSelection();
 		if (!selected.isEmpty()) {

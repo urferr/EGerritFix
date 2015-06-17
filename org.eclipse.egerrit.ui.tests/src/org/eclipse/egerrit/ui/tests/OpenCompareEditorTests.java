@@ -139,8 +139,7 @@ public class OpenCompareEditorTests {
 		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerritRepo(), changeInfo);
 		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();
 		Entry<String, RevisionInfo> theRevision = revisions.entrySet().iterator().next();
-		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next(),
-				theRevision);
+		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next());
 		return compareHelper.getCompareInput();
 	}
 }

@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -34,7 +33,6 @@ import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.jgit.lib.Repository;
@@ -54,9 +52,9 @@ public class OpenCompareEditor {
 		this.changeInfo = changeInfo;
 	}
 
-	public void compareAgainstWorkspace(FileInfo fileInfo, Map.Entry<String, RevisionInfo> revision) {
-		String resRight = getFilesContent(gerritRepo, changeInfo.getChange_id(), revision.getKey(),
-				fileInfo.getold_path(), new NullProgressMonitor());
+	public void compareAgainstWorkspace(FileInfo fileInfo) {
+		String resRight = getFilesContent(gerritRepo, changeInfo.getChange_id(),
+				fileInfo.getContainingRevisionInfo().getId(), fileInfo.getold_path(), new NullProgressMonitor());
 		CompareInput ci = new CompareInput();
 		if (resRight != null) {
 			ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));

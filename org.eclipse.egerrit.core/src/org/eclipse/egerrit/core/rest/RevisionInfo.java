@@ -70,6 +70,9 @@ public class RevisionInfo {
 	// current revision. Only set if REVIEWED option is requested.
 	private Boolean reviewed;
 
+	//Gerrit internal id for this revision
+	private String id;
+
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
@@ -159,6 +162,14 @@ public class RevisionInfo {
 		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
@@ -170,18 +181,11 @@ public class RevisionInfo {
 	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + _number;
-		result = prime * result + ((actions == null) ? 0 : actions.hashCode());
-		result = prime * result + ((commit == null) ? 0 : commit.hashCode());
-		result = prime * result + (draft ? 1231 : 1237);
-		result = prime * result + ((fetch == null) ? 0 : fetch.hashCode());
-		result = prime * result + ((files == null) ? 0 : files.hashCode());
-		result = prime * result + (has_draft_comments ? 1231 : 1237);
-		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
-		result = prime * result + ((reviewed == null) ? 0 : reviewed.hashCode());
-		return result;
+		if (id != null) {
+			return id.hashCode();
+		} else {
+			return super.hashCode();
+		}
 	}
 
 	/*
@@ -191,49 +195,23 @@ public class RevisionInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		RevisionInfo other = (RevisionInfo) obj;
-		if (_number != other._number)
-			return false;
-		if (actions == null) {
-			if (other.actions != null)
+		if (id == null) {
+			if (other.id != null) {
 				return false;
-		} else if (!actions.equals(other.actions))
+			}
+		} else if (!id.equals(other.id)) {
 			return false;
-		if (commit == null) {
-			if (other.commit != null)
-				return false;
-		} else if (!commit.equals(other.commit))
-			return false;
-		if (draft != other.draft)
-			return false;
-		if (fetch == null) {
-			if (other.fetch != null)
-				return false;
-		} else if (!fetch.equals(other.fetch))
-			return false;
-		if (files == null) {
-			if (other.files != null)
-				return false;
-		} else if (!files.equals(other.files))
-			return false;
-		if (has_draft_comments != other.has_draft_comments)
-			return false;
-		if (ref == null) {
-			if (other.ref != null)
-				return false;
-		} else if (!ref.equals(other.ref))
-			return false;
-		if (reviewed == null) {
-			if (other.reviewed != null)
-				return false;
-		} else if (!reviewed.equals(other.reviewed))
-			return false;
+		}
 		return true;
 	}
 
@@ -247,7 +225,7 @@ public class RevisionInfo {
 	public String toString() {
 		return "RevisionInfo [draft=" + draft + ", has_draft_comments=" + has_draft_comments + ", _number=" + _number
 				+ ", ref=" + ref + ", fetch=" + fetch + ", commit=" + commit + ", files=" + files + ", actions="
-				+ actions + ", reviewed=" + reviewed + "]";
+				+ actions + ", reviewed=" + reviewed + ", revisionId=" + id + "]";
 	}
 
 }
