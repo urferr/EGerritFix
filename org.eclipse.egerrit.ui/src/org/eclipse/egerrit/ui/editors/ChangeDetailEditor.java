@@ -1614,19 +1614,13 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		//Need to initialize the variables first
 		fCommitInfo.reset();
 
-		Iterator<Map.Entry<String, RevisionInfo>> itr1 = fRevisions.entrySet().iterator();
-		while (itr1.hasNext()) {
-			Entry<String, RevisionInfo> entry = itr1.next();
-
-			//Keep the current revision to display
-			if (entry.getKey().equals(revision)) {
-				fCommitInfo.setCommit(revision);
-				fCommitInfo.setMessage(entry.getValue().getCommit().getMessage());
-				fCommitInfo.setParents(entry.getValue().getCommit().getParents());
-				fCommitInfo.setAuthor(entry.getValue().getCommit().getAuthor());
-				fCommitInfo.setCommitter(entry.getValue().getCommit().getCommitter());
-
-			}
+		RevisionInfo match = fRevisions.get(revision);
+		if (match != null) {
+			fCommitInfo.setCommit(revision);
+			fCommitInfo.setMessage(match.getCommit().getMessage());
+			fCommitInfo.setParents(match.getCommit().getParents());
+			fCommitInfo.setAuthor(match.getCommit().getAuthor());
+			fCommitInfo.setCommitter(match.getCommit().getCommitter());
 		}
 	}
 
