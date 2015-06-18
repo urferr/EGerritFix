@@ -24,13 +24,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -95,6 +93,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelPr
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -114,10 +113,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -129,7 +128,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -140,7 +138,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor extends EditorPart implements PropertyChangeListener {
@@ -427,92 +424,43 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		Button submit = new Button(c, SWT.PUSH);
 		submit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		submit.setText("Submit");
+		submit.addSelectionListener(notAvailableListener());
 
 		Button abandon = new Button(c, SWT.PUSH);
 		abandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		abandon.setText("Abandon");
+		abandon.addSelectionListener(notAvailableListener());
 
 		Button restore = new Button(c, SWT.PUSH);
 		restore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		restore.setText("Restore");
+		restore.addSelectionListener(notAvailableListener());
 
 		Button rebase = new Button(c, SWT.PUSH);
 		rebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rebase.setText("Rebase");
+		rebase.addSelectionListener(notAvailableListener());
 
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		checkout.setText("Checkout");
-		checkout.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				GerritToGitMapping gTGM = null;
-				try {
-					gTGM = new GerritToGitMapping(new URIish(fGerritRepository.getURIBuilder(false).toString()),
-							genProjectData.getText());
-				} catch (URISyntaxException e2) {
-					EGerritCorePlugin.logError(e2.getMessage());
-				}
-				Repository repo = null;
-				try {
-					repo = gTGM.find();
-				} catch (IOException e2) {
-					EGerritCorePlugin.logError(e2.getMessage());
-				}
-				final Set<Repository> repositories = new HashSet();
-				repositories.add(repo);
-
-				if (!repositories.contains(null)) {
-					//Find the current selected Patchset in the table
-					ISelection selected = tablePatchSetsViewer.getSelection();
-					if (!selected.isEmpty()) {
-						String psSelected = "";
-						if (selected instanceof StructuredSelection) {
-							Object element = ((IStructuredSelection) selected).getFirstElement();
-							if (element instanceof RevisionInfo) {
-								RevisionInfo selectInfo = (RevisionInfo) element;
-								Map<String, FetchInfo> fetchInfoMap = selectInfo.getFetch();
-								FetchInfo fetchInfo = fetchInfoMap.get("git");
-								if (fetchInfo != null) {
-									psSelected = fetchInfo.getRef().toString();
-								}
-							}
-						}
-						if ((psSelected != null) && !psSelected.isEmpty()) {
-							FetchGerritChangeWizard fetchOp = new FetchGerritChangeWizard(repo, psSelected);
-							fetchOp.addPages();
-							WizardDialog wizardDialog = new WizardDialog(parent.getShell(), fetchOp);
-							wizardDialog.create();
-							wizardDialog.open();
-						} else {
-							Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
-									"No patchset selected");
-							ErrorDialog.openError(shell, "Error", "Operation could not be performed", status);
-						}
-					}
-
-				} else {
-					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repositories found");
-					ErrorDialog.openError(shell, "Error", "Operation could not be performed", status);
-				}
-
-			}
-
-		});
+		checkout.addSelectionListener(checkoutButtonListener(parent));
 
 		Button pull = new Button(c, SWT.PUSH);
 		pull.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		pull.setText("Pull");
+		pull.addSelectionListener(notAvailableListener());
 
 		Button cherrypick = new Button(c, SWT.PUSH);
 		cherrypick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		cherrypick.setText("Cherry-Pick");
+		cherrypick.addSelectionListener(notAvailableListener());
 
 		Button reply = new Button(c, SWT.PUSH);
 		reply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		reply.setText("Reply...");
+		reply.addSelectionListener(notAvailableListener());
+
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
 	}
@@ -1374,14 +1322,18 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/************************************************************* */
-/*                                                             */
-/* Section to SET the data structure                           */
-/*                                                             */
+	/*                                                             */
+	/* Section to SET the data structure                           */
+	/*                                                             */
 	/************************************************************* */
 
 	/**
-	 * @param string2
-	 * @param string
+	 * @param GerritRepository
+	 *            gerritRepository
+	 * @param String
+	 *            changeId
+	 * @param String
+	 *            revisionId
 	 */
 
 	private void setListCommentsPerPatchSet(GerritRepository gerritRepository, String changeId, String revisionId) {
@@ -1706,9 +1658,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/***************************************************************/
-/*                                                             */
-/* Section to QUERY the data structure                         */
-/*                                                             */
+	/*                                                             */
+	/* Section to QUERY the data structure                         */
+	/*                                                             */
 	/************************************************************* */
 
 	private Map<String, ArrayList<CommentInfo>> queryComments(GerritRepository gerritRepository, String change_id,
@@ -1992,9 +1944,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	}
 
 	/************************************************************* */
-/*                                                             */
-/* Section adjust the DATA binding                             */
-/*                                                             */
+	/*                                                             */
+	/* Section adjust the DATA binding                             */
+	/*                                                             */
 	/************************************************************* */
 
 	@Override
@@ -2313,6 +2265,122 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	public boolean isSaveAsAllowed() {
 		// ignore
 		return false;
+	}
+
+	/*********************************************/
+	/*                                           */
+	/*       Buttons Listener                    */
+	/*                                           */
+	/*********************************************/
+	/**
+	 * @param Compopsite
+	 *            parent
+	 * @return the listener when the Checkout button is triggered
+	 */
+	private SelectionAdapter checkoutButtonListener(final Composite parent) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+
+				Repository localRepo = findLocalRepo(fGerritRepository, genProjectData.getText());
+
+				if (localRepo != null) {
+					//Find the current selected Patch set reference in the table
+					ISelection selected = tablePatchSetsViewer.getSelection();
+					if (!selected.isEmpty()) {
+						String psSelected = ""; //$NON-NLS-1$
+						psSelected = findSelectedPatchsetRef(selected, psSelected);
+
+						if ((psSelected != null) && !psSelected.isEmpty()) {
+							FetchGerritChangeWizard fetchOp = new FetchGerritChangeWizard(localRepo, psSelected);
+							fetchOp.addPages();
+							WizardDialog wizardDialog = new WizardDialog(parent.getShell(), fetchOp);
+							wizardDialog.create();
+							wizardDialog.open();
+						} else {
+							Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
+									"No patchset selected");
+							ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed",
+									status);
+						}
+					}
+				} else {
+					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repository found");
+					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
+				}
+			}
+		};
+	}
+
+	/**
+	 * @return a Selection listener to any button not ready yet until implementation
+	 */
+	private SelectionAdapter notAvailableListener() {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				Button btn = (Button) event.getSource();
+				UIUtils.notInplementedDialog(btn.getText());
+			}
+		};
+	}
+
+	/*********************************************/
+	/*                                           */
+	/*       Utility                             */
+	/*                                           */
+	/*********************************************/
+	/**
+	 * @param GerritRepository
+	 *            gerritRepo
+	 * @param String
+	 *            projectName
+	 * @return Repository The local repository associated to the current project and Gerrit Repository
+	 */
+	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
+		GerritToGitMapping gerritToGitMap = null;
+		try {
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
+		} catch (URISyntaxException e2) {
+			EGerritCorePlugin.logError(e2.getMessage());
+		}
+		Repository jgitRepo = null;
+		try {
+			jgitRepo = gerritToGitMap.find();
+		} catch (IOException e2) {
+			EGerritCorePlugin.logError(e2.getMessage());
+		}
+		return jgitRepo;
+	}
+
+	/**
+	 * @param selected
+	 * @param psSelected
+	 * @return String The patch set reference when a patch set is selected
+	 */
+	private String findSelectedPatchsetRef(ISelection selected, String psSelected) {
+		if (selected instanceof StructuredSelection) {
+			Object element = ((IStructuredSelection) selected).getFirstElement();
+			if (element instanceof RevisionInfo) {
+				RevisionInfo selectInfo = (RevisionInfo) element;
+				Map<String, FetchInfo> fetchInfoMap = selectInfo.getFetch();
+				FetchInfo fetchInfo = fetchInfoMap.get("git"); //$NON-NLS-1$
+				if (fetchInfo != null) {
+					psSelected = fetchInfo.getRef().toString();
+				} else {
+					fetchInfo = fetchInfoMap.get("ssh"); //$NON-NLS-1$
+					if (fetchInfo != null) {
+						psSelected = fetchInfo.getRef().toString();
+					} else {
+						fetchInfo = fetchInfoMap.get("http"); //$NON-NLS-1$
+						if (fetchInfo != null) {
+							psSelected = fetchInfo.getRef().toString();
+						}
+					}
+				}
+			}
+		}
+		return psSelected;
 	}
 
 }
