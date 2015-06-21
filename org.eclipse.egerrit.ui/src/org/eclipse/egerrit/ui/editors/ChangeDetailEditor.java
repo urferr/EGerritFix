@@ -963,9 +963,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		gd_combo.horizontalSpan = 1;
 		comboDiffAgainst.setLayoutData(gd_combo);
 		System.err.println("Combo mini width = " + (numChar * pt.x));
-		String[] items = { BASE, WORKSPACE };
-		comboDiffAgainst.setItems(items);
-		comboDiffAgainst.select(0);//Select the Workspace to compare with by default
 
 		Button btnPublish = new Button(filesGroup, SWT.NONE);
 		GridData gd_btnPublish = new GridData(SWT.RIGHT, SWT.TOP, false, false, 3, 1);
@@ -1420,9 +1417,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		if (!listRevision.isEmpty()) {
 			tablePatchSetsViewer.getTable().setSelection(0);
 			setDiffAgainstCombo();
-			setListCommentsPerPatchSet(fGerritRepository, fChangeInfo.getId(), listRevision.get(0)
-					.getCommit()
-					.getCommit());
+			setListCommentsPerPatchSet(fGerritRepository, fChangeInfo.getId(),
+					listRevision.get(0).getCommit().getCommit());
 			displayFilesTable();
 		}
 
@@ -1537,8 +1533,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1595,7 +1591,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	}
 
-	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -1761,7 +1758,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+				null);
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -1782,8 +1780,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		//
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
-		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe(
-				fMergeableInfo);
+		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type")
+				.observe(fMergeableInfo);
 		bindingContext.bindValue(
 				observeTextGenStrategyDataObserveWidget,
 				bytesMergeableinfogetSubmit_typeObserveValue,
@@ -1878,7 +1876,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" }));
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" }));
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
+				BeanProperties.values(new String[] { "change_id" }));
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 
