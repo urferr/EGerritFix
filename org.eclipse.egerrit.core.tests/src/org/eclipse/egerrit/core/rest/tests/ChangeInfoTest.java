@@ -219,7 +219,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -258,7 +258,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -297,7 +297,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -336,7 +336,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -375,7 +375,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -414,7 +414,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -453,7 +453,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -492,7 +492,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -531,7 +531,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -570,7 +570,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -609,7 +609,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -649,7 +649,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -688,7 +688,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -727,7 +727,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -766,7 +766,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -805,7 +805,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -820,7 +820,7 @@ public class ChangeInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getNumber()}.
+	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#get_number()}.
 	 */
 	@Test
 	public void testGetNumber() {
@@ -844,7 +844,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", NUMBER, fChangeInfo.getNumber());
+		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -884,7 +884,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -924,7 +924,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -964,7 +964,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertEquals("Wrong labels", LABELS, fChangeInfo.getLabels());
@@ -1004,7 +1004,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1044,7 +1044,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1084,7 +1084,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1123,7 +1123,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1163,7 +1163,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1202,7 +1202,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1242,7 +1242,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1281,7 +1281,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
 		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
-		assertEquals("Wrong number", -1, fChangeInfo.getNumber());
+		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
@@ -1324,7 +1324,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
 		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
-		assertEquals("Wrong number", NUMBER, fChangeInfo.getNumber());
+		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());
@@ -1366,7 +1366,7 @@ public class ChangeInfoTest {
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
 		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
-		assertEquals("Wrong number", NUMBER, fChangeInfo.getNumber());
+		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());

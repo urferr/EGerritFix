@@ -12,10 +12,12 @@
 
 package org.eclipse.egerrit.core.rest;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 /**
- * The
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#git-person-info" >GitPersonInfo
- * </a> entity contains information about the author/committer of a commit.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#git-person-info"
+ * >GitPersonInfo </a> entity contains information about the author/committer of a commit.
  * <p>
  * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
@@ -27,6 +29,9 @@ public class GitPersonInfo {
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
+
+	// used to fire events of registered properties
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The name of the author/committer.
 	private String name;
@@ -95,30 +100,40 @@ public class GitPersonInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		GitPersonInfo other = (GitPersonInfo) obj;
 		if (date == null) {
-			if (other.date != null)
+			if (other.date != null) {
 				return false;
-		} else if (!date.equals(other.date))
+			}
+		} else if (!date.equals(other.date)) {
 			return false;
+		}
 		if (email == null) {
-			if (other.email != null)
+			if (other.email != null) {
 				return false;
-		} else if (!email.equals(other.email))
+			}
+		} else if (!email.equals(other.email)) {
 			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
-		if (tz != other.tz)
+		}
+		if (tz != other.tz) {
 			return false;
+		}
 		return true;
 	}
 
@@ -129,6 +144,44 @@ public class GitPersonInfo {
 	@SuppressWarnings("nls")
 	public String toString() {
 		return "GitPersonInfo [name=" + name + ", email=" + email + ", date=" + date + ", tz=" + tz + "]";
+	}
+
+	/**
+	 * Allow to add a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param PropertyChangeListener
+	 *            listener
+	 */
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	/**
+	 * Allow to remove a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param PropertyChangeListener
+	 *            listener
+	 */
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
+
+	/**
+	 * Initiate a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param Object
+	 *            oldValue
+	 * @param Object
+	 *            newValue
+	 */
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 }

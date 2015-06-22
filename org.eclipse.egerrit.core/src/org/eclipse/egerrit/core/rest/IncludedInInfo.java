@@ -14,12 +14,12 @@ package org.eclipse.egerrit.core.rest;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#includedin-info" >IncludedInInfo
- * </a> entity describes a REST API call the client can make to manipulate a resource.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#includedin-info"
+ * >IncludedInInfo </a> entity describes a REST API call the client can make to manipulate a resource.
  * <p>
  * TThe IncludedInInfo entity contains information about the branches a change was merged into and tags it was tagged
  * with
@@ -40,7 +40,7 @@ public class IncludedInInfo {
 	// without the refs/head/ prefix.
 	private List<String> branches;
 
-	// The list of tags this change was tagged with. Each tag is listed without 
+	// The list of tags this change was tagged with. Each tag is listed without
 	// the refs/tags/ prefix.
 	private List<String> tags;
 
@@ -51,6 +51,9 @@ public class IncludedInInfo {
 	 * @return the branches
 	 */
 	public List<String> getBranches() {
+		if (branches == null) {
+			branches = new ArrayList<String>();
+		}
 		return branches;
 	}
 
@@ -66,6 +69,9 @@ public class IncludedInInfo {
 	 * @return the tags
 	 */
 	public List<String> getTags() {
+		if (tags == null) {
+			tags = new ArrayList<String>();
+		}
 		return tags;
 	}
 

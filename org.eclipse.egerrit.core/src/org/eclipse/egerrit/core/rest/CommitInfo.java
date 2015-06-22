@@ -69,6 +69,9 @@ public class CommitInfo {
 	 * @return List. The parent commits of this commit. In each parent only the commit and subject fields are populated.
 	 */
 	public List<CommitInfo> getParents() {
+		if (parents == null) {
+			parents = new ArrayList<CommitInfo>();
+		}
 		return parents;
 	}
 
@@ -76,6 +79,9 @@ public class CommitInfo {
 	 * @return GitPersonInfo The author of the commit.
 	 */
 	public GitPersonInfo getAuthor() {
+		if (author == null) {
+			author = new GitPersonInfo();
+		}
 		return author;
 	}
 
@@ -83,6 +89,9 @@ public class CommitInfo {
 	 * @return GitPersonInfo The committer of the commit.
 	 */
 	public GitPersonInfo getCommitter() {
+		if (committer == null) {
+			committer = new GitPersonInfo();
+		}
 		return committer;
 	}
 

@@ -15,6 +15,7 @@ package org.eclipse.egerrit.ui.editors;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -34,11 +35,14 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -57,23 +61,19 @@ import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FetchInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.rest.GitPersonInfo;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.DisplayFileInfo;
-import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
@@ -84,7 +84,6 @@ import org.eclipse.egerrit.ui.internal.table.UIPatchSetsTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
-import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
 import org.eclipse.egerrit.ui.internal.table.provider.ConflictWithTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FilePatchSetTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
@@ -92,6 +91,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
@@ -148,6 +148,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private static ChangeDetailEditor chDetailEditor = null;
 
+	// used to fire events of registered properties
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
 	private static Color RED;
 
 //	private static Color GREEN = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -179,7 +182,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 	private Map<String, RevisionInfo> fRevisions = new HashMap<String, RevisionInfo>();;
 
-	private final Map<String, DisplayFileInfo> fFilesDisplay = new HashMap<String, DisplayFileInfo>();
+	private Map<String, DisplayFileInfo> fFilesDisplay = new HashMap<String, DisplayFileInfo>();
+
+	private final WritableValue writeListFiles = new WritableValue();
 
 	private final MergeableInfo fMergeableInfo = new MergeableInfo();
 
@@ -371,18 +376,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		gd_lblShortId.minimumWidth = idWidth;
 		gd_lblShortId.widthHint = idWidth;
 		shortIdData.setLayoutData(gd_lblShortId);
-		shortIdData.setText("lblID");
-		shortIdData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = shortIdData.getText();
-				int id = fChangeInfo.getNumber();
-				if (Integer.toString(id).compareTo(old) != 0) {
-					shortIdData.setText(Integer.toString(id));
-				}
-			}
-		});
 
 		Label lblChange = new Label(group_header, SWT.NONE);
 		GridData gd_lblChange = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -551,17 +544,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
 		gd_genStrategyData.widthHint = 146;
 		genStrategyData.setLayoutData(gd_genStrategyData);
-		genStrategyData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = genStrategyData.getText();
-				String latest = fMergeableInfo.getSubmit_type();
-				if (latest != null && !latest.isEmpty() && latest.compareTo(SubmitType.getEnumName(old)) != 0) {
-					genStrategyData.setText(SubmitType.valueOf(latest).getValue());
-				}
-			}
-		});
 
 		genMessageData = new Label(grpGeneral, SWT.NONE);
 		GridData gd_genMessageData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
@@ -569,41 +551,12 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		gd_genMessageData.widthHint = fontSize.x * numStrategy;
 		genMessageData.setLayoutData(gd_genMessageData);
 		genMessageData.setForeground(RED);
-		genMessageData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = genMessageData.getText();
-				Boolean latest = new Boolean(fMergeableInfo.isMergeable());
-				String latestVal;
-				latestVal = latest.booleanValue() ? "" : "CANNOT MERGE";
-				if (latestVal.toString().compareTo(old) != 0) {
-					genMessageData.setText(latestVal);
-				}
-			}
-		});
 
 		Label lblUpdated = new Label(grpGeneral, SWT.RIGHT);
 		lblUpdated.setText("Updated:");
 
 		genUpdatedData = new Label(grpGeneral, SWT.NONE);
 		genUpdatedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-		genUpdatedData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				if (fChangeInfo != null) {
-					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
-					String old = genUpdatedData.getText();
-					if (st.compareTo(old) != 0) {
-						System.err.println("Date update: " + st);
-						genUpdatedData.setText(st);
-					}
-				} else {
-					genUpdatedData.setText(""); //$NON-NLS-1$
-				}
-			}
-		});
 
 		//Set the binding for this section
 		sumGenDataBindings();
@@ -641,58 +594,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		GridData gd_lblLblvote = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1);
 		gd_lblLblvote.widthHint = 70;
 		genVoteData.setLayoutData(gd_lblLblvote);
-		genVoteData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String codeReviewed = null;
-				if (fChangeInfo != null && genVoteData.getText().compareTo("INIT") == 0) {
-					String old = genVoteData.getText();
-					int verifyState = 0;
-					int codeReviewState = 0;
-					Map<String, LabelInfo> labels = fChangeInfo.getLabels();
-					if (labels != null) {
-						for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-							if (entry.getKey().compareTo("Verified") == 0) {
-								LabelInfo labelInfo = entry.getValue();
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										verifyState = Utils.getStateValue(it.getValue(), verifyState);
-									}
-								}
-							} else if (entry.getKey().compareTo("Code-Review") == 0) {
-								LabelInfo labelInfo = entry.getValue();
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
-									}
-								}
-							}
-							String codeRev;
-							if (codeReviewState > 0) {
-								codeRev = "+" + Integer.toString(codeReviewState);
-							} else {
-								codeRev = Integer.toString(codeReviewState);
-							}
-							String verify;
-							if (verifyState > 0) {
-								verify = "+" + Integer.toString(verifyState);
-							} else {
-								verify = Integer.toString(verifyState);
-							}
-
-							codeReviewed = codeRev + "       " + verify;
-						}
-					} else {
-						codeReviewed = "";
-					}
-					if (codeReviewed.compareTo(old) != 0) {
-						genVoteData.setText(codeReviewed);
-					}
-				}
-
-			}
-		});
 
 		//Set the binding for this section
 		sumReviewerDataBindings();
@@ -718,37 +619,12 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		incBranchesData = new Text(grpIncludedIn, SWT.BORDER);
 		incBranchesData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-		incBranchesData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = incBranchesData.getText();
-				String branches = fIncludedIn.getBranches().toString().replace('[', ' ').replace(']', ' ').trim();
-
-				if (branches.compareTo(old) != 0) {
-					incBranchesData.setText(branches);
-				}
-			}
-		});
 
 		Label lblTags = new Label(grpIncludedIn, SWT.RIGHT);
 		lblTags.setText("Tags:");
 
 		includedInTagsData = new Text(grpIncludedIn, SWT.BORDER);
 		includedInTagsData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-
-		includedInTagsData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = includedInTagsData.getText();
-				String tags = fIncludedIn.getTags().toString().replace('[', ' ').replace(']', ' ').trim();
-
-				if (tags.compareTo(old) != 0) {
-					includedInTagsData.setText(tags);
-				}
-			}
-		});
 
 		//Set the binding for this section
 		sumIncludedDataBindings();
@@ -877,89 +753,23 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 //		msgAuthorData = new StyledText(composite, SWT.NONE);
 		msgAuthorData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		msgAuthorData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				GitPersonInfo authorInfo = fCommitInfo.getAuthor();
-				if (authorInfo != null) {
-					String st = authorInfo.getName() + "  < " + authorInfo.getEmail() + " >"; //$NON-NLS-1$ //$NON-NLS-2$
-					String old = msgAuthorData.getText();
-					if (old.compareTo(st) != 0) {
-						msgAuthorData.setText(st);
-					}
-				} else {
-					msgAuthorData.setText(""); //$NON-NLS-1$
-				}
-			}
-		});
-
 		msgDatePushData = new Label(composite, SWT.NONE);
 		GridData gd_DatePush = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		int maxDatePush = 22; //Max number of chars
 		gd_DatePush.widthHint = fontSize.x * maxDatePush;
 		msgDatePushData.setLayoutData(gd_DatePush);
-		msgDatePushData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				GitPersonInfo authorInfo = fCommitInfo.getAuthor();
-				if (authorInfo != null) {
-					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
-					String old = msgDatePushData.getText();
-					if (st.compareTo(old) != 0) {
-						msgDatePushData.setText(st);
-					}
-				} else {
-					msgDatePushData.setText(""); //$NON-NLS-1$
-				}
-			}
-		});
 
 		Label lblCommitter = new Label(composite, SWT.NONE);
 		lblCommitter.setText("Committer:");
 
 		msgCommitterData = new Label(composite, SWT.NONE);
 		msgCommitterData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		msgCommitterData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				GitPersonInfo committerInfo = fCommitInfo.getCommitter();
-				if (committerInfo != null) {
-					String st = committerInfo.getName() + "  < " + committerInfo.getEmail() + " >"; //$NON-NLS-1$ //$NON-NLS-2$
-					String old = msgCommitterData.getText();
-					if (st.compareTo(old) != 0) {
-						msgCommitterData.setText(st);
-					}
-				} else {
-					msgCommitterData.setText(""); //$NON-NLS-1$
-				}
-
-			}
-		});
 
 		msgDatecommitterData = new Label(composite, SWT.NONE);
 		GridData gd_DateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		int maxDateCommit = 22; //Max number of chars
 		gd_DateCommitter.widthHint = fontSize.x * maxDateCommit;
 		msgDatecommitterData.setLayoutData(gd_DateCommitter);
-		msgDatecommitterData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				GitPersonInfo committerInfo = fCommitInfo.getCommitter();
-				if (committerInfo != null) {
-					String st = Utils.formatDate(fChangeInfo.getUpdated(), formatTimeOut);
-					String old = msgDatecommitterData.getText();
-					if (st.compareTo(old) != 0) {
-						msgDatecommitterData.setText(st);
-					}
-				} else {
-					msgDatecommitterData.setText(""); //$NON-NLS-1$
-				}
-			}
-		});
 
 		Label lblCommit = new Label(composite, SWT.NONE);
 		lblCommit.setText("Commit:");
@@ -973,22 +783,6 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 
 		msgParentIdData = new Label(composite, SWT.NONE);
 		msgParentIdData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		msgParentIdData.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				List<CommitInfo> parentInfo = fCommitInfo.getParents();
-				CommitInfo commitInfo = (parentInfo != null && parentInfo.size() > 0) ? parentInfo.get(0) : null; //Only get the first level parent to display
-				if (commitInfo != null) {
-					String old = msgParentIdData.getText();
-					if (old.compareTo(commitInfo.getCommit()) != 0) {
-						msgParentIdData.setText(commitInfo.getCommit());
-					}
-				} else {
-					msgParentIdData.setText(""); //$NON-NLS-1$
-				}
-			}
-		});
 
 		new Label(composite, SWT.NONE);
 
@@ -1289,13 +1083,20 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	public void setFocus() {
 	}
 
+	/**
+	 * This is the entry pint to fill the editor with the Change info and the gerrit server being used.
+	 *
+	 * @param GerritRepository
+	 *            gerritRepository
+	 * @param ChangeInfo
+	 *            element
+	 */
 	public void setChangeInfo(GerritRepository gerritRepository, ChangeInfo element) {
 		this.fGerritRepository = gerritRepository;
-		genVoteData.setText("INIT");
 		fChangeInfo.reset();
 
 		//Fill the data structure
-		fChangeInfo.setNumber(element.getNumber());
+		fChangeInfo.setNumber(element.get_number());
 		fChangeInfo.setId(element.getId());
 		fChangeInfo.setChange_id(element.getChange_id());
 		fChangeInfo.setStatus(element.getStatus());
@@ -1604,6 +1405,7 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 	private void fillFiles(Map<String, FileInfo> map) {
 		fFilesDisplay.clear();
 		//Store the files
+		Map<String, DisplayFileInfo> displayFilesMap = new HashMap<String, DisplayFileInfo>();
 
 		if (map != null) {
 			//Fill the Files table
@@ -1612,10 +1414,16 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 				Entry<String, FileInfo> entryFile = fileIter.next();
 				DisplayFileInfo displayFileInfo = new DisplayFileInfo(entryFile.getValue());
 				displayFileInfo.setOld_path(entryFile.getKey());
-				fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
+//				fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
+				displayFilesMap.put(entryFile.getKey(), displayFileInfo);
 			}
-
+			setFilesDisplay(displayFilesMap);
 		}
+	}
+
+	private void setFilesDisplay(Map<String, DisplayFileInfo> displayFilesMap) {
+		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = displayFilesMap);
+//		writeListFiles.setValue(fFilesDisplay.values());
 	}
 
 	/**
@@ -1961,7 +1769,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		//
 		IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
 		IObservableValue idFChangeInfoObserveValue = BeanProperties.value("_number").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null,
+				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(true)));
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -1995,20 +1804,25 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		//
 		IObservableValue observeTextLblUpdated_1ObserveWidget = WidgetProperties.text().observe(genUpdatedData);
 		IObservableValue updatedFChangeInfoObserveValue = BeanProperties.value("updated").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblUpdated_1ObserveWidget, updatedFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblUpdated_1ObserveWidget, updatedFChangeInfoObserveValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
+
 		//
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
 		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe(
 				fMergeableInfo);
-		bindingContext.bindValue(observeTextGenStrategyDataObserveWidget, bytesMergeableinfogetSubmit_typeObserveValue,
-				null, null);
+		bindingContext.bindValue(
+				observeTextGenStrategyDataObserveWidget,
+				bytesMergeableinfogetSubmit_typeObserveValue,
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+
 		//
 		IObservableValue observeTextGenMessageDataObserveWidget = WidgetProperties.text().observe(genMessageData);
 		IObservableValue mergeableFMergeableInfoObserveValue = BeanProperties.value("mergeable")
 				.observe(fMergeableInfo);
 		bindingContext.bindValue(observeTextGenMessageDataObserveWidget, mergeableFMergeableInfoObserveValue, null,
-				null);
-		//
+				new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
 		return bindingContext;
 	}
@@ -2021,11 +1835,9 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genVoteData);
-		if (fChangeInfo != null && fChangeInfo.getLabels() != null && fChangeInfo.getLabels().get(0) != null) {
-			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("labels").observe(fChangeInfo);
-			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-					null);
-		}
+		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("labels").observe(fChangeInfo);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.reviewersVoteConverter()));
 
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "name" }));
@@ -2038,19 +1850,18 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(incBranchesData);
-		ArrayList arrList = new ArrayList<String>();
-		arrList.add(0, "");
-		fIncludedIn.setBranches(arrList);
-		if (fIncludedIn != null && fIncludedIn.getBranches() != null && fIncludedIn.getBranches().get(0) != null) {
+		if (fIncludedIn != null) {
 			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches")
 					.observe(fIncludedIn);
 			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-					null);
+					new UpdateValueStrategy().setConverter(DataConverter.stringListConverter()));
+
 			//
 			IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text()
 					.observe(includedInTagsData);
 			IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn);
-			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
+			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null,
+					new UpdateValueStrategy().setConverter(DataConverter.stringListConverter()));
 		}
 		return bindingContext;
 	}
@@ -2108,11 +1919,29 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		//
 		IObservableValue observeTextMsgAuthorDataWidget = WidgetProperties.text().observe(msgAuthorData);
 		IObservableValue msgAuthorDataValue = BeanProperties.value("author").observe(fCommitInfo);
-		bindingContext.bindValue(observeTextMsgAuthorDataWidget, msgAuthorDataValue, null, null);
+		bindingContext.bindValue(observeTextMsgAuthorDataWidget, msgAuthorDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
+
+		//
+		IObservableValue TextMsgAuthorDateDataWidget = WidgetProperties.text().observe(msgDatePushData);
+		IObservableValue msgAuthorDateDataValue = BeanProperties.value(CommitInfo.class, "author.date").observe(
+				fCommitInfo);
+		bindingContext.bindValue(TextMsgAuthorDateDataWidget, msgAuthorDateDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
+
 		//
 		IObservableValue observeTextMsgCommitterDataWidget = WidgetProperties.text().observe(msgCommitterData);
-		IObservableValue msgCommitterDataValue = BeanProperties.value("status").observe(fCommitInfo);
-		bindingContext.bindValue(observeTextMsgCommitterDataWidget, msgCommitterDataValue, null, null);
+		IObservableValue msgCommitterDataValue = BeanProperties.value("committer").observe(fCommitInfo);
+		bindingContext.bindValue(observeTextMsgCommitterDataWidget, msgCommitterDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
+
+		//
+		IObservableValue TextMsgCommitterDateDataWidget = WidgetProperties.text().observe(msgDatecommitterData);
+		IObservableValue msgCommitterDateDataValue = BeanProperties.value(CommitInfo.class, "committer.date").observe(
+				fCommitInfo);
+		bindingContext.bindValue(TextMsgCommitterDateDataWidget, msgCommitterDateDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
+
 		//
 		IObservableValue observeTextMsgCommitidDataWidget = WidgetProperties.text().observe(msgCommitidData);
 		IObservableValue msgCommitidDataValue = BeanProperties.value("commit").observe(fCommitInfo);
@@ -2120,7 +1949,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		//
 		IObservableValue observeTextMsgParentIdDataWidget = WidgetProperties.text().observe(msgParentIdData);
 		IObservableValue msgParentIdDataValue = BeanProperties.value("parents").observe(fCommitInfo);
-		bindingContext.bindValue(observeTextMsgParentIdDataWidget, msgParentIdDataValue, null, null);
+		bindingContext.bindValue(observeTextMsgParentIdDataWidget, msgParentIdDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.commitInfoIDConverter()));
 		//
 		IObservableValue observeTextMsgChangeIdDataWidget = WidgetProperties.text().observe(msgChangeIdData);
 		IObservableValue msgChangeIdDataValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -2136,6 +1966,8 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		WritableMap writeInfoMap = new WritableMap();
 		writeInfoMap.putAll(fRevisions);
 		WritableList writeInfoList = new WritableList(writeInfoMap.values(), Map.class);
+
+		DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "_number", "commit" }));
@@ -2155,7 +1987,19 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 		ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
 
 		tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+		//
+//		IObservableValue lblTotalTextDataWidget = WidgetProperties.text().observe(lblTotal);
+////		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(
+////				fFilesDisplay.entrySet().iterator());
+//
+//		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(writeListFiles);
+//		bindingContext.bindValue(lblTotalTextDataWidget, lblTotalDataValue, null,
+//				new UpdateValueStrategy().setConverter(DataConverter.commentLineCounter()));
 
+	}
+
+	private Map<String, DisplayFileInfo> getfFilesDisplay() {
+		return fFilesDisplay;
 	}
 
 	protected void hisTabDataBindings() {
@@ -2381,6 +2225,18 @@ public class ChangeDetailEditor extends EditorPart implements PropertyChangeList
 			}
 		}
 		return psSelected;
+	}
+
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
+
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 }

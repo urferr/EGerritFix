@@ -390,7 +390,7 @@ public class ChangeInfo {
 	/**
 	 * @return The legacy numeric ID of the change.
 	 */
-	public int getNumber() {
+	public int get_number() {
 		return _number;
 	}
 
@@ -472,15 +472,21 @@ public class ChangeInfo {
 	}
 
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+		}
 	}
 
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+		}
 	}
 
 	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -749,5 +755,66 @@ public class ChangeInfo {
 		setStatus(""); //$NON-NLS-1$
 		setNumber(-1);
 		setMessages(new ArrayList<ChangeMessageInfo>());
+		setStarred(false);
+		setReviewed(false);
+		setMergeable(false);
+		setInsertions(-1);
+		setDeletions(-1);
+		set_more_changes(false);
+	}
+
+	/**
+	 * @param starred
+	 *            the starred to set
+	 */
+	public void setStarred(boolean starred) {
+		this.starred = starred;
+	}
+
+	/**
+	 * @param reviewed
+	 *            the reviewed to set
+	 */
+	public void setReviewed(boolean reviewed) {
+		this.reviewed = reviewed;
+	}
+
+	/**
+	 * @param mergeable
+	 *            the mergeable to set
+	 */
+	public void setMergeable(boolean mergeable) {
+		this.mergeable = mergeable;
+	}
+
+	/**
+	 * @param insertions
+	 *            the insertions to set
+	 */
+	public void setInsertions(int insertions) {
+		this.insertions = insertions;
+	}
+
+	/**
+	 * @param deletions
+	 *            the deletions to set
+	 */
+	public void setDeletions(int deletions) {
+		this.deletions = deletions;
+	}
+
+	/**
+	 * @return the _more_changes
+	 */
+	public boolean is_more_changes() {
+		return _more_changes;
+	}
+
+	/**
+	 * @param _more_changes
+	 *            the _more_changes to set
+	 */
+	public void set_more_changes(boolean _more_changes) {
+		this._more_changes = _more_changes;
 	}
 }
