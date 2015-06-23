@@ -64,11 +64,13 @@ public class RevisionInfoTest {
 
 	private static final Boolean REVIEWED = true;
 
+	private static final String ID = null;
+
 	private static final int HASH_CODE = 1397094371;
 
-	private static final String TO_STRING = "RevisionInfo [" + "draft=" + DRAFT + ", has_draft_comments="
+	private static final String TO_STRING = "RevisionInfo [draft=" + DRAFT + ", has_draft_comments="
 			+ HAS_DRAFT_COMMENTS + ", _number=" + NUMBER + ", ref=" + REF + ", fetch=" + FETCH + ", commit=" + COMMIT
-			+ ", files=" + FILES + ", actions=" + ACTIONS + ", reviewed=" + REVIEWED + "]";
+			+ ", files=" + FILES + ", actions=" + ACTIONS + ", reviewed=" + REVIEWED + ", revisionId=" + ID + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -113,6 +115,7 @@ public class RevisionInfoTest {
 		JsonObject actions = new JsonObject();
 		json.add("actions", actions);
 		json.addProperty("reviewed", REVIEWED);
+		json.addProperty("revisionId", ID);
 	}
 
 	@After
@@ -364,7 +367,6 @@ public class RevisionInfoTest {
 		setAllFields();
 		Reader reader = new StringReader(json.toString());
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
-
 		assertEquals("Wrong hash code", HASH_CODE, fRevisionInfo.hashCode());
 	}
 

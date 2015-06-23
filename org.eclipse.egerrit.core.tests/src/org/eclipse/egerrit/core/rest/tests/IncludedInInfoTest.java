@@ -13,7 +13,6 @@
 package org.eclipse.egerrit.core.rest.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.Reader;
@@ -106,7 +105,7 @@ public class IncludedInInfoTest {
 		fIncludedInInfo = gson.fromJson(reader, IncludedInInfo.class);
 
 		assertEquals("Wrong branches", BRANCHES, fIncludedInInfo.getBranches());
-		assertNull("Wrong tags", fIncludedInInfo.getTags());
+		assertEquals("Wrong tags", TAGS, fIncludedInInfo.getTags());
 	}
 
 	/**
@@ -119,7 +118,7 @@ public class IncludedInInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fIncludedInInfo = gson.fromJson(reader, IncludedInInfo.class);
 
-		assertNull("Wrong branches", fIncludedInInfo.getBranches());
+		assertEquals("Wrong branches", BRANCHES, fIncludedInInfo.getBranches());
 		assertEquals("Wrong tags", TAGS, fIncludedInInfo.getTags());
 	}
 

@@ -51,7 +51,7 @@ public class FileInfoTest {
 
 	private static final String LINES_DELETED = "1234";
 
-	private static final int HASH_CODE = 1049234446;
+	private static final int HASH_CODE = -1833470542;
 
 	private static final String TO_STRING = "FileInfo [" + "status=" + STATUS + ", binary=" + BINARY + ", old_path="
 			+ OLD_PATH + ", lines_inserted=" + LINES_INSERTED + ", lines_deleted=" + LINES_DELETED + "]";

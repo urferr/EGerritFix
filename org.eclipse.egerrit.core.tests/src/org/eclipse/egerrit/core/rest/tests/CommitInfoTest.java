@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.rest.CommitInfo}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -120,9 +120,9 @@ public class CommitInfoTest {
 		fCommitInfo = gson.fromJson(reader, CommitInfo.class);
 
 		assertEquals("Wrong commit", COMMIT, fCommitInfo.getCommit());
-		assertNull("Wrong parents", fCommitInfo.getParents());
-		assertNull("Wrong author", fCommitInfo.getAuthor());
-		assertNull("Wrong committer", fCommitInfo.getCommitter());
+		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
+		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
+		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertNull("Wrong subject", fCommitInfo.getSubject());
 		assertNull("Wrong message", fCommitInfo.getMessage());
 	}
@@ -139,8 +139,8 @@ public class CommitInfoTest {
 
 		assertNull("Wrong commit", fCommitInfo.getCommit());
 		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
-		assertNull("Wrong author", fCommitInfo.getAuthor());
-		assertNull("Wrong committer", fCommitInfo.getCommitter());
+		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
+		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertNull("Wrong subject", fCommitInfo.getSubject());
 		assertNull("Wrong message", fCommitInfo.getMessage());
 	}
@@ -156,9 +156,9 @@ public class CommitInfoTest {
 		fCommitInfo = gson.fromJson(reader, CommitInfo.class);
 
 		assertNull("Wrong commit", fCommitInfo.getCommit());
-		assertNull("Wrong parents", fCommitInfo.getParents());
+		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
 		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
-		assertNull("Wrong committer", fCommitInfo.getCommitter());
+		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertNull("Wrong subject", fCommitInfo.getSubject());
 		assertNull("Wrong message", fCommitInfo.getMessage());
 	}
@@ -174,8 +174,8 @@ public class CommitInfoTest {
 		fCommitInfo = gson.fromJson(reader, CommitInfo.class);
 
 		assertNull("Wrong commit", fCommitInfo.getCommit());
-		assertNull("Wrong parents", fCommitInfo.getParents());
-		assertNull("Wrong author", fCommitInfo.getAuthor());
+		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
+		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
 		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertNull("Wrong subject", fCommitInfo.getSubject());
 		assertNull("Wrong message", fCommitInfo.getMessage());
@@ -191,9 +191,9 @@ public class CommitInfoTest {
 		fCommitInfo = gson.fromJson(reader, CommitInfo.class);
 
 		assertNull("Wrong commit", fCommitInfo.getCommit());
-		assertNull("Wrong parents", fCommitInfo.getParents());
-		assertNull("Wrong author", fCommitInfo.getAuthor());
-		assertNull("Wrong committer", fCommitInfo.getCommitter());
+		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
+		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
+		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertEquals("Wrong subject", SUBJECT, fCommitInfo.getSubject());
 		assertNull("Wrong message", fCommitInfo.getMessage());
 	}
@@ -208,9 +208,9 @@ public class CommitInfoTest {
 		fCommitInfo = gson.fromJson(reader, CommitInfo.class);
 
 		assertNull("Wrong commit", fCommitInfo.getCommit());
-		assertNull("Wrong parents", fCommitInfo.getParents());
-		assertNull("Wrong author", fCommitInfo.getAuthor());
-		assertNull("Wrong committer", fCommitInfo.getCommitter());
+		assertEquals("Wrong parents", PARENTS, fCommitInfo.getParents());
+		assertEquals("Wrong author", AUTHOR, fCommitInfo.getAuthor());
+		assertEquals("Wrong committer", COMMITTER, fCommitInfo.getCommitter());
 		assertNull("Wrong subject", fCommitInfo.getSubject());
 		assertEquals("Wrong message", MESSAGE, fCommitInfo.getMessage());
 	}

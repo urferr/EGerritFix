@@ -181,11 +181,18 @@ public class RevisionInfo {
 	 */
 	@Override
 	public int hashCode() {
-		if (id != null) {
-			return id.hashCode();
-		} else {
-			return super.hashCode();
-		}
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _number;
+		result = prime * result + ((actions == null) ? 0 : actions.hashCode());
+		result = prime * result + ((commit == null) ? 0 : commit.hashCode());
+		result = prime * result + (draft ? 1231 : 1237);
+		result = prime * result + ((fetch == null) ? 0 : fetch.hashCode());
+		result = prime * result + ((files == null) ? 0 : files.hashCode());
+		result = prime * result + (has_draft_comments ? 1231 : 1237);
+		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+		result = prime * result + ((reviewed == null) ? 0 : reviewed.hashCode());
+		return result;
 	}
 
 	/*
