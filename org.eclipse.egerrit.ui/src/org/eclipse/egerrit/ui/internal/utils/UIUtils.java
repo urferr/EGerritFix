@@ -17,6 +17,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -35,10 +38,9 @@ public class UIUtils {
 	 * @param String
 	 */
 	public static void notInplementedDialog(String aSt) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info,
-				NLS.bind(Messages.UIUtils_methodNotReady, aSt),
-				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, Messages.UIUtils_notImplemented, null),
-				IStatus.INFO);
+		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, NLS.bind(
+				Messages.UIUtils_methodNotReady, aSt), new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0,
+						Messages.UIUtils_notImplemented, null), IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();
@@ -56,8 +58,8 @@ public class UIUtils {
 	 *            reason
 	 */
 	public static void showErrorDialog(String aMsg, String aReason) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, aMsg,
-				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
+		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, aMsg, new Status(IStatus.INFO,
+				EGerritUIPlugin.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();
@@ -81,6 +83,21 @@ public class UIUtils {
 		child.setLayout(layout);
 		// child.minHeight = 100;
 		return child;
+	}
+
+	/**
+	 * Copute the size of the Fonts used for this composite
+	 *
+	 * @param composite
+	 * @return Point
+	 */
+	public static Point computeFontSize(Composite composite) {
+		GC gc = new GC(composite);
+		FontMetrics fm = gc.getFontMetrics();
+		int charWidth = fm.getAverageCharWidth();
+
+		gc.dispose();
+		return new Point(charWidth, fm.getHeight());
 	}
 
 }
