@@ -13,10 +13,10 @@
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info" >CommitInfo</a>
@@ -27,13 +27,11 @@ import java.util.List;
  * @since 1.0
  * @author Francois Chouinard
  */
-public class CommitInfo {
+public class CommitInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The commit ID.
 	private String commit;
@@ -169,44 +167,6 @@ public class CommitInfo {
 	 */
 	public void setCommitter(GitPersonInfo committer) {
 		firePropertyChange("committer", this.committer, this.committer = committer); //$NON-NLS-1$
-	}
-
-	/**
-	 * Allow to add a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param PropertyChangeListener
-	 *            listener
-	 */
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	/**
-	 * Allow to remove a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param PropertyChangeListener
-	 *            listener
-	 */
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	/**
-	 * Initiate a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param Object
-	 *            oldValue
-	 * @param Object
-	 *            newValue
-	 */
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------

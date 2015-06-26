@@ -8,13 +8,14 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Map;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revision-info"
@@ -26,14 +27,11 @@ import java.util.Map;
  * @since 1.0
  * @author Francois Chouinard
  */
-public class RevisionInfo {
+public class RevisionInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// Whether the patch set is a draft.
 	private boolean draft = false;
@@ -149,22 +147,17 @@ public class RevisionInfo {
 		return reviewed;
 	}
 
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-	}
-
+	/**
+	 * @param String
+	 *            id
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
 
+	/**
+	 * @return String
+	 */
 	public String getId() {
 		return this.id;
 	}

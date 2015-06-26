@@ -8,13 +8,14 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.List;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchanges-info" >
@@ -25,15 +26,12 @@ import java.util.List;
  * @since 1.0
  * @author Guy Perron
  */
-public class RelatedChangesInfo {
+public class RelatedChangesInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-	// A list of RelatedChangeAndCommitInfo entities describing the related changes. 
+	// A list of RelatedChangeAndCommitInfo entities describing the related changes.
 	// Sorted by git commit order, newest to oldest. Empty if there are no related changes
 	private List<RelatedChangeAndCommitInfo> changes;
 
@@ -56,18 +54,6 @@ public class RelatedChangesInfo {
 		firePropertyChange("changes", this.changes, this.changes = changes);
 	}
 
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-	}
-
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
@@ -88,18 +74,23 @@ public class RelatedChangesInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		RelatedChangesInfo other = (RelatedChangesInfo) obj;
 		if (changes == null) {
-			if (other.changes != null)
+			if (other.changes != null) {
 				return false;
-		} else if (!changes.equals(other.changes))
+			}
+		} else if (!changes.equals(other.changes)) {
 			return false;
+		}
 		return true;
 	}
 

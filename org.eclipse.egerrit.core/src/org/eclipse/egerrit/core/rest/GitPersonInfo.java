@@ -8,12 +8,12 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#git-person-info"
@@ -24,14 +24,11 @@ import java.beans.PropertyChangeSupport;
  * @since 1.0
  * @author Francois Chouinard
  */
-public class GitPersonInfo {
+public class GitPersonInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The name of the author/committer.
 	private String name;
@@ -144,44 +141,6 @@ public class GitPersonInfo {
 	@SuppressWarnings("nls")
 	public String toString() {
 		return "GitPersonInfo [name=" + name + ", email=" + email + ", date=" + date + ", tz=" + tz + "]";
-	}
-
-	/**
-	 * Allow to add a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param PropertyChangeListener
-	 *            listener
-	 */
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	/**
-	 * Allow to remove a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param PropertyChangeListener
-	 *            listener
-	 */
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	/**
-	 * Initiate a property change listener
-	 *
-	 * @param String
-	 *            propertyName
-	 * @param Object
-	 *            oldValue
-	 * @param Object
-	 *            newValue
-	 */
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 }

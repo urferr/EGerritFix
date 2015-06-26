@@ -8,33 +8,30 @@
  *
  * Contributors:
  *     Jacques Bouthillier - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Set;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 import com.google.gerrit.common.data.ProjectInfo;
 
 /**
- * The
- * <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info" >ProjectAccessInfo</a>
- * entity contains information about the project access.
+ * The <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info"
+ * >ProjectAccessInfo</a> entity contains information about the project access.
  * <p>
  * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  */
-public class ProjectAccessInfo {
+public class ProjectAccessInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
 	// The revision of the refs/meta/config branch from which the access rights
 	// were loaded.
 	private String revision;
@@ -196,18 +193,6 @@ public class ProjectAccessInfo {
 	 */
 	public void setConfig_visible(Boolean config_visible) {
 		firePropertyChange("config_visible", this.config_visible, this.config_visible = config_visible);
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	// ------------------------------------------------------------------------

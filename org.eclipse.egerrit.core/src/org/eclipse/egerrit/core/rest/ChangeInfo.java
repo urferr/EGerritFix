@@ -8,15 +8,16 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
@@ -27,13 +28,11 @@ import java.util.Map;
  * @since 1.0
  * @author Francois Chouinard
  */
-public class ChangeInfo {
+public class ChangeInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	// The structure type.
 	// "gerritcodereview#change"
@@ -469,24 +468,6 @@ public class ChangeInfo {
 	 */
 	public String getBaseChange() {
 		return base_change;
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		if (propertyChangeSupport != null) {
-			propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-		}
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		if (propertyChangeSupport != null) {
-			propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-		}
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		if (propertyChangeSupport != null) {
-			propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-		}
 	}
 
 	// ------------------------------------------------------------------------

@@ -8,12 +8,12 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#action-info" >ActionInfo</a>
@@ -24,15 +24,12 @@ import java.beans.PropertyChangeSupport;
  * @since 1.0
  * @author Guy Perron
  */
-public class MergeableInfo {
+public class MergeableInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-	// Submit type used for this change, can be MERGE_IF_NECESSARY, 
+	// Submit type used for this change, can be MERGE_IF_NECESSARY,
 	// FAST_FORWARD_ONLY, REBASE_IF_NECESSARY, MERGE_ALWAYS or CHERRY_PICK.
 	private String submit_type;
 
@@ -95,18 +92,6 @@ public class MergeableInfo {
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -125,25 +110,33 @@ public class MergeableInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		MergeableInfo other = (MergeableInfo) obj;
 		if (mergeable_into == null) {
-			if (other.mergeable_into != null)
+			if (other.mergeable_into != null) {
 				return false;
-		} else if (!mergeable_into.equals(other.mergeable_into))
+			}
+		} else if (!mergeable_into.equals(other.mergeable_into)) {
 			return false;
-		if (mergeable != other.mergeable)
+		}
+		if (mergeable != other.mergeable) {
 			return false;
+		}
 		if (submit_type == null) {
-			if (other.submit_type != null)
+			if (other.submit_type != null) {
 				return false;
-		} else if (!submit_type.equals(other.submit_type))
+			}
+		} else if (!submit_type.equals(other.submit_type)) {
 			return false;
+		}
 		return true;
 	}
 

@@ -16,7 +16,6 @@ package org.eclipse.egerrit.ui.editors;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Observable;
@@ -88,9 +87,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
 	private static ChangeDetailEditor chDetailEditor = null;
-
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	private SummaryTabView summaryTab = null;
 
@@ -705,18 +701,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			//Adjust the commit info for the Message Tab
 			setCurentCommitInfo(fileTabView.getCurrentRevision());
 		}
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	/**

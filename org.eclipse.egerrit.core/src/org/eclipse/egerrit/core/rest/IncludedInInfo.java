@@ -8,14 +8,15 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#includedin-info"
@@ -27,10 +28,7 @@ import java.util.List;
  * @since 1.0
  * @author Guy Perron
  */
-public class IncludedInInfo {
-
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+public class IncludedInInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
@@ -81,18 +79,6 @@ public class IncludedInInfo {
 	 */
 	public void setTags(List<String> tags) {
 		firePropertyChange("tags", this.tags, this.tags = tags);
-	}
-
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 
 	/* (non-Javadoc)

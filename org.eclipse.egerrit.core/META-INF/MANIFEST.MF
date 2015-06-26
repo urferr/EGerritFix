@@ -15,6 +15,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.egerrit.core,
  org.eclipse.egerrit.core.command,
  org.eclipse.egerrit.core.exception,
+ org.eclipse.egerrit.core.model,
  org.eclipse.egerrit.core.rest,
  org.eclipse.egerrit.core.utils
 Import-Package: com.google.gerrit.common;version="2.1.5",

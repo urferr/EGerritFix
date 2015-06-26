@@ -8,32 +8,29 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Map;
 
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
+
 /**
- * The
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info" >AccountInfo</a>
- * entity contains information about an account.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info"
+ * >AccountInfo</a> entity contains information about an account.
  * <p>
  * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
  */
-public class ReviewerInfo {
+public class ReviewerInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
 	// The numeric ID of the account
 	private int _account_id = -1;
 
@@ -49,7 +46,7 @@ public class ReviewerInfo {
 	// Only set if detailed account information was requested.
 	private String username;
 
-	// The approvals of the reviewer as a map that maps the label 
+	// The approvals of the reviewer as a map that maps the label
 	// names to the approval values ("-2", "-1", "0", "+1", "+2").
 	private Map<String, String> approvals;
 
@@ -143,18 +140,6 @@ public class ReviewerInfo {
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -174,30 +159,40 @@ public class ReviewerInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		ReviewerInfo other = (ReviewerInfo) obj;
-		if (_account_id != other._account_id)
+		if (_account_id != other._account_id) {
 			return false;
+		}
 		if (email == null) {
-			if (other.email != null)
+			if (other.email != null) {
 				return false;
-		} else if (!email.equals(other.email))
+			}
+		} else if (!email.equals(other.email)) {
 			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
+		}
 		if (username == null) {
-			if (other.username != null)
+			if (other.username != null) {
 				return false;
-		} else if (!username.equals(other.username))
+			}
+		} else if (!username.equals(other.username)) {
 			return false;
+		}
 		return true;
 	}
 

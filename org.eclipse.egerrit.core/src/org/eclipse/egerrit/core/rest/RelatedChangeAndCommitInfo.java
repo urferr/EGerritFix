@@ -8,31 +8,27 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add PropertyChangeSupport handler for each field
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.rest;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
 /**
- * The
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchangeandcommit-info" >
- * RelatedChangeAndCommitInfo</a> entity contains information about a change.
+ * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#relatedchangeandcommit-info"
+ * > RelatedChangeAndCommitInfo</a> entity contains information about a change.
  * <p>
  * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *
  * @since 1.0
  * @author Guy Perron
  */
-public class RelatedChangeAndCommitInfo {
+public class RelatedChangeAndCommitInfo extends PropertyChangeModel {
 
 	// ------------------------------------------------------------------------
 	// The data structure
 	// ------------------------------------------------------------------------
-	// used to fire events of registered properties
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
 	// The Change-Id of the change.
 	// e.g. "I4982a3771051891899528a94fb47baeeb70582ae"
 	private String change_id;
@@ -129,18 +125,6 @@ public class RelatedChangeAndCommitInfo {
 				this._current_revision_number = _current_revision_number);
 	}
 
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-	}
-
-	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-	}
-
 	// ------------------------------------------------------------------------
 	// Object
 	// ------------------------------------------------------------------------
@@ -165,38 +149,51 @@ public class RelatedChangeAndCommitInfo {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		RelatedChangeAndCommitInfo other = (RelatedChangeAndCommitInfo) obj;
 		if (_change_number == null) {
-			if (other._change_number != null)
+			if (other._change_number != null) {
 				return false;
-		} else if (!_change_number.equals(other._change_number))
+			}
+		} else if (!_change_number.equals(other._change_number)) {
 			return false;
+		}
 		if (_revision_number == null) {
-			if (other._revision_number != null)
+			if (other._revision_number != null) {
 				return false;
-		} else if (!_revision_number.equals(other._revision_number))
+			}
+		} else if (!_revision_number.equals(other._revision_number)) {
 			return false;
+		}
 		if (change_id == null) {
-			if (other.change_id != null)
+			if (other.change_id != null) {
 				return false;
-		} else if (!change_id.equals(other.change_id))
+			}
+		} else if (!change_id.equals(other.change_id)) {
 			return false;
+		}
 		if (commit == null) {
-			if (other.commit != null)
+			if (other.commit != null) {
 				return false;
-		} else if (!commit.equals(other.commit))
+			}
+		} else if (!commit.equals(other.commit)) {
 			return false;
+		}
 		if (_current_revision_number == null) {
-			if (other._current_revision_number != null)
+			if (other._current_revision_number != null) {
 				return false;
-		} else if (!_current_revision_number.equals(other._current_revision_number))
+			}
+		} else if (!_current_revision_number.equals(other._current_revision_number)) {
 			return false;
+		}
 		return true;
 	}
 
