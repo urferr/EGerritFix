@@ -147,8 +147,8 @@ public class GerritHttpClient {
 		return fHttpClient.execute(request);
 	}
 
-	public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler)
-			throws IOException, ClientProtocolException {
+	public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException,
+	ClientProtocolException {
 		return fHttpClient.execute(request, responseHandler);
 	}
 
@@ -243,9 +243,12 @@ public class GerritHttpClient {
 	// HTTP authentication
 	// ------------------------------------------------------------------------
 
-	// To be implemented
 	private boolean httpAuthentication(Credentials creds) {
-		return false;
+		if (creds != null && creds.getUserPrincipal() != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// ------------------------------------------------------------------------

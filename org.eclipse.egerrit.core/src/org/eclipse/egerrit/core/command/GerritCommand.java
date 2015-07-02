@@ -57,6 +57,8 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	/** Indicates that authentication is required */
 	protected boolean fAuthIsRequired;
 
+	public static String JSON_HEADER = "application/json";
+
 	// ------------------------------------------------------------------------
 	// Constructor
 	// ------------------------------------------------------------------------
@@ -131,7 +133,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 		T result = null;
 		try {
 			HttpRequestBase request = formatRequest();
-			request.addHeader("Accept", "application/json"); //$NON-NLS-1$//$NON-NLS-2$
+			request.addHeader("Accept", JSON_HEADER); //$NON-NLS-1$
 			EGerritCorePlugin.logInfo("Request: " + request.getURI().toString()); //$NON-NLS-1$
 
 			ResponseHandler<T> rh = new ResponseHandler<T>() {

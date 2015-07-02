@@ -12,15 +12,18 @@
 
 package org.eclipse.egerrit.core;
 
+import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
-import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
+import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
 /**
@@ -203,13 +206,46 @@ public abstract class Gerrit {
 
 	/**
 	 * Return a command to extract the list of comments related to a revision of a change set
-	 * 
+	 *
 	 * @param change_id
 	 * @param revision_id
 	 * @return
 	 */
 	public ListCommentsCommand getListComments(String change_id, String revision_id) {
 		return new ListCommentsCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to create comments related to a revision of a change
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return
+	 */
+	public CreateDraftCommand createDraftComments(String change_id, String revision_id) {
+		return new CreateDraftCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to publish draft of a revision of a change
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return
+	 */
+	public PublishDraftRevisionCommand publishDraftRevision(String change_id, String revision_id) {
+		return new PublishDraftRevisionCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to ser Review a revision of a change
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return
+	 */
+	public SetReviewCommand setReview(String change_id, String revision_id) {
+		return new SetReviewCommand(fGerritRepository, change_id, revision_id);
 	}
 
 }

@@ -41,10 +41,6 @@ public class CommentInfoTest {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private static final String KIND = "gerritcodereview#comment";
-
-	private static final String PATCH_SET = "patchset 1";
-
 	private static final String ID = "myProject~master~I4982a3771051891899528a94fb47baeeb70582ae";
 
 	private static final String PATH = "path/1";
@@ -65,9 +61,9 @@ public class CommentInfoTest {
 
 	private static final int HASH_CODE = 2007752449;
 
-	private static final String TO_STRING = "CommentInfo [kind=" + KIND + ", patch_set=" + PATCH_SET + ", id=" + ID
-			+ ", path=" + PATH + ", side=" + SIDE + ", line=" + LINE + ", range=" + RANGE + ", inReplyTo=" + INREPLYTO
-			+ ", message=" + MESSAGE + ", updated=" + UPDATED + ", author=" + AUTHOR + "]";
+	private static final String TO_STRING = "CommentInfo [id=" + ID + ", path=" + PATH + ", side=" + SIDE + ", line="
+			+ LINE + ", range=" + RANGE + ", inReplyTo=" + INREPLYTO + ", message=" + MESSAGE + ", updated=" + UPDATED
+			+ ", author=" + AUTHOR + "]";
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -99,8 +95,6 @@ public class CommentInfoTest {
 	}
 
 	private void setAllFields() {
-		json.addProperty("kind", KIND);
-		json.addProperty("patch_set", PATCH_SET);
 		json.addProperty("id", ID);
 		json.addProperty("path", PATH);
 		json.addProperty("side", SIDE);
@@ -124,50 +118,6 @@ public class CommentInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getKind()}.
-	 */
-	@Test
-	public void testGetKind() {
-		json.addProperty("kind", KIND);
-		Reader reader = new StringReader(json.toString());
-		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
-
-		assertEquals("Wrong kind", KIND, fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
-		assertNull("Wrong id", fCommentInfo.getId());
-		assertNull("Wrong path", fCommentInfo.getPath());
-		assertNull("Wrong side", fCommentInfo.getSide());
-		assertEquals("Wrong line", 0, fCommentInfo.getLine());
-		assertNull("Wrong range", fCommentInfo.getRange());
-		assertNull("Wrong in reply to", fCommentInfo.getInReplyTo());
-		assertNull("Wrong message", fCommentInfo.getMessage());
-		assertNull("Wrong updated", fCommentInfo.getUpdated());
-		assertNull("Wrong owner", fCommentInfo.getAuthor());
-	}
-
-	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getPatchSet()}.
-	 */
-	@Test
-	public void testGetPatchSet() {
-		json.addProperty("patch_set", PATCH_SET);
-		Reader reader = new StringReader(json.toString());
-		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
-
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertEquals("Wrong patch set", PATCH_SET, fCommentInfo.getPatch_set());
-		assertNull("Wrong id", fCommentInfo.getId());
-		assertNull("Wrong path", fCommentInfo.getPath());
-		assertNull("Wrong side", fCommentInfo.getSide());
-		assertEquals("Wrong line", 0, fCommentInfo.getLine());
-		assertNull("Wrong range", fCommentInfo.getRange());
-		assertNull("Wrong in reply to", fCommentInfo.getInReplyTo());
-		assertNull("Wrong message", fCommentInfo.getMessage());
-		assertNull("Wrong updated", fCommentInfo.getUpdated());
-		assertNull("Wrong owner", fCommentInfo.getAuthor());
-	}
-
-	/**
 	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getId()}.
 	 */
 	@Test
@@ -175,9 +125,6 @@ public class CommentInfoTest {
 		json.addProperty("id", ID);
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
-
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 
 		assertEquals("Wrong id", ID, fCommentInfo.getId());
 
@@ -200,8 +147,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 
 		assertEquals("Wrong path", PATH, fCommentInfo.getPath());
@@ -223,8 +168,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertEquals("Wrong side", SIDE, fCommentInfo.getSide());
@@ -245,8 +188,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -270,8 +211,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -292,8 +231,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -314,8 +251,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -336,8 +271,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -359,8 +292,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertNull("Wrong kind", fCommentInfo.getKind());
-		assertNull("Wrong patch set", fCommentInfo.getPatch_set());
 		assertNull("Wrong id", fCommentInfo.getId());
 		assertNull("Wrong path", fCommentInfo.getPath());
 		assertNull("Wrong side", fCommentInfo.getSide());
@@ -385,8 +316,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertEquals("Wrong kind", KIND, fCommentInfo.getKind());
-		assertEquals("Wrong patch set", PATCH_SET, fCommentInfo.getPatch_set());
 		assertEquals("Wrong id", ID, fCommentInfo.getId());
 		assertEquals("Wrong path", PATH, fCommentInfo.getPath());
 		assertEquals("Wrong side", SIDE, fCommentInfo.getSide());
@@ -409,8 +338,6 @@ public class CommentInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fCommentInfo = gson.fromJson(reader, CommentInfo.class);
 
-		assertEquals("Wrong kind", KIND, fCommentInfo.getKind());
-		assertEquals("Wrong patch set", PATCH_SET, fCommentInfo.getPatch_set());
 		assertEquals("Wrong id", ID, fCommentInfo.getId());
 		assertEquals("Wrong path", PATH, fCommentInfo.getPath());
 		assertEquals("Wrong side", SIDE, fCommentInfo.getSide());

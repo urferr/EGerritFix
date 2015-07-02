@@ -12,7 +12,6 @@
 
 package org.eclipse.egerrit.core.rest;
 
-
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >CommentInfo</a>
  * entity contains information about a comment.
@@ -23,15 +22,6 @@ package org.eclipse.egerrit.core.rest;
  * @author Guy Perron
  */
 public class CommentInfo {
-	// The structure type.
-	// "gerritcodereview#comment"
-	private String kind;
-
-	/*
-	 * The patch set number for the comment; only set in contexts where
-	comments may be returned for multiple patch sets.
-	 */
-	private String patch_set;
 
 /*
  * The URL encoded UUID of the comment.
@@ -83,36 +73,6 @@ public class CommentInfo {
 	Unset for draft comments, assumed to be the calling user.
 	 */
 	private AccountInfo author;
-
-	/**
-	 * @return String
-	 */
-	public String getKind() {
-		return kind;
-	}
-
-	/**
-	 * @param String
-	 *            kind
-	 */
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
-
-	/**
-	 * @return String
-	 */
-	public String getPatch_set() {
-		return patch_set;
-	}
-
-	/**
-	 * @param String
-	 *            patch_set
-	 */
-	public void setPatch_set(String patch_set) {
-		this.patch_set = patch_set;
-	}
 
 	/**
 	 * @return String
@@ -258,10 +218,8 @@ public class CommentInfo {
 		result = prime * result + ((author == null) ? 0 : author.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((inReplyTo == null) ? 0 : inReplyTo.hashCode());
-		result = prime * result + ((kind == null) ? 0 : kind.hashCode());
 		result = prime * result + line;
 		result = prime * result + ((message == null) ? 0 : message.hashCode());
-		result = prime * result + ((patch_set == null) ? 0 : patch_set.hashCode());
 		result = prime * result + ((path == null) ? 0 : path.hashCode());
 		result = prime * result + ((range == null) ? 0 : range.hashCode());
 		result = prime * result + ((side == null) ? 0 : side.hashCode());
@@ -305,13 +263,6 @@ public class CommentInfo {
 		} else if (!inReplyTo.equals(other.inReplyTo)) {
 			return false;
 		}
-		if (kind == null) {
-			if (other.kind != null) {
-				return false;
-			}
-		} else if (!kind.equals(other.kind)) {
-			return false;
-		}
 		if (line != other.line) {
 			return false;
 		}
@@ -320,13 +271,6 @@ public class CommentInfo {
 				return false;
 			}
 		} else if (!message.equals(other.message)) {
-			return false;
-		}
-		if (patch_set == null) {
-			if (other.patch_set != null) {
-				return false;
-			}
-		} else if (!patch_set.equals(other.patch_set)) {
 			return false;
 		}
 		if (path == null) {
@@ -360,13 +304,11 @@ public class CommentInfo {
 		return true;
 	}
 
-	/**
-	 * @return String
-	 */
 	@Override
 	public String toString() {
-		return "CommentInfo [kind=" + kind + ", patch_set=" + patch_set + ", id=" + id + ", path=" + path + ", side="
-				+ side + ", line=" + line + ", range=" + range + ", inReplyTo=" + inReplyTo + ", message=" + message
-				+ ", updated=" + updated + ", author=" + author + "]";
+		return "CommentInfo [id=" + id + ", path=" + path + ", side=" + side + ", line=" + line + ", range=" + range
+				+ ", inReplyTo=" + inReplyTo + ", message=" + message + ", updated=" + updated + ", author=" + author
+				+ "]";
 	}
+
 }
