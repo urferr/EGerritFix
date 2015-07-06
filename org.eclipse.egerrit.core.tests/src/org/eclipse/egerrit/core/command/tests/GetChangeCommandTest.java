@@ -330,7 +330,7 @@ public class GetChangeCommandTest {
 	 */
 	@Test
 	public void testSetTopic() {
-		String EXPECTED_RESULT = "q=" + "topic:" + "\"" + TOPIC + "\"";
+		String EXPECTED_RESULT = "q=" + "topic:" + TOPIC;
 
 		// Run test
 		GetChangeCommand command = fGerrit.getChange("");
@@ -709,7 +709,7 @@ public class GetChangeCommandTest {
 		assertTrue("Missing parent project", query.contains("parentproject:" + PARENT_PROJECT));
 		assertTrue("Missing prefix", query.contains("prefix:" + PREFIX));
 		assertTrue("Missing branch", query.contains("branch:" + BRANCH));
-		assertTrue("Missing topic", query.contains("topic:" + "\"" + TOPIC + "\""));
+		assertTrue("Missing topic", query.contains("topic:" + TOPIC));
 		assertTrue("Missing reference", query.contains("ref:" + REFERENCE));
 		assertTrue("Missing bug", query.contains("bug:" + BUG));
 		assertTrue("Missing label", query.contains("label:" + LABEL));

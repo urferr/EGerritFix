@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Francois Chouinard - Initial API and implementation
+ *     Jacques Bouthillier - Add new command for the search operator
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.command;
@@ -43,11 +44,15 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 
 	public static final String FILE = "FILE"; //$NON-NLS-1$
 
+	public static final String SHORTFILE = "F"; //$NON-NLS-1$
+
 	public static final String LABEL = "LABEL"; //$NON-NLS-1$
 
 	public static final String MESSAGE = "MESSAGE"; //$NON-NLS-1$
 
 	public static final String OWNER = "OWNER"; //$NON-NLS-1$
+
+	public static final String SHORTOWNER = "O"; //$NON-NLS-1$
 
 	public static final String OWNERIN = "OWNERIN"; //$NON-NLS-1$
 
@@ -59,9 +64,15 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 
 	public static final String PROJECT = "PROJECT"; //$NON-NLS-1$
 
+	public static final String SHORTPROJECT = "P"; //$NON-NLS-1$
+
+	public static final String MANYPROJECT = "PROJECTS"; //$NON-NLS-1$
+
 	public static final String REF = "REF"; //$NON-NLS-1$
 
 	public static final String REVIEWER = "REVIEWER"; //$NON-NLS-1$
+
+	public static final String SHORTREVIEWER = "R"; //$NON-NLS-1$
 
 	public static final String REVIEWERIN = "REVIEWERIN"; //$NON-NLS-1$
 
@@ -84,6 +95,20 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 	public static final String DRAFTBY = "DRAFTBY"; //$NON-NLS-1$
 
 	public static final String LIMIT = "LIMIT"; //$NON-NLS-1$
+
+	public static final String AGE = "AGE"; //$NON-NLS-1$
+
+	public static final String CHANGE = "CHANGE"; //$NON-NLS-1$
+
+	public static final String TR = "TR"; //$NON-NLS-1$
+
+	public static final String HAS = "HAS"; //$NON-NLS-1$
+
+	public static final String IS = "IS"; //$NON-NLS-1$
+
+	public static final String AND = "AND"; //$NON-NLS-1$
+
+	public static final String OR = "OR"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -134,12 +159,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 		while (parameters.hasNext()) {
 			Iterator<String> values = fQueryParameters.get(parameters.next()).listIterator();
 			while (values.hasNext()) {
-				String buf = values.next();
-				if (buf.indexOf("topic:") == 0) {
-					int colon = buf.indexOf(':');
-					buf = buf.substring(0, colon + 1) + "\"" + buf.substring(colon + 1) + "\"";
-				}
-				sb.append(buf);
+				sb.append(values.next());
 				if (values.hasNext()) {
 					sb.append(" "); //$NON-NLS-1$
 				}

@@ -20,9 +20,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,7 +41,9 @@ import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.ChangeState;
+import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.QueryCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
@@ -108,12 +114,6 @@ public class GerritTableView extends ViewPart {
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
-
-	public static final String MY_CHANGES_STRING = "owner:self OR reviewer:self"; //$NON-NLS-1$
-
-	public static final String MY_WATCHED_CHANGES_STRING = "is:watched status:open"; //$NON-NLS-1$
-
-	public static final String ALL_OPEN_CHANGES_STRING = "status:open"; //$NON-NLS-1$
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -437,8 +437,6 @@ public class GerritTableView extends ViewPart {
 				}
 				Object element = structuredSelection.getFirstElement();
 				if (element instanceof ChangeInfo) {
-					System.err.println(
-							"Command deactivated HERE in GerritTableview.makeactions() Could use convertGerritInfoToTaskRepository () temporary");
 					ChangeDetailEditor cDE = ChangeDetailEditor.getActiveEditor();
 
 					cDE.setChangeInfo(gerritRepository, (ChangeInfo) element);
@@ -878,27 +876,12 @@ public class GerritTableView extends ViewPart {
 //		RepositoryQuery query = null;
 		String queryString = null;
 
-//		IRepositoryModel repositoryModel = TasksUi.getRepositoryModel();
-//		query = (RepositoryQuery) repositoryModel.createRepositoryQuery(convertGerritInfoToTaskRepository(repository));
-//		query.setSummary(queryId);
-//		query.setAttribute(GerritQuery.TYPE, queryType);
-//		query.setAttribute(GerritQuery.PROJECT, null);
 //		if (queryType == GerritQuery.CUSTOM) {
 		if (queryType == "custom") { //$NON-NLS-1$
-//			query.setAttribute(GerritQuery.QUERY_STRING, getSearchText());
-
 			queryString = getSearchText();
 		} else {
-			String st = matchQueryTypeRequest(queryType);
-//			query.setAttribute(GerritQuery.QUERY_STRING, st);
-			queryString = st;
-
+			queryString = queryType;
 		}
-
-//		if (query.getAttribute(GerritQuery.QUERY_STRING).isEmpty()) {
-//			displayWarning(Messages.GerritTableView_warningEmptyValue);
-//			return Status.CANCEL_STATUS;
-//		}
 
 		// Save query
 //		fCurrentQuery = query;
@@ -931,29 +914,11 @@ public class GerritTableView extends ViewPart {
 
 	}
 
-	/**
-	 * We need to use the define in GerritQuery.java for the missing one
-	 *
-	 * @param queryType
-	 * @return queryString
-	 */
-	private String matchQueryTypeRequest(String queryType) {
-		if (queryType.equals(GerritQuery.ALL_OPEN_CHANGES)) {
-			return ALL_OPEN_CHANGES_STRING;
-		} else if (queryType.equals(GerritQuery.MY_CHANGES)) {
-			return MY_CHANGES_STRING;
-		} else if (queryType.equals(GerritQuery.MY_WATCHED_CHANGES)) {
-			return MY_WATCHED_CHANGES_STRING;
-		}
-		return queryType;
-	}
-
 	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {
 
 		ChangeInfo[] reviews = null;
 
 		try {
-//			reviews = performQuery(convertGerritInfoToTaskRepository(repository), aQuery, new NullProgressMonitor());
 			reviews = performQuery(aQuery, new NullProgressMonitor());
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -963,8 +928,6 @@ public class GerritTableView extends ViewPart {
 		return reviews;
 	}
 
-	//lmcgupe
-//	public ChangeInfo[] performQuery(TaskRepository repository, String query, IProgressMonitor monitor)
 	public ChangeInfo[] performQuery(String query, IProgressMonitor monitor) throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
@@ -986,13 +949,11 @@ public class GerritTableView extends ViewPart {
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_FILES);
 
-				setQuery(query, command);
-
 				try {
+					setQuery(query, command);
 					res = command.call();
 				} catch (EGerritException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
 				}
 				final String queryText = query;
 				Display.getDefault().syncExec(new Runnable() {
@@ -1014,7 +975,7 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
-	private void setQuery(String query, QueryChangesCommand command) {
+	private void setQuery(String query, QueryChangesCommand command) throws EGerritException {
 		if (!query.isEmpty()) {
 			if (query.compareTo(GerritQuery.MY_CHANGES) == 0) {
 				command.addOwner("self");
@@ -1044,90 +1005,229 @@ public class GerritTableView extends ViewPart {
 				// status:open
 				command.addState(ChangeState.IS_OPEN);
 				command.addProject(""); // TODO get project name
+			} else {
+				//Custom Queries
+				setFreeTextQuery(query, command);
 			}
 
 		}
 	}
 
-//	private List<GerritQueryResult> convert(List<com.google.gerrit.common.data.ChangeInfo> changes) {
-//		List<GerritQueryResult> results = new ArrayList<GerritQueryResult>(changes.size());
-//		for (com.google.gerrit.common.data.ChangeInfo changeInfo : changes) {
-//			GerritQueryResult result = new GerritQueryResult(changeInfo);
-//			results.add(result);
-//		}
-//		return results;
-//	}
+	private void setFreeTextQuery(String query, QueryChangesCommand command) throws EGerritException {
+		if (!query.isEmpty()) {
+			Map<String, String> map = parseQuery(query);
 
-// lmcgupe
+			Iterator<Map.Entry<String, String>> mapIter = map.entrySet().iterator();
+			while (mapIter.hasNext()) {
+				Entry<String, String> entryMap = mapIter.next();
 
-//Temporary converting method
-//	private TaskRepository convertGerritInfoToTaskRepository(GerritServerInformation gerritServerInfo) {
-//		TaskRepository taskrepository = new TaskRepository(CONNECTOR_KIND, gerritServerInfo.getServerURL());
-//		taskrepository.setAuthenticationCredentials(gerritServerInfo.getUserName(), gerritServerInfo.getPassword());
-//		return taskrepository;
-//	}
+				String key = entryMap.getKey().toUpperCase();
+				String value = entryMap.getValue();
+				if (key.compareTo(QueryCommand.BRANCH) == 0) {
+					command.addBranch(value);
+				} else if (key.compareTo(QueryCommand.BUG) == 0) {
+					command.addBug(value);
+				} else if (key.compareTo(QueryCommand.COMMENT) == 0) {
+					command.addComment(value);
+				} else if (key.compareTo(QueryCommand.COMMIT) == 0) {
+					command.addCommit(value);
+				} else if (key.compareTo(QueryCommand.FILE) == 0) {
+					command.addFile(value);
+				} else if (key.compareTo(QueryCommand.SHORTFILE) == 0) {
+					command.addShortFile(value);
+				} else if (key.compareTo(QueryCommand.LABEL) == 0) {
+					command.addLabel(value);
+				} else if (key.compareTo(QueryCommand.MESSAGE) == 0) {
+					command.addMessage(value);
+				} else if (key.compareTo(QueryCommand.OWNER) == 0) {
+					command.addOwner(value);
+				} else if (key.compareTo(QueryCommand.SHORTOWNER) == 0) {
+					command.addShortOwner(value);
+				} else if (key.compareTo(QueryCommand.OWNERIN) == 0) {
+					command.addOwnerGroup(value);
+				} else if (key.compareTo(QueryCommand.PARENTPROJECT) == 0) {
+					command.addParentProject(value);
+				} else if (key.compareTo(QueryCommand.PATH) == 0) {
+					command.addPath(value);
+				} else if (key.compareTo(QueryCommand.PREFIX) == 0) {
+					command.addPrefix(value);
+				} else if (key.compareTo(QueryCommand.PROJECT) == 0) {
+					command.addProject(value);
+				} else if (key.compareTo(QueryCommand.SHORTPROJECT) == 0) {
+					command.addShortProject(value);
+				} else if (key.compareTo(QueryCommand.MANYPROJECT) == 0) {
+					command.addManyProjects(value);
+				} else if (key.compareTo(QueryCommand.REF) == 0) {
+					command.addReference(value);
+				} else if (key.compareTo(QueryCommand.REVIEWER) == 0) {
+					command.addReviewer(value);
+				} else if (key.compareTo(QueryCommand.SHORTREVIEWER) == 0) {
+					command.addShortReviewer(value);
+				} else if (key.compareTo(QueryCommand.REVIEWERIN) == 0) {
+					command.addReviewerGroup(value);
+				} else if (key.compareTo(QueryCommand.STATE) == 0) {
+					command.addState(ChangeState.valueOf(value.toUpperCase())); //need to be as defined in ChangeState
+				} else if (key.compareTo(QueryCommand.STATUS) == 0) {
+					command.addStatus(ChangeStatus.valueOf(value.toUpperCase()));
+				} else if (key.compareTo(QueryCommand.TOPIC) == 0) {
+					command.addTopic(value);
+				} else if (key.compareTo(QueryCommand.CONFLICTS) == 0) {
+					command.addConflicts(value);
+				} else if (key.compareTo(QueryCommand.VISIBLETO) == 0) {
+					command.addVisibleTo(value);
+				} else if (key.compareTo(QueryCommand.ISVISIBLE) == 0) {
+					command.addVisible();
+				} else if (key.compareTo(QueryCommand.STARREDBY) == 0) {
+					command.addStarredBy(value);
+				} else if (key.compareTo(QueryCommand.WATCHEDBY) == 0) {
+					command.addWatchedBy(value);
+				} else if (key.compareTo(QueryCommand.DRAFTBY) == 0) {
+					command.addDraftBy(value);
+				} else if (key.compareTo(QueryCommand.LIMIT) == 0) {
+					command.addLimit(Integer.parseInt(value));
+				} else if (key.compareTo(QueryCommand.IS) == 0) {
+					command.addIs(value);
+				} else if (key.compareTo(QueryCommand.HAS) == 0) {
+					command.addHas(value);
+				} else if (key.compareTo(QueryCommand.TR) == 0) {
+					command.addTr(value);
+				} else if (key.compareTo(QueryCommand.CHANGE) == 0) {
+					command.addChange(value);
+				} else if (key.compareTo(QueryCommand.AGE) == 0) {
+					command.addAge(value);
+				} else if (key.compareTo(QueryCommand.AND) == 0) {
+					command.addAnd(key);
+				} else if (key.compareTo(QueryCommand.OR) == 0) {
+					command.addOr(key);
+				} else {
+					throw new EGerritException("Gerrit command invalid: " + entryMap.getKey()); //$NON-NLS-1$
+				}
 
-// ------------------------------------------------------------------------
-// ITaskListChangeListener
-// ------------------------------------------------------------------------
+			}
+		}
+	}
 
-/* (non-Javadoc)
- * @see org.eclipse.mylyn.internal.tasks.core.ITaskListChangeListener#containersChanged(java.util.Set)
- */
-//	@Override
-//	public void containersChanged(final Set<TaskContainerDelta> deltas) {
-//		for (TaskContainerDelta taskContainerDelta : deltas) {
-//			IRepositoryElement element = taskContainerDelta.getElement();
-//			switch (taskContainerDelta.getKind()) {
-//			case ROOT:
-//				refresh();
-//				break;
-//			case ADDED:
-//			case CONTENT:
-//				if (element != null && element instanceof ChangeInfo) {
-//					updateReview((ChangeInfo) element);
-//				}
-//				refresh();
-//				break;
-//			case DELETED:
-//			case REMOVED:
-//				if (element != null && element instanceof ChangeInfo) {
-//					deleteReview((ChangeInfo) element);
-//				}
-//				refresh();
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * Delete a review
-//	 */
-//	private synchronized void deleteReview(ChangeInfo task) {
-//		fReviewTable.deleteReviewItem(task.getChangeId());
-//	}
-//
-//	/**
-//	 * Add/update a review
-//	 */
-//	private synchronized void updateReview(ChangeInfo task) {
-//		boolean ourQuery = task.getParentContainers().contains(fCurrentQuery);
-//		if (ourQuery && !Strings.isNullOrEmpty(task.getSummary())) {
-//			try {
-//				TaskData taskData = fConnector.getTaskData(getTaskRepository(), task.getTaskId(),
-//						new NullProgressMonitor());
-//				GerritTask gtask = new GerritTask(taskData);
-//				if (gtask.getAttribute(GerritTask.DATE_COMPLETION) == null) {
-//					fReviewTable.updateReviewItem(gtask);
-//				}
-//			} catch (CoreException e) {
-//				StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, e.getMessage(), e));
-//			}
-//		}
-//
-//	}
+	private Map<String, String> parseQuery(String query) {
+		Map<String, String> mapQuery = new LinkedHashMap<String, String>();
+		Map<String, String> mapParsing = new LinkedHashMap<String, String>();
+		query = initialFreeTextParsing(query, mapParsing);
+		if (!query.isEmpty()) {
+			//Map all others keywords
+			String[] queryArray = query.split(" "); //$NON-NLS-1$
+
+			for (String element : queryArray) {
+				if (!element.isEmpty()) {
+					String[] value = element.split(":"); //$NON-NLS-1$
+					for (int j = 0; j < value.length; j++) {
+						if (j + 1 < value.length) {
+							mapQuery.put(value[j], value[++j]);
+						} else {
+							mapQuery.put(value[j], ""); //$NON-NLS-1$
+						}
+					}
+				}
+			}
+		}
+
+		//Append the free parsing
+		if (!mapParsing.isEmpty()) {
+			mapQuery.putAll(mapParsing);
+		}
+		return mapQuery;
+	}
+
+	/**
+	 * Take the initial query and store the parameters which could handle some free text and possibility having some
+	 * spaces
+	 *
+	 * @param String
+	 *            query
+	 * @param Map
+	 *            mapQuery
+	 * @return String modified query which the free text removed and put into the map
+	 */
+	private String initialFreeTextParsing(String initialQuery, Map<String, String> mapQuery) {
+		// Parse to filter the text with possible spaces in the value: topic, message, comment, visibleto
+		String COMMENT = "comment:"; //$NON-NLS-1$
+		String MESSAGE = "message:"; //$NON-NLS-1$
+		String TOPIC = "topic:"; //$NON-NLS-1$
+		String VISIBLETO = "visibleto:"; //$NON-NLS-1$
+		String OWNER = "owner:"; //$NON-NLS-1$
+		String SHORTOWNER = "o:"; //$NON-NLS-1$
+		String REVIEWER = "reviewer:"; //$NON-NLS-1$
+		String SHORTREVIEWER = "r:"; //$NON-NLS-1$
+
+		if (initialQuery.contains(TOPIC)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, TOPIC);
+		}
+		if (initialQuery.contains(MESSAGE)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, MESSAGE);
+		}
+		if (initialQuery.contains(COMMENT)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, COMMENT);
+		}
+		if (initialQuery.contains(VISIBLETO)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, VISIBLETO);
+		}
+
+		if (initialQuery.contains(OWNER)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, OWNER);
+		}
+		if (initialQuery.contains(SHORTOWNER)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, SHORTOWNER);
+		}
+
+		if (initialQuery.contains(REVIEWER)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, REVIEWER);
+		}
+		if (initialQuery.contains(SHORTREVIEWER)) {
+			initialQuery = adjustQuery(initialQuery, mapQuery, SHORTREVIEWER);
+		}
+		return initialQuery;
+	}
+
+	/**
+	 * Store the selected string into a map with the associated value and return the query string
+	 *
+	 * @param initialQuery
+	 * @param mapFreeTextQuery
+	 * @param searchText
+	 * @return
+	 */
+	private String adjustQuery(String initialQuery, Map<String, String> mapFreeTextQuery, String searchText) {
+		String stringValue;
+		int init = initialQuery.indexOf(searchText);
+		stringValue = initialQuery.substring(init + searchText.length());
+		stringValue = extractQueryValueString(stringValue);
+		mapFreeTextQuery.put(searchText.substring(0, searchText.length() - 1), stringValue);
+
+		//Remove the search text with its value from the next passing
+		String tmp = searchText + stringValue;
+		initialQuery = initialQuery.replaceFirst(tmp, "").trim();//Need to remove the last space at the beginning //$NON-NLS-1$
+		return initialQuery;
+	}
+
+	/**
+	 * Parse the string in parameter and return a modified one
+	 *
+	 * @param String
+	 *            stringValue
+	 * @return String
+	 */
+	private String extractQueryValueString(String stringValue) {
+		String COLON = ":"; //$NON-NLS-1$
+		if (stringValue.contains(COLON)) {
+			Pattern p = Pattern.compile(COLON);
+			String[] words = p.split(stringValue);
+			if (words.length > 1) {
+				//We have other data after, so need to rebuild it
+				//Extract the last word
+				int lastIndex = words[0].lastIndexOf(" ");//Keep string up to the last spaces //$NON-NLS-1$
+				stringValue = stringValue.substring(0, lastIndex);
+			}
+		}
+		return stringValue;
+	}
 
 	private void setRepositoryVersionLabel(String aRepo, String aVersion) {
 		if (!fRepositoryVersionResulLabel.isDisposed()) {

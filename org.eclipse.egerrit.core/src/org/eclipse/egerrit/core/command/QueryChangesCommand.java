@@ -61,6 +61,12 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 		return this;
 	}
 
+	public QueryChangesCommand addShortOwner(String owner) {
+		addParameter(OWNER, "o:" + owner); //$NON-NLS-1$
+		fAuthIsRequired = ("self".equals(owner)); //$NON-NLS-1$
+		return this;
+	}
+
 	public QueryChangesCommand addOwnerGroup(String group) {
 		addParameter(OWNERIN, "ownerin:" + group); //$NON-NLS-1$
 		return this;
@@ -68,6 +74,12 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 
 	public QueryChangesCommand addReviewer(String reviewer) {
 		addParameter(REVIEWER, "reviewer:" + reviewer); //$NON-NLS-1$
+		fAuthIsRequired = ("self".equals(reviewer)); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addShortReviewer(String reviewer) {
+		addParameter(REVIEWER, "r:" + reviewer); //$NON-NLS-1$
 		fAuthIsRequired = ("self".equals(reviewer)); //$NON-NLS-1$
 		return this;
 	}
@@ -84,6 +96,16 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 
 	public QueryChangesCommand addProject(String project) {
 		addParameter(PROJECT, "project:" + project); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addShortProject(String project) {
+		addParameter(PROJECT, "p:" + project); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addManyProjects(String prefix) {
+		addParameter(MANYPROJECT, "projects:" + prefix); //$NON-NLS-1$
 		return this;
 	}
 
@@ -147,6 +169,11 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 		return this;
 	}
 
+	public QueryChangesCommand addShortFile(String file) {
+		addParameter(FILE, "f:" + file); //$NON-NLS-1$
+		return this;
+	}
+
 	public QueryChangesCommand addStatus(ChangeStatus status) {
 		addParameter(STATUS, status.getValue());
 		return this;
@@ -158,6 +185,15 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 		return this;
 	}
 
+	public QueryChangesCommand addAnd(String value) {
+		addParameter(AND, value.toUpperCase());
+		return this;
+	}
+
+	public QueryChangesCommand addOr(String value) {
+		addParameter(OR, value.toUpperCase());
+		return this;
+	}
 	// ------------------------------------------------------------------------
 	// Magical operators
 	// ------------------------------------------------------------------------
@@ -229,10 +265,10 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 
 			try {
 				uri = uriBuilder.build();
-				if (uri.toString().equals(java.net.URLDecoder.decode(uri.toString(), "UTF-8"))) {
+				if (uri.toString().equals(java.net.URLDecoder.decode(uri.toString(), "UTF-8"))) { //$NON-NLS-1$
 				} else {
 					// Create the URI but revert the escaped characters
-					uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
+					uri = URIUtil.fromString(URIUtil.toUnencodedString(uriBuilder.build()));
 				}
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
@@ -245,4 +281,30 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 
 		return new HttpGet(uri);
 	}
+
+	public QueryChangesCommand addIs(String value) {
+		addParameter(IS, "is:" + value); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addHas(String value) {
+		addParameter(HAS, "has:" + value); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addTr(String value) {
+		addParameter(TR, "tr:" + value); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addChange(String value) {
+		addParameter(CHANGE, "change:" + value); //$NON-NLS-1$
+		return this;
+	}
+
+	public QueryChangesCommand addAge(String value) {
+		addParameter(AGE, "age:" + value); //$NON-NLS-1$
+		return this;
+	}
+
 }

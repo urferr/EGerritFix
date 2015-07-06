@@ -123,6 +123,26 @@ public class QueryChangesCommandTest {
 
 	private static final int COUNT = 10;
 
+	private static final String IS = ChangeState.IS_OPEN.getValue();
+
+	private static final String HAS = ChangeState.HAS_STAR.getValue();
+
+	private static final String TR = "Tr4567";
+
+	private static final String CHANGE = "9876";
+
+	private static final String AGE = "1week";
+
+	private static final String SHORTOWNER = "test";
+
+	private static final String SHORTREVIEWER = "tester";
+
+	private static final String SHORTFILE = "File1.java";
+
+	private static final String SHORTPROJECT = "alpha";
+
+	private static final String MANYPROJECT = "alpha,beta";
+
 	// ------------------------------------------------------------------------
 	// Helper methods
 	// ------------------------------------------------------------------------
@@ -332,7 +352,7 @@ public class QueryChangesCommandTest {
 	 */
 	@Test
 	public void testSetTopic() {
-		String EXPECTED_RESULT = "q=" + "topic:" + "\"" + TOPIC + "\"";
+		String EXPECTED_RESULT = "q=" + "topic:" + TOPIC;
 
 		// Run test
 		QueryChangesCommand command = fGerrit.queryChanges();
@@ -659,6 +679,166 @@ public class QueryChangesCommandTest {
 		assertEquals("Wrong count", EXPECTED_RESULT, uri.getQuery());
 	}
 
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addIs(java.lang.String)} .
+	 */
+	@Test
+	public void testaddIs() {
+		String EXPECTED_RESULT = "q=" + "is:" + IS;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addIs(IS);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong is ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addHas(java.lang.String)} .
+	 */
+	@Test
+	public void testaddHas() {
+		String EXPECTED_RESULT = "q=" + "has:" + HAS;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addHas(HAS);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong has ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addTr(java.lang.String)} .
+	 */
+	@Test
+	public void testaddTr() {
+		String EXPECTED_RESULT = "q=" + "tr:" + TR;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addTr(TR);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong TR ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addChange(java.lang.String)} .
+	 */
+	@Test
+	public void testaddChange() {
+		String EXPECTED_RESULT = "q=" + "change:" + CHANGE;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addChange(CHANGE);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong CHANGE ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addAge(java.lang.String)} .
+	 */
+	@Test
+	public void testaddAge() {
+		String EXPECTED_RESULT = "q=" + "age:" + AGE;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addAge(AGE);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong age ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addShortOwner(java.lang.String)} .
+	 */
+	@Test
+	public void testaddShortOwner() {
+		String EXPECTED_RESULT = "q=" + "o:" + SHORTOWNER;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addShortOwner(SHORTOWNER);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong short owner request ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addShortReviewer(java.lang.String)} .
+	 */
+	@Test
+	public void testaddShortReviewer() {
+		String EXPECTED_RESULT = "q=" + "r:" + SHORTREVIEWER;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addShortReviewer(SHORTREVIEWER);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong short reviewer request ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addShortProject(java.lang.String)} .
+	 */
+	@Test
+	public void testaddShortProject() {
+		String EXPECTED_RESULT = "q=" + "p:" + SHORTPROJECT;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addShortProject(SHORTPROJECT);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong short project request ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addManyProjects(java.lang.String)} .
+	 */
+	@Test
+	public void testaddManyProjects() {
+		String EXPECTED_RESULT = "q=" + "projects:" + MANYPROJECT;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addManyProjects(MANYPROJECT);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong many project request ", EXPECTED_RESULT, uri.getQuery());
+	}
+
+	/**
+	 * Test method for {@link org.eclipse.egerrit.core.command.QueryChangesCommand#addShortFile(java.lang.String)} .
+	 */
+	@Test
+	public void testaddShortFile() {
+		String EXPECTED_RESULT = "q=" + "f:" + SHORTFILE;
+
+		// Run test
+		QueryChangesCommand command = fGerrit.queryChanges();
+		command.addShortFile(SHORTFILE);
+		URI uri = command.formatRequest().getURI();
+
+		// Verify result
+		assertEquals("Wrong short project request ", EXPECTED_RESULT, uri.getQuery());
+	}
+
 	// ------------------------------------------------------------------------
 	// Combine everything
 	// ------------------------------------------------------------------------
@@ -698,6 +878,13 @@ public class QueryChangesCommandTest {
 		command.addLimit(LIMIT);
 		command.addOption(OPTION);
 		command.setCount(COUNT);
+		command.addTr(TR);
+		command.addChange(CHANGE);
+		command.addAge(AGE);
+		command.addShortFile(SHORTFILE);
+		command.addShortOwner(SHORTOWNER);
+		command.addShortProject(SHORTPROJECT);
+		command.addShortReviewer(SHORTREVIEWER);
 		URI uri = command.formatRequest().getURI();
 
 		// Verify result
@@ -711,7 +898,7 @@ public class QueryChangesCommandTest {
 		assertTrue("Missing parent project", query.contains("parentproject:" + PARENT_PROJECT));
 		assertTrue("Missing prefix", query.contains("prefix:" + PREFIX));
 		assertTrue("Missing branch", query.contains("branch:" + BRANCH));
-		assertTrue("Missing topic", query.contains("topic:" + "\"" + TOPIC + "\""));
+		assertTrue("Missing topic", query.contains("topic:" + TOPIC));
 		assertTrue("Missing reference", query.contains("ref:" + REFERENCE));
 		assertTrue("Missing bug", query.contains("bug:" + BUG));
 		assertTrue("Missing label", query.contains("label:" + LABEL));
@@ -727,9 +914,15 @@ public class QueryChangesCommandTest {
 		assertTrue("Missing watched by", query.contains("watchedby:" + WATCHED_BY));
 		assertTrue("Missing draft by", query.contains("draftby:" + DRAFT_BY));
 		assertTrue("Missing limit", query.contains("limit:" + LIMIT));
-
 		assertTrue("Missing option", query.contains("o=" + OPTION.getValue()));
 		assertTrue("Missing count", query.contains("n=" + COUNT));
+		assertTrue("Missing age", query.contains("age:" + AGE));
+		assertTrue("Missing tr", query.contains("tr:" + TR));
+		assertTrue("Missing change", query.contains("change:" + CHANGE));
+		assertTrue("Missing short file", query.contains("f:" + SHORTFILE));
+		assertTrue("Missing short owner", query.contains("o:" + SHORTOWNER));
+		assertTrue("Missing short reviewer", query.contains("r:" + SHORTREVIEWER));
+		assertTrue("Missing short project", query.contains("p:" + SHORTPROJECT));
 	}
 
 	// ------------------------------------------------------------------------

@@ -1,44 +1,32 @@
-/*********************************************************************
- * Copyright (c) 2010 Sony Ericsson/ST Ericsson and others.
+/*******************************************************************************
+ * Copyright (c) 2015 Ericsson
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- *  Contributors:
- *      Sony Ericsson/ST Ericsson - initial API and implementation
- *      Sascha Scholz (SAP) - improvements
- *      Francois Chouinard - Bug 414253 Add some definitions
- *      Jacques Bouthillier - Bug 414253 Add support for Gerrit Dashboard
-
- *********************************************************************/
+ * Contributors:
+ *     Jacques Bouthillier - Initial API and implementation
+ *******************************************************************************/
 package org.eclipse.egerrit.dashboard.core;
 
 /**
  * Constants for the query type.
  *
- * @author Mikael Kober
- * @author Thomas Westling
- * @author Francois Chouinard
- * @author Jacques Bouthillier
  * @since 1.0
  */
 public class GerritQuery {
 
 	/**
-	 * Key for the query attribute.
-	 */
-	public static final String TYPE = "gerrit query type"; //$NON-NLS-1$
-
-	/**
 	 * Query type: my changes
 	 */
-	public static final String MY_CHANGES = "my changes"; //$NON-NLS-1$
+	public static final String MY_CHANGES = "owner:self OR reviewer:self"; //$NON-NLS-1$
 
 	/**
 	 * Query type: my watched changes
 	 */
-	public static final String MY_WATCHED_CHANGES = "my watched changes"; //$NON-NLS-1$
+	public static final String MY_WATCHED_CHANGES = "is:watched status:open"; //$NON-NLS-1$
 
 	/**
 	 * Query : my starred changes
@@ -58,7 +46,7 @@ public class GerritQuery {
 	/**
 	 * Query type: all open changes
 	 */
-	public static final String ALL_OPEN_CHANGES = "all open changes"; //$NON-NLS-1$
+	public static final String ALL_OPEN_CHANGES = "status:open"; //$NON-NLS-1$
 
 	/**
 	 * Query : all merged changes
@@ -76,18 +64,8 @@ public class GerritQuery {
 	public static final String OPEN_CHANGES_BY_PROJECT = "open changes by project"; //$NON-NLS-1$
 
 	/**
-	 * Key for the project attribute
-	 */
-	public static final String PROJECT = "gerrit query project"; //$NON-NLS-1$
-
-	/**
 	 * Query type: custom
 	 */
 	public static final String CUSTOM = "custom"; //$NON-NLS-1$
-
-	/**
-	 * Key for the query string attribute
-	 */
-	public static final String QUERY_STRING = "gerrit query string"; //$NON-NLS-1$
 
 }
