@@ -709,6 +709,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
+	 * @return the latest patchset as a string
+	 */
+	public String getLatestPatchSet() {
+		String latestPatchset = null;
+		RevisionInfo topmost = (RevisionInfo) getTablePatchSetsViewer().getElementAt(0);
+		return topmost.getId();
+
+	}
+
+	/**
 	 * @param selected
 	 * @param psSelected
 	 * @return String The patch set reference when a patch set is selected

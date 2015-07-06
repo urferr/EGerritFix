@@ -18,6 +18,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -37,10 +39,13 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
+import org.eclipse.egerrit.core.rest.ReviewInfo;
+import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
@@ -64,12 +69,15 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -78,6 +86,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
@@ -113,6 +122,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private ScrolledComposite scrollView;
 
 	private Composite compButton;
+
+	private Button fReply;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -304,10 +315,68 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		cherrypick.setText("Cherry-Pick");
 		cherrypick.addSelectionListener(notAvailableListener());
 
-		Button reply = new Button(c, SWT.PUSH);
-		reply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		reply.setText("Reply...");
-		reply.addSelectionListener(notAvailableListener());
+		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
+		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fReply.setText("Reply...");
+		fReply.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
+
+				MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
+				itemReply.setText("Reply...");
+				itemReply.addSelectionListener(notAvailableListener());
+
+				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
+				itemCRPlus2.setText("Code-Review+2");
+				String latestPatchSet = filesTab.getLatestPatchSet();
+				itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
+						&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+				if (itemCRPlus2.isEnabled()) {
+					itemCRPlus2.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							super.widgetSelected(e);
+							// Code-Review +2
+							Gerrit gerrit = null;
+							try {
+								gerrit = filesTab.getGerritRepository().instantiateGerrit();
+							} catch (EGerritException e2) {
+								EGerritCorePlugin.logError(e2.getMessage());
+							}
+
+							SetReviewCommand command2 = gerrit.setReview(fChangeInfo.getChange_id(),
+									fChangeInfo.getCurrentRevision());
+							ReviewInput reviewInput = new ReviewInput();
+							Map obj = new HashMap();
+							obj.put("Code-Review", "2");
+
+							reviewInput.setLabels(obj);
+
+							command2.setReviewInput(reviewInput);
+
+							ReviewInfo result2 = null;
+							try {
+								result2 = command2.call();
+							} catch (EGerritException e1) {
+								EGerritCorePlugin.logError(e1.getMessage());
+							}
+						}
+					});
+				}
+
+				Point loc = fReply.getLocation();
+				Rectangle rect = fReply.getBounds();
+
+				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+
+				menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
+
+				menu.setVisible(true);
+			}
+		});
 
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
@@ -338,6 +407,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setBranch(element.getBranch());
 		fChangeInfo.setUpdated(element.getUpdated());
 		fChangeInfo.setTopic(element.getTopic());
+		fChangeInfo.setCodeReviewedTally(element.getCodeReviewedTally());
+		fChangeInfo.setVerifiedTally(element.getVerifiedTally());
 
 		//This query fill the current revision
 		setCurrentRevisionAndMessageTab(gerritRepository, element.getChange_id());
@@ -345,6 +416,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//Queries to fill the Summary Review tab data
 		summaryTab.setTabs(gerritRepository, element);
 
+		buttonEnablement();
+
+	}
+
+	/**
+	 * The logic that controls when bottom buttons are enabled or not
+	 */
+	private void buttonEnablement() {
+//		fReply.setEnabled(fChangeInfo.getCodeReviewedTally() != 2);
 	}
 
 	/************************************************************* */
@@ -655,16 +735,22 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				Button btn = (Button) event.getSource();
-				UIUtils.notInplementedDialog(btn.getText());
+				if (event.getSource() instanceof Button) {
+					Button btn = (Button) event.getSource();
+					UIUtils.notInplementedDialog(btn.getText());
+				} else {
+					MenuItem mnuItem = (MenuItem) event.getSource();
+					UIUtils.notInplementedDialog(mnuItem.getText());
+				}
 			}
+
 		};
 	}
 
 	/*********************************************/
-	/*                                           */
-	/*       Utility                             */
-	/*                                           */
+/*                                           */
+/*       Utility                             */
+/*                                           */
 	/*********************************************/
 	/**
 	 * @param GerritRepository
