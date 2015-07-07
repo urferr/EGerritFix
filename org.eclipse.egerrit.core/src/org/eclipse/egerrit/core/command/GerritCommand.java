@@ -15,6 +15,7 @@ package org.eclipse.egerrit.core.command;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import org.apache.http.HttpEntity;
@@ -52,7 +53,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	private final GerritRepository fGerritRepository;
 
 	/** The concrete command's return type */
-	private final Class<T> fResultType;
+	private final Type fResultType;
 
 	/** Indicates that authentication is required */
 	protected boolean fAuthIsRequired;
@@ -72,7 +73,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	 * @param returnType
 	 *            The concrete command's return type
 	 */
-	protected GerritCommand(GerritRepository gerritRepository, Class<T> returnType) {
+	protected GerritCommand(GerritRepository gerritRepository, Type returnType) {
 		fGerritRepository = gerritRepository;
 		fResultType = returnType;
 		fAuthIsRequired = false;
@@ -92,7 +93,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	/**
 	 * @return the command return type
 	 */
-	public Class<T> getReturnType() {
+	public Type getReturnType() {
 		return fResultType;
 	}
 

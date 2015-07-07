@@ -12,6 +12,8 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.lang.reflect.Type;
+
 import org.eclipse.egerrit.core.GerritRepository;
 
 /**
@@ -23,7 +25,7 @@ import org.eclipse.egerrit.core.GerritRepository;
  */
 public abstract class PostCommand<T> extends GerritCommand<T> {
 
-	protected PostCommand(GerritRepository gerritRepository, Class<T> returnType) {
+	protected PostCommand(GerritRepository gerritRepository, Type returnType) {
 		super(gerritRepository, returnType);
 	}
 

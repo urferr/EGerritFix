@@ -15,6 +15,7 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -120,7 +121,7 @@ public class GerritCommandTest {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GerritCommand#GerritCommand(org.eclipse.egerrit.core.GerritRepository, java.lang.Class)}
+	 * {@link org.eclipse.egerrit.core.command.GerritCommand#GerritCommand(org.eclipse.egerrit.core.GerritRepository, Type)}
 	 * . and {@link org.eclipse.egerrit.core.command.GerritCommand#getRepository()}. and
 	 * {@link org.eclipse.egerrit.core.command.GerritCommand#getReturnType()}.
 	 */

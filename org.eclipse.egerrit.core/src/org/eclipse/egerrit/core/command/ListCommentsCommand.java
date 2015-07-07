@@ -15,7 +15,6 @@ package org.eclipse.egerrit.core.command;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +24,8 @@ import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.CommentInfo;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The command: GET /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
@@ -43,8 +44,6 @@ public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<Comm
 
 	private String fRevision;
 
-	private static Map<String, ArrayList<CommentInfo>> ret = new HashMap<String, ArrayList<CommentInfo>>();
-
 	// ------------------------------------------------------------------------
 	// Constructor
 	// ------------------------------------------------------------------------
@@ -60,7 +59,8 @@ public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<Comm
 	 *            revisions-id
 	 */
 	public ListCommentsCommand(GerritRepository gerritRepository, String id, String revision) {
-		super(gerritRepository, (Class<Map<String, ArrayList<CommentInfo>>>) ret.getClass());
+		super(gerritRepository, new TypeToken<Map<String, ArrayList<CommentInfo>>>() {
+		}.getType());
 		this.setId(id);
 		this.setRevision(revision);
 
@@ -104,7 +104,8 @@ public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<Comm
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
 					.append(getId())
-					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
 					.append("/comments") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);

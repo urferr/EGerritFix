@@ -12,6 +12,8 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.lang.reflect.Type;
+
 import org.eclipse.egerrit.core.GerritRepository;
 
 /**
@@ -27,7 +29,7 @@ public abstract class PutCommand<T> extends GerritCommand<T> {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	protected PutCommand(GerritRepository gerritRepository, Class<T> returnType) {
+	protected PutCommand(GerritRepository gerritRepository, Type returnType) {
 		super(gerritRepository, returnType);
 	}
 

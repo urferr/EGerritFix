@@ -13,6 +13,7 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -127,7 +128,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 	// Attributes
 	// ------------------------------------------------------------------------
 
-	protected QueryCommand(GerritRepository gerritRepository, Class<T> returnType) {
+	protected QueryCommand(GerritRepository gerritRepository, Type returnType) {
 		super(gerritRepository, returnType);
 	}
 

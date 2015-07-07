@@ -17,7 +17,6 @@ import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpHost;
@@ -34,6 +33,8 @@ import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.command.ListCommentsCommand}
@@ -99,7 +100,8 @@ public class ListCommentsCommandTest {
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", HashMap.class, command.getReturnType());
+		assertEquals("Wrong return type", new TypeToken<Map<String, ArrayList<CommentInfo>>>() {
+		}.getType(), command.getReturnType());
 	}
 
 	/**
@@ -158,7 +160,7 @@ public class ListCommentsCommandTest {
 		}
 
 		// Verify result
-		assert (true);
+		assert(true);
 
 	}
 
