@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -82,6 +83,11 @@ public class GerritClientAuthenticationTest {
 			}
 			return changes;
 		} catch (EGerritException e) {
+			System.err.println("-----");
+			System.err.println(testcase + " failed with: " + e.getMessage());
+			e.printStackTrace();
+			fail();
+		} catch (ClientProtocolException e) {
 			System.err.println("-----");
 			System.err.println(testcase + " failed with: " + e.getMessage());
 			e.printStackTrace();

@@ -130,7 +130,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	@Override
-	public T call() throws EGerritException {
+	public T call() throws EGerritException, ClientProtocolException {
 		T result = null;
 		try {
 			HttpRequestBase request = formatRequest();
@@ -186,6 +186,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 
 		} catch (ClientProtocolException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			throw e;
 		} catch (IOException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 		}

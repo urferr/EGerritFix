@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -75,6 +76,8 @@ import org.eclipse.swt.widgets.Text;
  * @since 1.0
  */
 public class SummaryTabView {
+
+	private final String TITLE = "Gerrit Server ";
 
 	private static Color RED;
 
@@ -549,6 +552,8 @@ public class SummaryTabView {
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {
@@ -583,6 +588,8 @@ public class SummaryTabView {
 					res = command.call();
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 
 				return res;
@@ -613,6 +620,8 @@ public class SummaryTabView {
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {
@@ -625,7 +634,8 @@ public class SummaryTabView {
 
 	}
 
-	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -641,6 +651,8 @@ public class SummaryTabView {
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {
@@ -674,6 +686,8 @@ public class SummaryTabView {
 					res = command.call();
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 			return res;
@@ -702,6 +716,8 @@ public class SummaryTabView {
 					res = command.call();
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 			return res;
@@ -723,7 +739,8 @@ public class SummaryTabView {
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+				null);
 		//
 //		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 //		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -746,11 +763,13 @@ public class SummaryTabView {
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
 		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe( //$NON-NLS-1$
 				fMergeableInfo);
-		bindingContext.bindValue(
-				observeTextGenStrategyDataObserveWidget,
-				bytesMergeableinfogetSubmit_typeObserveValue,
-				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
-				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+		bindingContext.bindValue( //
+				observeTextGenStrategyDataObserveWidget, //
+				bytesMergeableinfogetSubmit_typeObserveValue, //
+				new UpdateValueStrategy()
+						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
+				new UpdateValueStrategy()
+						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
 
 		//
 		IObservableValue observeTextGenMessageDataObserveWidget = WidgetProperties.text().observe(genMessageData);
@@ -840,7 +859,8 @@ public class SummaryTabView {
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
+				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 

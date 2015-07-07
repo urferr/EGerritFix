@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -94,6 +95,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
+
+	private final String TITLE = "Gerrit Server ";
 
 	private static ChangeDetailEditor chDetailEditor = null;
 
@@ -362,6 +365,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 								result2 = command2.call();
 							} catch (EGerritException e1) {
 								EGerritCorePlugin.logError(e1.getMessage());
+							} catch (ClientProtocolException e1) {
+								UIUtils.displayInformation(null, TITLE,
+										e1.getLocalizedMessage() + "\n " + command2.formatRequest()); //$NON-NLS-1$
 							}
 						}
 					});
@@ -496,8 +502,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -513,6 +519,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {
@@ -554,6 +562,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					res = command.call();
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 				return res;
 			}
@@ -689,6 +699,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*       Buttons Listener                    */
 	/*                                           */
 	/*********************************************/
+
 	/**
 	 * @param Compopsite
 	 *            parent
@@ -748,10 +759,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/*********************************************/
-/*                                           */
-/*       Utility                             */
-/*                                           */
+	/*                                           */
+	/*       Utility                             */
+	/*                                           */
 	/*********************************************/
+
 	/**
 	 * @param GerritRepository
 	 *            gerritRepo
@@ -762,7 +774,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
+					projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}

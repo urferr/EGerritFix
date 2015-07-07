@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -956,6 +957,8 @@ public class GerritTableView extends ViewPart {
 					res = command.call();
 				} catch (EGerritException e) {
 					Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
+				} catch (ClientProtocolException e) {
+					Utils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + query);
 				}
 				final String queryText = query;
 				Display.getDefault().syncExec(new Runnable() {

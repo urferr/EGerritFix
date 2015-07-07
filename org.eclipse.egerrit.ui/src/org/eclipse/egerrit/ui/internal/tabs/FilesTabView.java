@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -85,6 +86,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private static final String BASE = "Base"; //$NON-NLS-1$
 
 	private static final String WORKSPACE = "Workspace"; //$NON-NLS-1$
+
+	private final String TITLE = "Gerrit Server ";
 
 	private RevisionInfo fCurrentRevision = null;
 
@@ -368,8 +371,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					notifyObservers();
 
 					try {
-						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), selInfo.getCommit()
-								.getCommit());
+						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
+								selInfo.getCommit().getCommit());
 						displayFilesTable();
 						setDiffAgainstCombo();
 					} catch (EGerritException e) {
@@ -468,8 +471,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			setDiffAgainstCombo();
 			fCurrentRevision = listRevision.get(0);
 			try {
-				setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), fCurrentRevision.getCommit()
-						.getCommit());
+				setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
+						fCurrentRevision.getCommit().getCommit());
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 			}
@@ -576,6 +579,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {

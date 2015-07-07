@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -956,6 +957,8 @@ public class QueryChangesCommandTest {
 		try {
 			result = command.call();
 		} catch (EGerritException e) {
+			fail(e.getMessage());
+		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 

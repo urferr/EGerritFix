@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -35,6 +36,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ import org.slf4j.LoggerFactory;
 
 public class OpenCompareEditor {
 	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
+
+	private final static String TITLE = "Gerrit Server ";
 
 	private final GerritRepository gerritRepo;
 
@@ -147,6 +151,8 @@ public class OpenCompareEditor {
 					return res;
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
 		} catch (UnsupportedClassVersionError e) {
