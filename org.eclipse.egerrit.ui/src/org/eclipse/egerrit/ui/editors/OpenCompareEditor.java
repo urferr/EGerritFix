@@ -17,6 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -31,12 +36,18 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.ui.editors.model.CompareInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
@@ -46,6 +57,8 @@ public class OpenCompareEditor {
 	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
 
 	private final static String TITLE = "Gerrit Server ";
+
+	final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
 	private final GerritRepository gerritRepo;
 
@@ -61,7 +74,7 @@ public class OpenCompareEditor {
 				fileInfo.getContainingRevisionInfo().getId(), fileInfo.getold_path(), new NullProgressMonitor());
 		CompareInput ci = new CompareInput();
 		if (resRight != null) {
-			ci.setRight(StringUtils.newStringUtf8(Base64.decodeBase64(resRight)));
+			ci.setRight(resRight);
 		} else {
 			logger.debug("The file has been deleted or its revision could not be retrieved."); //$NON-NLS-1$
 			ci.setRight(""); //$NON-NLS-1$
@@ -145,16 +158,30 @@ public class OpenCompareEditor {
 			if (gerrit != null) {
 				GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
 
-				String res = null;
+				String fileContent = null;
 				try {
-					res = command.call();
-					return res;
+					fileContent = command.call();
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+				}
+
+				ListCommentsCommand getComments = gerrit.getListComments(change_id, revision_id);
+				Map<String, ArrayList<CommentInfo>> comments = null;
+				try {
+					comments = getComments.call();
+					ArrayList<CommentInfo> commentsForFile = comments.get(file);
+					return mergeCommentsInText(StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)),
+							commentsForFile);
+
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
 				} catch (ClientProtocolException e) {
 					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
+
 		} catch (UnsupportedClassVersionError e) {
 			return null;
 		} finally {
@@ -163,5 +190,65 @@ public class OpenCompareEditor {
 
 		return null;
 
+	}
+
+	//Take the original text and merge the comments into it
+	//The insertion of comments starts from by last comment and proceed toward the first one. This allows for the insertion line to always be correct.
+	private static String mergeCommentsInText(String text, ArrayList<CommentInfo> comments) {
+		if (comments == null) {
+			return text;
+		}
+
+		sortComments(comments);
+
+		Document document = new Document(text);
+		for (CommentInfo commentInfo : comments) {
+			//We only consider the comments that apply to the revision
+			if (commentInfo.getSide() != null && !commentInfo.getSide().equals("REVISION")) { //$NON-NLS-1$
+				continue;
+			}
+			if (commentInfo.getLine() > 0) {
+				IRegion lineInfo;
+				try {
+					int insertionLineInDocument = commentInfo.getLine() - 1;
+					lineInfo = document.getLineInformation(insertionLineInDocument);
+					String lineDelimiter = document.getLineDelimiter(insertionLineInDocument);
+					int insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
+							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
+					document.replace(insertionPosition, 0,
+							formatComment(commentInfo, lineDelimiter != null, document.getDefaultLineDelimiter()));
+				} catch (BadLocationException e) {
+					//Ignore and continue
+				}
+			} else {
+				try {
+					document.replace(0, 0, formatComment(commentInfo, true, document.getDefaultLineDelimiter()));
+				} catch (BadLocationException e) {
+					//Ignore and continue
+				}
+			}
+		}
+		return document.get();
+	}
+
+	private static String formatComment(CommentInfo comment, boolean endsWithDelimiter, String defaultDelimiter) {
+		return (endsWithDelimiter ? "" : defaultDelimiter) + comment.getAuthor().getName() + '\t' + comment.getMessage() //$NON-NLS-1$
+				+ '\t' + Utils.formatDate(comment.getUpdated(), formatTimeOut) + defaultDelimiter;
+	}
+
+	private static void sortComments(ArrayList<CommentInfo> comments) {
+		Collections.sort(comments, new Comparator<CommentInfo>() {
+			@Override
+			public int compare(CommentInfo o1, CommentInfo o2) {
+				if (o1.getLine() == o2.getLine()) {
+					return o1.getUpdated().compareTo(o2.getUpdated());
+				}
+				if (o1.getLine() < o2.getLine()) {
+					return -1;
+				}
+				return 1;
+			}
+		});
+		Collections.reverse(comments);
 	}
 }
