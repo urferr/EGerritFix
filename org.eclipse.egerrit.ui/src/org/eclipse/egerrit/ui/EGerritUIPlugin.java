@@ -12,6 +12,7 @@
 
 package org.eclipse.egerrit.ui;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -90,6 +91,17 @@ public class EGerritUIPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		fPlugin = null;
 		super.stop(context);
+	}
+
+	/**
+	 * Returns an image descriptor for the image file at the given plug-in relative path
+	 *
+	 * @param aPth
+	 *            the path
+	 * @return the image descriptor
+	 */
+	public static ImageDescriptor getImageDescriptor(String aPath) {
+		return imageDescriptorFromPlugin(PLUGIN_ID, aPath);
 	}
 
 }

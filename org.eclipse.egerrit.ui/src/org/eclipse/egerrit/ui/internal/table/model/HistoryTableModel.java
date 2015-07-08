@@ -27,9 +27,9 @@ import org.eclipse.swt.SWT;
 // Definition of the history table {date, author, message}
 public enum HistoryTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	DATE(Messages.HistoryTableModel_date, 80, false, true, SWT.LEFT), //
-	AUTHOR(Messages.HistoryTableModel_author, 200, true, true, SWT.LEFT), MESSAGE(Messages.HistoryTableModel_message,
-			300, true, true, SWT.LEFT);
+	DATE(Messages.HistoryTableModel_date, 170, false, true, SWT.LEFT), //
+	AUTHOR(Messages.HistoryTableModel_author, 200, true, true, SWT.LEFT), //
+	MESSAGE(Messages.HistoryTableModel_message, 250, true, true, SWT.LEFT);//
 
 	private final String fHeader;
 

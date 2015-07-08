@@ -18,6 +18,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -223,6 +225,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		historytab = new HistoryTabView();
 		historytab.create(tabFolder, fChangeInfo.getMessages());
+		tabFolder.pack();
 
 		scrollView.setMinSize(minimumWidth, minimumHeight);
 
@@ -461,6 +464,14 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			setCurentCommitInfo(res.getCurrentRevision());
 
 			//Display the History tab
+			Collections.sort(fChangeInfo.getMessages(), new Comparator<ChangeMessageInfo>() {
+
+				@Override
+				public int compare(ChangeMessageInfo rev1, ChangeMessageInfo rev2) {
+					return rev2.getDate().compareTo(rev1.getDate());
+				}
+			});
+
 			WritableList writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
 			if (historytab != null) {
 				historytab.getTableHistoryViewer().setInput(writeInfoList);
