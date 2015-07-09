@@ -79,8 +79,9 @@ public class MessageTabView {
 		messagesTab(tabFolder, commitInfo, changeInfo);
 	}
 
-	private void messagesTab(final TabFolder tabFolder, CommitInfo commitInfo, ChangeInfo changeInfo) {
+	private void messagesTab(TabFolder tabFolder, CommitInfo commitInfo, ChangeInfo changeInfo) {
 
+		Point fontSize = UIUtils.computeFontSize(tabFolder);
 		final TabItem tabMessages = new TabItem(tabFolder, SWT.NONE);
 		tabMessages.setText("Messages");
 		final ScrolledComposite sc_msg = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -103,17 +104,17 @@ public class MessageTabView {
 
 		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI);
 		sc_msgtxt.setContent(msgTextData);
-		sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		int minHeight = fontSize.y * 6; //minimum 6 lines
+		sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, minHeight));
 
 		Composite composite = new Composite(messagesGroup, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(3, false);
 		gl_composite.marginTop = 3;
 		composite.setLayout(gl_composite);
 		GridData gd_composite = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_composite.heightHint = 117;
+		gd_composite.minimumHeight = 117;
 		composite.setLayoutData(gd_composite);
 
-		Point fontSize = UIUtils.computeFontSize(composite);
 		Label lblAuthor = new Label(composite, SWT.NONE);
 		lblAuthor.setText("Author:");
 
@@ -174,7 +175,6 @@ public class MessageTabView {
 		new Label(messagesGroup, SWT.NONE);
 
 		sc_msg.setContent(messagesGroup);
-		tabFolder.pack();
 
 		//Set the binding for this section
 		msgTabDataBindings(commitInfo, changeInfo);

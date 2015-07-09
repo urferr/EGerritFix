@@ -210,11 +210,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		summaryTab = new SummaryTabView();
 		summaryTab.create(tabFolder, fChangeInfo);
-		tabFolder.pack();
 
 		Point hScrolBarSize = scrollView.getHorizontalBar().getSize();
-		Point firstTabFolderSize = tabFolder.getSize();
-		int minimumHeight = ptHeader.y + firstTabFolderSize.y + ptButton.y + hScrolBarSize.y;
 
 		messageTab = new MessageTabView();
 		messageTab.create(tabFolder, fCommitInfo, fChangeInfo);
@@ -226,9 +223,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		historytab = new HistoryTabView();
 		historytab.create(tabFolder, fChangeInfo.getMessages());
 		tabFolder.pack();
-
+		int minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
+				+ hScrolBarSize.y;
 		scrollView.setMinSize(minimumWidth, minimumHeight);
-
 	}
 
 	private Composite headerSection(final Composite parent, Point fontSize) {

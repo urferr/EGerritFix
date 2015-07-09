@@ -11,11 +11,9 @@
  ******************************************************************************/
 package org.eclipse.egerrit.ui.internal.table;
 
-import org.eclipse.egerrit.ui.internal.table.model.ConflictWithTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.HistoryTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
-import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -58,7 +56,7 @@ public class UIHistoryTable {
 		Composite viewerForm = UIUtils.createsGeneralComposite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
 
 		GridLayout layout = new GridLayout();
-		layout.numColumns = ConflictWithTableModel.values().length;
+		layout.numColumns = HistoryTableModel.values().length;
 		layout.makeColumnsEqualWidth = false;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -130,8 +128,6 @@ public class UIHistoryTable {
 			col.getColumn().getParent().setLayoutData(gribData);
 		}
 
-		TableLayout tableLayout = new TableLayout();
-		table.setLayout(tableLayout);
 //		table.addControlListener(new ControlListener() {
 //
 //			@Override
@@ -140,8 +136,8 @@ public class UIHistoryTable {
 //				Point tableSize = table.getSize();
 //				Point parentSize = table.getParent().getSize();
 //				//Adjust the width  according to its parent
-//				int minimumTableWidth = ConfictWithTableDefinition.getMinimumWidth();
-//				int minHeadlineWidth = ConfictWithTableDefinition.HEADLINE.getWidth();
+//				int minimumTableWidth = HistoryTableModel.getMinimumWidth();
+//				int minHeadlineWidth = HistoryTableModel.MESSAGE.getWidth();
 //
 //				//Adjust the subject and project column to take the remaining space
 //				int scrollWidth = table.getVerticalBar().getSize().x;
