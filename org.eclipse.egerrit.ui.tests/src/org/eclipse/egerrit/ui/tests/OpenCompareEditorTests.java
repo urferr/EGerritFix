@@ -11,19 +11,28 @@
 
 package org.eclipse.egerrit.ui.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.http.HttpHost;
+import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
-import org.eclipse.egerrit.ui.editors.model.CompareInput;
+import org.eclipse.egerrit.ui.editors.model.CompareItem;
+import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
+import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,7 +42,35 @@ public class OpenCompareEditorTests {
 
 	private static final String INITIAL_CONTENT_FILE_A = "this is file a"; //$NON-NLS-1$
 
+	private final String SCHEME = Common.SCHEME;
+
+	private final String HOST = Common.HOST;
+
+	private final int PORT = Common.PORT;
+
+	private final String PATH = Common.PATH;
+
+	private final String PROXY_HOST = Common.PROXY_HOST;
+
+	private final int PROXY_PORT = Common.PROXY_PORT;
+
+	private final String USER = Common.USER;
+
+	private final String PASSWORD = Common.PASSWORD;
+
+	private GerritRepository fRepository;
+
 	private static GitAccess gitAccess;
+
+	@Before
+	public void setUp() throws Exception {
+		fRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
+		if (PROXY_HOST != null) {
+			fRepository.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
+		}
+		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
+		fRepository.getCredentials().setHttpCredentials(USER, PASSWORD);
+	}
 
 	@BeforeClass
 	public static void setupRepo() throws Exception {
@@ -62,10 +99,10 @@ public class OpenCompareEditorTests {
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
-		CompareInput input = new CompareInput();
-		input.setLeft(INITIAL_CONTENT_FILE_A);
-		input.setRight(newContent);
-		assertEquals(input, getCompareInputFor(gitAccess.getChangeId()));
+		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
+		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
+		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
+		assertNotNull(((CompareItem) compareInput.getRight()).getContents());
 	}
 
 	@Test
@@ -76,10 +113,7 @@ public class OpenCompareEditorTests {
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
-		CompareInput input = new CompareInput();
-		input.setLeft(""); //$NON-NLS-1$
-		input.setRight(content);
-		assertEquals(input, getCompareInputFor(gitAccess.getChangeId()));
+		assertTrue(getCompareInputFor(gitAccess.getChangeId()).getTitle().contains("(no matching file in workspace)"));
 	}
 
 	@Test
@@ -89,10 +123,10 @@ public class OpenCompareEditorTests {
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
-		CompareInput input = new CompareInput();
-		input.setLeft(INITIAL_CONTENT_FILE_A);
-		input.setRight(""); //$NON-NLS-1$
-		assertEquals(input, getCompareInputFor(gitAccess.getChangeId()));
+		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
+		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
+		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
+		assertNotNull(((CompareItem) compareInput.getRight()).getContents());
 	}
 
 	@Test
@@ -106,10 +140,8 @@ public class OpenCompareEditorTests {
 			gitAccess.pushFile();
 			gitAccess.resetTo(beforeMods);
 
-			CompareInput input = new CompareInput();
-			input.setLeft(""); //$NON-NLS-1$
-			input.setRight(newContent);
-			assertEquals(input, getCompareInputFor(gitAccess.getChangeId()));
+			assertTrue(
+					getCompareInputFor(gitAccess.getChangeId()).getTitle().contains("(no matching file in workspace)"));
 		} finally {
 			gitAccess.addToGitView();
 		}
@@ -118,9 +150,9 @@ public class OpenCompareEditorTests {
 
 	//This subclass is just here so we can access the value of compareinput
 	public static class OpenCompareEditorForTest extends OpenCompareEditor {
-		private CompareInput input;
+		private GerritCompareInput input;
 
-		public CompareInput getCompareInput() {
+		public GerritCompareInput getCompareInput() {
 			return input;
 		}
 
@@ -129,12 +161,12 @@ public class OpenCompareEditorTests {
 		}
 
 		@Override
-		public void openCompareEditor(CompareInput input) {
+		public void openCompareEditor(GerritCompareInput input) {
 			this.input = input;
 		}
 	}
 
-	private CompareInput getCompareInputFor(String changeId) throws Exception {
+	private GerritCompareInput getCompareInputFor(String changeId) throws Exception {
 		ChangeInfo changeInfo = gitAccess.getChange(changeId);
 		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerritRepo(), changeInfo);
 		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();

@@ -12,10 +12,8 @@
 
 package org.eclipse.egerrit.ui.editors;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,9 +27,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -42,7 +38,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.utils.Utils;
-import org.eclipse.egerrit.ui.editors.model.CompareInput;
+import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.text.BadLocationException;
@@ -70,53 +66,28 @@ public class OpenCompareEditor {
 	}
 
 	public void compareAgainstWorkspace(FileInfo fileInfo) {
-		String resRight = getFilesContent(gerritRepo, changeInfo.getChange_id(),
-				fileInfo.getContainingRevisionInfo().getId(), fileInfo.getold_path(), new NullProgressMonitor());
-		CompareInput ci = new CompareInput();
-		if (resRight != null) {
-			ci.setRight(resRight);
-		} else {
-			logger.debug("The file has been deleted or its revision could not be retrieved."); //$NON-NLS-1$
-			ci.setRight(""); //$NON-NLS-1$
-		}
-
 		File potentialFile = locateFileInLocalGitRepo(fileInfo);
+		IFile workspaceFile = null;
 		if (potentialFile == null) {
 			logger.debug("The corresponding file could not be found in any git repository known by the workspace."); //$NON-NLS-1$
-			ci.setLeft(""); //$NON-NLS-1$
 		}
 
 		if (potentialFile != null) {
-			IFile workspaceFile = getFileFromWorkspace(potentialFile);
+			workspaceFile = getFileFromWorkspace(potentialFile);
 			if (workspaceFile == null) {
 				logger.debug(
 						"The compare editor could not be opened because the corresponding file is not in the workspace."); //$NON-NLS-1$
-				ci.setLeft(""); //$NON-NLS-1$
-			} else {
-				ci.setLeft(getContent(workspaceFile));
 			}
 		}
-
+		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getChange_id(),
+				fileInfo.getContainingRevisionInfo().getId(), fileInfo.getold_path(), gerritRepo);
 		openCompareEditor(ci);
+
 	}
 
 	//This method is protected just so we can use it during the tests
-	protected void openCompareEditor(CompareInput input) {
+	protected void openCompareEditor(GerritCompareInput input) {
 		CompareUI.openCompareEditor(input);
-	}
-
-	private String getContent(IFile workspaceFile) {
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				InputStream is = workspaceFile.getContents(true)) {
-			byte[] buffer = new byte[1024];
-			int length = 0;
-			while ((length = is.read(buffer)) != -1) {
-				baos.write(buffer, 0, length);
-			}
-			return baos.toString(workspaceFile.getCharset(true));
-		} catch (IOException | CoreException e) {
-			return null;
-		}
 	}
 
 	private IFile getFileFromWorkspace(File potentialFile) {
@@ -147,10 +118,10 @@ public class OpenCompareEditor {
 		return potentialFile;
 	}
 
-	static String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	public static String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Obtaining revision content", IProgressMonitor.UNKNOWN);
 
 			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
@@ -161,6 +132,9 @@ public class OpenCompareEditor {
 				String fileContent = null;
 				try {
 					fileContent = command.call();
+					if (fileContent == null) {
+						return "";
+					}
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
 				} catch (ClientProtocolException e) {
@@ -181,15 +155,10 @@ public class OpenCompareEditor {
 					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			}
-
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
-
 		return null;
-
 	}
 
 	//Take the original text and merge the comments into it

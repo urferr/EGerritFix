@@ -19,6 +19,7 @@ import org.eclipse.compare.IModificationDate;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * @since 1.0
@@ -38,11 +39,12 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 
-	public org.eclipse.swt.graphics.Image getImage() {
+	public Image getImage() {
 		return null;
 	}
 
 	public long getModificationDate() {
+		//TODO this  needs to be fixed
 		return time;
 	}
 
