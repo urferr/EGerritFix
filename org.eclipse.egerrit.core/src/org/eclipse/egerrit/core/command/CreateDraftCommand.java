@@ -28,7 +28,6 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * The command: PUT /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
@@ -126,15 +125,13 @@ public class CreateDraftCommand extends PutCommand<CommentInfo> {
 
 		// Get the generic URI
 		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-		Gson gson = new Gson();
-		String json = null;
-
 		URI uri = null;
 		try {
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
 					.append(getId())
-					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
 					.append("/drafts") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);
@@ -145,33 +142,15 @@ public class CreateDraftCommand extends PutCommand<CommentInfo> {
 
 		HttpPut httpPut = new HttpPut(uri);
 
-		JsonObject jsonCommentInput = new JsonObject();
-
-		jsonCommentInput.addProperty("id", fCommentInfo.getId());
-		jsonCommentInput.addProperty("inReplyTo", fCommentInfo.getInReplyTo());
-		jsonCommentInput.addProperty("line", fCommentInfo.getLine());
-		jsonCommentInput.addProperty("message", fCommentInfo.getMessage());
-		jsonCommentInput.addProperty("path", fCommentInfo.getPath());
-		json = gson.toJson(fCommentInfo.getRange());
-		if (json != null && json.compareTo("null") != 0) {
-			jsonCommentInput.addProperty("range", json);
-		}
-
-		jsonCommentInput.addProperty("side", fCommentInfo.getSide());
-
-		if (json != null && json.compareTo("null") != 0) {
-			json = gson.toJson(fCommentInfo.getAuthor());
-			jsonCommentInput.addProperty("author", json);
-		}
 		StringEntity input = null;
 		try {
-			input = new StringEntity(jsonCommentInput.toString());
+			input = new StringEntity(new Gson().toJson(fCommentInfo));
 		} catch (UnsupportedEncodingException e) {
 			EGerritCorePlugin.logError("URI error encoding CommentInfo", e); //$NON-NLS-1$
-
 		}
 
-		input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
+		if (input != null)
+			input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
 		httpPut.setEntity(input);
 
 		return httpPut;
