@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eGerrit-Eclipse_4.5" sequenceNumber="49">
+<?pde version="3.8"?><target name="eGerrit-Eclipse_4.5" sequenceNumber="50">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="com.google.gerrit.reviewdb" version="2.1.5.v201112241444"/>
@@ -25,6 +25,10 @@
 <unit id="org.eclipse.swtbot.ide.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/technology/swtbot/releases/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.swt.tools" version="0.0.0"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.5/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
