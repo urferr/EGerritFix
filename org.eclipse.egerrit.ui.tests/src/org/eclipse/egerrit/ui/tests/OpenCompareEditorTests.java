@@ -38,9 +38,19 @@ import org.junit.Test;
 
 public class OpenCompareEditorTests {
 
-	private static final String A_PROJECT_A_TXT = "aProject/a.txt"; //$NON-NLS-1$
+	private static final String A_PROJECT_A_JAVA = "aProject/A.java"; //$NON-NLS-1$
 
-	private static final String INITIAL_CONTENT_FILE_A = "this is file a"; //$NON-NLS-1$
+	private static final String INITIAL_CONTENT_FILE_A = "public class A {\n" + "	\n"
+			+ "	public static void main(String[] args) {\n" + "		throw new RuntimeException();\n" + "	}\n" + "\n"
+			+ "	public void foo() {\n" + "		System.out.println(\"A\");\n" + "	}\n" + "\n" + "	\n"
+			+ "	public void bar() {\n" + "	}\n" + "}"; //$NON-NLS-3$
+
+	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
+			+ "	</projects>\n" + "	<buildSpec>\n" + "		<buildCommand>\n"
+			+ "			<name>org.eclipse.jdt.core.javabuilder</name>\n" + "			<arguments>\n"
+			+ "			</arguments>\n" + "		</buildCommand>\n" + "	</buildSpec>\n" + "	<natures>\n"
+			+ "		<nature>org.eclipse.jdt.core.javanature</nature>\n" + "	</natures>\n" + "</projectDescription>\n";
 
 	private final String SCHEME = Common.SCHEME;
 
@@ -76,9 +86,8 @@ public class OpenCompareEditorTests {
 	public static void setupRepo() throws Exception {
 		gitAccess = new GitAccess();
 		gitAccess.getGitProject();
-		gitAccess.addFile(A_PROJECT_A_TXT, INITIAL_CONTENT_FILE_A);
-		gitAccess.addFile("aProject/.project",
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><projectDescription><name>aProject</name></projectDescription>"); //$NON-NLS-1$
+		gitAccess.addFile(A_PROJECT_A_JAVA, INITIAL_CONTENT_FILE_A);
+		gitAccess.addFile("aProject/.project", DOT_PROJECT_FILE); //$NON-NLS-1$
 		gitAccess.commitAndPush("initial commit"); //$NON-NLS-1$
 		gitAccess.addToGitView();
 		gitAccess.importProject("aProject/.project"); //$NON-NLS-1$
@@ -95,7 +104,7 @@ public class OpenCompareEditorTests {
 		final String newContent = "new content for a"; //$NON-NLS-1$
 
 		String beforeMods = gitAccess.getLastLocalCommitId();
-		gitAccess.modifyFile(A_PROJECT_A_TXT, newContent);
+		gitAccess.modifyFile(A_PROJECT_A_JAVA, newContent);
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
@@ -119,7 +128,7 @@ public class OpenCompareEditorTests {
 	@Test
 	public void compareRemovedFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
-		gitAccess.removeFile(A_PROJECT_A_TXT);
+		gitAccess.removeFile(A_PROJECT_A_JAVA);
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
@@ -136,7 +145,7 @@ public class OpenCompareEditorTests {
 			final String newContent = "new content for a"; //$NON-NLS-1$
 
 			String beforeMods = gitAccess.getLastLocalCommitId();
-			gitAccess.modifyFile(A_PROJECT_A_TXT, newContent);
+			gitAccess.modifyFile(A_PROJECT_A_JAVA, newContent);
 			gitAccess.pushFile();
 			gitAccess.resetTo(beforeMods);
 
