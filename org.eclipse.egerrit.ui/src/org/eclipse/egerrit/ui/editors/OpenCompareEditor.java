@@ -79,8 +79,7 @@ public class OpenCompareEditor {
 						"The compare editor could not be opened because the corresponding file is not in the workspace."); //$NON-NLS-1$
 			}
 		}
-		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getChange_id(),
-				fileInfo.getContainingRevisionInfo().getId(), fileInfo.getold_path(), gerritRepo);
+		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getChange_id(), fileInfo, gerritRepo);
 		openCompareEditor(ci);
 
 	}
@@ -118,34 +117,41 @@ public class OpenCompareEditor {
 		return potentialFile;
 	}
 
-	public static String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	public static String getFilesContent(GerritRepository gerritRepository, String change_id, FileInfo fileInfo,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Obtaining revision content", IProgressMonitor.UNKNOWN);
 
 			Gerrit gerrit = gerritRepository.instantiateGerrit();
 
+			String fileContent = null;
+
 			// Create query
 			if (gerrit != null) {
-				GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
+				GetContentCommand command = gerrit.getContent(change_id, fileInfo.getContainingRevisionInfo().getId(),
+						fileInfo.getold_path());
 
-				String fileContent = null;
-				try {
-					fileContent = command.call();
-					if (fileContent == null) {
-						return "";
+				if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
+					try {
+						fileContent = command.call();
+						if (fileContent == null) {
+							fileContent = ""; //$NON-NLS-1$
+						}
+					} catch (EGerritException e) {
+						EGerritCorePlugin.logError(e.getMessage());
+					} catch (ClientProtocolException e) {
+						UIUtils.displayInformation(null, TITLE,
+								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 					}
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+				} else {
+					fileContent = "";
 				}
-
-				ListCommentsCommand getComments = gerrit.getListComments(change_id, revision_id);
+				ListCommentsCommand getComments = gerrit.getListComments(change_id,
+						fileInfo.getContainingRevisionInfo().getId());
 				Map<String, ArrayList<CommentInfo>> comments = null;
 				try {
 					comments = getComments.call();
-					ArrayList<CommentInfo> commentsForFile = comments.get(file);
+					ArrayList<CommentInfo> commentsForFile = comments.get(fileInfo.getold_path());
 					return mergeCommentsInText(StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)),
 							commentsForFile);
 
@@ -158,7 +164,7 @@ public class OpenCompareEditor {
 		} finally {
 			monitor.done();
 		}
-		return null;
+		return "";
 	}
 
 	//Take the original text and merge the comments into it

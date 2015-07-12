@@ -21,6 +21,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
 
@@ -31,20 +32,20 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private String changeId;
 
-	private String revisionId;
-
 	private GerritRepository gerrit;
 
 	private IFile left;
 
+	private FileInfo fileInfo;
+
 	private String file;
 
-	public GerritCompareInput(IFile left, String changeId, String revisionId, String file, GerritRepository gerrit) {
+	public GerritCompareInput(IFile left, String changeId, FileInfo info, GerritRepository gerrit) {
 		super(new CompareConfiguration(), null);
 		this.left = left;
 		this.changeId = changeId;
-		this.revisionId = revisionId;
-		this.file = file;
+		this.fileInfo = info;
+		this.file = fileInfo.getold_path();
 		this.gerrit = gerrit;
 	}
 
@@ -58,8 +59,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	@Override
 	//Note this method is made public for testing purpose
 	public ICompareInput prepareCompareInput(IProgressMonitor pm) {
-		CompareItem right = new CompareItem(file,
-				OpenCompareEditor.getFilesContent(gerrit, changeId, revisionId, file, pm), 0);
+		CompareItem right = new CompareItem(file, OpenCompareEditor.getFilesContent(gerrit, changeId, fileInfo, pm), 0);
 		return new DiffNode(null, Differencer.ADDITION, null, createFileElement(getLeft()), right);
 	}
 
