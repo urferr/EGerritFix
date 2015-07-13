@@ -28,13 +28,13 @@ import org.eclipse.egerrit.core.rest.CommentInfo;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The command: GET /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
+ * The command: GET /a/changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/drafts/ As
  * result a map is returned that maps the file path to a list of CommentInfo entries.
  * <p>
  *
  * @since 1.0
  */
-public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<CommentInfo>>> {
+public class ListDraftsCommand extends QueryCommand<Map<String, ArrayList<CommentInfo>>> {
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -58,11 +58,12 @@ public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<Comm
 	 * @param revision
 	 *            revisions-id
 	 */
-	public ListCommentsCommand(GerritRepository gerritRepository, String id, String revision) {
+	public ListDraftsCommand(GerritRepository gerritRepository, String id, String revision) {
 		super(gerritRepository, new TypeToken<Map<String, ArrayList<CommentInfo>>>() {
 		}.getType());
 		this.setId(id);
 		this.setRevision(revision);
+		requiresAuthentication(true);
 
 	}
 
@@ -118,7 +119,7 @@ public class ListCommentsCommand extends QueryCommand<Map<String, ArrayList<Comm
 					.append(getId())
 					.append("/revisions/") //$NON-NLS-1$
 					.append(getRevision())
-					.append("/comments") //$NON-NLS-1$
+					.append("/drafts") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);
 			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));

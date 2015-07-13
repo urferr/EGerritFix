@@ -23,7 +23,11 @@ import org.eclipse.egerrit.core.rest.FileInfo;
  */
 public class DisplayFileInfo extends FileInfo {
 
-	private ArrayList<CommentInfo> comments;
+	private ArrayList<CommentInfo> newComments;
+
+	private ArrayList<CommentInfo> draftComments;
+
+	private String currentUser;
 
 	private Boolean reviewed = false;
 
@@ -38,12 +42,21 @@ public class DisplayFileInfo extends FileInfo {
 	}
 
 	/**
-	 * This method return the list of commentsArrayList<CommentInfo>
+	 * This method return the list of newComments commentsArrayList<CommentInfo>
 	 *
 	 * @return ArrayList<CommentInfo>
 	 */
-	public ArrayList<CommentInfo> getComments() {
-		return comments;
+	public ArrayList<CommentInfo> getNewComments() {
+		return newComments;
+	}
+
+	/**
+	 * This method return the list of draftComments commentsArrayList<CommentInfo>
+	 *
+	 * @return ArrayList<CommentInfo>
+	 */
+	public ArrayList<CommentInfo> getDraftComments() {
+		return draftComments;
 	}
 
 	/**
@@ -52,9 +65,20 @@ public class DisplayFileInfo extends FileInfo {
 	 * @param ArrayList
 	 *            <CommentInfo>arrayList
 	 */
-	public void setComments(ArrayList<CommentInfo> arrayList) {
-		this.comments = arrayList;
-		firePropertyChange("comments", this.comments, this.comments = arrayList); //$NON-NLS-1$
+	public void setNewComments(ArrayList<CommentInfo> arrayList) {
+		this.newComments = arrayList;
+		firePropertyChange("newComments", this.newComments, this.newComments = arrayList); //$NON-NLS-1$
+	}
+
+	/**
+	 * This method receives a list of draft comments and triggers a property change on it
+	 *
+	 * @param ArrayList
+	 *            <CommentInfo>arrayList
+	 */
+	public void setDraftComments(ArrayList<CommentInfo> arrayList) {
+		this.draftComments = arrayList;
+		firePropertyChange("draftComments", this.draftComments, this.draftComments = arrayList); //$NON-NLS-1$
 	}
 
 	/**
@@ -68,7 +92,7 @@ public class DisplayFileInfo extends FileInfo {
 
 	/**
 	 * This method receives a flag for the review state of a file and trigger a property change on it.
-	 * 
+	 *
 	 * @param reviewed
 	 */
 	public void setReviewed(Boolean reviewed) {
@@ -76,4 +100,18 @@ public class DisplayFileInfo extends FileInfo {
 		firePropertyChange("reviewed", this.reviewed, this.reviewed = reviewed); //$NON-NLS-1$
 	}
 
+	/**
+	 * @return the currentUser
+	 */
+	public String getCurrentUser() {
+		return currentUser;
+	}
+
+	/**
+	 * @param currentUser
+	 *            the currentUser to set
+	 */
+	public void setCurrentUser(String currentUser) {
+		this.currentUser = currentUser;
+	}
 }

@@ -510,8 +510,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -782,8 +782,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
-					projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}

@@ -20,6 +20,7 @@ import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
+import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
@@ -246,6 +247,17 @@ public abstract class Gerrit {
 	 */
 	public SetReviewCommand setReview(String change_id, String revision_id) {
 		return new SetReviewCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to extract the list of draft comments related to a revision of a change set
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return
+	 */
+	public ListDraftsCommand listDraftsComments(String change_id, String revision_id) {
+		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
 	}
 
 }

@@ -37,6 +37,7 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
+import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
@@ -110,6 +111,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private Combo comboDiffAgainst;
 
 	private TableViewer tablePatchSetsViewer;
+
+	private FileTableLabelProvider fFileTableLabelProvider;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -191,6 +194,35 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		gd_lblDrafts.horizontalSpan = 1;
 		lblDrafts.setLayoutData(gd_lblDrafts);
 		lblDrafts.setText("drafts:");
+		lblDrafts.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblDrafts.getText();
+				String newCount = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
+				sb.append("drafts:");
+
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					int numComment = 0;
+					while (itr1.hasNext()) {
+						DisplayFileInfo displayFileInfo = itr1.next();
+						if (displayFileInfo.getDraftComments() != null) {
+							numComment += displayFileInfo.getDraftComments().size();
+						}
+					}
+					if (numComment > 0) {
+						sb.append(Integer.toString(numComment));
+					}
+				}
+				newCount = sb.toString();
+				if (!old.equals(newCount)) {
+					lblDrafts.setText(newCount);
+					lblDrafts.pack();
+				}
+			}
+		});
 
 		lblComments = new Label(filesGroup, SWT.NONE);
 		GridData gd_lblComments = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
@@ -211,8 +243,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					int numComment = 0;
 					while (itr1.hasNext()) {
 						DisplayFileInfo displayFileInfo = itr1.next();
-						if (displayFileInfo.getComments() != null) {
-							numComment += displayFileInfo.getComments().size();
+						if (displayFileInfo.getNewComments() != null) {
+							numComment += displayFileInfo.getNewComments().size();
 						}
 					}
 					if (numComment > 0) {
@@ -336,7 +368,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
 
-		tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+		fFileTableLabelProvider = new FileTableLabelProvider(observeMaps);
+		tableFilesViewer.setLabelProvider(fFileTableLabelProvider);
 		//
 //		IObservableValue lblTotalTextDataWidget = WidgetProperties.text().observe(lblTotal);
 ////		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(
@@ -371,8 +404,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					notifyObservers();
 
 					try {
-						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
-								selInfo.getCommit().getCommit());
+						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), selInfo.getCommit()
+								.getCommit());
 						displayFilesTable();
 						setDiffAgainstCombo();
 					} catch (EGerritException e) {
@@ -471,8 +504,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			setDiffAgainstCombo();
 			fCurrentRevision = listRevision.get(0);
 			try {
-				setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
-						fCurrentRevision.getCommit().getCommit());
+				setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), fCurrentRevision.getCommit()
+						.getCommit());
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 			}
@@ -542,14 +575,33 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				new NullProgressMonitor());
 
 		//Fill the Files table
-		while (displayFile.hasNext()) {
+		while (displayFile.hasNext() && mapCommentInfo != null) {
 			DisplayFileInfo displayFileInfo = displayFile.next();
+			displayFileInfo.setCurrentUser(gerritRepository.getCredentials().getUsername());
 			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
 			while (commentIter.hasNext()) {
 				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
 				//Add comments associated to the file
 				if (displayFileInfo.getold_path().equals(entryComment.getKey())) {
-					displayFileInfo.setComments(entryComment.getValue());
+					displayFileInfo.setNewComments(entryComment.getValue());
+					break;
+				}
+			}
+		}
+
+		Iterator<DisplayFileInfo> displayFile2 = fFilesDisplay.values().iterator();
+		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritRepository, changeId,
+				revisionId, new NullProgressMonitor());
+
+		//Fill the Files table
+		while (displayFile2.hasNext() && mapDraftCommentInfo != null) {
+			DisplayFileInfo displayFileInfo = displayFile2.next();
+			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapDraftCommentInfo.entrySet().iterator();
+			while (commentIter.hasNext()) {
+				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
+				//Add comments associated to the file
+				if (displayFileInfo.getold_path().equals(entryComment.getKey())) {
+					displayFileInfo.setDraftComments(entryComment.getValue());
 					break;
 				}
 			}
@@ -591,6 +643,36 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		return null;
 
+	}
+
+	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritRepository gerritRepository, String change_id,
+			String revision_id, IProgressMonitor monitor) {
+
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
+
+			// Create query
+			if (gerrit != null) {
+				ListDraftsCommand command = gerrit.listDraftsComments(change_id, revision_id);
+				Map<String, ArrayList<CommentInfo>> res = null;
+				try {
+					res = command.call();
+					return res;
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+				}
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
 	}
 
 	/**

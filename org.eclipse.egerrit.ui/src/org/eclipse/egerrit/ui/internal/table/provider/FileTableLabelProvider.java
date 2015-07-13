@@ -12,8 +12,12 @@
 
 package org.eclipse.egerrit.ui.internal.table.provider;
 
+import java.sql.Timestamp;
+import java.util.Iterator;
+
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.utils.DisplayFileInfo;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
@@ -36,6 +40,12 @@ ITableColorProvider {
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
+
+	private static final String NEW = "new :";
+
+	private static final String COMMENTS = "comments : ";
+
+	private static final String DRAFTS = "drafts : ";
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -198,7 +208,6 @@ ITableColorProvider {
 		// + "\tcolumn: " + aIndex);
 		if (aObj instanceof DisplayFileInfo) {
 			DisplayFileInfo fileInfo = (DisplayFileInfo) aObj;
-//			String value = null;
 			switch (aIndex) {
 			case 0:
 				return "";
@@ -207,11 +216,52 @@ ITableColorProvider {
 			case 2:
 				return fileInfo.getold_path();
 			case 3:
-				if (fileInfo.getComments() != null) {
-					return Integer.toString(fileInfo.getComments().size()); //Missing also the line added
-				} else {
-					return "";
+				String ret = "";
+				if (fileInfo.getDraftComments() != null) {
+					ret = DRAFTS + fileInfo.getDraftComments().size() + " ";
 				}
+				if (fileInfo.getNewComments() != null) {
+					int newCommentCount = 0;
+					Iterator iterator = fileInfo.getNewComments().iterator();
+					String currentUpdate = "";
+					String currentUser = fileInfo.getCurrentUser();
+					while (iterator.hasNext()) {
+						CommentInfo aComment = (CommentInfo) iterator.next();
+						if (aComment.getAuthor().getUsername().compareTo(currentUser) == 0) {
+							if (currentUpdate.isEmpty()) {
+								currentUpdate = aComment.getUpdated();
+								continue;
+							}
+							if (Timestamp.valueOf(aComment.getUpdated()).after(Timestamp.valueOf(currentUpdate))) {
+								currentUpdate = aComment.getUpdated();
+							}
+						}
+					}
+
+					if (!currentUpdate.isEmpty()) {
+						Iterator iterator2 = fileInfo.getNewComments().iterator();
+						while (iterator2.hasNext()) {
+							CommentInfo aComment2 = (CommentInfo) iterator2.next();
+							if ((Timestamp.valueOf(aComment2.getUpdated()).after(Timestamp.valueOf(currentUpdate)))) {
+								newCommentCount++;
+							}
+						}
+					}
+
+					if (ret.compareTo("") == 0) {
+						ret = "                     ";
+					}
+					if (fileInfo.getNewComments().size() - newCommentCount != 0) {
+						ret = ret + COMMENTS + (fileInfo.getNewComments().size() - newCommentCount) + " ";
+					}
+					if (newCommentCount != 0) {
+						ret = ret + NEW + newCommentCount;
+					}
+					System.out.println("newCommentCount : " + newCommentCount);
+
+				}
+				return ret;
+
 			case 4:
 				StringBuilder sb = new StringBuilder();
 				sb.append("+");

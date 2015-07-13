@@ -21,6 +21,7 @@ import org.eclipse.egerrit.core.command.tests.GetIncludedInCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetRelatedChangesCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListCommentsCommandTest;
+import org.eclipse.egerrit.core.command.tests.ListDraftsCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListReviewersCommandTest;
 import org.eclipse.egerrit.core.command.tests.PublishDraftRevisionCommandTest;
 import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
@@ -56,28 +57,28 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	// org.eclipse.egerrit.core
 	EGerritCorePluginTest.class,
-		GerritRepositoryTest.class,
-		GerritClientAuthenticationTest.class,
+	GerritRepositoryTest.class,
+	GerritClientAuthenticationTest.class,
 	GerritFactoryTest.class,
-		GerritTest.class,
-		Gerrit_2_9Test.class,
+	GerritTest.class,
+	Gerrit_2_9Test.class,
 
 	// org.eclipse.egerrit.core.rest
 	AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
 	ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
 	GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
 	ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class,
-		RelatedChangesInfoTest.class,
+	RelatedChangesInfoTest.class,
 	RelatedChangeAndCommitInfoTest.class,
 	ReviewInfoTest.class,
 	ReviewInputTest.class,
 
 	// org.eclipse.egerrit.core.command
 	GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
-		GetContentCommandTest.class, GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
-		ListReviewersCommandTest.class, ListCommentsCommandTest.class, GetIncludedInCommandTest.class,
-		GetRelatedChangesCommandTest.class, CreateDraftCommandTest.class, SetReviewCommandTest.class,
-	PublishDraftRevisionCommandTest.class })
+	GetContentCommandTest.class, GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
+	ListReviewersCommandTest.class, ListCommentsCommandTest.class, GetIncludedInCommandTest.class,
+	GetRelatedChangesCommandTest.class, CreateDraftCommandTest.class, SetReviewCommandTest.class,
+	PublishDraftRevisionCommandTest.class, ListDraftsCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
