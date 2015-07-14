@@ -18,11 +18,8 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -135,7 +132,7 @@ public class UIFilesTable {
 	}
 
 	/**
-	 * Create each column for the List of Reviewers
+	 * Create each column for the files list *
 	 *
 	 * @param aParent
 	 * @param aViewer
@@ -154,51 +151,12 @@ public class UIFilesTable {
 			TableViewerColumn col = createTableViewerColumn(tableInfo[index]);
 		}
 		GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gribData.minimumWidth = tableInfo[0].getWidth();
 		gribData.minimumHeight = 200;
-		gribData.heightHint = 213;
 		fViewer.getTable().setLayoutData(gribData);
 
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
-		table.addControlListener(new ControlAdapter() {
-
-			@Override
-			public void controlResized(ControlEvent e) {
-				table.setRedraw(false);
-				Point tableSize = table.getSize();
-				Point parentSize = table.getParent().getSize();
-				//Adjust the width  according to its parent
-				int minimumTableWidth = tableInfo[0].getMinimumWidth();
-				int minFilePathWidth = FilesTableModel.FILE_PATH.getWidth();
-				int minCommentsWidth = FilesTableModel.COMMENTS.getWidth();
-
-				//Adjust the subject and project column to take the remaining space
-				int scrollWidth = table.getVerticalBar().getSize().x;
-				//If not visible, take the extra space
-				if (!table.getVerticalBar().isVisible()) {
-					scrollWidth = 0;
-				}
-
-				int computeExtraWidth = parentSize.x - 10 - (minimumTableWidth) - scrollWidth;
-				int newFilePathWidth = minFilePathWidth - scrollWidth;
-				int newCommentsWidth = minCommentsWidth;
-				//If extra space, redistribute it to specific column
-				if (computeExtraWidth > 0) {
-					//Assign 1/2 to role and 1/2 to Id
-					newFilePathWidth = minFilePathWidth + computeExtraWidth / 2;
-					newCommentsWidth = minCommentsWidth + computeExtraWidth / 2;
-				}
-
-				//Id and Role column
-				table.getColumn(FilesTableModel.FILE_PATH.ordinal()).setWidth(newFilePathWidth);
-				table.getColumn(FilesTableModel.COMMENTS.ordinal()).setWidth(newCommentsWidth);
-
-				table.setSize(parentSize.x, tableSize.y);
-
-				table.setRedraw(true);
-			}
-
-		});
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);

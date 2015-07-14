@@ -30,11 +30,11 @@ import org.eclipse.swt.SWT;
 // Moveable, Alignment}
 public enum PatchSetsTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	COMMENTS("", 30, true, true, SWT.LEFT), //
+	COMMENTS("", 30, false, true, SWT.LEFT), //
 	PATCH_SET(Messages.PatchSetsTableDefinition_patchSet, 35, false, true, SWT.LEFT), //
 	COMMIT(Messages.PatchSetsTableDefinition_commit, 200, true, true, SWT.LEFT), //
-	DATE(Messages.PatchSetsTableDefinition_date, 175, true, true, SWT.LEFT), //
-	AUTHOR(Messages.PatchSetsTableDefinition_author, 100, false, true, SWT.LEFT);
+	DATE(Messages.PatchSetsTableDefinition_date, 175, false, true, SWT.LEFT), //
+	AUTHOR(Messages.PatchSetsTableDefinition_author, 100, true, true, SWT.LEFT);
 
 	private final String fHeader;
 

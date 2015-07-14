@@ -67,8 +67,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -171,15 +169,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		createAdditionalToolbarActions();
 		GridLayout gl_parent = new GridLayout(1, false);
 		parent.setLayout(gl_parent);
-		parent.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				parent.setRedraw(false);
-//				System.out.println("Size parent: " + parent.getSize() + "\t button size: " + compButton.getSize());
-				scrollView.setSize(scrollView.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-				parent.setRedraw(true);
-			}
-		});
 
 		parent.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
 		scrollView = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -203,10 +192,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		//Create the button section before filling the tabfolder
 		compButton = buttonSection(composite);
-		Point ptHeader = hd.getSize();
-		Point ptButton = compButton.getSize();
-		System.err.println("Header width: " + ptHeader.x + "\t Button width: " + ptButton.x);
-		int minimumWidth = Math.max(ptHeader.x, ptButton.x);
 
 		summaryTab = new SummaryTabView();
 		summaryTab.create(tabFolder, fChangeInfo);
@@ -223,6 +208,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		historytab = new HistoryTabView();
 		historytab.create(tabFolder, fChangeInfo.getMessages());
 		tabFolder.pack();
+
+		//Check for the minimum width
+		Point ptHeader = hd.getSize();
+		Point ptButton = compButton.getSize();
+
+		int minimumWidth = Math.max(ptHeader.x, ptButton.x);
+		minimumWidth = Math.max(minimumWidth, tabFolder.getSize().x);
 		int minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
 				+ hScrolBarSize.y;
 		scrollView.setMinSize(minimumWidth, minimumHeight);
@@ -510,8 +502,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -782,7 +774,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
+					projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}

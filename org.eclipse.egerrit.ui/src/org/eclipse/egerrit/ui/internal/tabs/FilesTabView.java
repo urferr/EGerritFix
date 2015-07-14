@@ -112,8 +112,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private TableViewer tablePatchSetsViewer;
 
-	private FileTableLabelProvider fFileTableLabelProvider;
-
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -184,13 +182,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 
 		Label lblSummary = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblSummary = new GridData(SWT.RIGHT, SWT.TOP, true, false, 6, 1);
+		GridData gd_lblSummary = new GridData(SWT.RIGHT, SWT.TOP, false, false, 5, 1);
 		gd_lblSummary.horizontalSpan = 6;
 		lblSummary.setLayoutData(gd_lblSummary);
 		lblSummary.setText("Summary:");
 
 		lblDrafts = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblDrafts = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+		GridData gd_lblDrafts = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
 		gd_lblDrafts.horizontalSpan = 1;
 		lblDrafts.setLayoutData(gd_lblDrafts);
 		lblDrafts.setText("drafts:");
@@ -307,12 +305,12 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		lblDiffAgainst.setText("Diff against:");
 
 		comboDiffAgainst = new Combo(filesGroup, SWT.NONE);
-		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 2, 1);
+		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 4, 1);
 		gd_combo.verticalIndent = 5;
-		int numChar = 15;
+		int numChar = 25;
 		Point pt = UIUtils.computeFontSize(comboDiffAgainst);
 		gd_combo.minimumWidth = numChar * pt.x;
-		gd_combo.horizontalSpan = 1;
+		gd_combo.horizontalSpan = 2;
 		comboDiffAgainst.setLayoutData(gd_combo);
 		System.err.println("Combo mini width = " + (numChar * pt.x));
 
@@ -335,6 +333,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		patchSetSelection();
 
 		filesGroup.pack();
+
 		scFilesTab.setMinSize(filesGroup.getSize());
 
 		//Set the binding for this section
@@ -343,33 +342,36 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	protected void filesTabDataBindings(TableViewer tableFilesViewer, TableViewer tablePatchSetsViewer) {
 		//Set the PatchSetViewer
-		ObservableListContentProvider contentPatchSetProvider = new ObservableListContentProvider();
-		tablePatchSetsViewer.setContentProvider(contentPatchSetProvider);
-		WritableMap writeInfoMap = new WritableMap();
-		writeInfoMap.putAll(fRevisions);
-		WritableList writeInfoList = new WritableList(writeInfoMap.values(), Map.class);
+		if (tablePatchSetsViewer != null) {
+			ObservableListContentProvider contentPatchSetProvider = new ObservableListContentProvider();
+			tablePatchSetsViewer.setContentProvider(contentPatchSetProvider);
+			WritableMap writeInfoMap = new WritableMap();
+			writeInfoMap.putAll(fRevisions);
+			WritableList writeInfoList = new WritableList(writeInfoMap.values(), Map.class);
 
-		DataBindingContext bindingContext = new DataBindingContext();
+			DataBindingContext bindingContext = new DataBindingContext();
 
-		IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "_number", "commit" }));
+			IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
+					BeanProperties.values(new String[] { "_number", "commit" }));
 
-		ViewerSupport.bind(tablePatchSetsViewer, writeInfoList, BeanProperties.values(new String[] { "commit" }));
-		tablePatchSetsViewer.setLabelProvider(new FilePatchSetTableLabelProvider(observePatchSetMaps));
+			ViewerSupport.bind(tablePatchSetsViewer, writeInfoList, BeanProperties.values(new String[] { "commit" }));
+			tablePatchSetsViewer.setLabelProvider(new FilePatchSetTableLabelProvider(observePatchSetMaps));
+		}
 
 		//Set the FilesViewer
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableFilesViewer.setContentProvider(contentProvider);
+		if (tableFilesViewer != null) {
+			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+			tableFilesViewer.setContentProvider(contentProvider);
 
-		writeInfoList = new WritableList(fFilesDisplay.values(), DisplayFileInfo.class);
+			WritableList writeInfoList = new WritableList(fFilesDisplay.values(), DisplayFileInfo.class);
 
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "fileInfo", "comments" }));
+			IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+					BeanProperties.values(new String[] { "fileInfo", "comments" }));
 
-		ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
+			ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
 
-		fFileTableLabelProvider = new FileTableLabelProvider(observeMaps);
-		tableFilesViewer.setLabelProvider(fFileTableLabelProvider);
+			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+		}
 		//
 //		IObservableValue lblTotalTextDataWidget = WidgetProperties.text().observe(lblTotal);
 ////		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(
@@ -404,8 +406,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					notifyObservers();
 
 					try {
-						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), selInfo.getCommit()
-								.getCommit());
+						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
+								selInfo.getCommit().getCommit());
 						displayFilesTable();
 						setDiffAgainstCombo();
 					} catch (EGerritException e) {
@@ -497,22 +499,24 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 		writeInfoList = new WritableList(listRevision, List.class);
 
-		tablePatchSetsViewer.setInput(writeInfoList);
-		//If we have a patch set, we need to select the current which is the top one
-		if (!listRevision.isEmpty()) {
-			tablePatchSetsViewer.getTable().setSelection(0);
-			setDiffAgainstCombo();
-			fCurrentRevision = listRevision.get(0);
-			try {
-				setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(), fCurrentRevision.getCommit()
-						.getCommit());
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+		if (tablePatchSetsViewer != null) {
+			tablePatchSetsViewer.setInput(writeInfoList);
+			//If we have a patch set, we need to select the current which is the top one
+			if (!listRevision.isEmpty()) {
+				tablePatchSetsViewer.getTable().setSelection(0);
+				setDiffAgainstCombo();
+				fCurrentRevision = listRevision.get(0);
+				try {
+					setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
+							fCurrentRevision.getCommit().getCommit());
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+				}
+				displayFilesTable();
 			}
-			displayFilesTable();
-		}
 
-		tablePatchSetsViewer.refresh();
+			tablePatchSetsViewer.refresh();
+		}
 	}
 
 	/**

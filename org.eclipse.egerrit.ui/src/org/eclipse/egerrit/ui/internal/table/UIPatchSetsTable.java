@@ -143,7 +143,7 @@ public class UIPatchSetsTable {
 		//Get the Patch set table definition
 		final ITableModel[] tableInfo = PatchSetsTableModel.values();
 		int size = tableInfo.length;
-//		GerritUi.Ftracer.traceInfo("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
+		//		GerritUi.Ftracer.traceInfo("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
 //			GerritUi.Ftracer.traceInfo("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 //					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
@@ -171,7 +171,7 @@ public class UIPatchSetsTable {
 				int minCommitWidth = PatchSetsTableModel.COMMIT.getWidth();
 				int minAuthorWidth = PatchSetsTableModel.AUTHOR.getWidth();
 
-				//Adjust the subject and project column to take the remaining space
+				//Adjust the commit and Author column to take the remaining space
 				int scrollWidth = table.getVerticalBar().getSize().x;
 				//If not visible, take the extra space
 				if (!table.getVerticalBar().isVisible()) {
@@ -183,7 +183,7 @@ public class UIPatchSetsTable {
 				int newAuthorWidth = minAuthorWidth;
 				//If extra space, redistribute it to specific column
 				if (computeExtraWidth > 0) {
-					//Assign 1/2 to role and 1/2 to Id
+					//Assign 1/2 to commit and 1/2 to Author
 					newCommitWidth = minCommitWidth + computeExtraWidth / 2;
 					newAuthorWidth = minAuthorWidth + computeExtraWidth / 2;
 				}
