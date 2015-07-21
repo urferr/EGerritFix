@@ -50,7 +50,7 @@ public class NavigatetoCompareTest {
 
 		SWTBotUtils.waitForJobs();
 
-//		SWTBotPreferences.PLAYBACK_DELAY = 100;
+		SWTBotPreferences.PLAYBACK_DELAY = 100;
 
 		SWTBotPreferences.TIMEOUT = 80000;
 
@@ -103,6 +103,8 @@ public class NavigatetoCompareTest {
 		bot.textWithLabel("Port:").setText("28294");
 		bot.textWithLabel("Server Path:").setText("/gerrit-2.9.4");
 		bot.textWithLabel("Gerrit Server Name:").setText("VagrantTest2.9.4");
+		bot.textWithLabel("User:").setText("admin");
+		bot.textWithLabel("Password:").setText("egerritTest");
 		bot.button("OK").click();
 
 		// click ok in the preferences dialog
@@ -139,6 +141,10 @@ public class NavigatetoCompareTest {
 		SWTBotView egerritDash = bot.viewById("org.eclipse.egerrit.dashboard.ui.views.GerritTableView");
 		SWTBotToolbarDropDownButton dropDown = egerritDash.toolbarDropDownButton("Select current Gerrit repository");
 		dropDown.menuItem("VagrantTest2.9.4").click();
+
+		bot.viewById("org.eclipse.egerrit.dashboard.ui.views.GerritTableView");
+		dropDown = egerritDash.toolbarDropDownButton("Find all Open Reviews for the selected repository");
+		dropDown.menuItem("Open").click();
 
 		// escape drop down
 		bot.activeShell().pressShortcut(Keystrokes.ESC);

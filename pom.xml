@@ -288,10 +288,10 @@
 	<modules>
 		<module>org.eclipse.egerrit.target</module>
 		<module>org.eclipse.egerrit.core</module>
-<!-- 		<module>org.eclipse.egerrit.core.tests</module> -->
+ 		<module>org.eclipse.egerrit.core.tests</module> 
 		<module>org.eclipse.egerrit.ui</module>
-<!-- 		<module>org.eclipse.egerrit.ui.tests</module> -->
-<!-- 		<module>org.eclipse.egerrit.ui.swtbot.tests</module> -->
+ 		<module>org.eclipse.egerrit.ui.tests</module> 
+ 		<module>org.eclipse.egerrit.ui.swtbot.tests</module> 
 		<module>org.eclipse.egerrit.dashboard.core</module>
 		<module>org.eclipse.egerrit.dashboard.ui</module>
 

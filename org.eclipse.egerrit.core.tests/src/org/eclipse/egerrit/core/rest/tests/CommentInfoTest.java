@@ -59,7 +59,7 @@ public class CommentInfoTest {
 
 	private static final AccountInfo AUTHOR = new AccountInfo();;
 
-	private static final int HASH_CODE = 2007752449;
+	private static final int HASH_CODE = 359458368;
 
 	private static final String TO_STRING = "CommentInfo [id=" + ID + ", path=" + PATH + ", side=" + SIDE + ", line="
 			+ LINE + ", range=" + RANGE + ", inReplyTo=" + INREPLYTO + ", message=" + MESSAGE + ", updated=" + UPDATED

@@ -215,7 +215,7 @@ public class GerritServerDialog extends Dialog {
 
 		Label labelUser = new Label(composite, SWT.NONE);
 		labelUser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		labelUser.setText("User: ");
+		labelUser.setText("User:");
 
 		txtUserName = new Text(composite, SWT.BORDER);
 		txtUserName.setLayoutData(gridDataText);
@@ -224,7 +224,7 @@ public class GerritServerDialog extends Dialog {
 
 		Label labelPassword = new Label(composite, SWT.NONE);
 		labelPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		labelPassword.setText("Password: ");
+		labelPassword.setText("Password:");
 
 		txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(gridDataText);
