@@ -62,6 +62,7 @@ import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
@@ -69,12 +70,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MenuItem;
@@ -317,12 +320,40 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
 
-				MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
+				final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
 				itemReply.setText("Reply...");
-				itemReply.addSelectionListener(notAvailableListener());
+				itemReply.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						// ignore
+						final ReplyDialog replyDialog = new ReplyDialog(itemReply.getParent().getShell(),
+								fChangeInfo.getPermittedLabels(), fChangeInfo.getLabels());
+						Display.getDefault().syncExec(new Runnable() {
+							public void run() {
+								int ret = replyDialog.open();
+								if (ret == IDialogConstants.OK_ID) {
+									//Fill the data structure for the reply
+									ReviewInput reviewInput = new ReviewInput();
+									reviewInput.setMessage(replyDialog.getMessage());
+									reviewInput.setLabels(replyDialog.getRadiosSelection());
+									// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
+									//Send the data
+									postReply(reviewInput);
+								}
+
+							}
+						});
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// ignore
+					}
+				});
 
 				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 				itemCRPlus2.setText("Code-Review+2");
@@ -335,32 +366,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						public void widgetSelected(SelectionEvent e) {
 							super.widgetSelected(e);
 							// Code-Review +2
-							Gerrit gerrit = null;
-							try {
-								gerrit = filesTab.getGerritRepository().instantiateGerrit();
-							} catch (EGerritException e2) {
-								EGerritCorePlugin.logError(e2.getMessage());
-							}
-
-							SetReviewCommand command2 = gerrit.setReview(fChangeInfo.getChange_id(),
-									fChangeInfo.getCurrentRevision());
 							ReviewInput reviewInput = new ReviewInput();
 							Map obj = new HashMap();
 							obj.put("Code-Review", "2");
 
 							reviewInput.setLabels(obj);
-
-							command2.setReviewInput(reviewInput);
-
-							ReviewInfo result2 = null;
-							try {
-								result2 = command2.call();
-							} catch (EGerritException e1) {
-								EGerritCorePlugin.logError(e1.getMessage());
-							} catch (ClientProtocolException e1) {
-								UIUtils.displayInformation(null, TITLE,
-										e1.getLocalizedMessage() + "\n " + command2.formatRequest()); //$NON-NLS-1$
-							}
+							postReply(reviewInput);
 						}
 					});
 				}
@@ -378,6 +389,32 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
+	}
+
+	/**
+	 * Post the reply information to the Gerrit server
+	 *
+	 * @param reviewInput
+	 */
+	private void postReply(ReviewInput reviewInput) {
+		Gerrit gerrit = null;
+		try {
+			gerrit = filesTab.getGerritRepository().instantiateGerrit();
+		} catch (EGerritException e2) {
+			EGerritCorePlugin.logError(e2.getMessage());
+		}
+
+		SetReviewCommand command2 = gerrit.setReview(fChangeInfo.getChange_id(), fChangeInfo.getCurrentRevision());
+		command2.setReviewInput(reviewInput);
+
+		ReviewInfo result2 = null;
+		try {
+			result2 = command2.call();
+		} catch (EGerritException e1) {
+			EGerritCorePlugin.logError(e1.getMessage());
+		} catch (ClientProtocolException e1) {
+			UIUtils.displayInformation(null, TITLE, e1.getLocalizedMessage() + "\n " + command2.formatRequest()); //$NON-NLS-1$
+		}
 	}
 
 	@Override
@@ -447,6 +484,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
 			fChangeInfo.setLabels(res.getLabels());
 			fChangeInfo.setMessages(res.getMessages());
+			fChangeInfo.setPermittedLabels(res.getPermittedLabels());
 
 			//Set the file tab view
 			filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
@@ -549,6 +587,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			// Create query
 			if (gerrit != null) {
 				GetChangeCommand command = gerrit.getChange(change_id);
+				command.addOption(ChangeOption.DETAILED_LABELS);
 				command.addOption(ChangeOption.ALL_FILES);
 				command.addOption(ChangeOption.ALL_REVISIONS);
 				command.addOption(ChangeOption.ALL_COMMITS);

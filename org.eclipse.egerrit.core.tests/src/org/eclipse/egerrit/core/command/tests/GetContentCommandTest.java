@@ -119,7 +119,7 @@ public class GetContentCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes/" + "/detail", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/a/changes/" + "/detail", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -129,7 +129,7 @@ public class GetContentCommandTest {
 
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
