@@ -751,12 +751,12 @@ public class GetChangeCommandTest {
 			change_id = gAccess.getChangeId();
 
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			fail(e1.getMessage());
 		}
 
 		// Run test
 		GetChangeCommand command = fGerrit.getChange(change_id);
+		command.addOption(ChangeOption.DETAILED_LABELS);
 		ChangeInfo result = null;
 		try {
 			result = command.call();
@@ -770,5 +770,4 @@ public class GetChangeCommandTest {
 		assertEquals(change_id, result.getChange_id());
 
 	}
-
 }

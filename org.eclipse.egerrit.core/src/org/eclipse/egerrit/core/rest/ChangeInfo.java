@@ -247,6 +247,14 @@ public class ChangeInfo extends PropertyChangeModel {
 	}
 
 	/**
+	 * @param permitted
+	 *            labels the labels to set
+	 */
+	public void setPermittedLabels(Map<String, String[]> labels) {
+		this.permitted_labels = labels;
+	}
+
+	/**
 	 * @return The Change-Id of the change.
 	 */
 	public String getChange_id() {

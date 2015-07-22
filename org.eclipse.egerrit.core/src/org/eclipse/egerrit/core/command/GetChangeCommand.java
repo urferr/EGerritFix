@@ -58,6 +58,7 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 	public GetChangeCommand(GerritRepository gerritRepository, String id) {
 		super(gerritRepository, ChangeInfo.class);
 		this.setId(id);
+		requiresAuthentication(true);
 
 	}
 
