@@ -27,10 +27,13 @@ import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
+import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
+import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
 import org.eclipse.jgit.api.Git;
@@ -39,12 +42,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.SetReviewCommand}
+ * Test suite for {@link org.eclipse.egerrit.core.command.SubmitCommand}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
-public class SetReviewCommandTest {
+public class SubmitCommandTest {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -97,27 +100,27 @@ public class SetReviewCommandTest {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.SetReviewCommand#GetChangeCommand(org.eclipse.egerrit.core.GerritRepository)}
+	 * {@link org.eclipse.egerrit.core.command.SubmitCommand#SubmitCommand(org.eclipse.egerrit.core.GerritRepository)}
 	 */
 	@Test
-	public void testSetReviewCommand() {
+	public void testSubmitCommand() {
 		// Run test
-		SetReviewCommand command = fGerrit.setReview("", "");
+		SubmitCommand command = fGerrit.submit("");
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ReviewInfo.class, command.getReturnType());
+		assertEquals("Wrong return type", ChangeInfo.class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.SetReviewCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.SubmitCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
 		String EXPECTED_RESULT = null;
 
 		// Run test
-		SetReviewCommand command = fGerrit.setReview("", "");
+		SubmitCommand command = fGerrit.submit("");
 		command.setId("");
 		URI uri = command.formatRequest().getURI();
 
@@ -126,7 +129,7 @@ public class SetReviewCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/a/changes//revisions//review", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/a/changes//submit", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -135,7 +138,7 @@ public class SetReviewCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.core.command.SubmitCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -174,7 +177,7 @@ public class SetReviewCommandTest {
 		}
 
 		// Code-Review +2
-		SetReviewCommand command2 = fGerrit.setReview(change_id, commit_id);
+		SetReviewCommand setReviewcommand = fGerrit.setReview(change_id, commit_id);
 		ReviewInput reviewInput = new ReviewInput();
 		reviewInput.setMessage("This review is NOW ready to go ...");
 		Map obj = new HashMap();
@@ -182,18 +185,35 @@ public class SetReviewCommandTest {
 
 		reviewInput.setLabels(obj);
 
-		command2.setReviewInput(reviewInput);
+		setReviewcommand.setReviewInput(reviewInput);
 
 		ReviewInfo result2 = null;
 		try {
-			result2 = command2.call();
+			result2 = setReviewcommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
+
+		// now do test and submit ...
+		SubmitCommand submitCmd = fGerrit.submit(change_id);
+		SubmitInput submitInput = new SubmitInput();
+		submitInput.setWait_for_merge(true);
+
+		submitCmd.setSubmitInput(submitInput);
+
+		ChangeInfo submitCmdResult = null;
+		try {
+			submitCmdResult = submitCmd.call();
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		} catch (ClientProtocolException e) {
+			fail(e.getMessage());
+		}
+
 		// Verify result
-		assertEquals(result2.getLabels(), reviewInput.getLabels());
+		assertEquals(submitCmdResult.getChange_id(), change_id);
 
 	}
 }

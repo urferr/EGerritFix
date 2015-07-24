@@ -25,6 +25,7 @@ import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
+import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
 /**
@@ -239,7 +240,7 @@ public abstract class Gerrit {
 	}
 
 	/**
-	 * Return a command to ser Review a revision of a change
+	 * Return a command to set Review a revision of a change
 	 *
 	 * @param change_id
 	 * @param revision_id
@@ -258,6 +259,16 @@ public abstract class Gerrit {
 	 */
 	public ListDraftsCommand listDraftsComments(String change_id, String revision_id) {
 		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to submit a change
+	 *
+	 * @param change_id
+	 * @return
+	 */
+	public SubmitCommand submit(String change_id) {
+		return new SubmitCommand(fGerritRepository, change_id);
 	}
 
 }

@@ -21,7 +21,9 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -43,13 +45,16 @@ import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
+import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
+import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
@@ -94,6 +99,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
+	private static final String VERIFIED = "Verified";
+
+	private static final String CODE_REVIEW = "Code-Review";
+
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -130,6 +139,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Composite compButton;
 
 	private Button fReply;
+
+	private Button fSubmit;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -278,10 +289,39 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		c.setLayout(new GridLayout(8, true));
 		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 8, 1));
 
-		Button submit = new Button(c, SWT.PUSH);
-		submit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		submit.setText("Submit");
-		submit.addSelectionListener(notAvailableListener());
+		fSubmit = new Button(c, SWT.PUSH);
+		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fSubmit.setText("Submit");
+		fSubmit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+
+				Gerrit gerrit = null;
+				try {
+					gerrit = filesTab.getGerritRepository().instantiateGerrit();
+				} catch (EGerritException e2) {
+					EGerritCorePlugin.logError(e2.getMessage());
+				}
+
+				SubmitCommand submitCmd = gerrit.submit(fChangeInfo.getChange_id());
+				SubmitInput submitInput = new SubmitInput();
+				submitInput.setWait_for_merge(false);
+
+				submitCmd.setSubmitInput(submitInput);
+
+				ChangeInfo submitCmdResult = null;
+				try {
+					submitCmdResult = submitCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(e3.getMessage());
+				} catch (ClientProtocolException e3) {
+					UIUtils.displayInformation(null, TITLE,
+							e3.getLocalizedMessage() + "\n " + submitCmd.formatRequest()); //$NON-NLS-1$
+				}
+				fSubmit.setEnabled(false);
+			}
+		});
 
 		Button abandon = new Button(c, SWT.PUSH);
 		abandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -368,7 +408,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 							// Code-Review +2
 							ReviewInput reviewInput = new ReviewInput();
 							Map obj = new HashMap();
-							obj.put("Code-Review", "2");
+							obj.put(CODE_REVIEW, "2");
 
 							reviewInput.setLabels(obj);
 							postReply(reviewInput);
@@ -444,6 +484,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setTopic(element.getTopic());
 		fChangeInfo.setCodeReviewedTally(element.getCodeReviewedTally());
 		fChangeInfo.setVerifiedTally(element.getVerifiedTally());
+		fChangeInfo.setLabels(element.getLabels());
 
 		//This query fill the current revision
 		setCurrentRevisionAndMessageTab(gerritRepository, element.getChange_id());
@@ -451,15 +492,84 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//Queries to fill the Summary Review tab data
 		summaryTab.setTabs(gerritRepository, element);
 
-		buttonEnablement();
+		buttonsEnablement();
 
+	}
+
+	private int findMaxDefinedLabelValue(String label) {
+		Iterator<Entry<String, LabelInfo>> iterator = fChangeInfo.getLabels().entrySet().iterator();
+		//Get the structure having all the possible options
+		int maxDefined = 0;
+		while (iterator.hasNext()) {
+			Entry<String, LabelInfo> definedlabel = iterator.next();
+			if (definedlabel.getKey().compareTo(label) == 0) {
+				for (String element2 : definedlabel.getValue().getValues().keySet()) {
+					maxDefined = Math.max(maxDefined, new Integer(element2.trim()));
+				}
+			}
+
+		}
+		return maxDefined;
+	}
+
+	private int findMaxPermitted(String label) {
+		String[] listPermitted = null;
+		Iterator<Map.Entry<String, String[]>> iterator = fChangeInfo.getPermittedLabels().entrySet().iterator();
+		//Get the structure having all the possible options
+		int maxPermitted = 0;
+		while (iterator.hasNext()) {
+			Entry<String, String[]> permittedlabel = iterator.next();
+			listPermitted = permittedlabel.getValue();
+			if (permittedlabel.getKey().compareTo(label) == 0) {
+				for (String element2 : listPermitted) {
+					maxPermitted = Math.max(maxPermitted, new Integer(element2.trim()));
+				}
+			}
+
+		}
+		return maxPermitted;
 	}
 
 	/**
 	 * The logic that controls when bottom buttons are enabled or not
 	 */
-	private void buttonEnablement() {
-//		fReply.setEnabled(fChangeInfo.getCodeReviewedTally() != 2);
+	private void buttonsEnablement() {
+		submitButtonEnablement();
+	}
+
+	private void submitButtonEnablement() {
+		fSubmit.setEnabled(true);
+
+		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
+		int maxVPermitted = findMaxPermitted(VERIFIED);
+		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
+			fSubmit.setEnabled(false);
+		}
+
+		if (fChangeInfo.getLabels().get(VERIFIED) != null) {
+			if (fChangeInfo.getLabels().get(VERIFIED).isBlocking()) {
+				fSubmit.setEnabled(false);
+			} else if (fChangeInfo.getLabels().get(VERIFIED).getValue() != null) {
+				if (fChangeInfo.getVerifiedTally() <= 0) {
+					fSubmit.setEnabled(false);
+				}
+				if (new Integer(fChangeInfo.getLabels().get(VERIFIED).getValue().trim()).intValue() != maxVPermitted) {
+					fSubmit.setEnabled(false);
+				}
+			}
+		}
+		if (fChangeInfo.getLabels().get(CODE_REVIEW) != null) {
+			if (fChangeInfo.getLabels().get(CODE_REVIEW).isBlocking()) {
+				fSubmit.setEnabled(false);
+			} else if (fChangeInfo.getLabels().get(CODE_REVIEW).getValue() != null) {
+				if (fChangeInfo.getCodeReviewedTally() <= 0) {
+					fSubmit.setEnabled(false);
+				}
+				if (new Integer(fChangeInfo.getLabels().get(CODE_REVIEW).getValue()).intValue() != maxCRPermitted) {
+					fSubmit.setEnabled(false);
+				}
+			}
+		}
 	}
 
 	/************************************************************* */
@@ -540,8 +650,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -665,9 +775,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
+/* (non-Javadoc)
+ * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+ */
 	@Override
 	public void dispose() {
 		IEditorPart editorPart = null;
@@ -813,8 +923,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
-					projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}
