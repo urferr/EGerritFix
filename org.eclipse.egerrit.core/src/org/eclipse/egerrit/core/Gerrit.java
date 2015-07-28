@@ -32,8 +32,8 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
  * Gerrit v2.9.
  * <p>
- * The Gerrit REST commands are described in the <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
+ * The Gerrit REST commands are described in the
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
  * <p>
  * This class only offers methods to construct so-called command classes. Each Gerrit REST command is represented by one
  * such command class.
@@ -215,6 +215,17 @@ public abstract class Gerrit {
 	 */
 	public ListCommentsCommand getListComments(String change_id, String revision_id) {
 		return new ListCommentsCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to obtain the list of drafts related to a revision of a change set
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return
+	 */
+	public ListDraftsCommand getDraftcomments(String change_id, String revision_id) {
+		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
 	}
 
 	/**
