@@ -21,6 +21,7 @@ import org.apache.http.HttpHost;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -165,8 +166,8 @@ public class OpenCompareEditorTests {
 			return input;
 		}
 
-		public OpenCompareEditorForTest(GerritRepository gerritRepo, ChangeInfo changeInfo) {
-			super(gerritRepo, changeInfo);
+		public OpenCompareEditorForTest(Gerrit gerrit, ChangeInfo changeInfo) {
+			super(gerrit, changeInfo);
 		}
 
 		@Override
@@ -177,7 +178,7 @@ public class OpenCompareEditorTests {
 
 	private GerritCompareInput getCompareInputFor(String changeId) throws Exception {
 		ChangeInfo changeInfo = gitAccess.getChange(changeId);
-		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerritRepo(), changeInfo);
+		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerrit(), changeInfo);
 		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();
 		Entry<String, RevisionInfo> theRevision = revisions.entrySet().iterator().next();
 		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next());

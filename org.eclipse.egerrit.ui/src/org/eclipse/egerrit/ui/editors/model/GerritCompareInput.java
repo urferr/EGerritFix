@@ -18,11 +18,13 @@ import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
 
 /**
@@ -32,7 +34,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private String changeId;
 
-	private GerritRepository gerrit;
+	private Gerrit gerrit;
 
 	private IFile left;
 
@@ -40,7 +42,9 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private String file;
 
-	public GerritCompareInput(IFile left, String changeId, FileInfo info, GerritRepository gerrit) {
+	private boolean problemSavingChanges = false;
+
+	public GerritCompareInput(IFile left, String changeId, FileInfo info, Gerrit gerrit) {
 		super(new CompareConfiguration(), null);
 		this.left = left;
 		this.changeId = changeId;
@@ -57,9 +61,12 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	}
 
 	@Override
-	//Note this method is made public for testing purpose
+	/**
+	 * This method is made public for testing purpose
+	 */
 	public ICompareInput prepareCompareInput(IProgressMonitor pm) {
-		CompareItem right = new CompareItem(file, OpenCompareEditor.getFilesContent(gerrit, changeId, fileInfo, pm), 0);
+		getCompareConfiguration().setRightEditable(true);
+		CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo, pm);
 		return new DiffNode(null, Differencer.ADDITION, null, createFileElement(getLeft()), right);
 	}
 
@@ -74,5 +81,34 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	@Override
 	protected void fireInputChange() {
 		// TODO Need to see if we want to do something with this
+	}
+
+	@Override
+	public void saveChanges(IProgressMonitor monitor) throws CoreException {
+		try {
+			super.saveChanges(monitor);
+		} catch (RuntimeException ex) {
+			//This works hand in hand with the CompareItem#setContent method which raises a very specific RuntimeException
+			if (CompareItem.class.getName().equals(ex.getMessage())) {
+				problemSavingChanges = true;
+				setRightDirty(true);
+				throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
+						"A problem occurred while sending the changes to the gerrit server"));
+			} else {
+				//When it is not our exception we just pass it on.
+				throw ex;
+			}
+		}
+	}
+
+	@Override
+	public void setDirty(boolean dirty) {
+		if (problemSavingChanges) {
+			super.setDirty(true);
+			problemSavingChanges = false;
+			setRightDirty(true);
+		} else {
+			super.setDirty(dirty);
+		}
 	}
 }

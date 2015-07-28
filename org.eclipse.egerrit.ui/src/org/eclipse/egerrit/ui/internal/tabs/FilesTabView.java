@@ -166,7 +166,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				if (element instanceof FileInfo) {
 					OpenCompareEditor compareEditor;
 					try {
-						compareEditor = new OpenCompareEditor(getGerritRepository(), fChangeInfo);
+						compareEditor = new OpenCompareEditor(getGerritRepository().instantiateGerrit(), fChangeInfo);
 						String diffSource = comboDiffAgainst.getText();
 						if (diffSource.equals(WORKSPACE)) {
 							compareEditor.compareAgainstWorkspace((FileInfo) element);
