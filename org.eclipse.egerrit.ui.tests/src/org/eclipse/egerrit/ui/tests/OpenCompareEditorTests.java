@@ -45,6 +45,10 @@ public class OpenCompareEditorTests {
 			+ "	public void foo() {\n" + "		System.out.println(\"A\");\n" + "	}\n" + "\n" + "	\n"
 			+ "	public void bar() {\n" + "	}\n" + "}"; //$NON-NLS-3$
 
+	private static final String NEW_CONTENT_FILE_A = "public class A {\n" + "	\n"
+			+ "	public static void main(String[] args) {\n" + "		throw new RuntimeException();\n" + "	}\n" + "\n"
+			+ "	public void foo() {\n" + "		System.out.println(\"A\");\n" + "	}\n" + "\n" + "	\n" + "}";
+
 	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
 			+ "	</projects>\n" + "	<buildSpec>\n" + "		<buildCommand>\n"
@@ -101,10 +105,8 @@ public class OpenCompareEditorTests {
 
 	@Test
 	public void compareModifiedFile() throws Exception {
-		final String newContent = "new content for a"; //$NON-NLS-1$
-
 		String beforeMods = gitAccess.getLastLocalCommitId();
-		gitAccess.modifyFile(A_PROJECT_A_JAVA, newContent);
+		gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
@@ -142,10 +144,8 @@ public class OpenCompareEditorTests {
 	public void repoUnknown() throws Exception {
 		gitAccess.removeFromGitView();
 		try {
-			final String newContent = "new content for a"; //$NON-NLS-1$
-
 			String beforeMods = gitAccess.getLastLocalCommitId();
-			gitAccess.modifyFile(A_PROJECT_A_JAVA, newContent);
+			gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
 			gitAccess.pushFile();
 			gitAccess.resetTo(beforeMods);
 
