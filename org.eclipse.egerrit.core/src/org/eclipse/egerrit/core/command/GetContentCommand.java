@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -134,5 +135,10 @@ public class GetContentCommand extends QueryCommand<String> {
 	@Override
 	protected boolean expectsJson() {
 		return false;
+	}
+
+	@Override
+	protected Map<String, String> headers() {
+		return null;
 	}
 }

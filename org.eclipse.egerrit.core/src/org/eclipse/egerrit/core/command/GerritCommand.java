@@ -16,6 +16,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.http.HttpEntity;
@@ -134,7 +138,8 @@ public abstract class GerritCommand<T> implements Callable<T> {
 		T result = null;
 		try {
 			HttpRequestBase request = formatRequest();
-			request.addHeader("Accept", JSON_HEADER); //$NON-NLS-1$
+			setHeaders(request);
+
 			EGerritCorePlugin.logInfo("Request: " + request.getURI().toString()); //$NON-NLS-1$
 
 			ResponseHandler<T> rh = new ResponseHandler<T>() {
@@ -194,8 +199,25 @@ public abstract class GerritCommand<T> implements Callable<T> {
 		return result;
 	}
 
+	private void setHeaders(HttpRequestBase request) {
+		Map<String, String> headers = headers();
+		if (headers == null) {
+			return;
+		}
+		Set<Entry<String, String>> entries = headers.entrySet();
+		for (Entry<String, String> entry : entries) {
+			request.addHeader(entry.getKey(), entry.getValue());
+		}
+	}
+
 	protected boolean expectsJson() {
 		return true;
+	}
+
+	protected Map<String, String> headers() {
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Accept", JSON_HEADER); //$NON-NLS-1$
+		return headers;
 	}
 
 	protected T postProcessResult(T result) {
