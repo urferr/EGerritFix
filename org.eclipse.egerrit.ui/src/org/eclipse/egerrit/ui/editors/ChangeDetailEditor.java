@@ -380,6 +380,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 									ReviewInput reviewInput = new ReviewInput();
 									reviewInput.setMessage(replyDialog.getMessage());
 									reviewInput.setLabels(replyDialog.getRadiosSelection());
+									reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 									// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
 									//Send the data
 									postReply(reviewInput);
@@ -407,6 +408,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 							super.widgetSelected(e);
 							// Code-Review +2
 							ReviewInput reviewInput = new ReviewInput();
+							reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 							Map obj = new HashMap();
 							obj.put(CODE_REVIEW, "2");
 
@@ -650,8 +652,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -923,7 +925,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
+					projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}

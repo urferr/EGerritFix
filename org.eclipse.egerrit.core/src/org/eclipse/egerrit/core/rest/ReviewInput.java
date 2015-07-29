@@ -50,6 +50,12 @@ public class ReviewInput {
 	// If not set, the default is DELETE.
 	private String drafts;
 
+	public static final String DRAFT_DELETE = "DELETE"; //$NON-NLS-1$
+
+	public static final String DRAFT_PUBLISH = "PUBLISH"; //$NON-NLS-1$
+
+	public static final String DRAFT_KEEP = "KEEP"; //$NON-NLS-1$
+
 	// Notify handling that defines to whom email notifications should be sent after
 	// the review is stored.
 	// Allowed values are NONE, OWNER, OWNER_REVIEWERS and ALL.
