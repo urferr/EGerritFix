@@ -201,8 +201,8 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 			ISecurePreferences serverPreference = securePref
 					.node(EncodingUtils.encodeSlashes(GerritServerUtility.getPreferenceKey(item)));
 			try {
-				serverPreference.put(item.getUserLabel(), item.getUserName(), true);
-				serverPreference.put(item.getPasswordLabel(), item.getPassword(), true);
+				serverPreference.put(GerritServerInformation.KEY_USER, item.getUserName(), true);
+				serverPreference.put(GerritServerInformation.KEY_PASSWORD, item.getPassword(), true);
 			} catch (StorageException e) {
 				EGerritCorePlugin.logError(e.getMessage());
 			}
