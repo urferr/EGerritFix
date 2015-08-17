@@ -903,7 +903,6 @@ public class GerritTableView extends ViewPart {
 		// Initialize
 		gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
 		gerritRepository.setCredentials(creds);
-		gerritRepository.getCredentials().setHttpCredentials(USER, PASSWORD);
 
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
 

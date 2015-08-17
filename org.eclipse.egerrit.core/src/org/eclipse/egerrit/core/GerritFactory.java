@@ -55,6 +55,7 @@ public final class GerritFactory {
 		if (gerritRepository == null) {
 			throw new EGerritException("Invalid gerrit repository"); //$NON-NLS-1$
 		}
+		gerritRepository.connect();
 		Version version = gerritRepository.getVersion();
 		if (version == null) {
 			throw new EGerritException("Invalid gerrit version (null)"); //$NON-NLS-1$

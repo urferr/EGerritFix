@@ -147,8 +147,11 @@ public class GerritHttpClient {
 		return fHttpClient.execute(request);
 	}
 
-	public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler) throws IOException,
-	ClientProtocolException {
+	public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler)
+			throws IOException, ClientProtocolException {
+		if (gotKey) {
+			request.addHeader(X_GERRIT_AUTHORITY_TAG, fKey);
+		}
 		return fHttpClient.execute(request, responseHandler);
 	}
 
