@@ -12,8 +12,13 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
+import java.lang.reflect.Field;
+import java.util.Iterator;
+
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.ICompareInputLabelProvider;
+import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
+import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.resources.IFile;
@@ -26,14 +31,30 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.jface.text.ITextPresentationListener;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Input to open a compare editor on a gerrit review 
  * @since 1.0
  */
 public class GerritCompareInput extends SaveableCompareEditorInput {
+	private Logger logger = LoggerFactory.getLogger(GerritCompareInput.class);
 
 	private String changeId;
 
@@ -48,6 +69,11 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	private boolean problemSavingChanges = false;
 
 	private GerritDiffNode diffNode;
+
+	//This flag indicates whether the initial syntax coloring should be done.
+	//This is necessary so we don't spend our time recoloring things that have been already colored.
+	//Also because if we do recolor things, it throw things off when the user starts editing.
+	final private Boolean[] performInitialColoring = new Boolean[] { Boolean.FALSE };
 
 	public GerritCompareInput(IFile left, String changeId, FileInfo info, GerritClient gerrit) {
 		super(createEditorConfiguration(), null);
@@ -85,10 +111,15 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	@Override
 	protected void fireInputChange() {
-		CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo,
-				new NullProgressMonitor());
-		((GerritDiffNode) getCompareResult()).setRight(right);
-		((GerritDiffNode) getCompareResult()).fireChange();
+		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the input is changed
+		try {
+			CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo,
+					new NullProgressMonitor());
+			((GerritDiffNode) getCompareResult()).setRight(right);
+			((GerritDiffNode) getCompareResult()).fireChange();
+		} finally {
+			performInitialColoring[0] = Boolean.FALSE;
+		}
 	}
 
 	@Override
@@ -212,5 +243,67 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		});
 		config.setRightEditable(true);
 		return config;
+	}
+
+	@Override
+	//We need this so we can hook the mechanism to color the comments
+	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
+		Viewer contentViewer = super.findContentViewer(oldViewer, input, parent);
+		setupCommentColorer(contentViewer);
+		return contentViewer;
+	}
+
+	private void setupCommentColorer(Viewer contentViewer) {
+		if (!(contentViewer instanceof TextMergeViewer)) {
+			return;
+		}
+
+		//Navigate from the top level widget of the compare editor down to the right pane of the editor
+		//to participate in the coloring of the text: see method applyTextPresentation
+		TextMergeViewer textMergeViewer = (TextMergeViewer) contentViewer;
+		try {
+			Class<TextMergeViewer> clazz = TextMergeViewer.class;
+			Field declaredField = clazz.getDeclaredField("fRight"); //$NON-NLS-1$
+			declaredField.setAccessible(true);
+			MergeSourceViewer rightSourceViewer = (MergeSourceViewer) declaredField.get(textMergeViewer);
+
+			Field sourceViewerField = MergeSourceViewer.class.getDeclaredField("fSourceViewer");
+			sourceViewerField.setAccessible(true);
+			final SourceViewer sourceViewer = (SourceViewer) sourceViewerField.get(rightSourceViewer);
+			sourceViewer.addTextPresentationListener(new ITextPresentationListener() {
+				@Override
+				//Perform the coloration of comments
+				public void applyTextPresentation(TextPresentation textPresentation) {
+					if (performInitialColoring[0]) {
+						CompareItem coloredDocument = (CompareItem) sourceViewer.getDocument();
+						AnnotationModel commentsToColor = coloredDocument.getEditableComments();
+						Iterator commentsIterator = commentsToColor.getAnnotationIterator();
+						while (commentsIterator.hasNext()) {
+							Annotation comment = (Annotation) commentsIterator.next();
+							Position commentPosition = commentsToColor.getPosition(comment);
+							textPresentation.replaceStyleRange(
+									createCommentStyle(commentPosition.getOffset(), commentPosition.getLength()));
+						}
+					}
+				}
+			});
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException t) {
+			logger.error("Problem while setting up coloration of comments", t); //$NON-NLS-1$
+		}
+	}
+
+	private StyleRange createCommentStyle(int start, int length) {
+		return new StyleRange(start, length, Display.getCurrent().getSystemColor(SWT.COLOR_BLACK),
+				Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+	}
+
+	@Override
+	public Control createContents(Composite parent) {
+		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the editor is first created
+		try {
+			return super.createContents(parent);
+		} finally {
+			performInitialColoring[0] = Boolean.FALSE;
+		}
 	}
 }
