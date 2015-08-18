@@ -139,8 +139,8 @@ public class GitAccess {
 				.call();
 		lastCommitId = ObjectId.toString(commitId.getId());
 		fGit.push()
-		.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
-		.call();
+				.setCredentialsProvider(new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD))
+				.call();
 	}
 
 	/**
@@ -166,9 +166,8 @@ public class GitAccess {
 
 		Collection<RemoteRefUpdate> crru = result.iterator().next().getRemoteUpdates();
 		RemoteRefUpdate rru = crru.iterator().next();
-		fCommit_id = rru.getNewObjectId()
-				.toString()
-				.substring("AnyObjectId[".length(), rru.getNewObjectId().toString().length() - 1);
+		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
+				rru.getNewObjectId().toString().length() - 1);
 
 	}
 
@@ -307,5 +306,9 @@ public class GitAccess {
 			EGerritCorePlugin.logError(e.getMessage());
 		}
 		return res;
+	}
+
+	public Gerrit getGerrit() {
+		return gerrit;
 	}
 }
