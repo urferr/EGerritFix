@@ -223,8 +223,8 @@ public class GerritServerUtility {
 							.node(EncodingUtils.encodeSlashes(getPreferenceKey(gerritInfo)));
 					String user;
 					try {
-						user = serverPreference.get(gerritInfo.getUserLabel(), ""); //$NON-NLS-1$
-						String password = serverPreference.get(gerritInfo.getPasswordLabel(), ""); //$NON-NLS-1$
+						user = serverPreference.get(GerritServerInformation.KEY_USER, ""); //$NON-NLS-1$
+						String password = serverPreference.get(GerritServerInformation.KEY_PASSWORD, ""); //$NON-NLS-1$
 						GerritPlugin.Ftracer.traceInfo("GerritServerUtility.createGerritServerInfo() URL: " //$NON-NLS-1$
 								+ gerritInfo.getServerURI() + "\n\t user: " + user); //$NON-NLS-1$
 						gerritInfo.setUserName(user);

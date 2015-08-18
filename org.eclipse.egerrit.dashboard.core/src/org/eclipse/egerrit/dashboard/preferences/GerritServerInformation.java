@@ -44,9 +44,9 @@ public class GerritServerInformation {
 
 	private String fPassword;
 
-	private static String USER_LABEL = "user"; //$NON-NLS-1$
+	public static final String KEY_USER = "user"; //$NON-NLS-1$
 
-	private static String PASSWORD_LABEL = "password"; //$NON-NLS-1$
+	public static final String KEY_PASSWORD = "password"; //$NON-NLS-1$
 
 	private boolean fSelfSigned = false;
 
@@ -116,14 +116,6 @@ public class GerritServerInformation {
 	public String getAllInfo() {
 		return fServerURI + PreferenceConstants.LIST_SEPARATOR + fServerName + PreferenceConstants.LIST_SEPARATOR
 				+ getSelfSigned();
-	}
-
-	public String getUserLabel() {
-		return USER_LABEL;
-	}
-
-	public String getPasswordLabel() {
-		return PASSWORD_LABEL;
 	}
 
 	public void setScheme(String text) {
