@@ -220,7 +220,7 @@ public class GerritServerUtility {
 				}
 				if (gerritInfo != null) {
 					ISecurePreferences serverPreference = securePref
-							.node(EncodingUtils.encodeSlashes(gerritInfo.getServerURI()));
+							.node(EncodingUtils.encodeSlashes(getPreferenceKey(gerritInfo)));
 					String user;
 					try {
 						user = serverPreference.get(gerritInfo.getUserLabel(), ""); //$NON-NLS-1$
@@ -420,4 +420,12 @@ public class GerritServerUtility {
 		return lastCommands;
 	}
 
+  	/**
+         * Builds a preference key from a server information
+         *
+         * @ return String the constructed key
+         */
+	public static String getPreferenceKey(GerritServerInformation serverInfo) {
+		return GerritPlugin.PLUGIN_ID + '/' + serverInfo.getServerURI() + serverInfo.getName();
+	}
 }

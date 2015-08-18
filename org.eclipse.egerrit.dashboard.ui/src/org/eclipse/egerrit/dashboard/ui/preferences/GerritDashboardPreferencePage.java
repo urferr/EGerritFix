@@ -198,7 +198,8 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 		for (GerritServerInformation item : tableItems) {
 			value.append(item.getAllInfo());
 			value.append(PreferenceConstants.LIST_SEPARATOR);
-			ISecurePreferences serverPreference = securePref.node(EncodingUtils.encodeSlashes(item.getServerURI()));
+			ISecurePreferences serverPreference = securePref
+					.node(EncodingUtils.encodeSlashes(GerritServerUtility.getPreferenceKey(item)));
 			try {
 				serverPreference.put(item.getUserLabel(), item.getUserName(), true);
 				serverPreference.put(item.getPasswordLabel(), item.getPassword(), true);
