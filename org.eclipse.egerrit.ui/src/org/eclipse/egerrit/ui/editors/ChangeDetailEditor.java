@@ -509,25 +509,26 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					maxDefined = Math.max(maxDefined, new Integer(element2.trim()));
 				}
 			}
-
 		}
 		return maxDefined;
 	}
 
 	private int findMaxPermitted(String label) {
-		String[] listPermitted = null;
-		Iterator<Map.Entry<String, String[]>> iterator = fChangeInfo.getPermittedLabels().entrySet().iterator();
-		//Get the structure having all the possible options
 		int maxPermitted = 0;
-		while (iterator.hasNext()) {
-			Entry<String, String[]> permittedlabel = iterator.next();
-			listPermitted = permittedlabel.getValue();
-			if (permittedlabel.getKey().compareTo(label) == 0) {
-				for (String element2 : listPermitted) {
-					maxPermitted = Math.max(maxPermitted, new Integer(element2.trim()));
+		String[] listPermitted = null;
+		Map<String, String[]> mapLabels = fChangeInfo.getPermittedLabels();
+		if (mapLabels != null) {
+			Iterator<Map.Entry<String, String[]>> iterator = mapLabels.entrySet().iterator();
+			//Get the structure having all the possible options
+			while (iterator.hasNext()) {
+				Entry<String, String[]> permittedlabel = iterator.next();
+				listPermitted = permittedlabel.getValue();
+				if (permittedlabel.getKey().compareTo(label) == 0) {
+					for (String element2 : listPermitted) {
+						maxPermitted = Math.max(maxPermitted, new Integer(element2.trim()));
+					}
 				}
 			}
-
 		}
 		return maxPermitted;
 	}
@@ -539,6 +540,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitButtonEnablement();
 	}
 
+	/**
+	 * This method set the state of the Submit button. By default, we set the submit button to true. The following code
+	 * can set the "Submit" button to false. when we meet the conditions that follows. So when the state is set to
+	 * false, no need to continue, we can just return at that point.
+	 */
 	private void submitButtonEnablement() {
 		fSubmit.setEnabled(true);
 
@@ -546,32 +552,35 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		int maxVPermitted = findMaxPermitted(VERIFIED);
 		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
 			fSubmit.setEnabled(false);
+			return;
 		}
 
-		if (fChangeInfo.getLabels().get(VERIFIED) != null) {
-			if (fChangeInfo.getLabels().get(VERIFIED).isBlocking()) {
+		LabelInfo lblInfoVerify = fChangeInfo.getLabels().get(VERIFIED);
+		if (lblInfoVerify != null) {
+			if (lblInfoVerify.isBlocking()) {
 				fSubmit.setEnabled(false);
-			} else if (fChangeInfo.getLabels().get(VERIFIED).getValue() != null) {
+				return;
+			} else {
 				if (fChangeInfo.getVerifiedTally() <= 0) {
 					fSubmit.setEnabled(false);
-				}
-				if (new Integer(fChangeInfo.getLabels().get(VERIFIED).getValue().trim()).intValue() != maxVPermitted) {
-					fSubmit.setEnabled(false);
+					return;
 				}
 			}
 		}
-		if (fChangeInfo.getLabels().get(CODE_REVIEW) != null) {
-			if (fChangeInfo.getLabels().get(CODE_REVIEW).isBlocking()) {
+
+		LabelInfo lblInfoCR = fChangeInfo.getLabels().get(CODE_REVIEW);
+		if (lblInfoCR != null) {
+			if (lblInfoCR.isBlocking()) {
 				fSubmit.setEnabled(false);
-			} else if (fChangeInfo.getLabels().get(CODE_REVIEW).getValue() != null) {
+				return;
+			} else {
 				if (fChangeInfo.getCodeReviewedTally() <= 0) {
 					fSubmit.setEnabled(false);
-				}
-				if (new Integer(fChangeInfo.getLabels().get(CODE_REVIEW).getValue()).intValue() != maxCRPermitted) {
-					fSubmit.setEnabled(false);
+					return;
 				}
 			}
 		}
+
 	}
 
 	/************************************************************* */
