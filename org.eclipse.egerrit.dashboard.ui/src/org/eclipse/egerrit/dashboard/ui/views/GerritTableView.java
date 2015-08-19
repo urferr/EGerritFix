@@ -950,6 +950,7 @@ public class GerritTableView extends ViewPart {
 				command.addOption(ChangeOption.DETAILED_LABELS);
 				command.addOption(ChangeOption.CURRENT_REVISION);
 				command.addOption(ChangeOption.CURRENT_FILES);
+				command.addOption(ChangeOption.DETAILED_ACCOUNTS);
 
 				try {
 					setQuery(query, command);
