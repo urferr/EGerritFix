@@ -12,6 +12,7 @@
 
 package org.eclipse.egerrit.core;
 
+import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
@@ -24,6 +25,7 @@ import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -32,8 +34,8 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
  * Gerrit v2.9.
  * <p>
- * The Gerrit REST commands are described in the
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
+ * The Gerrit REST commands are described in the <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
  * <p>
  * This class only offers methods to construct so-called command classes. Each Gerrit REST command is represented by one
  * such command class.
@@ -211,7 +213,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return ListCommentsCommand
 	 */
 	public ListCommentsCommand getListComments(String change_id, String revision_id) {
 		return new ListCommentsCommand(fGerritRepository, change_id, revision_id);
@@ -222,7 +224,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return ListDraftsCommand
 	 */
 	public ListDraftsCommand getDraftcomments(String change_id, String revision_id) {
 		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
@@ -233,7 +235,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return CreateDraftCommand
 	 */
 	public CreateDraftCommand createDraftComments(String change_id, String revision_id) {
 		return new CreateDraftCommand(fGerritRepository, change_id, revision_id);
@@ -244,7 +246,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return PublishDraftRevisionCommand
 	 */
 	public PublishDraftRevisionCommand publishDraftRevision(String change_id, String revision_id) {
 		return new PublishDraftRevisionCommand(fGerritRepository, change_id, revision_id);
@@ -255,7 +257,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return SetReviewCommand
 	 */
 	public SetReviewCommand setReview(String change_id, String revision_id) {
 		return new SetReviewCommand(fGerritRepository, change_id, revision_id);
@@ -266,7 +268,7 @@ public abstract class Gerrit {
 	 *
 	 * @param change_id
 	 * @param revision_id
-	 * @return
+	 * @return ListDraftsCommand
 	 */
 	public ListDraftsCommand listDraftsComments(String change_id, String revision_id) {
 		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
@@ -276,10 +278,30 @@ public abstract class Gerrit {
 	 * Return a command to submit a change
 	 *
 	 * @param change_id
-	 * @return
+	 * @return SubmitCommand
 	 */
 	public SubmitCommand submit(String change_id) {
 		return new SubmitCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to abandon a change
+	 *
+	 * @param change_id
+	 * @return AbandonCommand
+	 */
+	public AbandonCommand abandon(String change_id) {
+		return new AbandonCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to restore a change
+	 *
+	 * @param change_id
+	 * @return RestoreCommand
+	 */
+	public RestoreCommand restore(String change_id) {
+		return new RestoreCommand(fGerritRepository, change_id);
 	}
 
 }
