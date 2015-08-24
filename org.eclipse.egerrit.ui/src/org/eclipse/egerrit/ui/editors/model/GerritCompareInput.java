@@ -13,7 +13,6 @@
 package org.eclipse.egerrit.ui.editors.model;
 
 import org.eclipse.compare.CompareConfiguration;
-import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.resources.IFile;
@@ -21,6 +20,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.rest.FileInfo;
@@ -43,6 +43,8 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	private String file;
 
 	private boolean problemSavingChanges = false;
+
+	private GerritDiffNode diffNode;
 
 	public GerritCompareInput(IFile left, String changeId, FileInfo info, Gerrit gerrit) {
 		super(new CompareConfiguration(), null);
@@ -67,7 +69,8 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	public ICompareInput prepareCompareInput(IProgressMonitor pm) {
 		getCompareConfiguration().setRightEditable(true);
 		CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo, pm);
-		return new DiffNode(null, Differencer.ADDITION, null, createFileElement(getLeft()), right);
+		diffNode = new GerritDiffNode(null, Differencer.ADDITION, null, createFileElement(getLeft()), right);
+		return diffNode;
 	}
 
 	@Override
@@ -80,7 +83,10 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	@Override
 	protected void fireInputChange() {
-		// TODO Need to see if we want to do something with this
+		CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo,
+				new NullProgressMonitor());
+		((GerritDiffNode) getCompareResult()).setRight(right);
+		((GerritDiffNode) getCompareResult()).fireChange();
 	}
 
 	@Override
