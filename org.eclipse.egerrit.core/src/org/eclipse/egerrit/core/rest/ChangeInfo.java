@@ -806,4 +806,12 @@ public class ChangeInfo extends PropertyChangeModel {
 	public void set_more_changes(boolean _more_changes) {
 		this._more_changes = _more_changes;
 	}
+
+	/**
+	 * @param actions
+	 *            as List
+	 */
+	public void setActions(Map<String, ActionInfo> actions) {
+		this.actions = actions;
+	}
 }

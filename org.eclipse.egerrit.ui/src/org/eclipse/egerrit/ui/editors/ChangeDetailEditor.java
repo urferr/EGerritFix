@@ -41,16 +41,21 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.Gerrit;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.AbandonInput;
+import org.eclipse.egerrit.core.rest.ActionInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
+import org.eclipse.egerrit.core.rest.RestoreInput;
 import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
@@ -68,6 +73,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
@@ -99,6 +106,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
+	private static final String RESTORE = "restore";
+
+	private static final String ABANDON = "abandon";
+
 	private static final String VERIFIED = "Verified";
 
 	private static final String CODE_REVIEW = "Code-Review";
@@ -138,9 +149,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Composite compButton;
 
-	private Button fReply;
-
 	private Button fSubmit;
+
+	private Button fAbandon;
+
+	private Button fRestore;
+
+	private Button fReply;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -292,6 +307,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fSubmit = new Button(c, SWT.PUSH);
 		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fSubmit.setText("Submit");
+		fSubmit.setEnabled(false);
 		fSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -323,15 +339,89 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 		});
 
-		Button abandon = new Button(c, SWT.PUSH);
-		abandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		abandon.setText("Abandon");
-		abandon.addSelectionListener(notAvailableListener());
+		fAbandon = new Button(c, SWT.PUSH);
+		fAbandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fAbandon.setText("Abandon");
+		fAbandon.setEnabled(false);
+		fAbandon.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
 
-		Button restore = new Button(c, SWT.PUSH);
-		restore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		restore.setText("Restore");
-		restore.addSelectionListener(notAvailableListener());
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message", "", "",
+						null);
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				Gerrit gerrit = null;
+				try {
+					gerrit = filesTab.getGerritRepository().instantiateGerrit();
+				} catch (EGerritException e2) {
+					EGerritCorePlugin.logError(e2.getMessage());
+				}
+
+				AbandonCommand abandonCmd = gerrit.abandon(fChangeInfo.getChange_id());
+				AbandonInput abandonInput = new AbandonInput();
+				abandonInput.setMessage(inputDialog.getValue());
+
+				abandonCmd.setAbandonInput(abandonInput);
+
+				ChangeInfo abandonCmdResult = null;
+				try {
+					abandonCmdResult = abandonCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(e3.getMessage());
+				} catch (ClientProtocolException e3) {
+					UIUtils.displayInformation(null, TITLE,
+							e3.getLocalizedMessage() + "\n " + abandonCmd.formatRequest()); //$NON-NLS-1$
+				}
+				refreshStatus();
+
+			}
+
+		});
+
+		fRestore = new Button(c, SWT.PUSH);
+		fRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fRestore.setText("Restore");
+		fRestore.setEnabled(false);
+		fRestore.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message", "", "",
+						null);
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				Gerrit gerrit = null;
+				try {
+					gerrit = filesTab.getGerritRepository().instantiateGerrit();
+				} catch (EGerritException e2) {
+					EGerritCorePlugin.logError(e2.getMessage());
+				}
+
+				RestoreCommand restoreCmd = gerrit.restore(fChangeInfo.getChange_id());
+				RestoreInput restoreInput = new RestoreInput();
+				restoreInput.setMessage(inputDialog.getValue());
+
+				restoreCmd.setRestoreInput(restoreInput);
+
+				ChangeInfo restoreCmdResult = null;
+				try {
+					restoreCmdResult = restoreCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(e3.getMessage());
+				} catch (ClientProtocolException e3) {
+					UIUtils.displayInformation(null, TITLE,
+							e3.getLocalizedMessage() + "\n " + restoreCmd.formatRequest()); //$NON-NLS-1$
+				}
+				refreshStatus();
+			}
+		});
 
 		Button rebase = new Button(c, SWT.PUSH);
 		rebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -533,11 +623,27 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return maxPermitted;
 	}
 
+	private void refreshStatus() {
+		try {
+			ChangeInfo changeInfo = refreshChangeInfo(filesTab.getGerritRepository(), fChangeInfo.getChange_id(),
+					new NullProgressMonitor());
+			fChangeInfo.setStatus(changeInfo.getStatus());
+			fChangeInfo.setUpdated(changeInfo.getUpdated());
+			fChangeInfo.setActions(changeInfo.getActions());
+			fChangeInfo.setPermittedLabels(changeInfo.getPermittedLabels());
+
+		} catch (EGerritException e1) {
+			EGerritCorePlugin.logError(e1.getMessage());
+		}
+		buttonsEnablement();
+	}
+
 	/**
 	 * The logic that controls when bottom buttons are enabled or not
 	 */
 	private void buttonsEnablement() {
 		submitButtonEnablement();
+		abandonrestoreButtonEnablement();
 	}
 
 	/**
@@ -579,8 +685,33 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return;
 				}
 			}
+		} else {
+			fSubmit.setEnabled(false);
+			return;
+
 		}
 
+	}
+
+	private void abandonrestoreButtonEnablement() {
+
+		Map<String, ActionInfo> actions = fChangeInfo.getActions();
+		if (actions != null) {
+			ActionInfo abandon = actions.get(ABANDON);
+			ActionInfo restore = actions.get(RESTORE);
+
+			if (abandon != null && abandon.isEnabled()) {
+				fAbandon.setEnabled(true);
+				fRestore.setEnabled(false);
+			} else if (restore != null && restore.isEnabled()) {
+				fAbandon.setEnabled(false);
+				fRestore.setEnabled(true);
+			} else {
+				fAbandon.setEnabled(false);
+				fRestore.setEnabled(false);
+			}
+
+		}
 	}
 
 	/************************************************************* */
@@ -606,6 +737,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setLabels(res.getLabels());
 			fChangeInfo.setMessages(res.getMessages());
 			fChangeInfo.setPermittedLabels(res.getPermittedLabels());
+			fChangeInfo.setStatus(res.getStatus());
+			fChangeInfo.setActions(res.getActions());
 
 			//Set the file tab view
 			filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
@@ -661,8 +794,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
+	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
+			String file, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
@@ -716,6 +849,44 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				command.addOption(ChangeOption.REVIEWED);
 				command.addOption(ChangeOption.MESSAGES);
 				command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+				command.addOption(ChangeOption.CURRENT_ACTIONS);
+
+				ChangeInfo res = null;
+				try {
+					res = command.call();
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+				}
+				return res;
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+		return null;
+	}
+
+	/**
+	 * @param gerritRepository
+	 * @param change_id
+	 * @param monitor
+	 * @return
+	 */
+	private ChangeInfo refreshChangeInfo(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+		try {
+
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			Gerrit gerrit = gerritRepository.instantiateGerrit();
+
+			// Create query
+			if (gerrit != null) {
+				GetChangeCommand command = gerrit.getChange(change_id);
+				command.addOption(ChangeOption.DETAILED_LABELS);
+				command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 				ChangeInfo res = null;
 				try {
@@ -934,8 +1105,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()),
-					projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}
