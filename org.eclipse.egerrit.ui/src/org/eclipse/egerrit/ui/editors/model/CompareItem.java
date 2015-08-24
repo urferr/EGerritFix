@@ -101,7 +101,7 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 	}
 
 	@Override
-        // Extracts newly added comments from the content passed in, and publish new comments on the gerrit server
+	// Extracts newly added comments from the content passed in, and publish new comments on the gerrit server
 	public void setContent(byte[] newContent) {
 		ArrayList<CommentInfo> newComments = new CommentExtractor().extractComments(documentWithComments,
 				gerritComments, new Document(new String(newContent)));
