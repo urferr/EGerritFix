@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
@@ -34,7 +34,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private String changeId;
 
-	private Gerrit gerrit;
+	private GerritClient gerrit;
 
 	private IFile left;
 
@@ -46,7 +46,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private GerritDiffNode diffNode;
 
-	public GerritCompareInput(IFile left, String changeId, FileInfo info, Gerrit gerrit) {
+	public GerritCompareInput(IFile left, String changeId, FileInfo info, GerritClient gerrit) {
 		super(new CompareConfiguration(), null);
 		this.left = left;
 		this.changeId = changeId;

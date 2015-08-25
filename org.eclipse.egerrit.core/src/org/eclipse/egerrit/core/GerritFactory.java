@@ -16,7 +16,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.osgi.framework.Version;
 
 /**
- * The GerritFactory instantiates a {@link Gerrit} object that matches the gerrit server version.
+ * The GerritFactory instantiates a {@link GerritClient} object that matches the gerrit server version.
  * <p>
  * If there is no exact match for the repository version, the factory creates an object with version <= repository
  * version.
@@ -46,7 +46,7 @@ public final class GerritFactory {
 	 * @return the appropriate gerrit object
 	 * @throws EGerritException
 	 */
-	public static Gerrit create(GerritRepository gerritRepository) throws EGerritException {
+	public static GerritClient create(GerritRepository gerritRepository) throws EGerritException {
 
 		// --------------------------------------------------------------------
 		// Quick validations
@@ -78,7 +78,7 @@ public final class GerritFactory {
 		// If no match is found, we return the most basic version supported.
 		// --------------------------------------------------------------------
 
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		Version workVersion = new Version(version.getMajor(), version.getMinor(), version.getMicro(),
 				version.getQualifier());
 		do {

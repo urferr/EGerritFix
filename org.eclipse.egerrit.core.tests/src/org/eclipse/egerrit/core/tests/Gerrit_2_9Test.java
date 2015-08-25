@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -82,12 +82,12 @@ public class Gerrit_2_9Test {
 
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.core.GerritRepository)}
-	 * . and {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
+	 * . and {@link org.eclipse.egerrit.core.GerritClient#getRepository()}.
 	 */
 	@Test
 	public void testGerrit_2_9() {
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(fRepository);
 		} catch (EGerritException e) {
@@ -105,12 +105,12 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit#queryChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#queryChanges()}.
 	 */
 	@Test
 	public void testQueryChanges() {
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(fRepository);
 		} catch (EGerritException e) {

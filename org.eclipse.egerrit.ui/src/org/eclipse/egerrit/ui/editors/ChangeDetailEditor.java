@@ -39,8 +39,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
-import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
@@ -313,12 +312,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 
-				Gerrit gerrit = null;
-				try {
-					gerrit = filesTab.getGerritRepository().instantiateGerrit();
-				} catch (EGerritException e2) {
-					EGerritCorePlugin.logError(e2.getMessage());
-				}
+				GerritClient gerrit = filesTab.getGerritClient();
 
 				SubmitCommand submitCmd = gerrit.submit(fChangeInfo.getChange_id());
 				SubmitInput submitInput = new SubmitInput();
@@ -354,12 +348,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return;
 				}
 
-				Gerrit gerrit = null;
-				try {
-					gerrit = filesTab.getGerritRepository().instantiateGerrit();
-				} catch (EGerritException e2) {
-					EGerritCorePlugin.logError(e2.getMessage());
-				}
+				GerritClient gerrit = filesTab.getGerritClient();
 
 				AbandonCommand abandonCmd = gerrit.abandon(fChangeInfo.getChange_id());
 				AbandonInput abandonInput = new AbandonInput();
@@ -397,12 +386,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return;
 				}
 
-				Gerrit gerrit = null;
-				try {
-					gerrit = filesTab.getGerritRepository().instantiateGerrit();
-				} catch (EGerritException e2) {
-					EGerritCorePlugin.logError(e2.getMessage());
-				}
+				GerritClient gerrit = filesTab.getGerritClient();
 
 				RestoreCommand restoreCmd = gerrit.restore(fChangeInfo.getChange_id());
 				RestoreInput restoreInput = new RestoreInput();
@@ -529,12 +513,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param reviewInput
 	 */
 	private void postReply(ReviewInput reviewInput) {
-		Gerrit gerrit = null;
-		try {
-			gerrit = filesTab.getGerritRepository().instantiateGerrit();
-		} catch (EGerritException e2) {
-			EGerritCorePlugin.logError(e2.getMessage());
-		}
+		GerritClient gerrit = filesTab.getGerritClient();
 
 		SetReviewCommand command2 = gerrit.setReview(fChangeInfo.getChange_id(), fChangeInfo.getCurrentRevision());
 		command2.setReviewInput(reviewInput);
@@ -556,13 +535,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/**
 	 * This is the entry pint to fill the editor with the Change info and the gerrit server being used.
 	 *
-	 * @param GerritRepository
-	 *            gerritRepository
+	 * @param GerritClient
+	 *            gerritClient
 	 * @param ChangeInfo
 	 *            element
 	 */
-	public void setChangeInfo(GerritRepository gerritRepository, ChangeInfo element) {
-		filesTab.setGerritRepository(gerritRepository);
+	public void setChangeInfo(GerritClient gerritClient, ChangeInfo element) {
+		filesTab.setGerritClient(gerritClient);
 		fChangeInfo.reset();
 
 		//Fill the data structure
@@ -579,10 +558,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setLabels(element.getLabels());
 
 		//This query fill the current revision
-		setCurrentRevisionAndMessageTab(gerritRepository, element.getChange_id());
+		setCurrentRevisionAndMessageTab(gerritClient, element.getChange_id());
 
 		//Queries to fill the Summary Review tab data
-		summaryTab.setTabs(gerritRepository, element);
+		summaryTab.setTabs(gerritClient, element);
 
 		buttonsEnablement();
 
@@ -624,17 +603,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void refreshStatus() {
-		try {
-			ChangeInfo changeInfo = refreshChangeInfo(filesTab.getGerritRepository(), fChangeInfo.getChange_id(),
-					new NullProgressMonitor());
-			fChangeInfo.setStatus(changeInfo.getStatus());
-			fChangeInfo.setUpdated(changeInfo.getUpdated());
-			fChangeInfo.setActions(changeInfo.getActions());
-			fChangeInfo.setPermittedLabels(changeInfo.getPermittedLabels());
+		ChangeInfo changeInfo = refreshChangeInfo(filesTab.getGerritClient(), fChangeInfo.getChange_id(),
+				new NullProgressMonitor());
+		fChangeInfo.setStatus(changeInfo.getStatus());
+		fChangeInfo.setUpdated(changeInfo.getUpdated());
+		fChangeInfo.setActions(changeInfo.getActions());
+		fChangeInfo.setPermittedLabels(changeInfo.getPermittedLabels());
 
-		} catch (EGerritException e1) {
-			EGerritCorePlugin.logError(e1.getMessage());
-		}
 		buttonsEnablement();
 	}
 
@@ -724,13 +699,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * Fill the data related to the current revision, labels and messages. Also, the data for the Message tab is
 	 * available with this request
 	 *
-	 * @param GerritRepository
-	 *            gerritRepository
+	 * @param GerritClient
+	 *            gerritClient
 	 * @param String
 	 *            change_id
 	 */
-	private void setCurrentRevisionAndMessageTab(GerritRepository gerritRepository, String change_id) {
-		ChangeInfo res = queryMessageTab(gerritRepository, change_id, new NullProgressMonitor());
+	private void setCurrentRevisionAndMessageTab(GerritClient gerritClient, String change_id) {
+		ChangeInfo res = queryMessageTab(gerritClient, change_id, new NullProgressMonitor());
 
 		if (res != null) {
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
@@ -794,26 +769,22 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritRepository gerritRepository, String change_id, String revision_id,
-			String file, IProgressMonitor monitor) {
+	private String getFilesContent(GerritClient gerrit, String change_id, String revision_id, String file,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
 			// Create query
-			if (gerrit != null) {
-				GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
+			GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
 
-				String res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			String res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -826,84 +797,73 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param change_id
 	 * @param monitor
 	 * @return
 	 */
-	private ChangeInfo queryMessageTab(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+	private ChangeInfo queryMessageTab(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
 		try {
 
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
 			// Create query
-			if (gerrit != null) {
-				GetChangeCommand command = gerrit.getChange(change_id);
-				command.addOption(ChangeOption.DETAILED_LABELS);
-				command.addOption(ChangeOption.ALL_FILES);
-				command.addOption(ChangeOption.ALL_REVISIONS);
-				command.addOption(ChangeOption.ALL_COMMITS);
-				command.addOption(ChangeOption.DRAFT_COMMENTS);
-				command.addOption(ChangeOption.REVIEWED);
-				command.addOption(ChangeOption.MESSAGES);
-				command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
-				command.addOption(ChangeOption.CURRENT_ACTIONS);
+			GetChangeCommand command = gerrit.getChange(change_id);
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.ALL_FILES);
+			command.addOption(ChangeOption.ALL_REVISIONS);
+			command.addOption(ChangeOption.ALL_COMMITS);
+			command.addOption(ChangeOption.DRAFT_COMMENTS);
+			command.addOption(ChangeOption.REVIEWED);
+			command.addOption(ChangeOption.MESSAGES);
+			command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
-				ChangeInfo res = null;
-				try {
-					res = command.call();
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
-				return res;
+			ChangeInfo res = null;
+			try {
+				res = command.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
+			return res;
 		} catch (UnsupportedClassVersionError e) {
 			return null;
 		} finally {
 			monitor.done();
 		}
-		return null;
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param change_id
 	 * @param monitor
 	 * @return
 	 */
-	private ChangeInfo refreshChangeInfo(GerritRepository gerritRepository, String change_id, IProgressMonitor monitor) {
+	private ChangeInfo refreshChangeInfo(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
 		try {
 
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
+			GetChangeCommand command = gerrit.getChange(change_id);
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
-			// Create query
-			if (gerrit != null) {
-				GetChangeCommand command = gerrit.getChange(change_id);
-				command.addOption(ChangeOption.DETAILED_LABELS);
-				command.addOption(ChangeOption.CURRENT_ACTIONS);
-
-				ChangeInfo res = null;
-				try {
-					res = command.call();
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
-				return res;
+			ChangeInfo res = null;
+			try {
+				res = command.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
+			return res;
 		} catch (UnsupportedClassVersionError e) {
 			return null;
 		} finally {
 			monitor.done();
 		}
-		return null;
 	}
 
 	/************************************************************* */
@@ -950,7 +910,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				editorPart = page.openEditor(new org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput(),
 						EDITOR_ID);
 			} catch (PartInitException e) {
-//				GerritUi.Ftracer.traceWarning(e.getMessage());
+//				logger.warn(e.getMessage());
 			}
 			return (ChangeDetailEditor) editorPart;
 
@@ -1041,12 +1001,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 
-				Repository localRepo = null;
-				try {
-					localRepo = findLocalRepo(filesTab.getGerritRepository(), summaryTab.getProject());
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-				}
+				Repository localRepo = findLocalRepo(filesTab.getGerritClient(), summaryTab.getProject());
 
 				if (localRepo != null) {
 					//Find the current selected Patch set reference in the table
@@ -1096,16 +1051,17 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*********************************************/
 
 	/**
-	 * @param GerritRepository
-	 *            gerritRepo
+	 * @param GerritClient
+	 *            gerritClient
 	 * @param String
 	 *            projectName
 	 * @return Repository The local repository associated to the current project and Gerrit Repository
 	 */
-	private Repository findLocalRepo(GerritRepository gerritRepo, String projectName) {
+	private Repository findLocalRepo(GerritClient gerrit, String projectName) {
 		GerritToGitMapping gerritToGitMap = null;
 		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerritRepo.getURIBuilder(false).toString()), projectName);
+			gerritToGitMap = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
+					projectName);
 		} catch (URISyntaxException e2) {
 			EGerritCorePlugin.logError(e2.getMessage());
 		}

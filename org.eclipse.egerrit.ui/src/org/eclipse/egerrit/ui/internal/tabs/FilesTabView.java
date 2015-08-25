@@ -34,8 +34,7 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
-import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -96,7 +95,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private Map<String, DisplayFileInfo> fFilesDisplay = new HashMap<String, DisplayFileInfo>();
 
-	private GerritRepository fGerritRepository;
+	private GerritClient gerritClient;
 
 	private ChangeInfo fChangeInfo;
 
@@ -165,17 +164,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				Object element = sel.getFirstElement();
 				if (element instanceof FileInfo) {
 					OpenCompareEditor compareEditor;
-					try {
-						compareEditor = new OpenCompareEditor(getGerritRepository().instantiateGerrit(), fChangeInfo);
-						String diffSource = comboDiffAgainst.getText();
-						if (diffSource.equals(WORKSPACE)) {
-							compareEditor.compareAgainstWorkspace((FileInfo) element);
-						} else {
-							MessageDialog.openError(null, "Can not open compare editor",
-									"The compare editor can not yet show difference with " + diffSource);
-						}
-					} catch (EGerritException e) {
-						EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
+					String diffSource = comboDiffAgainst.getText();
+					if (diffSource.equals(WORKSPACE)) {
+						compareEditor.compareAgainstWorkspace((FileInfo) element);
+					} else {
+						MessageDialog.openError(null, "Can not open compare editor",
+								"The compare editor can not yet show difference with " + diffSource);
 					}
 				}
 			}
@@ -405,14 +400,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					setChanged();
 					notifyObservers();
 
-					try {
-						setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
-								selInfo.getCommit().getCommit());
-						displayFilesTable();
-						setDiffAgainstCombo();
-					} catch (EGerritException e) {
-						EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-					}
+					setListCommentsPerPatchSet(getGerritClient(), fChangeInfo.getId(), selInfo.getCommit().getCommit());
+					displayFilesTable();
+					setDiffAgainstCombo();
 				}
 			}
 
@@ -506,12 +496,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				tablePatchSetsViewer.getTable().setSelection(0);
 				setDiffAgainstCombo();
 				fCurrentRevision = listRevision.get(0);
-				try {
-					setListCommentsPerPatchSet(getGerritRepository(), fChangeInfo.getId(),
-							fCurrentRevision.getCommit().getCommit());
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-				}
+				setListCommentsPerPatchSet(getGerritClient(), fChangeInfo.getId(),
+						fCurrentRevision.getCommit().getCommit());
 				displayFilesTable();
 			}
 
@@ -564,24 +550,24 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
-	 * @param GerritRepository
-	 *            gerritRepository
+	 * @param GerritClient
+	 *            gerritClient
 	 * @param String
 	 *            changeId
 	 * @param String
 	 *            revisionId
 	 */
 
-	private void setListCommentsPerPatchSet(GerritRepository gerritRepository, String changeId, String revisionId) {
+	private void setListCommentsPerPatchSet(GerritClient gerritClient, String changeId, String revisionId) {
 
 		Iterator<DisplayFileInfo> displayFile = fFilesDisplay.values().iterator();
-		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritRepository, changeId, revisionId,
+		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritClient, changeId, revisionId,
 				new NullProgressMonitor());
 
 		//Fill the Files table
 		while (displayFile.hasNext() && mapCommentInfo != null) {
 			DisplayFileInfo displayFileInfo = displayFile.next();
-			displayFileInfo.setCurrentUser(gerritRepository.getCredentials().getUsername());
+			displayFileInfo.setCurrentUser(gerritClient.getRepository().getCredentials().getUsername());
 			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
 			while (commentIter.hasNext()) {
 				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
@@ -594,8 +580,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		}
 
 		Iterator<DisplayFileInfo> displayFile2 = fFilesDisplay.values().iterator();
-		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritRepository, changeId,
-				revisionId, new NullProgressMonitor());
+		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritClient, changeId, revisionId,
+				new NullProgressMonitor());
 
 		//Fill the Files table
 		while (displayFile2.hasNext() && mapDraftCommentInfo != null) {
@@ -618,26 +604,21 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	/* Section to QUERY the data structure                         */
 	/*                                                             */
 	/************************************************************* */
-	private Map<String, ArrayList<CommentInfo>> queryComments(GerritRepository gerritRepository, String change_id,
-			String revision_id, IProgressMonitor monitor) {
+	private Map<String, ArrayList<CommentInfo>> queryComments(GerritClient gerrit, String change_id, String revision_id,
+			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
+			ListCommentsCommand command = gerrit.getListComments(change_id, revision_id);
 
-			// Create query
-			if (gerrit != null) {
-				ListCommentsCommand command = gerrit.getListComments(change_id, revision_id);
-
-				Map<String, ArrayList<CommentInfo>> res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			Map<String, ArrayList<CommentInfo>> res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -649,26 +630,21 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	}
 
-	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritRepository gerritRepository, String change_id,
-			String revision_id, IProgressMonitor monitor) {
+	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritClient gerrit, String change_id, String revision_id,
+			IProgressMonitor monitor) {
 
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
-			// Create query
-			if (gerrit != null) {
-				ListDraftsCommand command = gerrit.listDraftsComments(change_id, revision_id);
-				Map<String, ArrayList<CommentInfo>> res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			ListDraftsCommand command = gerrit.listDraftsComments(change_id, revision_id);
+			Map<String, ArrayList<CommentInfo>> res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -695,23 +671,17 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
-	 * @return the GerritRepository
-	 * @throws EGerritException
+	 * @return the Gerrit
 	 */
-	public GerritRepository getGerritRepository() throws EGerritException {
-		if (fGerritRepository == null) {
-			throw new EGerritException("Gerrit repository not set"); //$NON-NLS-1$
-		}
-
-		return fGerritRepository;
+	public GerritClient getGerritClient() {
+		return gerritClient;
 	}
 
 	/**
-	 * @param GerritRepository
-	 *            gerritRepository the gerritRepository to set
+	 * @param GerritClient
 	 */
-	public void setGerritRepository(GerritRepository gerritRepository) {
-		this.fGerritRepository = gerritRepository;
+	public void setGerritClient(GerritClient gerrit) {
+		this.gerritClient = gerrit;
 	}
 
 	/**
@@ -803,7 +773,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 * @return the latest patchset as a string
 	 */
 	public String getLatestPatchSet() {
-		String latestPatchset = null;
 		RevisionInfo topmost = (RevisionInfo) getTablePatchSetsViewer().getElementAt(0);
 		return topmost.getId();
 

@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.Gerrit}
+ * Test suite for {@link org.eclipse.egerrit.GerritClient}
  * 
  * @since 1.0
  */
@@ -77,7 +77,7 @@ public class GerritTest {
 	public void tearDown() throws Exception {
 	}
 
-	class MyGerrit extends Gerrit {
+	class MyGerrit extends GerritClient {
 		protected MyGerrit(GerritRepository gerritRepository) throws EGerritException {
 			super(gerritRepository);
 		}
@@ -88,13 +88,13 @@ public class GerritTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit#Gerrit(org.eclipse.egerrit.core.GerritRepository)} and
-	 * {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
+	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#Gerrit(org.eclipse.egerrit.core.GerritRepository)} and
+	 * {@link org.eclipse.egerrit.core.GerritClient#getRepository()}.
 	 */
 	@Test
 	public void testGerrit() {
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(fRepository);
 		} catch (EGerritException e) {
@@ -103,18 +103,18 @@ public class GerritTest {
 
 		// Verify result
 		assertNotNull("Gerrit instance is null", gerrit);
-		assertTrue("Wrong version", gerrit instanceof Gerrit);
+		assertTrue("Wrong version", gerrit instanceof GerritClient);
 		assertEquals("Wrong repository", fRepository, gerrit.getRepository());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit#Gerrit(org.eclipse.egerrit.core.GerritRepository)} when
+	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#Gerrit(org.eclipse.egerrit.core.GerritRepository)} when
 	 * repository == null
 	 */
 	@Test
 	public void testGerrit_Null_Repo() {
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = new MyGerrit(null);
 			fail("Exception was not thrown");
@@ -130,12 +130,12 @@ public class GerritTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit#queryChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#queryChanges()}.
 	 */
 	@Test
 	public void testQueryChanges() {
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(fRepository);
 		} catch (EGerritException e) {

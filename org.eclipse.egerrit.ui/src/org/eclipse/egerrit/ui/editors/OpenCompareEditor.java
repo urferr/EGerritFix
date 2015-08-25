@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 public class OpenCompareEditor {
 	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
 
-	private final Gerrit gerrit;
+	private final GerritClient gerrit;
 
 	private final ChangeInfo changeInfo;
 
-	public OpenCompareEditor(Gerrit gerrit, ChangeInfo changeInfo) {
+	public OpenCompareEditor(GerritClient gerrit, ChangeInfo changeInfo) {
 		this.gerrit = gerrit;
 		this.changeInfo = changeInfo;
 	}

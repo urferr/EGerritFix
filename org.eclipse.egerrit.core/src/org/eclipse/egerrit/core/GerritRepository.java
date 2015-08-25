@@ -365,8 +365,8 @@ public class GerritRepository {
 		return Version.emptyVersion;
 	}
 
-	public Gerrit instantiateGerrit() {
-		Gerrit gerrit = null;
+	public GerritClient instantiateGerrit() {
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(this);
 		} catch (EGerritException e) {

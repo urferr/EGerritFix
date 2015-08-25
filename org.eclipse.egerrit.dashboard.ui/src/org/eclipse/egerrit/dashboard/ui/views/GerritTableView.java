@@ -36,9 +36,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.ChangeState;
@@ -172,7 +171,7 @@ public class GerritTableView extends ViewPart {
 
 	private final LinkedHashSet<Job> fJobs = new LinkedHashSet<Job>();
 
-	private GerritRepository gerritRepository = null;
+	private GerritClient gerritClient = null;
 
 	//	GerritClient gerritClient = null;
 
@@ -444,7 +443,7 @@ public class GerritTableView extends ViewPart {
 				if (element instanceof ChangeInfo) {
 					ChangeDetailEditor cDE = ChangeDetailEditor.getActiveEditor();
 
-					cDE.setChangeInfo(gerritRepository, (ChangeInfo) element);
+					cDE.setChangeInfo(gerritClient, (ChangeInfo) element);
 					IWorkbench workbench = GerritUi.getDefault().getWorkbench();
 					IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 					IWorkbenchPage page = null;
@@ -892,7 +891,7 @@ public class GerritTableView extends ViewPart {
 //		fCurrentQuery = query;
 		URI uri = null;
 		try {
-			uri = new URI(defaultServerInfo.getServerURI());
+			uri = new URI(repository.getServerURI());
 		} catch (URISyntaxException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 
@@ -901,15 +900,16 @@ public class GerritTableView extends ViewPart {
 		String HOST = uri.getHost();
 		int PORT = uri.getPort();
 		String PATH = uri.getPath();
-		String USER = defaultServerInfo.getUserName();
-		String PASSWORD = defaultServerInfo.getPassword();
+		String USER = repository.getUserName();
+		String PASSWORD = repository.getPassword();
 		GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
 		// Initialize
-		gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
+		GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
 		gerritRepository.setCredentials(creds);
 
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
 
+		gerritClient = gerritRepository.instantiateGerrit();
 		// Fetch the list of reviews and pre-populate the table
 		ChangeInfo[] reviews = getReviewList(repository, queryString);
 
@@ -938,43 +938,31 @@ public class GerritTableView extends ViewPart {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = null;
-			try {
-				gerrit = GerritFactory.create(gerritRepository);
-			} catch (EGerritException e) {
-				String message = "Server: " + gerritRepository.getURIBuilder(false) + "\n" + e.getLocalizedMessage();
-				Utils.displayInformation(null, TITLE, message);
-				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-			}
-
 			ChangeInfo[] res = null;
-			if (gerrit != null) {
-				// Create query
-				QueryChangesCommand command = gerrit.queryChanges();
-				command.addOption(ChangeOption.DETAILED_LABELS);
-				command.addOption(ChangeOption.CURRENT_REVISION);
-				command.addOption(ChangeOption.CURRENT_FILES);
-				command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+			QueryChangesCommand command = gerritClient.queryChanges();
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.CURRENT_REVISION);
+			command.addOption(ChangeOption.CURRENT_FILES);
+			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
 
-				try {
-					setQuery(query, command);
-					res = command.call();
-				} catch (EGerritException e) {
-					Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
-				} catch (ClientProtocolException e) {
-					Utils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + query);
-				}
-				final String queryText = query;
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						setRepositoryVersionLabel(defaultServerInfo.getName(),
-								gerritRepository.getVersion().toString());
-						fSearchRequestText.setText(queryText);
-
-					}
-				});
+			try {
+				setQuery(query, command);
+				res = command.call();
+			} catch (EGerritException e) {
+				Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
+			} catch (ClientProtocolException e) {
+				Utils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + query);
 			}
+			final String queryText = query;
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					setRepositoryVersionLabel(defaultServerInfo.getName(),
+							gerritClient.getRepository().getVersion().toString());
+					fSearchRequestText.setText(queryText);
+
+				}
+			});
 			return res;
 		} catch (UnsupportedClassVersionError e) {
 //			return new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, "error", e);

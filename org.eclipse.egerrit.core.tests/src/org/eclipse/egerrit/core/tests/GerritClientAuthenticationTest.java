@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -67,7 +67,7 @@ public class GerritClientAuthenticationTest {
 	private ChangeInfo[] getChanges(String testcase, GerritRepository repo) {
 
 		try {
-			Gerrit gerrit = GerritFactory.create(repo);
+			GerritClient gerrit = GerritFactory.create(repo);
 			QueryChangesCommand command = gerrit.queryChanges();
 			command.setCount(10);
 			String username = repo.getCredentials().getUsername();

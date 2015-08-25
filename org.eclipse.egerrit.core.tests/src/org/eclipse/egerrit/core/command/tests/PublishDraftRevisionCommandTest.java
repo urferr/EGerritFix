@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -133,7 +133,7 @@ public class PublishDraftRevisionCommandTest {
 
 	private GerritRepository fRepository;
 
-	private Gerrit fGerrit;
+	private GerritClient fGerrit;
 
 	@Before
 	public void setUp() throws Exception {

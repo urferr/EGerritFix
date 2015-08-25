@@ -19,7 +19,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  *
  * @since 1.0
  */
-public class Gerrit_2_9 extends Gerrit {
+public class Gerrit_2_9 extends GerritClient {
 
 	/**
 	 * This gerrit version

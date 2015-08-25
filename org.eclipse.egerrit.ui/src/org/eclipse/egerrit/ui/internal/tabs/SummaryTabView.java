@@ -29,8 +29,7 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
-import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
@@ -383,11 +382,11 @@ public class SummaryTabView {
 	/************************************************************* */
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param element
 	 */
-	private void setMergeable(GerritRepository gerritRepository, ChangeInfo element) {
-		MergeableInfo mergeableInfo = queryMergeable(gerritRepository, element.getChange_id(), "",
+	private void setMergeable(GerritClient gerritClient, ChangeInfo element) {
+		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getChange_id(), "",
 				new NullProgressMonitor());
 		if (mergeableInfo != null) {
 			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
@@ -399,11 +398,11 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 */
-	private void setIncludedIn(GerritRepository gerritRepository) {
+	private void setIncludedIn(GerritClient gerritClient) {
 		try {
-			IncludedInInfo includedIn = queryIncludedIn(gerritRepository, fChangeInfo.getChange_id(),
+			IncludedInInfo includedIn = queryIncludedIn(gerritClient, fChangeInfo.getChange_id(),
 					new NullProgressMonitor());
 			if (includedIn != null) {
 				fIncludedIn.setBranches(includedIn.getBranches());
@@ -419,11 +418,11 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 */
-	private void setRelatedChanges(GerritRepository gerritRepository) {
+	private void setRelatedChanges(GerritClient gerritClient) {
 		WritableList writeInfoList;
-		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritRepository, fChangeInfo.getChange_id(),
+		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getChange_id(),
 				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
 		fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
 
@@ -439,12 +438,11 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 */
-	private void setReviewers(GerritRepository gerritRepository) {
+	private void setReviewers(GerritClient gerritClient) {
 		WritableList writeInfoList;
-		ReviewerInfo[] reviewers = queryReviewers(gerritRepository, fChangeInfo.getChange_id(),
-				new NullProgressMonitor());
+		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getChange_id(), new NullProgressMonitor());
 		fReviewers.clear();
 		if (reviewers != null) {
 			//fReviewers = Arrays.asList(reviewers);
@@ -464,17 +462,17 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param element
 	 */
-	private void setSameTopic(GerritRepository gerritRepository, ChangeInfo element) {
+	private void setSameTopic(GerritClient gerritClient, ChangeInfo element) {
 		ListIterator<ChangeInfo> litr;
 		WritableList writeInfoList;
 		ChangeInfo[] sameTopicChangeInfo = null;
 		fSameTopicChangeInfo.clear();
 		if (element.getTopic() != null) {
 			try {
-				sameTopicChangeInfo = querySameTopic(gerritRepository, element.getTopic(), new NullProgressMonitor());
+				sameTopicChangeInfo = querySameTopic(gerritClient, element.getTopic(), new NullProgressMonitor());
 			} catch (MalformedURLException e) {
 				EGerritCorePlugin.logError(e.getMessage());
 			}
@@ -494,17 +492,17 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param element
 	 */
-	private void setConflictsWith(GerritRepository gerritRepository, ChangeInfo element) {
+	private void setConflictsWith(GerritClient gerritClient, ChangeInfo element) {
 		ListIterator<ChangeInfo> litr;
 		WritableList writeInfoList;
 		ChangeInfo[] conflictsWithChangeInfo = null;
 		fConflictsWithChangeInfo.clear();
 
 		try {
-			conflictsWithChangeInfo = queryConflictsWith(gerritRepository, element.getChange_id(),
+			conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(),
 					new NullProgressMonitor());
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -535,26 +533,22 @@ public class SummaryTabView {
 	/*                                                             */
 	/************************************************************* */
 
-	private MergeableInfo queryMergeable(GerritRepository gerritRepository, String change_id, String revision_id,
+	private MergeableInfo queryMergeable(GerritClient gerritClient, String change_id, String revision_id,
 			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
 			// Create query
-			if (gerrit != null) {
-				GetMergeableCommand command = gerrit.getMergeable(change_id, revision_id);
+			GetMergeableCommand command = gerritClient.getMergeable(change_id, revision_id);
 
-				MergeableInfo res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			MergeableInfo res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -567,128 +561,105 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * @param gerritRepository
+	 * @param gerritClient
 	 * @param change_id
 	 * @param monitor
 	 * @return
 	 * @throws MalformedURLException
 	 */
-	private IncludedInInfo queryIncludedIn(GerritRepository gerritRepository, String change_id,
-			NullProgressMonitor monitor) throws MalformedURLException {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
-			// Create query
-			if (gerrit != null) {
-				GetIncludedInCommand command = gerrit.getIncludedIn(change_id);
-				IncludedInInfo res = null;
-				try {
-					res = command.call();
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
-
-				return res;
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-		return null;
-
-	}
-
-	private RelatedChangesInfo queryRelatedChanges(GerritRepository gerritRepository, String change_id,
-			String revision_id, IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
-			// Create query
-			if (gerrit != null) {
-				GetRelatedChangesCommand command = gerrit.getRelatedChanges(change_id, revision_id);
-
-				RelatedChangesInfo res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	private ReviewerInfo[] queryReviewers(GerritRepository gerritRepository, String change_id,
-			IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
-			// Create query
-			if (gerrit != null) {
-				ListReviewersCommand command = gerrit.getReviewers(change_id);
-
-				ReviewerInfo[] res = null;
-				try {
-					res = command.call();
-					return res;
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	private ChangeInfo[] querySameTopic(GerritRepository gerritRepository, String topic, IProgressMonitor monitor)
+	private IncludedInInfo queryIncludedIn(GerritClient gerritClient, String change_id, NullProgressMonitor monitor)
 			throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
+			GetIncludedInCommand command = gerritClient.getIncludedIn(change_id);
+			IncludedInInfo res = null;
+			try {
+				res = command.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+			}
+			return res;
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+	}
+
+	private RelatedChangesInfo queryRelatedChanges(GerritClient gerritClient, String change_id, String revision_id,
+			IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(change_id, revision_id);
+
+			RelatedChangesInfo res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
+
+	}
+
+	private ReviewerInfo[] queryReviewers(GerritClient gerritClient, String change_id, IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			ListReviewersCommand command = gerritClient.getReviewers(change_id);
+
+			ReviewerInfo[] res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
+
+	}
+
+	private ChangeInfo[] querySameTopic(GerritClient gerritClient, String topic, IProgressMonitor monitor)
+			throws MalformedURLException {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			ChangeInfo[] res = null;
-			if (gerrit != null) {
-				// Create query
-				QueryChangesCommand command = gerrit.queryChanges();
+			// Create query
+			QueryChangesCommand command = gerritClient.queryChanges();
 //				command.addOption(ChangeOption.LABELS);
 //				command.addOption(ChangeOption.CURRENT_REVISION);
 //				command.addOption(ChangeOption.CURRENT_FILES);
 //				command.addLimit(101);
-				command.addTopic(topic);
+			command.addTopic(topic);
 
-				try {
-					res = command.call();
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			try {
+				res = command.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -699,26 +670,22 @@ public class SummaryTabView {
 		}
 	}
 
-	private ChangeInfo[] queryConflictsWith(GerritRepository gerritRepository, String change_id,
-			IProgressMonitor monitor) throws MalformedURLException {
+	private ChangeInfo[] queryConflictsWith(GerritClient gerritClient, String change_id, IProgressMonitor monitor)
+			throws MalformedURLException {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			Gerrit gerrit = gerritRepository.instantiateGerrit();
-
 			ChangeInfo[] res = null;
-			if (gerrit != null) {
-				// Create query
-				QueryChangesCommand command = gerrit.queryChanges();
-				command.addConflicts(change_id);
+			// Create query
+			QueryChangesCommand command = gerritClient.queryChanges();
+			command.addConflicts(change_id);
 
-				try {
-					res = command.call();
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-				}
+			try {
+				res = command.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -867,24 +834,24 @@ public class SummaryTabView {
 	/**
 	 * This method set this tab view with the current revision;
 	 *
-	 * @param GerritRepository
-	 *            gerritRepository
+	 * @param GerritClient
+	 *            gerritClient
 	 * @param ChangeInfo
 	 *            changeInfo
 	 */
-	public void setTabs(GerritRepository gerritRepository, ChangeInfo changeInfo) {
+	public void setTabs(GerritClient gerritClient, ChangeInfo changeInfo) {
 		//Queries to fill the Review tab data
-		setSameTopic(gerritRepository, changeInfo);
+		setSameTopic(gerritClient, changeInfo);
 
-		setConflictsWith(gerritRepository, changeInfo);
+		setConflictsWith(gerritClient, changeInfo);
 
-		setMergeable(gerritRepository, changeInfo);
+		setMergeable(gerritClient, changeInfo);
 
-		setReviewers(gerritRepository);
-		setIncludedIn(gerritRepository);
+		setReviewers(gerritClient);
+		setIncludedIn(gerritClient);
 
 		//Need the current Revision set before setting the RelatedChanges
-		setRelatedChanges(gerritRepository);
+		setRelatedChanges(gerritClient);
 
 	}
 

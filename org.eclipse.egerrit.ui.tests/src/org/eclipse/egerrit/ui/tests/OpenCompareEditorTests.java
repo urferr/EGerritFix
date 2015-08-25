@@ -21,7 +21,7 @@ import org.apache.http.HttpHost;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -166,7 +166,7 @@ public class OpenCompareEditorTests {
 			return input;
 		}
 
-		public OpenCompareEditorForTest(Gerrit gerrit, ChangeInfo changeInfo) {
+		public OpenCompareEditorForTest(GerritClient gerrit, ChangeInfo changeInfo) {
 			super(gerrit, changeInfo);
 		}
 

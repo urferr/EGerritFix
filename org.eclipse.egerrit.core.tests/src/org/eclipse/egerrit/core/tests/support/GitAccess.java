@@ -25,7 +25,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -68,7 +68,7 @@ public class GitAccess {
 
 	private GerritRepository gerritRepo;
 
-	private Gerrit gerrit;
+	private GerritClient gerrit;
 
 	private final String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
 			+ Common.TEST_PROJECT;
@@ -308,7 +308,7 @@ public class GitAccess {
 		return res;
 	}
 
-	public Gerrit getGerrit() {
+	public GerritClient getGerrit() {
 		return gerrit;
 	}
 }

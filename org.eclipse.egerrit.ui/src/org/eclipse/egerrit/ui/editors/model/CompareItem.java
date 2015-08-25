@@ -22,7 +22,7 @@ import org.eclipse.compare.IModificationDate;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.CommentInfo;
@@ -42,7 +42,7 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 
 	private AnnotationModel gerritComments;
 
-	private Gerrit gerrit;
+	private GerritClient gerrit;
 
 //	private final long time;
 
@@ -62,7 +62,7 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		this.gerritComments = gerritComments;
 	}
 
-	void setGerritConnection(Gerrit gerrit) {
+	void setGerritConnection(GerritClient gerrit) {
 		this.gerrit = gerrit;
 	}
 

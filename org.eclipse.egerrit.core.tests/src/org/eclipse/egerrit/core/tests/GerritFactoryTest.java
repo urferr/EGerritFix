@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
@@ -95,7 +95,7 @@ public class GerritFactoryTest {
 		GerritRepository repo = null;
 
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(repo);
 			fail("Exception should have been thrown");
@@ -117,7 +117,7 @@ public class GerritFactoryTest {
 		GerritRepository repo = new MyGerritRepository("2.7.0.too-old");
 
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(repo);
 			fail("Exception should have been thrown");
@@ -143,7 +143,7 @@ public class GerritFactoryTest {
 		repo.setCredentials(new GerritCredentials(USER, PASSWORD));
 
 		// Run test
-		Gerrit gerrit = null;
+		GerritClient gerrit = null;
 		try {
 			gerrit = GerritFactory.create(repo);
 		} catch (EGerritException e) {

@@ -408,7 +408,7 @@ public class FilePatchSetTableLabelProvider extends ObservableMapLabelProvider i
 	@Override
 	@SuppressWarnings("restriction")
 	public Color getBackground(Object aElement, int aColumnIndex) {
-		// GerritUi.Ftracer.traceInfo("getBackground column : " +
+		// logger.debug("getBackground column : " +
 		// aColumnIndex +
 		// " ]: "+ aElement );
 		if (aElement instanceof FileInfo) {

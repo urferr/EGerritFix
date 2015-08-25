@@ -71,7 +71,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  *
  * @since 1.0
  */
-public abstract class Gerrit {
+public abstract class GerritClient {
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -85,13 +85,13 @@ public abstract class Gerrit {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Constructs a new {@link Gerrit} object which can interact with the specified Gerrit repository. All command
+	 * Constructs a new {@link GerritClient} object which can interact with the specified Gerrit repository. All command
 	 * classes returned by methods of this class will always interact with this Gerrit repository.
 	 *
 	 * @param gerritRepository
 	 *            The gerrit repository this class interacts with ({@code null} is not allowed)
 	 */
-	protected Gerrit(GerritRepository gerritRepository) throws EGerritException {
+	protected GerritClient(GerritRepository gerritRepository) throws EGerritException {
 		if (gerritRepository == null) {
 			throw new EGerritException("Invalid gerrit repository"); //$NON-NLS-1$
 		}

@@ -25,7 +25,7 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.Gerrit;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
@@ -46,11 +46,11 @@ public class CompareItemFactory {
 
 	private final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
-	private Gerrit gerrit;
+	private GerritClient gerrit;
 
 	private CompareItem newCompareItem = new CompareItem();
 
-	public CompareItemFactory(Gerrit gerrit) {
+	public CompareItemFactory(GerritClient gerrit) {
 		this.gerrit = gerrit;
 	}
 
@@ -104,7 +104,7 @@ public class CompareItemFactory {
 
 	}
 
-	private Map<String, ArrayList<CommentInfo>> loadComments(Gerrit gerrit, String change_id, String revision_id) {
+	private Map<String, ArrayList<CommentInfo>> loadComments(GerritClient gerrit, String change_id, String revision_id) {
 		Map<String, ArrayList<CommentInfo>> allComments = new HashMap<>();
 		try {
 			ListCommentsCommand getComments = gerrit.getListComments(change_id, revision_id);

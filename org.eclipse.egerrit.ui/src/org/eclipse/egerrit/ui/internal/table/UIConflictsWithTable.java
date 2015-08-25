@@ -116,9 +116,9 @@ public class UIConflictsWithTable {
 		//Get the review table definition
 		ITableModel[] tableInfo = ConflictWithTableModel.values();
 		int size = tableInfo.length;
-//		GerritUi.Ftracer.traceInfo("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
+//		logger.debug("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
-//			GerritUi.Ftracer.traceInfo("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+//			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 //					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
 //					+ tableInfo[index].getMoveable());
 			TableViewerColumn col = createTableViewerColumn(tableInfo[index]);

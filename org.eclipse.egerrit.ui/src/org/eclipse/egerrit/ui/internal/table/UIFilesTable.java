@@ -143,9 +143,9 @@ public class UIFilesTable {
 		//Get the review table definition
 		final ITableModel[] tableInfo = FilesTableModel.values();
 		int size = tableInfo.length;
-//		GerritUi.Ftracer.traceInfo("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
+//		logger.debug("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
-//			GerritUi.Ftracer.traceInfo("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+//			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 //					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
 //					+ tableInfo[index].getMoveable());
 			TableViewerColumn col = createTableViewerColumn(tableInfo[index]);
@@ -184,7 +184,7 @@ public class UIFilesTable {
 
 //	private final Listener mouseButtonListener = new Listener() {
 //		public void handleEvent(Event aEvent) {
-//			GerritUi.Ftracer.traceInfo("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
+//			logger.debug("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
 //			switch (aEvent.type) {
 //			case SWT.MouseDown:
 //				// Left Click
@@ -213,7 +213,7 @@ public class UIFilesTable {
 //					} catch (ExecutionException excutionException) {
 ////						StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID,
 ////								excutionException.getMessage(), excutionException));
-//						GerritUi.Ftracer.traceError(excutionException.getMessage());
+//						logger.error(excutionException.getMessage());
 //
 //					}
 //				}
@@ -240,7 +240,7 @@ public class UIFilesTable {
 //				Object obj = ((IStructuredSelection) tableSelection).getFirstElement();
 //				if (obj instanceof ChangeInfo) {
 ////					IAttributeContainer item = (IAttributeContainer) obj;
-//					GerritUi.Ftracer.traceInfo("Selected table OBJECT selection ID: " //$NON-NLS-1$
+//					logger.debug("Selected table OBJECT selection ID: " //$NON-NLS-1$
 //							+ ((ChangeInfo) obj).getChange_id() + "\t subject: " //$NON-NLS-1$
 //							+ ((ChangeInfo) obj).getSubject());
 ////
