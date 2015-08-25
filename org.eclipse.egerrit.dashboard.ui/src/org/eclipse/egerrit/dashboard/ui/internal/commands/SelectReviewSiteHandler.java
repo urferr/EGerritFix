@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.egerrit.dashboard.GerritPlugin;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIConstants;
@@ -27,6 +26,8 @@ import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the search to pre-filled the list of Gerrit project locations.
@@ -35,6 +36,7 @@ import org.eclipse.ui.handlers.IHandlerService;
  */
 public class SelectReviewSiteHandler extends AbstractHandler {
 
+	private static Logger logger = LoggerFactory.getLogger(SelectReviewSiteHandler.class);
 	// ------------------------------------------------------------------------
 	// Variables
 	// ------------------------------------------------------------------------
@@ -55,7 +57,7 @@ public class SelectReviewSiteHandler extends AbstractHandler {
 	 */
 	public Object execute(final ExecutionEvent aEvent) {
 
-		GerritPlugin.Ftracer.traceInfo("Collecting the gerrit review locations"); //$NON-NLS-1$
+		logger.debug("Collecting the gerrit review locations"); //$NON-NLS-1$
 
 		// Open the review table first;
 		final GerritTableView reviewTableView = GerritTableView.getActiveView();
@@ -88,8 +90,7 @@ public class SelectReviewSiteHandler extends AbstractHandler {
 					try {
 						handlerService.executeCommand(UIConstants.ADD_GERRIT_SITE_COMMAND_ID, null);
 					} catch (Exception ex) {
-						GerritPlugin.Ftracer
-								.traceError(NLS.bind(Messages.SelectReviewSiteHandler_exception, ex.toString()));
+						logger.error(NLS.bind(Messages.SelectReviewSiteHandler_exception, ex.toString()));
 //					      GerritUi.getDefault().logError("Exception: ", ex);
 						//  throw new RuntimeException("org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSite not found");
 

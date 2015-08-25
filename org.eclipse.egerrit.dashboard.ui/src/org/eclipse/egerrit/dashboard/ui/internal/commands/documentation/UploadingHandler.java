@@ -17,14 +17,17 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Dashboard-Gerrit UI documentation uploading reviews handler.
- * 
+ *
  * @since 1.0
  */
 
 public class UploadingHandler extends AbstractHandler {
+	private static Logger logger = LoggerFactory.getLogger(UploadingHandler.class);
 
 	private final String UPLOADING_DOCUMENTATION = "Documentation/user-upload.html"; //$NON-NLS-1$
 
@@ -33,7 +36,7 @@ public class UploadingHandler extends AbstractHandler {
 	 */
 	@Override
 	public Object execute(ExecutionEvent aEvent) throws ExecutionException {
-		GerritUi.Ftracer.traceInfo("Search the documentation UploadingHandler  "); //$NON-NLS-1$
+		logger.debug("Search the documentation UploadingHandler  "); //$NON-NLS-1$
 
 		GerritServerUtility.getInstance().openWebBrowser(UPLOADING_DOCUMENTATION);
 

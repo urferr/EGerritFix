@@ -17,6 +17,8 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Dashboard-Gerrit UI documentation searching reviews handler.
@@ -25,6 +27,7 @@ import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
  */
 
 public class SearchingHandler extends AbstractHandler {
+	private static Logger logger = LoggerFactory.getLogger(SearchingHandler.class);
 
 	private final String SEARCHING_DOCUMENTATION = "Documentation/user-search.html"; //$NON-NLS-1$
 
@@ -33,7 +36,7 @@ public class SearchingHandler extends AbstractHandler {
 	 */
 	@Override
 	public Object execute(ExecutionEvent aEvent) throws ExecutionException {
-		GerritUi.Ftracer.traceInfo("Search the documentation SearchingHandler  "); //$NON-NLS-1$
+		logger.debug("Search the documentation SearchingHandler  "); //$NON-NLS-1$
 
 		GerritServerUtility.getInstance().openWebBrowser(SEARCHING_DOCUMENTATION);
 

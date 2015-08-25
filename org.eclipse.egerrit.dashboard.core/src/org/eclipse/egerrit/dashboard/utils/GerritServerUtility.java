@@ -41,6 +41,8 @@ import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements some utility for the Gerrit servers.
@@ -49,6 +51,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
  */
 public class GerritServerUtility {
 
+	Logger logger = LoggerFactory.getLogger(GerritServerUtility.class);
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
@@ -225,7 +228,7 @@ public class GerritServerUtility {
 					try {
 						user = serverPreference.get(GerritServerInformation.KEY_USER, ""); //$NON-NLS-1$
 						String password = serverPreference.get(GerritServerInformation.KEY_PASSWORD, ""); //$NON-NLS-1$
-						GerritPlugin.Ftracer.traceInfo("GerritServerUtility.createGerritServerInfo() URL: " //$NON-NLS-1$
+						logger.debug("GerritServerUtility.createGerritServerInfo() URL: " //$NON-NLS-1$
 								+ gerritInfo.getServerURI() + "\n\t user: " + user); //$NON-NLS-1$
 						gerritInfo.setUserName(user);
 						gerritInfo.setPassword(password);
@@ -297,13 +300,12 @@ public class GerritServerUtility {
 		String uriStr = null;
 		fGerritServer = getGerritMapping();
 		if (!fGerritServer.isEmpty()) {
-			GerritPlugin.Ftracer.traceInfo("-------------------"); //$NON-NLS-1$
 			for (GerritServerInformation key : fGerritServer) {
 				//If there is no server name, then we test for the server URI
 				if (key.getName().equals(aSt) || key.getServerURI().equals(aSt)) {
 					uriStr = key.getServerURI();
 
-					GerritPlugin.Ftracer.traceInfo("Map Key: " + key.getName() + "\t URL: " //$NON-NLS-1$//$NON-NLS-2$
+					logger.debug("Map Key: " + key.getName() + "\t URL: " //$NON-NLS-1$//$NON-NLS-2$
 							+ key.getServerURI());
 					return uriStr;
 				}
@@ -323,11 +325,10 @@ public class GerritServerUtility {
 	public GerritServerInformation getServerRepo(String aStURL) {
 		fGerritServer = getGerritMapping();
 		if (aStURL != null && !fGerritServer.isEmpty()) {
-			GerritPlugin.Ftracer.traceInfo("-------------------"); //$NON-NLS-1$
 			for (GerritServerInformation key : fGerritServer) {
 				if (key.getServerURI().equals(aStURL)) {
 
-					GerritPlugin.Ftracer.traceInfo("Key label : " + key.getName() + "\t URL: " //$NON-NLS-1$ //$NON-NLS-2$
+					logger.debug("Key label : " + key.getName() + "\t URL: " //$NON-NLS-1$ //$NON-NLS-2$
 							+ key.getServerURI());
 					return key;
 				}
@@ -364,7 +365,7 @@ public class GerritServerUtility {
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		}
-		GerritPlugin.Ftracer.traceInfo("openWebBrowser for " + url); //$NON-NLS-1$
+		logger.debug("openWebBrowser for " + url); //$NON-NLS-1$
 	}
 
 	/**
@@ -420,11 +421,9 @@ public class GerritServerUtility {
 		return lastCommands;
 	}
 
-  	/**
-         * Builds a preference key from a server information
-         *
-         * @ return String the constructed key
-         */
+	/**
+	 * Builds a preference key from a server information @ return String the constructed key
+	 */
 	public static String getPreferenceKey(GerritServerInformation serverInfo) {
 		return GerritPlugin.PLUGIN_ID + '/' + serverInfo.getServerURI() + serverInfo.getName();
 	}

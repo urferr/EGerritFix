@@ -20,14 +20,18 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Gerrit Dashboard UI utility.
- * 
+ *
  * @since 1.0
  */
 
 public class UIUtils {
+
+	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
 
 	/**
 	 * Method notInplementedDialog.
@@ -35,7 +39,7 @@ public class UIUtils {
 	 * @param String
 	 */
 	public static void notInplementedDialog(String aSt) {
-		GerritUi.Ftracer.traceWarning(Messages.UIUtils_notImplemented);
+		logger.warn(Messages.UIUtils_notImplemented);
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInformation,
 				NLS.bind(Messages.UIUtils_methodNotReady, aSt),
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, 0, Messages.UIUtils_notImplemented, null), IStatus.INFO);
@@ -56,7 +60,7 @@ public class UIUtils {
 	 *            reason
 	 */
 	public static void showErrorDialog(String aMsg, String aReason) {
-		GerritUi.Ftracer.traceWarning(aMsg + "\t reason: " + aReason);
+		logger.warn(aMsg + "\t reason: " + aReason);
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, aMsg,
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {

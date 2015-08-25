@@ -96,7 +96,7 @@ public enum ReviewTableDefinition {
 	}
 
 	// public static int getColumnNumber (String st) {
-	// GerritPlugin.Ftracer.traceInfo("getColumnNumber(): " +
+	// logger.debug("getColumnNumber(): " +
 	// (ReviewTableDefinition.valueOf(st).ordinal() + 1));
 	// //The ordinal starts at zero, so add 1
 	// return ReviewTableDefinition.valueOf(st).ordinal();

@@ -12,20 +12,13 @@
 
 package org.eclipse.egerrit.dashboard;
 
-import org.eclipse.core.runtime.IBundleGroup;
-import org.eclipse.core.runtime.IBundleGroupProvider;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.egerrit.dashboard.trace.Tracer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Version;
 
 /**
  * This class implements the Dashboard-Gerrit.
@@ -61,11 +54,6 @@ public class GerritPlugin extends Plugin {
 	private static GerritPlugin Fplugin;
 
 	/**
-	 * Field Tracer.
-	 */
-	public static Tracer Ftracer = new Tracer();
-
-	/**
 	 * Storage for preferences.
 	 */
 	private ScopedPreferenceStore fPreferenceStore;
@@ -96,45 +84,6 @@ public class GerritPlugin extends Plugin {
 	public void start(BundleContext aContext) throws Exception {
 		super.start(aContext);
 		Fplugin = this;
-		Ftracer = new Tracer();
-		Ftracer.init(PLUGIN_ID);
-		Ftracer.traceDebug(Messages.GerritPlugin_started);
-		verifyVersion(PLUGIN_ID);
-	}
-
-	/**
-	 * Verify if we should consider the availability for the REPORT option based on the features level
-	 */
-	private void verifyVersion(String aBundleStr) {
-
-		//Testing for the eclipse runtime here
-		final Bundle bdleCurrent = Platform.getBundle(aBundleStr);
-		if (bdleCurrent != null) {
-			Version ver = bdleCurrent.getVersion();
-			if (ver.getQualifier().equals(DASHBOARD_VERSION_QUALIFIER)) {
-				//We are in a runtime environment, so enable it
-				Ftracer.traceDebug(NLS.bind(Messages.GerritPlugin_Version, aBundleStr, ver.toString()));
-				return;
-			}
-		}
-
-		//Testing for the binary execution
-		IBundleGroupProvider[] grpprovider = Platform.getBundleGroupProviders();
-		for (IBundleGroupProvider element : grpprovider) {
-			IBundleGroup[] bdlgrp = element.getBundleGroups();
-			Ftracer.traceDebug("bundle group count: " + bdlgrp.length); //$NON-NLS-1$
-			for (int j = 0; j < bdlgrp.length; j++) {
-				if (bdlgrp[j].getIdentifier().contains(aBundleStr)) {
-					Ftracer.traceDebug("\t bdlgrp[" + j + "] : " + bdlgrp[j].getName() + "\t : " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ bdlgrp[j].getProviderName() + "\t version: " + bdlgrp[j].getVersion() + "\t : " //$NON-NLS-1$//$NON-NLS-2$
-							+ bdlgrp[j].getIdentifier());
-					break;
-
-				}
-			}
-
-		}
-
 	}
 
 	/**
@@ -149,7 +98,6 @@ public class GerritPlugin extends Plugin {
 	public void stop(BundleContext aContext) throws Exception {
 		Fplugin = null;
 		super.stop(aContext);
-		Ftracer.traceDebug(Messages.GerritPlugin_stopped);
 	}
 
 	/**

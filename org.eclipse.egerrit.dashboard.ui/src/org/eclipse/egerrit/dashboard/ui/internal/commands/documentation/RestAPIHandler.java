@@ -20,6 +20,8 @@ import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
 import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.osgi.util.NLS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Dashboard-Gerrit UI REST API reviews handler.
@@ -28,6 +30,7 @@ import org.eclipse.osgi.util.NLS;
  */
 
 public class RestAPIHandler extends AbstractHandler {
+	private static Logger logger = LoggerFactory.getLogger(RestAPIHandler.class);
 
 	private final String REST_API_DOCUMENTATION = "Documentation/rest-api.html"; //$NON-NLS-1$
 
@@ -41,7 +44,7 @@ public class RestAPIHandler extends AbstractHandler {
 		if (view.isGerritVersionBefore_2_5()) {
 			String msg = NLS.bind(Messages.RestAPIHandler_selectedServer, view.getlastGerritServerVersion().toString());
 			String reason = Messages.RestAPIHandler_serverTooOld;
-			GerritUi.Ftracer.traceInfo(msg);
+			logger.debug(msg);
 			UIUtils.showErrorDialog(msg, reason);
 			return null;
 		}

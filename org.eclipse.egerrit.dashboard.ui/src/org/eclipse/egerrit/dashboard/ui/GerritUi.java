@@ -12,7 +12,6 @@
 
 package org.eclipse.egerrit.dashboard.ui;
 
-import org.eclipse.egerrit.dashboard.trace.Tracer;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -43,11 +42,6 @@ public class GerritUi extends AbstractUIPlugin {
 	// The shared instance
 	private static GerritUi fPlugin;
 
-	/**
-	 * Field Tracer.
-	 */
-	public static Tracer Ftracer;
-
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -70,9 +64,6 @@ public class GerritUi extends AbstractUIPlugin {
 	public void start(BundleContext aContext) throws Exception {
 		super.start(aContext);
 		fPlugin = this;
-		Ftracer = new Tracer();
-		Ftracer.init(PLUGIN_ID);
-		Ftracer.traceDebug("plugin started"); //$NON-NLS-1$
 	}
 
 	/*

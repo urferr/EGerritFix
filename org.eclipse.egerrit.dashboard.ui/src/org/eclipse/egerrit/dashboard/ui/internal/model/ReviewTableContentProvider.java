@@ -50,7 +50,7 @@ public class ReviewTableContentProvider implements IStructuredContentProvider {
 	 */
 	@Override
 	public Object[] getElements(Object aInputElement) {
-		//GerritPlugin.Ftracer.traceInfo("getElements() content provider Object: " + aInputElement);
+		//logger.debug("getElements() content provider Object: " + aInputElement);
 		if (aInputElement instanceof ChangeInfo[]) {
 			ChangeInfo[] itemList = (ChangeInfo[]) aInputElement;
 			return itemList;
