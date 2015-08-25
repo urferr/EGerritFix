@@ -97,6 +97,8 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.framework.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // need our own to handle query result
 
@@ -111,6 +113,8 @@ import org.osgi.framework.Version;
  */
 
 public class GerritTableView extends ViewPart {
+
+	private static Logger logger = LoggerFactory.getLogger(GerritTableView.class);
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -521,9 +525,9 @@ public class GerritTableView extends ViewPart {
 					try {
 						viewPart = page.showView(VIEW_ID, null, org.eclipse.ui.IWorkbenchPage.VIEW_CREATE);
 					} catch (PartInitException e) {
-						GerritUi.Ftracer.traceWarning(e.getMessage());
+						logger.warn(e.getMessage());
 					}
-					GerritUi.Ftracer.traceWarning("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart);
+					logger.warn("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart);
 
 				}
 			}
@@ -544,7 +548,7 @@ public class GerritTableView extends ViewPart {
 			try {
 				viewPart = page.showView(VIEW_ID);
 			} catch (PartInitException e) {
-				GerritUi.Ftracer.traceWarning(e.getMessage());
+				logger.warn(e.getMessage());
 			}
 		}
 		// if there exists the view, but if not on the top,
@@ -561,7 +565,7 @@ public class GerritTableView extends ViewPart {
 	 *            aQuery
 	 */
 	public void processCommands(String aQuery) {
-		GerritUi.Ftracer.traceInfo("Process command :   " + aQuery);
+		logger.debug("Process command :   " + aQuery);
 		String lastSaved = fServerUtil.getLastSavedGerritServer();
 		if (lastSaved != null) {
 			//Already saved a Gerrit server, so use it
@@ -654,7 +658,7 @@ public class GerritTableView extends ViewPart {
 //				GerritClient gerritClient = fConnector.getClient(fTaskRepository);
 //				try {
 //					version = gerritClient.getVersion(new NullProgressMonitor());
-//					GerritUi.Ftracer.traceInfo("Selected version: " + version.toString()); //$NON-NLS-1$
+//					logger.debug("Selected version: " + version.toString()); //$NON-NLS-1$
 //				} catch (GerritException e) {
 //					StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, e.getMessage(), e));
 //				}
@@ -731,7 +735,7 @@ public class GerritTableView extends ViewPart {
 //										setRepositoryVersionLabel(aTaskRepo.getServerName(),
 //												gerritClient.getVersion(new NullProgressMonitor()).toString());
 //									} catch (GerritException e) {
-//										GerritUi.Ftracer.traceError(e.getMessage());
+//										logger.error(e.getMessage());
 //
 //									}
 //								}
@@ -741,7 +745,7 @@ public class GerritTableView extends ViewPart {
 					}
 				} catch (GerritQueryException e) {
 					status = e.getStatus();
-					GerritUi.Ftracer.traceError(e.getMessage());
+					logger.error(e.getMessage());
 
 				}
 
@@ -822,7 +826,7 @@ public class GerritTableView extends ViewPart {
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					str[0] = fSearchRequestText.getText().trim();
-					GerritUi.Ftracer.traceInfo("Custom string: " + str[0]); //$NON-NLS-1$
+					logger.debug("Custom string: " + str[0]); //$NON-NLS-1$
 				}
 			});
 			return str[0];

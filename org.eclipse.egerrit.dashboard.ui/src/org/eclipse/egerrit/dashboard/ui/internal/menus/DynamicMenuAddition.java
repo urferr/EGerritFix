@@ -13,7 +13,6 @@ package org.eclipse.egerrit.dashboard.ui.internal.menus;
 
 import java.util.List;
 
-import org.eclipse.egerrit.dashboard.GerritPlugin;
 import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIConstants;
@@ -26,6 +25,8 @@ import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.menus.IWorkbenchContribution;
 import org.eclipse.ui.services.IServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Dynamic menu selection to pre-fill the list of gerrit project locations.
@@ -33,6 +34,8 @@ import org.eclipse.ui.services.IServiceLocator;
  * @since 1.0
  */
 public class DynamicMenuAddition extends CompoundContributionItem implements IWorkbenchContribution {
+
+	private static Logger logger = LoggerFactory.getLogger(DynamicMenuAddition.class);
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -83,7 +86,7 @@ public class DynamicMenuAddition extends CompoundContributionItem implements IWo
 	@Override
 	protected IContributionItem[] getContributionItems() {
 
-		GerritPlugin.Ftracer.traceInfo("\t\t DynamicMenuAddition .getContributionItems()"); //$NON-NLS-1$
+		logger.debug("\t\t DynamicMenuAddition .getContributionItems()"); //$NON-NLS-1$
 		CommandContributionItem[] contributionItems = new CommandContributionItem[0];
 		if (fServer != null) {
 			fMapServer = fServer.getGerritMapping();
@@ -91,13 +94,13 @@ public class DynamicMenuAddition extends CompoundContributionItem implements IWo
 
 		if (fMapServer != null && !fMapServer.isEmpty()) {
 			String lastSelected = fServer.getLastSavedGerritServer();
-			GerritPlugin.Ftracer.traceInfo("-------------------"); //$NON-NLS-1$
+			logger.debug("-------------------"); //$NON-NLS-1$
 			int size = fMapServer.size();
 			contributionItems = new CommandContributionItem[size];
 
 			int count = 0;
 			for (GerritServerInformation key : fMapServer) {
-				GerritPlugin.Ftracer.traceInfo("Map Key: " + key.getName() + "\t URL: " //$NON-NLS-1$//$NON-NLS-2$
+				logger.debug("Map Key: " + key.getName() + "\t URL: " //$NON-NLS-1$//$NON-NLS-2$
 						+ key.getServerURI());
 				CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(
 						fServiceLocator, key.getName(), UIConstants.ADD_GERRIT_SITE_COMMAND_ID,

@@ -17,6 +17,8 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Dashboard-Gerrit UI documentation index reviews handler.
@@ -26,6 +28,8 @@ import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 
 public class IndexHandler extends AbstractHandler {
 
+	private static Logger logger = LoggerFactory.getLogger(IndexHandler.class);
+
 	private final String INDEX_DOCUMENTATION = "Documentation/index.html"; //$NON-NLS-1$
 
 	/* (non-Javadoc)
@@ -33,7 +37,7 @@ public class IndexHandler extends AbstractHandler {
 	 */
 	@Override
 	public Object execute(ExecutionEvent aEvent) throws ExecutionException {
-		GerritUi.Ftracer.traceInfo("Search the documentation IndexHandler  "); //$NON-NLS-1$
+		logger.debug("Search the documentation IndexHandler  "); //$NON-NLS-1$
 
 		GerritServerUtility.getInstance().openWebBrowser(INDEX_DOCUMENTATION);
 

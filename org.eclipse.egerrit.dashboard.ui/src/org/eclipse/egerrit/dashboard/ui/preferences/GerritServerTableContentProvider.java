@@ -57,7 +57,7 @@ public class GerritServerTableContentProvider implements IStructuredContentProvi
 	 */
 	@Override
 	public Object[] getElements(Object aInputElement) {
-		//GerritPlugin.Ftracer.traceInfo("getElements() content provider Object: " + aInputElement);
+		//logger.debug("getElements() content provider Object: " + aInputElement);
 		if (aInputElement instanceof GerritServerInformation[]) {
 			GerritServerInformation[] itemList = (GerritServerInformation[]) aInputElement;
 			return itemList;
