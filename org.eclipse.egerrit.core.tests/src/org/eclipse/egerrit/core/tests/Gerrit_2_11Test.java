@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Francois Chouinard - Initial API and implementation
+ *   Jacques Bouthillier - Initial API and implementation
  *******************************************************************************/
 
 package org.eclipse.egerrit.core.tests;
@@ -22,7 +22,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.Gerrit_2_9;
+import org.eclipse.egerrit.core.Gerrit_2_11;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.junit.After;
@@ -31,12 +31,12 @@ import org.junit.Test;
 import org.osgi.framework.Version;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.Gerrit_2_9}
+ * Test suite for {@link org.eclipse.egerrit.core.Gerrit_2_11}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
-public class Gerrit_2_9Test {
+public class Gerrit_2_11Test {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -50,7 +50,13 @@ public class Gerrit_2_9Test {
 
 	@Before
 	public void setUp() throws Exception {
-		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_9.PORT, Common_2_9.PATH);
+		System.err.println("System.getProperty(): " + System.getProperties());
+		System.err.println("====-----=====-----======-----====");
+		System.err.println("System.getProperty(localhost.test.server http://localhost:2080)"
+				+ System.getProperty("localhost.test.server", "http://localhost:2080"));
+		System.err.println("System.getProperty(org.eclipse.egerrit.test.all: "
+				+ System.getProperty("org.eclipse.egerrit.test.all", "Jacques"));
+		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_11.PORT, Common_2_11.PATH);
 		if (Common.PROXY_HOST != null) {
 			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
 		}
@@ -66,11 +72,12 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.core.GerritRepository)}
-	 * . and {@link org.eclipse.egerrit.core.GerritClient#getRepository()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.core.Gerrit_2_11#Gerrit_2_11(org.eclipse.egerrit.core.GerritRepository)} . and
+	 * {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
 	 */
 	@Test
-	public void testGerrit_2_9() {
+	public void testGerrit_2_11() {
 		// Run test
 		GerritClient gerrit = null;
 		try {
@@ -81,8 +88,8 @@ public class Gerrit_2_9Test {
 
 		// Verify result
 		Version version = fRepository.getVersion();
-		if (version.getMajor() == 2 && version.getMinor() == 9) {
-			assertTrue("Wrong version", gerrit instanceof Gerrit_2_9);
+		if (version.getMajor() == 2 && version.getMinor() == 11) {
+			assertTrue("Wrong version", gerrit instanceof Gerrit_2_11);
 		}
 		assertNotNull("Gerrit instance is null", gerrit);
 		assertEquals("Wrong repository", fRepository, gerrit.getRepository());
@@ -93,7 +100,7 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#queryChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.core.Gerrit#queryChanges()}.
 	 */
 	@Test
 	public void testQueryChanges() {

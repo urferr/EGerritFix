@@ -22,14 +22,14 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.Gerrit_2_9;
+import org.eclipse.egerrit.core.Gerrit_2_11;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.GerritFactory}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -152,7 +152,7 @@ public class GerritFactoryTest {
 
 		// Verify result
 		assertNotNull(gerrit);
-		assertTrue("Wrong gerrit version", gerrit instanceof Gerrit_2_9);
+		assertTrue("Wrong gerrit version", gerrit instanceof Gerrit_2_11);
 	}
 
 }
