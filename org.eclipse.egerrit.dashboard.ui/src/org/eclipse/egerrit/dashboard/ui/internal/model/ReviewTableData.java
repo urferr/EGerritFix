@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
 
 /**
  * This class implements the review table view information.

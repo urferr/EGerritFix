@@ -44,8 +44,7 @@
         </toolbar>
       </menuContribution>
  -->
-	<!-- Add the menu item to the Gerrit Dashboard pulldown menu
-	-->
+	<!-- Add the menu item to the Gerrit Dashboard pulldown menu -->
       <menuContribution
             locationURI="menu:GerritDashboard.dropdown.toolbar.initiateGerrit">
           <dynamic
@@ -62,10 +61,9 @@
                 label="%command.addRepository"
                 style="push">
           </command>
-
-           </menuContribution>
-   	<!-- Define the toolbar menu for Gerrit Dashboard UI "with pulldown menu"
-	-->
+      </menuContribution>
+           
+   	<!-- Define the toolbar menu for Gerrit Dashboard UI "with pulldown menu"-->
       <menuContribution
             locationURI="toolbar:org.eclipse.egerrit.dashboard.ui.views.GerritTableView?after=additions">
           <command
@@ -344,6 +342,9 @@
       <command
             id="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"
             name="%command.name.selectCurrent">
+            <commandParameter
+                 id="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit.serverId" name="ServerId">
+            </commandParameter>
       </command>
 
       <command
@@ -549,15 +550,7 @@
       <page
             class="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage"
             id="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"
-            name="Gerrit Dashboard Preferences">
+            name="Gerrit Servers">
       </page>
    </extension>
-<!--
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.eclipse.egerrit.dashboard.preferences.PreferenceInitializer">
-      </initializer>
-   </extension>
--->
 </plugin>

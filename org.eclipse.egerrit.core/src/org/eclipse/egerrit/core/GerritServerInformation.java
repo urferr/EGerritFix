@@ -9,12 +9,18 @@
  * Contributors:
  *   Jacques Bouthillier - Initial Implementation
  ******************************************************************************/
-package org.eclipse.egerrit.dashboard.preferences;
+package org.eclipse.egerrit.core;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Holds information that represents a Gerrit Server.
@@ -28,25 +34,37 @@ public class GerritServerInformation {
 
 	private static final String DEFAULT_SCHEME = "http"; //$NON-NLS-1$
 
+	@Expose
 	private String fServerURI;
 
+	@Expose
 	private String fServerScheme;
 
+	@Expose
 	private String fHostId;
 
+	@Expose
 	private String fServerPath;
 
+	@Expose
 	private String fServerName;
 
+	@Expose
 	private int fServerPort = DEFAULT_PORT;
 
+	@Expose
 	private String fUserName;
+
+	@Expose
+	private boolean fPasswordProvided = false;
+
+	private boolean fPasswordChanged = false;
 
 	private String fPassword;
 
-	public static final String KEY_USER = "user"; //$NON-NLS-1$
+	private static final String KEY_USER = "user"; //$NON-NLS-1$
 
-	public static final String KEY_PASSWORD = "password"; //$NON-NLS-1$
+	private static final String KEY_PASSWORD = "password"; //$NON-NLS-1$
 
 	private boolean fSelfSigned = false;
 
@@ -114,8 +132,7 @@ public class GerritServerInformation {
 	}
 
 	public String getAllInfo() {
-		return fServerURI + PreferenceConstants.LIST_SEPARATOR + fServerName + PreferenceConstants.LIST_SEPARATOR
-				+ getSelfSigned();
+		return fServerURI + ";" + fServerName + ";" + getSelfSigned();
 	}
 
 	public void setScheme(String text) {
@@ -150,14 +167,14 @@ public class GerritServerInformation {
 
 	public void setPassword(String password) {
 		this.fPassword = password != null ? password.trim() : ""; //$NON-NLS-1$
+		if (this.fPassword.length() > 0) {
+			fPasswordProvided = true;
+			fPasswordChanged = true;
+		}
 	}
 
 	public String getUserName() {
 		return fUserName != null ? fUserName : ""; //$NON-NLS-1$
-	}
-
-	public String getPassword() {
-		return fPassword != null ? fPassword : ""; //$NON-NLS-1$
 	}
 
 	public void setSeverInfo(URI uri) {
@@ -168,7 +185,9 @@ public class GerritServerInformation {
 		setHostId(uri.getHost());
 		setPort(uri.getPort());
 		setPath(uri.getPath());
-		setUserName(uri.getUserInfo());
+		if (uri.getUserInfo() != null && getUserName().isEmpty()) {
+			setUserName(uri.getUserInfo());
+		}
 
 		//RE-initiate the URI build
 		setSkipReformat(false);
@@ -205,5 +224,126 @@ public class GerritServerInformation {
 		URI uri = new URI(getServerURI());
 		return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(),
 				uri.getFragment()).equals(uri);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((fServerName == null) ? 0 : fServerName.hashCode());
+		result = prime * result + ((fServerURI == null) ? 0 : fServerURI.hashCode());
+		result = prime * result + ((fUserName == null) ? 0 : fUserName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GerritServerInformation other = (GerritServerInformation) obj;
+		if (fServerName == null) {
+			if (other.fServerName != null) {
+				return false;
+			}
+		} else if (!fServerName.equals(other.fServerName)) {
+			return false;
+		}
+		if (fServerURI == null) {
+			if (other.fServerURI != null) {
+				return false;
+			}
+		} else if (!fServerURI.equals(other.fServerURI)) {
+			return false;
+		}
+		if (fUserName == null) {
+			if (other.fUserName != null) {
+				return false;
+			}
+		} else if (!fUserName.equals(other.fUserName)) {
+			return false;
+		}
+		return true;
+	}
+
+	public String getPassword() {
+		if (getUserName().isEmpty()) {
+			return null;
+		}
+		if (!isPasswordProvided()) {
+			return null;
+		}
+		if (!internalGetPassword().isEmpty()) {
+			return internalGetPassword();
+		}
+
+		ISecurePreferences securePref = SecurePreferencesFactory.getDefault();
+		ISecurePreferences serverPreference = securePref
+				.node(org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes(getPreferenceKey()));
+		try {
+			return serverPreference.get(GerritServerInformation.KEY_PASSWORD, internalGetPassword());
+		} catch (StorageException e) {
+			return null;
+		}
+	}
+
+	String internalGetPassword() {
+		return fPassword != null ? fPassword : ""; //$NON-NLS-1$
+	}
+
+	void persistPassword() {
+		if (!(isPasswordProvided() && fPasswordChanged)) {
+			return;
+		}
+		ISecurePreferences securePref = SecurePreferencesFactory.getDefault();
+		ISecurePreferences serverPreference = securePref
+				.node(org.eclipse.equinox.security.storage.EncodingUtils.encodeSlashes(getPreferenceKey()));
+		try {
+			serverPreference.put(GerritServerInformation.KEY_PASSWORD, getPassword(), true);
+			serverPreference.flush();
+			fPasswordChanged = false;
+		} catch (StorageException e) {
+			EGerritCorePlugin.logError(e.getMessage());
+		} catch (IOException e) {
+			EGerritCorePlugin.logError(e.getMessage());
+		}
+	}
+
+	private String getPreferenceKey() {
+		return EGerritCorePlugin.PLUGIN_ID + '/' + getServerURI() + getName();
+	}
+
+	public boolean isPasswordProvided() {
+		return fPasswordProvided;
+	}
+
+	@Override
+	public GerritServerInformation clone() {
+		try {
+			GerritServerInformation clone;
+			clone = new GerritServerInformation(this.fServerURI, this.fServerName);
+			clone.fSkipURIFormat = fSkipURIFormat;
+			clone.fServerURI = fServerURI;
+			clone.fServerScheme = fServerScheme;
+			clone.fHostId = fHostId;
+			clone.fServerPath = fServerPath;
+			clone.fServerName = fServerName;
+			clone.fServerPort = fServerPort;
+			clone.fUserName = fUserName;
+			clone.fPasswordProvided = fPasswordProvided;
+			clone.fPasswordChanged = fPasswordChanged;
+			clone.fPassword = fPassword;
+			clone.fSelfSigned = fSelfSigned;
+			return clone;
+		} catch (URISyntaxException e) {
+			//Can't happen since we are starting from a proper instance
+		}
+		throw new IllegalStateException("Failed to clone " + this); //$NON-NLS-1$
 	}
 }

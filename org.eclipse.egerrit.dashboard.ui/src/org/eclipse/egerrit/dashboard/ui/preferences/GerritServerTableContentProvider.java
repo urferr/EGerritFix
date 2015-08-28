@@ -14,7 +14,7 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui.preferences;
 
-import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -65,7 +65,7 @@ public class GerritServerTableContentProvider implements IStructuredContentProvi
 		//This null will generate an error if we reach this point, may be we should log an error and
 		// initiate an empty structure to return
 		//return null;
-		return new GerritServerInformation[] {};
+		return new GerritServerInformation[0];
 	}
 
 }

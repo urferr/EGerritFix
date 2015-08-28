@@ -13,7 +13,7 @@ package org.eclipse.egerrit.dashboard.ui.internal.utils;
 
 import java.util.List;
 
-import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,7 +35,7 @@ public class SelectionDialog extends FormDialog {
 
 	private final List<GerritServerInformation> fListGerritServerInformation;
 
-	private String fSelection = null;
+	private GerritServerInformation fSelection = null;
 
 	public SelectionDialog(Shell parent, List<GerritServerInformation> listGerritServerInformation) {
 		super(parent);
@@ -55,16 +55,16 @@ public class SelectionDialog extends FormDialog {
 		composite.setLayout(layout);
 
 		GridDataFactory.fillDefaults().grab(false, false).applyTo(composite);
-		int size = fListGerritServerInformation.size();
-		for (int index = 0; index < size; index++) {
+		for (GerritServerInformation server : fListGerritServerInformation) {
 			final Button button = new Button(composite, SWT.RADIO);
-			button.setText(fListGerritServerInformation.get(index).getName());
+			button.setText(server.getName());
+			button.setData(server);
 			button.setSelection(false);
 
 			button.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event event) {
-					setSelection(button.getText());
+					setSelection((GerritServerInformation) button.getData());
 				}
 			});
 
@@ -74,11 +74,11 @@ public class SelectionDialog extends FormDialog {
 		setHelpAvailable(false);
 	}
 
-	private void setSelection(String selection) {
-		fSelection = selection;
+	private void setSelection(GerritServerInformation selectedServer) {
+		fSelection = selectedServer;
 	}
 
-	public String getSelection() {
+	public GerritServerInformation getSelection() {
 		return fSelection;
 	}
 }

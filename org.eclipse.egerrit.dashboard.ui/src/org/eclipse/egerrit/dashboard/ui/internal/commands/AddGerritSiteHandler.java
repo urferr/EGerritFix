@@ -18,91 +18,23 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.egerrit.core.command.ChangeState;
-import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage;
-import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
-import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
- * This class implements the "Add ..." a new Gerrit project locations.
+ * This class implements the "Add ..." a new Gerrit server locations.
  *
  * @since 1.0
  */
 public class AddGerritSiteHandler extends AbstractHandler {
 
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
-	// ------------------------------------------------------------------------
-	// Variables
-	// ------------------------------------------------------------------------
-
-	private GerritServerUtility fServerUtil = null;
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Method execute.
-	 *
-	 * @param aEvent
-	 *            ExecutionEvent
-	 * @return Object
-	 * @see org.eclipse.core.commands.IHandler#execute(ExecutionEvent)
-	 */
+	@Override
 	public Object execute(final ExecutionEvent aEvent) {
-
-		String menuItemText = ""; //$NON-NLS-1$
-		fServerUtil = GerritServerUtility.getInstance();
-		Object obj = aEvent.getTrigger();
-		GerritTableView reviewTableView = GerritTableView.getActiveView();
-
-		if (obj instanceof Event) {
-			Event ev = (Event) obj;
-			Widget objWidget = ev.widget;
-			if (objWidget instanceof MenuItem) {
-				MenuItem menuItem = (MenuItem) objWidget;
-				menuItemText = menuItem.getText();
-				String stURL = fServerUtil.getMenuSelectionURL(menuItemText);
-				// Open the review table first;
-				reviewTableView.openView();
-
-				//Verify if we selected the "Add.." button or a pre=defined Gerrit
-				if (stURL != null) {
-					if (stURL.equals(fServerUtil.getLastSavedGerritServer())) {
-
-						//Initiate the request for the list of reviews with a default query
-						reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " //$NON-NLS-1$
-								+ ChangeStatus.OPEN.getValue());// .MY_WATCHED_CHANGES);
-
-						return Status.OK_STATUS; //For now , do not process the dialogue
-					} else {
-						//Store the new Gerrit server into a file
-						fServerUtil.saveLastGerritServer(stURL);
-
-						//Initiate the request for the list of reviews with a default query
-						reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " //$NON-NLS-1$
-								+ ChangeStatus.OPEN.getValue());// .MY_WATCHED_CHANGES);
-
-						return Status.OK_STATUS; //For now , do not process the dialogue
-					}
-				}
-			}
-		}
-
-		//Open the Dialogue to enter a new Gerrit URL
-		Object dialogObj = openDialogue();
+		//Open the dialog to enter a new Gerrit URL
+		Object dialogObj = openDialog();
 		return dialogObj;
-
 	}
 
 	/**
@@ -110,7 +42,7 @@ public class AddGerritSiteHandler extends AbstractHandler {
 	 *
 	 * @return Object
 	 */
-	private Object openDialogue() {
+	private Object openDialog() {
 		final Job job = new Job(Messages.AddGerritSiteHandler_commandAdd) {
 
 			@Override

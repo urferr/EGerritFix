@@ -18,7 +18,6 @@ package org.eclipse.egerrit.dashboard.ui.views;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -39,6 +38,8 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritServerInformation;
+import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.ChangeState;
 import org.eclipse.egerrit.core.command.ChangeStatus;
@@ -48,7 +49,6 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
-import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.ui.internal.model.ReviewTableData;
 import org.eclipse.egerrit.dashboard.ui.internal.model.UIReviewTable;
@@ -565,32 +565,28 @@ public class GerritTableView extends ViewPart {
 	 */
 	public void processCommands(String aQuery) {
 		logger.debug("Process command :   " + aQuery);
-		String lastSaved = fServerUtil.getLastSavedGerritServer();
-		if (lastSaved != null) {
+		GerritServerInformation lastServer = fServerUtil.getLastSavedGerritServer();
+		if (lastServer != null) {
 			//Already saved a Gerrit server, so use it
-			defaultServerInfo = fServerUtil.getServerRepo(lastSaved);
+			defaultServerInfo = lastServer;
 		}
 
 		if (defaultServerInfo == null) {
 			//If we did not find the task Repository
-			fMapRepoServer = GerritServerUtility.getInstance().getGerritMapping();
+			fMapRepoServer = ServersStore.getAllServers();
 			//Verify How many gerrit server are defined
 			if (fMapRepoServer.size() == 1) {
 				for (GerritServerInformation key : fMapRepoServer) {
 					//Save it for the next query time
-					fServerUtil.saveLastGerritServer(key.getServerURI());
+					fServerUtil.saveLastGerritServer(key);
 					break;
 				}
 
 			} else if (fMapRepoServer.size() > 1) {
-				List<GerritServerInformation> listServerInfo = new ArrayList<GerritServerInformation>();
-				for (GerritServerInformation key : fMapRepoServer) {
-					listServerInfo.add(key);
-				}
-				defaultServerInfo = getSelectedRepositoryURL(listServerInfo);
+				defaultServerInfo = askUserToSelectRepo();
 				if (defaultServerInfo != null) {
 					//Save it for the next query time
-					fServerUtil.saveLastGerritServer(defaultServerInfo.getServerURI());
+					fServerUtil.saveLastGerritServer(defaultServerInfo);
 				}
 			}
 		}
@@ -629,22 +625,22 @@ public class GerritTableView extends ViewPart {
 	 */
 	public Version getlastGerritServerVersion() {
 		Version version = null;
-		String lastSaved = fServerUtil.getLastSavedGerritServer();
+		GerritServerInformation lastSaved = fServerUtil.getLastSavedGerritServer();
 
 		if (lastSaved != null) {
 			//Already saved a Gerrit server, so use it
-			defaultServerInfo = fServerUtil.getServerRepo(lastSaved);
+			defaultServerInfo = lastSaved;
 		}
 
 		if (defaultServerInfo == null) {
 			//If we did not find the task Repository
-			fMapRepoServer = GerritServerUtility.getInstance().getGerritMapping();
+			fMapRepoServer = ServersStore.getAllServers();
 			//Verify How many gerrit server are defined
 			if (fMapRepoServer.size() == 1) {
 				for (GerritServerInformation key : fMapRepoServer) {
 					defaultServerInfo = key;
 					//Save it for the next query time
-					fServerUtil.saveLastGerritServer(key.getServerURI());
+					fServerUtil.saveLastGerritServer(key);
 					break;
 				}
 
@@ -720,8 +716,6 @@ public class GerritTableView extends ViewPart {
 								//Record the custom query
 								setSearchText(getSearchText());
 //								}
-								System.out.println(
-										"defaultServerInfo.getServerURL() is " + defaultServerInfo.getServerURI());
 //								if (gerritClient == null) {
 //									gerritClient = new GerritClient(null, new TaskRepositoryLocation(
 //											new TaskRepository(TaskRepository.CATEGORY_REVIEW,
@@ -1239,14 +1233,14 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
-	private GerritServerInformation getSelectedRepositoryURL(
-			final List<GerritServerInformation> listGerritServerInformation) {
-		String selection = null;
-		SelectionDialog taskSelection = new SelectionDialog(fViewer.getTable().getShell(), listGerritServerInformation);
+	private GerritServerInformation askUserToSelectRepo() {
+		GerritServerInformation selection = null;
+		SelectionDialog taskSelection = new SelectionDialog(fViewer.getTable().getShell(),
+				ServersStore.getAllServers());
 		if (taskSelection.open() == Window.OK) {
 			selection = taskSelection.getSelection();
 		}
-		return fServerUtil.getServerRepo(selection);
+		return selection;
 	}
 
 }

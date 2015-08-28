@@ -15,9 +15,6 @@ package org.eclipse.egerrit.dashboard;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -52,11 +49,6 @@ public class GerritPlugin extends Plugin {
 
 	// The shared instance
 	private static GerritPlugin Fplugin;
-
-	/**
-	 * Storage for preferences.
-	 */
-	private ScopedPreferenceStore fPreferenceStore;
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -144,13 +136,4 @@ public class GerritPlugin extends Plugin {
 	public void logInfo(String aMsg, Exception ae) {
 		getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, aMsg, ae));
 	}
-
-	public IPreferenceStore getPreferenceStore() {
-		// Create the preference store lazily.
-		if (fPreferenceStore == null) {
-			fPreferenceStore = new ScopedPreferenceStore(new InstanceScope(), getBundle().getSymbolicName());
-		}
-		return fPreferenceStore;
-	}
-
 }

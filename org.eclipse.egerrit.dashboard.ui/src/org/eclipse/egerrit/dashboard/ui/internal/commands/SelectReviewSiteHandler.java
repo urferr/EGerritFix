@@ -12,98 +12,112 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui.internal.commands;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.egerrit.dashboard.core.GerritQuery;
-import org.eclipse.egerrit.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.core.GerritServerInformation;
+import org.eclipse.egerrit.core.ServersStore;
+import org.eclipse.egerrit.core.command.ChangeState;
+import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIConstants;
+import org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage;
 import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.handlers.IHandlerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.ui.commands.IElementUpdater;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.menus.UIElement;
 
 /**
- * This class implements the search to pre-filled the list of Gerrit project locations.
+ * This class implements the behavior of the blue cylinder in the toolbar, and the selection of an entry in its drop
+ * down menu
  *
  * @since 1.0
  */
-public class SelectReviewSiteHandler extends AbstractHandler {
+public class SelectReviewSiteHandler extends AbstractHandler implements IElementUpdater {
 
-	private static Logger logger = LoggerFactory.getLogger(SelectReviewSiteHandler.class);
-	// ------------------------------------------------------------------------
-	// Variables
-	// ------------------------------------------------------------------------
+	private GerritServerUtility fServerUtil = GerritServerUtility.getInstance();
 
-	private GerritServerUtility fServerUtil = null;
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Method execute.
-	 *
-	 * @param aEvent
-	 *            ExecutionEvent
-	 * @return Object
-	 * @see org.eclipse.core.commands.IHandler#execute(ExecutionEvent)
-	 */
+	@Override
 	public Object execute(final ExecutionEvent aEvent) {
+		GerritTableView reviewTableView = GerritTableView.getActiveView();
 
-		logger.debug("Collecting the gerrit review locations"); //$NON-NLS-1$
-
-		// Open the review table first;
-		final GerritTableView reviewTableView = GerritTableView.getActiveView();
-
+		//Now, deal with the case where the user selected a server from the drop down
+		GerritServerInformation server = getServer(aEvent.getParameter(UIConstants.SELECT_SERVER_COMMAND_ID_PARAM));
+		if (server == null) {
+			return Status.OK_STATUS;
+		}
 		reviewTableView.openView();
+		fServerUtil.saveLastGerritServer(server);
 
-		final Job job = new Job(Messages.SelectReviewSiteHandler_searchCommand) {
+		if (!server.getUserName().isEmpty()) {
+			reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " //$NON-NLS-1$
+					+ ChangeStatus.OPEN.getValue());
+		} else {
+			reviewTableView.processCommands(ChangeState.IS_OPEN.getValue() + " " //$NON-NLS-1$
+					+ ChangeStatus.OPEN.getValue());
+		}
+		return Status.OK_STATUS; //For now , do not process the dialogue
+	}
 
-			@Override
-			public boolean belongsTo(Object aFamily) {
-				return Messages.SelectReviewSiteHandler_dashboardUiJob.equals(aFamily);
-
+	private GerritServerInformation getServer(String id) {
+		//First try to resolve the id. This is only if the invocation corresponds to a server being selected
+		GerritServerInformation resolvedServer = ServersStore.getServer(id);
+		if (resolvedServer != null) {
+			return resolvedServer;
+		}
+		//No server selected, pick the last used server
+		GerritServerInformation savedServer = GerritServerUtility.getInstance().getLastSavedGerritServer();
+		if (savedServer != null) {
+			return savedServer;
+		}
+		//No server ever selected, grab the unique server if it exists
+		List<GerritServerInformation> allServers = ServersStore.getAllServers();
+		if (allServers.size() == 1) {
+			return ServersStore.getAllServers().get(0);
+		}
+		//No server, prompt the user to enter one
+		if (allServers.size() == 0) {
+			PreferenceDialog prefDialog = PreferencesUtil.createPreferenceDialogOn(null,
+					GerritDashboardPreferencePage.getID(), null, null);
+			prefDialog.setBlockOnOpen(true);
+			prefDialog.open();
+			//By now hopefully we have a new server
+			allServers = ServersStore.getAllServers();
+			if (allServers.size() == 1) {
+				return ServersStore.getAllServers().get(0);
 			}
-
-			@Override
-			public IStatus run(IProgressMonitor aMonitor) {
-				aMonitor.beginTask(Messages.SelectReviewSiteHandler_searchCommand, IProgressMonitor.UNKNOWN);
-
-				//Map the Gerrit server
-				fServerUtil = GerritServerUtility.getInstance();
-
-				String serverToUsed = fServerUtil.getLastSavedGerritServer();
-				if (serverToUsed != null) {
-					//Initiate the request for the list of reviews with a default query
-					reviewTableView.processCommands(GerritQuery.MY_WATCHED_CHANGES);
-
-				} else {
-					IWorkbench workbench = GerritUi.getDefault().getWorkbench();
-					IHandlerService handlerService = (IHandlerService) workbench.getService(IHandlerService.class);
-					try {
-						handlerService.executeCommand(UIConstants.ADD_GERRIT_SITE_COMMAND_ID, null);
-					} catch (Exception ex) {
-						logger.error(NLS.bind(Messages.SelectReviewSiteHandler_exception, ex.toString()));
-//					      GerritUi.getDefault().logError("Exception: ", ex);
-						//  throw new RuntimeException("org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSite not found");
-
-					}
-				}
-
-				aMonitor.done();
-				return Status.OK_STATUS;
-			}
-
-		};
-		job.setUser(true);
-		job.schedule();
+		}
 		return null;
+	}
+
+	@Override
+	public void updateElement(UIElement element, Map parameters) {
+		String serverId = (String) parameters.get(UIConstants.SELECT_SERVER_COMMAND_ID_PARAM);
+		if (serverId == null) {
+			element.setChecked(false);
+			return;
+		}
+
+		GerritServerInformation savedServer = GerritServerUtility.getInstance().getLastSavedGerritServer();
+		if (savedServer == null) {
+			element.setChecked(false);
+			return;
+		}
+
+		GerritServerInformation server = ServersStore.getServer(serverId);
+		if (server == null) {
+			element.setChecked(false);
+			return;
+		}
+
+		if (savedServer.equals(server)) {
+			element.setChecked(true);
+		} else {
+			element.setChecked(false);
+		}
 	}
 }

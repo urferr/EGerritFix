@@ -192,5 +192,4 @@ public class EGerritCorePlugin extends Plugin {
 	public static void logError(String message, Throwable exception) {
 		log(IStatus.ERROR, message, exception);
 	}
-
 }

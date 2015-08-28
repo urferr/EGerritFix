@@ -1,4 +1,3 @@
-// $codepro.audit.disable com.instantiations.assist.eclipse.analysis.audit.rule.effectivejava.alwaysOverridetoString.alwaysOverrideToString, com.instantiations.assist.eclipse.analysis.deserializeabilitySecurity, com.instantiations.assist.eclipse.analysis.enforceCloneableUsageSecurity
 /*******************************************************************************
  * Copyright (c) 2013 Ericsson AB and others.
  *
@@ -18,8 +17,12 @@ package org.eclipse.egerrit.dashboard.ui.internal.utils;
  *
  * @since 1.0
  */
-public class UIConstants { // $codepro.audit.disable convertClassToInterface
+public class UIConstants {
 
 	public static final String ADD_GERRIT_SITE_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.addGerritSite"; //$NON-NLS-1$
+
+	public static final String SELECT_SERVER_COMMAND_ID_PARAM = "org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit.serverId"; //$NON-NLS-1$
+
+	public static final String SELECT_SERVER_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"; //$NON-NLS-1$
 
 }

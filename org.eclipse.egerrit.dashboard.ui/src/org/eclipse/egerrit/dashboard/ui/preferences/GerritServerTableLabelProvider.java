@@ -12,7 +12,7 @@
 
 package org.eclipse.egerrit.dashboard.ui.preferences;
 
-import org.eclipse.egerrit.dashboard.preferences.GerritServerInformation;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
