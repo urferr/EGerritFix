@@ -30,8 +30,6 @@ import com.google.gson.annotations.Expose;
 public class GerritServerInformation {
 	private static final int DEFAULT_PORT = 29418;
 
-	private boolean fSkipURIFormat = false;
-
 	private static final String DEFAULT_SCHEME = "http"; //$NON-NLS-1$
 
 	@Expose
@@ -62,8 +60,6 @@ public class GerritServerInformation {
 
 	private String fPassword;
 
-	private static final String KEY_USER = "user"; //$NON-NLS-1$
-
 	private static final String KEY_PASSWORD = "password"; //$NON-NLS-1$
 
 	private boolean fSelfSigned = false;
@@ -87,16 +83,16 @@ public class GerritServerInformation {
 		setServerName(serverName != null ? serverName.trim() : ""); //$NON-NLS-1$
 	}
 
-	private void setSkipReformat(Boolean b) {
-		fSkipURIFormat = b;
-	}
-
-	private Boolean getSkipReformat() {
-		return fSkipURIFormat;
-	}
-
 	public void setServerURI(String serverURI) {
 		this.fServerURI = serverURI != null ? serverURI.trim() : ""; //$NON-NLS-1$
+		this.fServerURI = removeTrailingSlash(this.fServerURI);
+	}
+
+	private String removeTrailingSlash(String server) {
+		if (server.endsWith("/")) { //$NON-NLS-1$
+			return server.substring(0, server.length() - 1);
+		}
+		return server;
 	}
 
 	public GerritServerInformation getServerInfo() {
@@ -129,10 +125,6 @@ public class GerritServerInformation {
 
 	public int getPort() {
 		return fServerPort;
-	}
-
-	public String getAllInfo() {
-		return fServerURI + ";" + fServerName + ";" + getSelfSigned();
 	}
 
 	public void setScheme(String text) {
@@ -178,19 +170,13 @@ public class GerritServerInformation {
 	}
 
 	public void setSeverInfo(URI uri) {
-		//Just set the data field, no need to re-compute the URI
-		setSkipReformat(true);
-
 		setScheme(uri.getScheme());
 		setHostId(uri.getHost());
 		setPort(uri.getPort());
-		setPath(uri.getPath());
+		setPath(removeTrailingSlash(uri.getPath()));
 		if (uri.getUserInfo() != null && getUserName().isEmpty()) {
 			setUserName(uri.getUserInfo());
 		}
-
-		//RE-initiate the URI build
-		setSkipReformat(false);
 	}
 
 	public void setSelfSigned(boolean signed) {
@@ -202,10 +188,6 @@ public class GerritServerInformation {
 	}
 
 	public URI getURI() {
-
-		if (getSkipReformat()) {
-			return null;
-		}
 		try {
 			URI uri = new URIBuilder().setScheme(getScheme())
 					.setHost(getHostId())
@@ -328,7 +310,6 @@ public class GerritServerInformation {
 		try {
 			GerritServerInformation clone;
 			clone = new GerritServerInformation(this.fServerURI, this.fServerName);
-			clone.fSkipURIFormat = fSkipURIFormat;
 			clone.fServerURI = fServerURI;
 			clone.fServerScheme = fServerScheme;
 			clone.fHostId = fHostId;
