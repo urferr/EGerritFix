@@ -18,6 +18,7 @@ package org.eclipse.egerrit.dashboard.ui.views;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,6 +51,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSiteHandler;
 import org.eclipse.egerrit.dashboard.ui.internal.model.ReviewTableData;
 import org.eclipse.egerrit.dashboard.ui.internal.model.UIReviewTable;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.SelectionDialog;
@@ -376,7 +378,7 @@ public class GerritTableView extends ViewPart {
 			public void handleEvent(Event event) {
 				//The shorten request is: "is:open" with 7 characters, so need to process the command if text is smaller
 				if (fSearchRequestText.getText().trim().length() > 6) {
-					processCommands(GerritQuery.CUSTOM);
+					processCommands(fSearchRequestText.getText());
 
 				}
 			}
@@ -389,7 +391,7 @@ public class GerritTableView extends ViewPart {
 
 			@Override
 			public void handleEvent(Event event) {
-				processCommands(GerritQuery.CUSTOM);
+				processCommands(fSearchRequestText.getText());
 			}
 		});
 
@@ -565,41 +567,102 @@ public class GerritTableView extends ViewPart {
 	 */
 	public void processCommands(String aQuery) {
 		logger.debug("Process command :   " + aQuery);
-		GerritServerInformation lastServer = fServerUtil.getLastSavedGerritServer();
-		if (lastServer != null) {
-			//Already saved a Gerrit server, so use it
-			defaultServerInfo = lastServer;
-		}
+		defaultServerInfo = null;
+		aQuery = handleHttpInQuery(aQuery);
 
-		if (defaultServerInfo == null) {
-			//If we did not find the task Repository
-			fMapRepoServer = ServersStore.getAllServers();
-			//Verify How many gerrit server are defined
-			if (fMapRepoServer.size() == 1) {
-				for (GerritServerInformation key : fMapRepoServer) {
-					//Save it for the next query time
-					fServerUtil.saveLastGerritServer(key);
-					break;
-				}
-
-			} else if (fMapRepoServer.size() > 1) {
-				defaultServerInfo = askUserToSelectRepo();
-				if (defaultServerInfo != null) {
-					//Save it for the next query time
-					fServerUtil.saveLastGerritServer(defaultServerInfo);
-				}
-			}
-		}
+		initializeDefaultServer();
 
 		//We should have a Gerrit Server here, otherwise, the user need to define one
 		if (defaultServerInfo == null) {
 			UIUtils.showErrorDialog(Messages.GerritTableView_defineRepository,
 					Messages.GerritTableView_noGerritRepository);
-		} else {
-			if (aQuery != null && !aQuery.equals("")) { //$NON-NLS-1$
-				updateTable(defaultServerInfo, aQuery);
+			new AddGerritSiteHandler().execute(null);
+			return;
+		}
+
+		//At this point we have a server, execute the query if we can
+		if (aQuery != null && !aQuery.equals("")) { //$NON-NLS-1$
+			updateTable(defaultServerInfo, aQuery);
+		}
+	}
+
+	private void initializeDefaultServer() {
+		//Use the last server if no server got discovered
+		if (defaultServerInfo == null) {
+			GerritServerInformation lastServer = fServerUtil.getLastSavedGerritServer();
+			if (lastServer != null) {
+				//Already saved a Gerrit server, so use it
+				defaultServerInfo = lastServer;
 			}
 		}
+
+		//No last server was specified, get a server by prompting the user or picking the first one
+		if (defaultServerInfo == null) {
+			fMapRepoServer = ServersStore.getAllServers();
+			if (fMapRepoServer.size() == 1) {
+				defaultServerInfo = fMapRepoServer.get(0);
+			} else if (fMapRepoServer.size() > 1) {
+				defaultServerInfo = askUserToSelectRepo(ServersStore.getAllServers());
+			}
+		}
+
+		if (defaultServerInfo != null) {
+			fServerUtil.saveLastGerritServer(defaultServerInfo);
+		}
+	}
+
+	private String handleHttpInQuery(String aQuery) {
+		ChangeIdExtractor extractedData = new ChangeIdExtractor(aQuery);
+		if (extractedData.getServer() != null) {
+			selectServer(extractedData.getServer());
+			if (extractedData.getChangeId() != null) {
+				aQuery = "change:" + extractedData.getChangeId(); //$NON-NLS-1$
+			} else {
+				aQuery = "status:open"; //$NON-NLS-1$
+			}
+		}
+		return aQuery;
+	}
+
+	private void selectServer(GerritServerInformation server) {
+		List<GerritServerInformation> matches = findOrAddMatchingServers(server);
+		if (matches.size() == 1) {
+			defaultServerInfo = matches.get(0);
+			return;
+		}
+		defaultServerInfo = askUserToSelectRepo(matches);
+	}
+
+	private List<GerritServerInformation> findOrAddMatchingServers(GerritServerInformation searched) {
+		List<GerritServerInformation> knownServers = ServersStore.getAllServers();
+		List<GerritServerInformation> matches = new ArrayList<>();
+		List<GerritServerInformation> bestMatches = new ArrayList<>();
+
+		//Best matches are those with the same URI and a username
+		//Second best matches are servers with URIs
+		for (GerritServerInformation candidate : knownServers) {
+			if (candidate.getServerURI().equals(searched.getServerURI())) {
+				if (candidate.getUserName().equals(searched.getUserName())) {
+					bestMatches.add(0, candidate);
+				} else {
+					matches.add(candidate);
+				}
+			}
+		}
+
+		//Return the best matches if we have any
+		if (!bestMatches.isEmpty()) {
+			return bestMatches;
+		}
+
+		//No match at all, then we will the one we have
+		if (matches.size() == 0) {
+			knownServers.add(searched);
+			ServersStore.saveServers(knownServers);
+			matches.add(searched);
+		}
+
+		return matches;
 	}
 
 	/**
@@ -680,13 +743,13 @@ public class GerritTableView extends ViewPart {
 	}
 
 	/**
-	 * @param aTaskRepo
+	 * @param server
 	 * @param aQueryType
 	 * @return
 	 */
-	private Object updateTable(final GerritServerInformation aTaskRepo, final String aQueryType) {
+	private Object updateTable(final GerritServerInformation server, final String aQueryType) {
 
-		String cmdMessage = NLS.bind(Messages.GerritTableView_commandMessage, aTaskRepo.getServerURI(), aQueryType);
+		String cmdMessage = NLS.bind(Messages.GerritTableView_commandMessage, server.getServerURI(), aQueryType);
 		final Job job = new Job(cmdMessage) {
 
 			@Override
@@ -700,8 +763,8 @@ public class GerritTableView extends ViewPart {
 				// If there is only have one Gerrit server, we can proceed as if it was already used before
 				IStatus status = null;
 				try {
-					fReviewTable.createReviewItem(aQueryType, aTaskRepo);
-					status = getReviews(aTaskRepo, aQueryType);
+					fReviewTable.createReviewItem(aQueryType, server);
+					status = getReviews(server, aQueryType);
 					if (status.isOK()) {
 						Display.getDefault().syncExec(new Runnable() {
 							@Override
@@ -1233,10 +1296,9 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
-	private GerritServerInformation askUserToSelectRepo() {
+	private GerritServerInformation askUserToSelectRepo(List<GerritServerInformation> servers) {
 		GerritServerInformation selection = null;
-		SelectionDialog taskSelection = new SelectionDialog(fViewer.getTable().getShell(),
-				ServersStore.getAllServers());
+		SelectionDialog taskSelection = new SelectionDialog(fViewer.getTable().getShell(), servers);
 		if (taskSelection.open() == Window.OK) {
 			selection = taskSelection.getSelection();
 		}

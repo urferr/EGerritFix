@@ -20,7 +20,8 @@ import org.junit.runners.Suite.SuiteClasses;
 //------------------------------------------------------------------------
 
 @RunWith(Suite.class)
-@SuiteClasses({ EGerritUIPluginTest.class, OpenCompareEditorTests.class, CommentExtractorTest.class })
+@SuiteClasses({ EGerritUIPluginTest.class, OpenCompareEditorTests.class, CommentExtractorTest.class,
+		ChangeIdExtractorTest.class, EnterHttpInSearchTest.class })
 //------------------------------------------------------------------------
 //Constructor
 //------------------------------------------------------------------------
