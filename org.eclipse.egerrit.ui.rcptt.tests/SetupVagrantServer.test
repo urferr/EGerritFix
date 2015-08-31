@@ -14,7 +14,36 @@ Content-Type: text/ecl
 Entry-Name: .content
 
 get-preferences-menu | click
-get-window Preferences | get-tree | select "Gerrit Dashboard Preferences"
+get-window Preferences | get-tree | select "Gerrit Servers"
+
+
+
+
+with [get-window Preferences] {
+    get-button "New..." | click
+    with [get-window "Gerrit Server Selection"] {
+        with [get-editbox -after [get-label "URI:"]] {
+            click-text
+            key-type "M1+v"
+            set-text "https://git.eclipse.org/r"
+            click-text 2 
+        }
+        get-editbox -after [get-label "Shortname:"] | click-text
+        get-editbox -after [get-label "URI:"] | set-text "https://git.eclipse.org/r"
+        get-editbox -after [get-label "Shortname:"] | set-text "foundation"
+        with [get-editbox -after [get-label "User:"]] {
+            set-text "guy.perron@ericsson.com"
+            key-type "TRAVERSE_TAB_NEXT"
+        }
+        with [get-editbox -after [get-label "Password:"]] {
+             set-text "gperron1"
+        }
+       
+        get-button OK | click
+    }
+    get-button OK | click
+}
+
 with [get-window "Secure Storage"] {
     with [get-editbox -after [get-label "Password:"]] {
         set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
@@ -32,34 +61,9 @@ with [get-window "Secure Storage"] {
 }
 get-window "Secure Storage" | get-button No | click
 
-
-with [get-window Preferences] {
-    get-button "New..." | click
-    with [get-window "Gerrit Server Selection"] {
-        with [get-editbox -after [get-label "Gerrit Server URI:"]] {
-            click-text
-            key-type "M1+v"
-            set-text "https://git.eclipse.org/r"
-            click-text 2 
-        }
-        get-editbox -after [get-label "Gerrit Server Name:"] | click-text
-        get-editbox -after [get-label "Gerrit Server URI:"] | set-text "https://git.eclipse.org/r"
-        get-editbox -after [get-label "Gerrit Server Name:"] | set-text "foundation"
-        with [get-editbox -after [get-label "User:"]] {
-            set-text "guy.perron@ericsson.com"
-            key-type "TRAVERSE_TAB_NEXT"
-        }
-        with [get-editbox -after [get-label "Password:"]] {
-             set-text "gperron1"
-        }
-       
-        get-button OK | click
-    }
-    get-button OK | click
-}
 get-preferences-menu | click
 with [get-window Preferences] {
-    get-tree | select "Gerrit Dashboard Preferences"
+    get-tree | select "Gerrit Servers"
     get-table | select "foundation"
     get-button Remove | click
     get-button OK | click
