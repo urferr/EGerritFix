@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2015, Ericsson, Inc. All rights reserved. This program
-	and the accompanying materials are made available under the terms of the
-	Eclipse Public License v1.0 which accompanies this distribution, and is available
+<!-- Copyright (C) 2015, Ericsson, Inc. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	Eclipse Public License v1.0 which accompanies this distribution, and is available 
 	at http://www.eclipse.org/legal/epl-v10.html -->
 
 <project
@@ -11,7 +11,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<prerequisites>
-		<maven>3.0</maven>
+		<maven>3.1</maven>
 	</prerequisites>
 
 	<licenses>
@@ -215,11 +215,31 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.4.1</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.1</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -288,13 +308,11 @@
 	<modules>
 		<module>org.eclipse.egerrit.target</module>
 		<module>org.eclipse.egerrit.core</module>
- 		<module>org.eclipse.egerrit.core.tests</module>
+		<module>org.eclipse.egerrit.core.tests</module>
 		<module>org.eclipse.egerrit.ui</module>
- 		<module>org.eclipse.egerrit.ui.tests</module>
-<!--
- 		<module>org.eclipse.egerrit.ui.swtbot.tests</module>
--->
- 		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
+		<module>org.eclipse.egerrit.ui.tests</module>
+		<!-- <module>org.eclipse.egerrit.ui.swtbot.tests</module> -->
+		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
 		<module>org.eclipse.egerrit.dashboard.core</module>
 		<module>org.eclipse.egerrit.dashboard.ui</module>
 
