@@ -293,8 +293,8 @@
  		<module>org.eclipse.egerrit.ui.tests</module>
 <!--
  		<module>org.eclipse.egerrit.ui.swtbot.tests</module>
- 		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
 -->
+ 		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
 		<module>org.eclipse.egerrit.dashboard.core</module>
 		<module>org.eclipse.egerrit.dashboard.ui</module>
 
