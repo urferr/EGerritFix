@@ -24,6 +24,7 @@ import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
+import org.junit.Test;
 
 public class EnterHttpInSearchTest {
 
@@ -32,7 +33,7 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(new ArrayList<GerritServerInformation>());
 	}
 
-//	@Test
+	@Test
 	public void enterANonExistantURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView();
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
@@ -46,7 +47,7 @@ public class EnterHttpInSearchTest {
 
 	}
 
-//	@Test
+	@Test
 	public void enterAnExistingURL() throws URISyntaxException {
 		//Setup, we create a server
 		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
@@ -66,7 +67,7 @@ public class EnterHttpInSearchTest {
 		});
 	}
 
-//	@Test
+	@Test
 	public void preferServerWithUsername() throws URISyntaxException {
 		//Setup, we create two servers, one anonymous, the other with a user
 		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
@@ -90,7 +91,7 @@ public class EnterHttpInSearchTest {
 		});
 	}
 
-//	@Test
+	@Test
 	public void enterJustAURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView();
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
