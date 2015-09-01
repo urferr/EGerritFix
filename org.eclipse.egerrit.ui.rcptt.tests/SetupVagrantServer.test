@@ -29,14 +29,14 @@ with [get-window Preferences] {
             click-text 2 
         }
         get-editbox -after [get-label "Shortname:"] | click-text
-        get-editbox -after [get-label "URI:"] | set-text "https://git.eclipse.org/r"
-        get-editbox -after [get-label "Shortname:"] | set-text "foundation"
+        get-editbox -after [get-label "URI:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+        get-editbox -after [get-label "Shortname:"] | set-text "vagrant2.11.2"
         with [get-editbox -after [get-label "User:"]] {
-            set-text "guy.perron@ericsson.com"
+            set-text "admin"
             key-type "TRAVERSE_TAB_NEXT"
         }
         with [get-editbox -after [get-label "Password:"]] {
-             set-text "gperron1"
+             set-text "egerritTest"
         }
        
         get-button OK | click
@@ -55,7 +55,6 @@ with [get-window "Secure Storage"] {
         set-text [decrypt "drMptdnwgHYrLPrTmzyfqw=="]
         set-text [decrypt "6jAz3m7u2AGD4J10r7vt3A=="]
         set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
-        
     }
     get-button OK | click
 }
@@ -64,7 +63,7 @@ get-window "Secure Storage" | get-button No | click
 get-preferences-menu | click
 with [get-window Preferences] {
     get-tree | select "Gerrit Servers"
-    get-table | select "foundation"
+    get-table | select "vagrant2.11.2"
     get-button Remove | click
     get-button OK | click
 }
