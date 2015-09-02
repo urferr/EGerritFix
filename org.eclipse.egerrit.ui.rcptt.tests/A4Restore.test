@@ -1,0 +1,41 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: A4Restore
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: __7JZgFGaEeWtV_4QiXrmPg
+Runtime-Version: 2.0.0.201506120617
+Save-Time: 9/2/15 1:50 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-editor "ChangeDetail Editor" | get-button Restore | click
+with [get-window "Restore message"] {
+    with [get-editbox] {
+        set-text "This re"
+        set-text "This rev"
+        set-text "This revi"
+        set-text "This revie"
+        set-text "This review "
+        set-text "This review m"
+        set-text "This review mu"
+        set-text "This review mus"
+        set-text "This review must "
+        set-text "This review must b"
+        set-text "This review must be "
+        set-text "This review must be r"
+        set-text "This review must be re"
+        set-text "This review must be res"
+        set-text "This review must be rest"
+        set-text "This review must be resto"
+        set-text "This review must be restor"
+        set-text "This review must be restore"
+        set-text "This review must be restored"
+    }
+    get-button OK | click
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

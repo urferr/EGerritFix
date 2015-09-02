@@ -1,0 +1,30 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: A2SelectReview
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _cf5NYFGQEeWvEPKyhn0BbA
+Runtime-Version: 2.0.0.201506120617
+Save-Time: 9/2/15 1:13 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-menu "Window/Show View/Other..." | click
+with [get-window "Show View"] {
+    get-tree | select "Other/EGerrit"
+    get-button OK | click
+}
+get-view EGerrit | get-button "Find all Open Reviews for the selected repository" | click -arrow
+get-menu Open | click
+with [get-view EGerrit | get-table] {
+    get-cell 0 2 | click
+    get-cell 0 2 | click
+    get-cell 0 2 | mouse down -count 2
+    double-click
+    get-cell 0 2 | mouse up -count 2
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
