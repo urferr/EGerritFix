@@ -15,8 +15,8 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.eclipse.compare;bundle-version="3.5.501",
  org.eclipse.egerrit.ui;bundle-version="0.1.0",
  org.eclipse.core.resources,
- org.eclipse.team.ui;bundle-version="3.7.100",
- org.eclipse.jface.text;bundle-version="3.9.0",
+ org.eclipse.team.ui;bundle-version="3.6.201",
+ org.eclipse.jface.text;bundle-version="3.8.2",
  org.eclipse.egerrit.dashboard.ui;bundle-version="0.1.0",
  org.eclipse.egerrit.dashboard.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
