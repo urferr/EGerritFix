@@ -37,9 +37,9 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>eGerrit-Eclipse_4.4.target</file>
+									<file>eGerrit-Eclipse_4.4-luna.target</file>
 									<type>target</type>
-									<classifier>eGerrit-Eclipse_4.4</classifier>
+									<classifier>eGerrit-Eclipse_4.4-luna</classifier>
 								</artifact>
 								<!-- More targets could be added here -->
 							</artifacts>

@@ -51,7 +51,7 @@
 
 		<!-- Target platform -->
 		<egerrit.target.artifact>org.eclipse.egerrit.target</egerrit.target.artifact>
-		<egerrit.target.platform>eGerrit-Eclipse_4.4</egerrit.target.platform>
+		<egerrit.target.platform>eGerrit-Eclipse_4.4-luna</egerrit.target.platform>
 
 		<!-- set gtk3 version -->
 		<SWT_GTK3>0</SWT_GTK3>
