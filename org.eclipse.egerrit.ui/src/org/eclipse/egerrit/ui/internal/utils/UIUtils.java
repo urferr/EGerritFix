@@ -73,7 +73,7 @@ public class UIUtils {
 
 	/**
 	 * To display some information to the end-user
-	 * 
+	 *
 	 * @param shell
 	 * @param title
 	 * @param message
@@ -105,7 +105,7 @@ public class UIUtils {
 	}
 
 	/**
-	 * Copute the size of the Fonts used for this composite
+	 * Compute the size of the Fonts used for this composite
 	 *
 	 * @param composite
 	 * @return Point
