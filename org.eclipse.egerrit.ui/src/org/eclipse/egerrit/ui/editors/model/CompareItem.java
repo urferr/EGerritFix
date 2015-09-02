@@ -127,4 +127,7 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		return null;
 	}
 
+	public FileInfo getFileInfo() {
+		return fileInfo;
+	}
 }
