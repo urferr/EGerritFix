@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -30,12 +31,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.AddReviewerInput;
+import org.eclipse.egerrit.core.rest.AddReviewerResult;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
@@ -55,9 +60,19 @@ import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -123,6 +138,8 @@ public class SummaryTabView {
 	private final RelatedChangesInfo fRelatedChangesInfo = new RelatedChangesInfo();
 
 	private ChangeInfo fChangeInfo;
+
+	private GerritClient gerritClient;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -263,14 +280,16 @@ public class SummaryTabView {
 		grid.grabExcessHorizontalSpace = true;
 		grpReviewers.setLayoutData(grid);
 
-		Button buttonPlus = new Button(grpReviewers, SWT.NONE);
+		final Button buttonPlus = new Button(grpReviewers, SWT.NONE);
 		buttonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 		buttonPlus.setText("+"); //$NON-NLS-1$
+		buttonPlus.addSelectionListener(buttonPlusListener(buttonPlus));
 
 		UIReviewersTable uiReviewersTable = new UIReviewersTable();
 		uiReviewersTable.createTableViewerSection(grpReviewers, grid);
 
 		tableReviewersViewer = uiReviewersTable.getViewer();
+		tableReviewersViewer.getTable().addMouseListener(deleteReviewerListener());
 
 		Label lblVoteSummary = new Label(grpReviewers, SWT.RIGHT);
 		lblVoteSummary.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 4, 1));
@@ -696,6 +715,131 @@ public class SummaryTabView {
 		}
 	}
 
+	/**
+	 * This method is the listener to add a reviewer or a group of reviewers
+	 *
+	 * @param buttonPlus
+	 * @return SelectionAdapter
+	 */
+	private SelectionAdapter buttonPlusListener(final Button buttonPlus) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+
+				InputDialog inputDialog = new InputDialog(buttonPlus.getParent().getShell(), "EGerrit Reviewer input",
+						"Add a reviewer or a review group name", "", null);
+
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+				String reviewer = inputDialog.getValue().trim();
+
+				if (!reviewer.isEmpty()) {
+					AddReviewerCommand addReviewerCmd = getGerritClient().addReviewer(fChangeInfo.getChange_id());
+					AddReviewerInput addReviewerInput = new AddReviewerInput();
+					addReviewerInput.setReviewer(inputDialog.getValue());
+
+					addReviewerCmd.setReviewerInput(addReviewerInput);
+
+					AddReviewerResult reviewerCmdResult = null;
+					reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
+					if (reviewerCmdResult != null && reviewerCmdResult.getConfirm()) {
+						//There is an error, just need to know if we should re-send or not
+						if (!MessageDialog.openConfirm(buttonPlus.getParent().getShell(),
+								"Process the list of reviewers", reviewerCmdResult.getError())) {
+							return;
+						}
+						//Call again but with the flag confirm
+						addReviewerInput.setConfirmed(true);
+						reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
+					}
+					setReviewers(gerritClient);
+				}
+			}
+
+			/**
+			 * @param addReviewerCmd
+			 * @param reviewerCmdResult
+			 * @return
+			 */
+			private AddReviewerResult addReviewerRequest(AddReviewerCommand addReviewerCmd,
+					AddReviewerResult reviewerCmdResult) {
+				try {
+					reviewerCmdResult = addReviewerCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(e3.getMessage());
+				} catch (ClientProtocolException e3) {
+					if (e3 instanceof HttpResponseException) {
+						HttpResponseException httpException = (HttpResponseException) e3;
+						if (httpException.getStatusCode() == 422) {
+							String message = addReviewerCmd.getReviewerInput().getReviewer()
+									+ " does not identify a registered user or group";
+							UIUtils.displayInformation(null, TITLE, message);
+						}
+					} else {
+						UIUtils.displayInformation(null, TITLE,
+								e3.getLocalizedMessage() + "\n " + addReviewerCmd.formatRequest()); //$NON-NLS-1$
+					}
+				}
+				return reviewerCmdResult;
+			}
+		};
+	}
+
+	/**
+	 * This method is the listener to delete a reviewer
+	 *
+	 * @return MouseAdapter
+	 */
+	private MouseAdapter deleteReviewerListener() {
+		return new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				ViewerCell viewerCell = tableReviewersViewer.getCell(new Point(e.x, e.y));
+				String cellText = viewerCell.getText();
+				if (viewerCell.getColumnIndex() == 0) {
+					//Selected the first column, so we can send the delete option
+					//Otherwise, do not delete
+					ISelection selection = tableReviewersViewer.getSelection();
+					if (selection instanceof IStructuredSelection) {
+
+						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+
+						Object element = structuredSelection.getFirstElement();
+
+						if (element instanceof ReviewerInfo) {
+
+							ReviewerInfo reviewerInfo = (ReviewerInfo) element;
+
+							//Add a safety dialog to confirm the deletion
+
+							if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
+									"EGerrit delete reviewer",
+									"Are you sure you want to delete [ " + reviewerInfo.getName() + " ]")) {
+								return;
+							}
+
+							DeleteReviewerCommand deleteReviewerCmd = getGerritClient().deleteReviewer(
+									fChangeInfo.getChange_id(), String.valueOf(reviewerInfo.get_account_id()));
+
+							String reviewerCmdResult = null;
+							try {
+								reviewerCmdResult = deleteReviewerCmd.call();
+							} catch (EGerritException e3) {
+								EGerritCorePlugin.logError(e3.getMessage());
+							} catch (ClientProtocolException e3) {
+								UIUtils.displayInformation(null, TITLE,
+										e3.getLocalizedMessage() + "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
+							}
+							setReviewers(gerritClient);
+						}
+					}
+				}
+			}
+		};
+	}
+
 	/************************************************************* */
 	/*                                                             */
 	/* Section adjust the DATA binding                             */
@@ -840,6 +984,7 @@ public class SummaryTabView {
 	 *            changeInfo
 	 */
 	public void setTabs(GerritClient gerritClient, ChangeInfo changeInfo) {
+		setGerritClient(gerritClient);
 		//Queries to fill the Review tab data
 		setSameTopic(gerritClient, changeInfo);
 
@@ -860,6 +1005,21 @@ public class SummaryTabView {
 	 */
 	public String getProject() {
 		return genProjectData.getText();
+	}
+
+	/**
+	 * @return the gerritClient
+	 */
+	private GerritClient getGerritClient() {
+		return gerritClient;
+	}
+
+	/**
+	 * @param gerritClient
+	 *            the gerritClient to set
+	 */
+	private void setGerritClient(GerritClient gerritClient) {
+		this.gerritClient = gerritClient;
 	}
 
 }

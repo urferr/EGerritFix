@@ -203,7 +203,7 @@ public class ReviewersTableLabelProvider extends ObservableMapLabelProvider
 //			String value = null;
 			switch (aIndex) {
 			case 0:
-				return "";
+				return "x";
 			case 1:
 				return reviewerInfo.getName();
 			case 2:

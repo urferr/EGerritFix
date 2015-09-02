@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -150,6 +151,10 @@ public abstract class GerritCommand<T> implements Callable<T> {
 					EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
 					if (statusLine.getStatusCode() >= 300) {
 						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
+					}
+					if (statusLine.getStatusCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+						//Nothing to handle since the buffer is OK but empty
+						return null;
 					}
 					HttpEntity entity = response.getEntity();
 					BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
