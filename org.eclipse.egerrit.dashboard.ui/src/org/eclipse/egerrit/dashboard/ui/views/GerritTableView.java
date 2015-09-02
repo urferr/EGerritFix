@@ -59,6 +59,7 @@ import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
 import org.eclipse.egerrit.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
+import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -286,9 +287,6 @@ public class GerritTableView extends ViewPart {
 		// Start the periodic refresh job
 //		fTableRefreshJob = new TableRefreshJob(fViewer, Messages.GerritTableView_refreshTable);
 
-		// Listen on query results
-//		TasksUiPlugin.getTaskList().addChangeListener(this);
-
 		sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
@@ -426,40 +424,35 @@ public class GerritTableView extends ViewPart {
 				FormPage form_Page;
 
 				// -------------------------------------------------
-				// Open an editor with the detailed task information
+				// Open an editor on the provided server and changeInfo
 				// -------------------------------------------------
 
-				// Retrieve the single table selection ("the" task)
 				ISelection selection = fViewer.getSelection();
-				if //		if (taskRepository.getConnectorKind().equals(LocalRepositoryConnector.CONNECTOR_KIND)) {
-//				getHeaderForm().getForm().setText(Messages.TaskEditor_Task_ + task.getSummary());
-//				} else {
-				(!(selection instanceof IStructuredSelection)) {
+				if (!(selection instanceof IStructuredSelection)) {
 					return;
 				}
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				if (structuredSelection.size() != 1) {
-					return;
-				}
-				Object element = structuredSelection.getFirstElement();
-				if (element instanceof ChangeInfo) {
-					ChangeDetailEditor cDE = ChangeDetailEditor.getActiveEditor();
+				Iterator<?> selections = structuredSelection.iterator();
+				while (selections.hasNext()) {
+					Object element = selections.next();
+					if (element instanceof ChangeInfo) {
+						IWorkbench workbench = GerritUi.getDefault().getWorkbench();
+						IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+						IWorkbenchPage page = null;
+						if (window != null) {
+							page = workbench.getActiveWorkbenchWindow().getActivePage();
+						}
 
-					cDE.setChangeInfo(gerritClient, (ChangeInfo) element);
-					IWorkbench workbench = GerritUi.getDefault().getWorkbench();
-					IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-					IWorkbenchPage page = null;
-					if (window != null) {
-						page = workbench.getActiveWorkbenchWindow().getActivePage();
-					}
-
-					if (page != null) {
-						try {
-							page.openEditor(cDE.getEditorInput(), ChangeDetailEditor.EDITOR_ID);
-						} catch (PartInitException e) {
-							EGerritCorePlugin.logError(e.getMessage());
+						if (page != null) {
+							try {
+								page.openEditor(new ChangeDetailEditorInput(gerritClient, (ChangeInfo) element),
+										ChangeDetailEditor.EDITOR_ID);
+							} catch (PartInitException e) {
+								EGerritCorePlugin.logError(e.getMessage());
+							}
 						}
 					}
+
 				}
 
 			}
@@ -963,7 +956,7 @@ public class GerritTableView extends ViewPart {
 		// Initialize
 		GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
 		gerritRepository.setCredentials(creds);
-
+		gerritRepository.setServerInfo(repository);
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
 
 		gerritClient = gerritRepository.instantiateGerrit();

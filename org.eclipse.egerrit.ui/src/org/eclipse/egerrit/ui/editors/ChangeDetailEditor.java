@@ -192,8 +192,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void createPartControl(final Composite parent) {
-//		RED = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
-
 		createAdditionalToolbarActions();
 		GridLayout gl_parent = new GridLayout(1, false);
 		parent.setLayout(gl_parent);
@@ -246,6 +244,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		int minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
 				+ hScrolBarSize.y;
 		scrollView.setMinSize(minimumWidth, minimumHeight);
+		setChangeInfo(((ChangeDetailEditorInput) getEditorInput()).getClient(),
+				((ChangeDetailEditorInput) getEditorInput()).getChange());
+		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 	}
 
 	private Composite headerSection(final Composite parent, Point fontSize) {
@@ -540,7 +541,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param ChangeInfo
 	 *            element
 	 */
-	public void setChangeInfo(GerritClient gerritClient, ChangeInfo element) {
+	private void setChangeInfo(GerritClient gerritClient, ChangeInfo element) {
 		filesTab.setGerritClient(gerritClient);
 		fChangeInfo.reset();
 
@@ -892,31 +893,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return bindingContext;
 	}
 
-	/**
-	 * @return ChangeDetailEditor
-	 */
-	public static ChangeDetailEditor getActiveEditor() {
-		IEditorPart editorPart = null;
-		if (chDetailEditor != null) {
-			return chDetailEditor;
-		} else {
-			IWorkbench workbench = EGerritUIPlugin.getDefault().getWorkbench();
-			IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-			IWorkbenchPage page = null;
-			if (window != null) {
-				page = workbench.getActiveWorkbenchWindow().getActivePage();
-			}
-			try {
-				editorPart = page.openEditor(new org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput(),
-						EDITOR_ID);
-			} catch (PartInitException e) {
-//				logger.warn(e.getMessage());
-			}
-			return (ChangeDetailEditor) editorPart;
-
-		}
-	}
-
 /* (non-Javadoc)
  * @see org.eclipse.ui.part.WorkbenchPart#dispose()
  */
@@ -970,7 +946,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 		setSite(site);
 		setInput(input);
-
 	}
 
 	@Override
@@ -1097,5 +1072,4 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		// ignore
 
 	}
-
 }

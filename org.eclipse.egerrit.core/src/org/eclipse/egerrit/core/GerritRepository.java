@@ -78,6 +78,8 @@ public class GerritRepository {
 	/** The HTTP client */
 	private GerritHttpClient fHttpClient = null;
 
+	/** The gerrit server information */
+	private GerritServerInformation serverInfo = null;
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -262,6 +264,22 @@ public class GerritRepository {
 		}
 
 		return builder;
+	}
+
+	/**
+	 * Returns the server information
+	 * 
+	 * @return the {@link GerritServerInformation} associated with this repository
+	 */
+	public GerritServerInformation getServerInfo() {
+		return serverInfo;
+	}
+
+	/**
+	 * Sets the server information
+	 */
+	public void setServerInfo(GerritServerInformation serverInfo) {
+		this.serverInfo = serverInfo;
 	}
 
 	// ------------------------------------------------------------------------
