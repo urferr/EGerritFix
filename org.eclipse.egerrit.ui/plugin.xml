@@ -7,7 +7,7 @@
             class="org.eclipse.egerrit.ui.editors.ChangeDetailEditor"
             default="false"
             extensions="mpe"
-            icon="icons/view16/datasheet.gif"
+            icon="icons/EGerritcolor16.png"
             id="org.eclipse.egerrit.ui.editors.ChangeDetailEditor"
             name="ChangeDetail Editor">
       </editor>
