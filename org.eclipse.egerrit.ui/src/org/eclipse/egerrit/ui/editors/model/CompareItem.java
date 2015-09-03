@@ -33,14 +33,20 @@ import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.graphics.Image;
 
 /**
+ * The compare item is the input to the compare editor, and it ALSO is the document that is shown in the compare editor.
+ * Finally it is responsible for pushing the new comments to the server
+ *
  * @since 1.0
  */
-public class CompareItem implements IStreamContentAccessor, ITypedElement, IModificationDate, IEditableContent {
+public class CompareItem extends Document
+		implements IStreamContentAccessor, ITypedElement, IModificationDate, IEditableContent {
 	private String fileName;
 
-	private IDocument documentWithComments;
+	private IDocument originalDocument;
 
-	private AnnotationModel gerritComments;
+	private AnnotationModel originalComments;
+
+	private AnnotationModel editableComments;
 
 	private GerritClient gerrit;
 
@@ -54,12 +60,16 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		this.fileName = name;
 	}
 
-	void setDocumentWithComments(IDocument documentWithComments) {
-		this.documentWithComments = documentWithComments;
+	void setOriginalDocument(IDocument documentWithComments) {
+		this.originalDocument = documentWithComments;
 	}
 
-	void setGerritComments(AnnotationModel gerritComments) {
-		this.gerritComments = gerritComments;
+	void setOriginalComments(AnnotationModel gerritComments) {
+		this.originalComments = gerritComments;
+	}
+
+	void setEditableComments(AnnotationModel gerritComments) {
+		this.editableComments = gerritComments;
 	}
 
 	void setGerritConnection(GerritClient gerrit) {
@@ -74,25 +84,30 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		this.change_id = change_id;
 	}
 
+	@Override
 	public InputStream getContents() throws CoreException {
-		return new ByteArrayInputStream(documentWithComments.get().getBytes());
+		return new ByteArrayInputStream(get().getBytes());
 	}
 
+	@Override
 	public Image getImage() {
 		return null;
 	}
 
+	@Override
 	public long getModificationDate() {
 		//TODO this  needs to be fixed
 		return 0;
 	}
 
+	@Override
 	public String getName() {
 		return fileName;
 	}
 
+	@Override
 	public String getType() {
-		return ITypedElement.TEXT_TYPE;
+		return ITypedElement.UNKNOWN_TYPE;
 	}
 
 	@Override
@@ -103,8 +118,8 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 	@Override
 	// Extracts newly added comments from the content passed in, and publish new comments on the gerrit server
 	public void setContent(byte[] newContent) {
-		ArrayList<CommentInfo> newComments = new CommentExtractor().extractComments(documentWithComments,
-				gerritComments, new Document(new String(newContent)));
+		ArrayList<CommentInfo> newComments = new CommentExtractor().extractComments(originalDocument, originalComments,
+				this);
 		for (CommentInfo newComment : newComments) {
 			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id,
 					fileInfo.getContainingRevisionInfo().getId());
@@ -127,7 +142,21 @@ public class CompareItem implements IStreamContentAccessor, ITypedElement, IModi
 		return null;
 	}
 
+	/**
+	 * Return the file info object for which this compare item is created
+	 * 
+	 * @return {@link FileInfo}
+	 */
 	public FileInfo getFileInfo() {
 		return fileInfo;
+	}
+
+	/**
+	 * Return an annotation model representing the comments
+	 * 
+	 * @return {@link AnnotationModel}
+	 */
+	public AnnotationModel getEditableComments() {
+		return editableComments;
 	}
 }

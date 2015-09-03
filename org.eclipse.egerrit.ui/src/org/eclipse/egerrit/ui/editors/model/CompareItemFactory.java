@@ -40,6 +40,9 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.AnnotationModel;
 
+/**
+ * Factory class to create compare items
+ */
 public class CompareItemFactory {
 
 	private final static String TITLE = "Gerrit Server ";
@@ -70,31 +73,27 @@ public class CompareItemFactory {
 			String fileContent = null;
 
 			// Create query
-			if (gerrit != null) {
-				GetContentCommand command = gerrit.getContent(change_id, fileInfo.getContainingRevisionInfo().getId(),
-						filename);
+			GetContentCommand command = gerrit.getContent(change_id, fileInfo.getContainingRevisionInfo().getId(),
+					filename);
 
-				if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
-					try {
-						fileContent = command.call();
-						if (fileContent == null) {
-							fileContent = ""; //$NON-NLS-1$
-						}
-					} catch (EGerritException e) {
-						EGerritCorePlugin.logError(e.getMessage());
-					} catch (ClientProtocolException e) {
-						UIUtils.displayInformation(null, TITLE,
-								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+			if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
+				try {
+					fileContent = command.call();
+					if (fileContent == null) {
+						fileContent = ""; //$NON-NLS-1$
 					}
-				} else {
-					fileContent = ""; //$NON-NLS-1$
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(e.getMessage());
+				} catch (ClientProtocolException e) {
+					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
-				Map<String, ArrayList<CommentInfo>> comments = loadComments(gerrit, change_id,
-						fileInfo.getContainingRevisionInfo().getId());
-				mergeCommentsInText(StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)),
-						comments.get(filename));
-
+			} else {
+				fileContent = ""; //$NON-NLS-1$
 			}
+			Map<String, ArrayList<CommentInfo>> comments = loadComments(gerrit, change_id,
+					fileInfo.getContainingRevisionInfo().getId());
+			mergeCommentsInText(StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)), comments.get(filename));
+
 		} finally
 
 		{
@@ -104,7 +103,8 @@ public class CompareItemFactory {
 
 	}
 
-	private Map<String, ArrayList<CommentInfo>> loadComments(GerritClient gerrit, String change_id, String revision_id) {
+	private Map<String, ArrayList<CommentInfo>> loadComments(GerritClient gerrit, String change_id,
+			String revision_id) {
 		Map<String, ArrayList<CommentInfo>> allComments = new HashMap<>();
 		try {
 			ListCommentsCommand getComments = gerrit.getListComments(change_id, revision_id);
@@ -138,11 +138,20 @@ public class CompareItemFactory {
 	//Take the original text and merge the comments into it
 	//The insertion of comments starts from by last comment and proceed toward the first one. This allows for the insertion line to always be correct.
 	private void mergeCommentsInText(String text, ArrayList<CommentInfo> comments) {
-		Document document = new Document(text);
-		AnnotationModel gerritComments = new AnnotationModel();
-		newCompareItem.setDocumentWithComments(document);
-		newCompareItem.setGerritComments(gerritComments);
-		gerritComments.connect(document);
+		//Create a document and an associated annotation model to keep track of the original text w/ comments
+		AnnotationModel originalComments = new AnnotationModel();
+		Document originalDocument = new Document(text);
+		originalDocument.set(text);
+		originalComments.connect(originalDocument);
+		newCompareItem.setOriginalComments(originalComments);
+		newCompareItem.setOriginalDocument(originalDocument);
+
+		//Editable comments are a copy of the original comments but associated with the document that is presented in the UI
+		AnnotationModel editableComments = new AnnotationModel();
+		newCompareItem.set(text);
+		editableComments.connect(newCompareItem);
+		newCompareItem.setEditableComments(editableComments);
+
 		if (comments == null) {
 			return;
 		}
@@ -158,21 +167,25 @@ public class CompareItemFactory {
 				IRegion lineInfo;
 				try {
 					int insertionLineInDocument = commentInfo.getLine() - 1;
-					lineInfo = document.getLineInformation(insertionLineInDocument);
-					String lineDelimiter = document.getLineDelimiter(insertionLineInDocument);
+					lineInfo = originalDocument.getLineInformation(insertionLineInDocument);
+					String lineDelimiter = originalDocument.getLineDelimiter(insertionLineInDocument);
 					int insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
 							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
 					String formattedComment = formatComment(commentInfo, lineDelimiter != null,
-							document.getDefaultLineDelimiter());
-					document.replace(insertionPosition, 0, formattedComment);
-					gerritComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+							originalDocument.getDefaultLineDelimiter());
+					originalDocument.replace(insertionPosition, 0, formattedComment);
+					newCompareItem.replace(insertionPosition, 0, formattedComment);
+					originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+							new Position(insertionPosition, formattedComment.length()));
+					editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
 							new Position(insertionPosition, formattedComment.length()));
 				} catch (BadLocationException e) {
 					//Ignore and continue
 				}
 			} else {
 				try {
-					document.replace(0, 0, formatComment(commentInfo, true, document.getDefaultLineDelimiter()));
+					newCompareItem.replace(0, 0,
+							formatComment(commentInfo, true, newCompareItem.getDefaultLineDelimiter()));
 				} catch (BadLocationException e) {
 					//Ignore and continue
 				}

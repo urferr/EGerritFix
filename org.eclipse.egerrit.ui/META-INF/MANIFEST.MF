@@ -21,7 +21,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.egit.ui;bundle-version="4.0.0",
  org.eclipse.swt,
  org.eclipse.text;bundle-version="3.5.200",
- org.eclipse.team.ui;bundle-version="3.6.201"
+ org.eclipse.team.ui;bundle-version="3.6.201",
+ org.eclipse.ui.workbench.texteditor;bundle-version="3.8.0",
+ org.eclipse.jface.text;bundle-version="3.8.2"
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
