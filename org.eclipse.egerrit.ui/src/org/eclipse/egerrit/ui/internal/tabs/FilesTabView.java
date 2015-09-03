@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
+import java.util.TreeMap;
 
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -469,8 +470,19 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	private void setFilesDisplay(Map<String, DisplayFileInfo> displayFilesMap) {
-		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = displayFilesMap);
-//		writeListFiles.setValue(fFilesDisplay.values());
+
+		//Sort the file according to the file path
+		Map<String, DisplayFileInfo> sortedMap = new TreeMap<String, DisplayFileInfo>(new Comparator<String>() {
+
+			@Override
+			public int compare(String key1, String key2) {
+				return key1.compareTo(key2);
+			}
+		});
+
+		sortedMap.putAll(displayFilesMap);
+		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = sortedMap);
+
 	}
 
 	/**
@@ -630,8 +642,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	}
 
-	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritClient gerrit, String change_id, String revision_id,
-			IProgressMonitor monitor) {
+	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritClient gerrit, String change_id,
+			String revision_id, IProgressMonitor monitor) {
 
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
