@@ -76,6 +76,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -379,6 +381,26 @@ public class GerritTableView extends ViewPart {
 					processCommands(fSearchRequestText.getText());
 
 				}
+			}
+		});
+
+		fSearchRequestText.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String old = fSearchRequestText.getItem(0);
+				Object obj = e.getSource();
+				if (obj instanceof Combo) {
+					Combo combo = (Combo) obj;
+					//Trigger a request only if this is not the last one requested
+					if (combo.getText().compareTo(old) != 0) {
+						processCommands(combo.getText());
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 
@@ -930,12 +952,7 @@ public class GerritTableView extends ViewPart {
 //		RepositoryQuery query = null;
 		String queryString = null;
 
-//		if (queryType == GerritQuery.CUSTOM) {
-		if (queryType == "custom") { //$NON-NLS-1$
-			queryString = getSearchText();
-		} else {
-			queryString = queryType;
-		}
+		queryString = queryType;
 
 		// Save query
 //		fCurrentQuery = query;
