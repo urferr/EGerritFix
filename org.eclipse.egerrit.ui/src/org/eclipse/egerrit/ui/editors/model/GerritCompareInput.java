@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextPresentationListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextPresentation;
@@ -284,6 +285,10 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 							textPresentation.replaceStyleRange(
 									createCommentStyle(commentPosition.getOffset(), commentPosition.getLength()));
 						}
+					} else {
+						IRegion newRegion = textPresentation.getCoverage();
+						textPresentation
+								.replaceStyleRange(createCommentStyle(newRegion.getOffset(), newRegion.getLength()));
 					}
 				}
 			});
