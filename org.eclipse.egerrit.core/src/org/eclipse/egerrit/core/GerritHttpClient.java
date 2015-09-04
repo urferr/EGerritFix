@@ -106,7 +106,8 @@ public class GerritHttpClient {
 			// Basic builder
 			HttpClientBuilder builder = HttpClients.custom()
 					.setDefaultCookieStore(fCookieStore)
-					.setHostnameVerifier(fHostNameVerifier);
+					.setHostnameVerifier(fHostNameVerifier)
+					.setUserAgent(EGerritCorePlugin.getDefault().getUserAgent());
 			// Handle proxy settings
 			HttpHost proxy = fRepository.getProxy();
 			if (proxy != null) {
