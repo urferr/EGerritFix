@@ -205,13 +205,6 @@ public class GerritRepository {
 		return fCredentials;
 	}
 
-	/**
-	 * @return the user password
-	 */
-	public boolean isAnonymous() {
-		return (fCredentials == null) || (fCredentials.getUsername() == null);
-	}
-
 	// ------------------------------------------------------------------------
 	// Operations
 	// ------------------------------------------------------------------------
@@ -268,7 +261,7 @@ public class GerritRepository {
 
 	/**
 	 * Returns the server information
-	 * 
+	 *
 	 * @return the {@link GerritServerInformation} associated with this repository
 	 */
 	public GerritServerInformation getServerInfo() {

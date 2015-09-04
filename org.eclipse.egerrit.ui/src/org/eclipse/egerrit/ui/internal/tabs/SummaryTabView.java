@@ -611,6 +611,10 @@ public class SummaryTabView {
 	private RelatedChangesInfo queryRelatedChanges(GerritClient gerritClient, String change_id, String revision_id,
 			IProgressMonitor monitor) {
 		try {
+			if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
+				return null;
+			}
+
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(change_id, revision_id);

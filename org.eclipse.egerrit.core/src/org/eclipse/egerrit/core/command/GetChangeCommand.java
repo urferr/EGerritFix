@@ -58,7 +58,10 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 	public GetChangeCommand(GerritRepository gerritRepository, String id) {
 		super(gerritRepository, ChangeInfo.class);
 		this.setId(id);
-		requiresAuthentication(true);
+		//Setting requires to false, because even though this command can access user specific information
+		//It will still succeed when user-specific information is requested by anonymous.
+		//It will just not return the requested information
+		requiresAuthentication(false); 
 
 	}
 

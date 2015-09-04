@@ -305,6 +305,13 @@ public class GerritServerInformation {
 		return fPasswordProvided;
 	}
 
+	/**
+	 * Returns a boolean indicating if a user is provided for this connection
+	 */
+	public boolean isAnonymous() {
+		return fUserName == null || fUserName.length() == 0;
+	}
+
 	@Override
 	public GerritServerInformation clone() {
 		try {

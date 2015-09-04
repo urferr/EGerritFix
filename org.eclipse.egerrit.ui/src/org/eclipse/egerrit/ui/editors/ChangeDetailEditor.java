@@ -43,7 +43,6 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
-import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
@@ -55,11 +54,9 @@ import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.RestoreInput;
-import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.rest.SubmitInput;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
@@ -89,17 +86,15 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
@@ -120,8 +115,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private final String TITLE = "Gerrit Server ";
 
-	private static ChangeDetailEditor chDetailEditor = null;
-
 	private SummaryTabView summaryTab = null;
 
 	private HistoryTabView historytab = null;
@@ -133,6 +126,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private final ChangeInfo fChangeInfo = new ChangeInfo();
 
 	private final CommitInfo fCommitInfo = new CommitInfo();
+
+	private GerritClient fGerritClient = null;
 
 	private Label changeidData;
 
@@ -156,6 +151,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Button fReply;
 
+	private String anonymousUserToolTip;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -165,7 +162,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 */
 	public ChangeDetailEditor() {
 		super();
-		chDetailEditor = this;
 	}
 
 	private void createAdditionalToolbarActions() {
@@ -192,6 +188,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void createPartControl(final Composite parent) {
+		anonymousUserToolTip = "This button is disabled because you are connected anonymously to "
+				+ fGerritClient.getRepository().getServerInfo().getServerURI() + ".";
 		createAdditionalToolbarActions();
 		GridLayout gl_parent = new GridLayout(1, false);
 		parent.setLayout(gl_parent);
@@ -228,8 +226,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		messageTab.create(tabFolder, fCommitInfo, fChangeInfo);
 
 		filesTab = new FilesTabView();
-		filesTab.create(tabFolder, fChangeInfo);
-		filesTab.addObserver(chDetailEditor);
+		filesTab.create(fGerritClient, tabFolder, fChangeInfo);
+		filesTab.addObserver(this);
 
 		historytab = new HistoryTabView();
 		historytab.create(tabFolder, fChangeInfo.getMessages());
@@ -244,9 +242,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		int minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
 				+ hScrolBarSize.y;
 		scrollView.setMinSize(minimumWidth, minimumHeight);
-		setChangeInfo(((ChangeDetailEditorInput) getEditorInput()).getClient(),
-				((ChangeDetailEditorInput) getEditorInput()).getChange());
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
+
+		//This query fill the current revision
+		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
+
+		//Queries to fill the Summary Review tab data
+		summaryTab.setTabs(fGerritClient, fChangeInfo);
+
+		buttonsEnablement();
 	}
 
 	private Composite headerSection(final Composite parent, Point fontSize) {
@@ -308,110 +312,123 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fSubmit.setText("Submit");
 		fSubmit.setEnabled(false);
-		fSubmit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fSubmit.setToolTipText(anonymousUserToolTip);
+			fSubmit.addListener(SWT.MouseHover, new Listener() {
 
-				GerritClient gerrit = filesTab.getGerritClient();
+				@Override
+				public void handleEvent(Event event) {
+					// ignore
 
-				SubmitCommand submitCmd = gerrit.submit(fChangeInfo.getChange_id());
-				SubmitInput submitInput = new SubmitInput();
-				submitInput.setWait_for_merge(false);
-
-				submitCmd.setSubmitInput(submitInput);
-
-				ChangeInfo submitCmdResult = null;
-				try {
-					submitCmdResult = submitCmd.call();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(e3.getMessage());
-				} catch (ClientProtocolException e3) {
-					UIUtils.displayInformation(null, TITLE,
-							e3.getLocalizedMessage() + "\n " + submitCmd.formatRequest()); //$NON-NLS-1$
 				}
-				fSubmit.setEnabled(false);
-			}
-		});
+			});
+		} else {
+			fSubmit.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
 
+					SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getChange_id());
+					SubmitInput submitInput = new SubmitInput();
+					submitInput.setWait_for_merge(false);
+
+					submitCmd.setSubmitInput(submitInput);
+
+					try {
+						submitCmd.call();
+					} catch (EGerritException e3) {
+						EGerritCorePlugin.logError(e3.getMessage());
+					} catch (ClientProtocolException e3) {
+						UIUtils.displayInformation(null, TITLE,
+								e3.getLocalizedMessage() + "\n " + submitCmd.formatRequest()); //$NON-NLS-1$
+					}
+					fSubmit.setEnabled(false);
+				}
+			});
+		}
 		fAbandon = new Button(c, SWT.PUSH);
 		fAbandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fAbandon.setText("Abandon");
 		fAbandon.setEnabled(false);
-		fAbandon.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fAbandon.setToolTipText(anonymousUserToolTip);
+		} else {
+			fAbandon.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
 
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message", "", "",
-						null);
-				if (inputDialog.open() != Window.OK) {
-					return;
+					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message", "",
+							"", null);
+					if (inputDialog.open() != Window.OK) {
+						return;
+					}
+
+					AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getChange_id());
+					AbandonInput abandonInput = new AbandonInput();
+					abandonInput.setMessage(inputDialog.getValue());
+
+					abandonCmd.setAbandonInput(abandonInput);
+
+					ChangeInfo abandonCmdResult = null;
+					try {
+						abandonCmdResult = abandonCmd.call();
+					} catch (EGerritException e3) {
+						EGerritCorePlugin.logError(e3.getMessage());
+					} catch (ClientProtocolException e3) {
+						UIUtils.displayInformation(null, TITLE,
+								e3.getLocalizedMessage() + "\n " + abandonCmd.formatRequest()); //$NON-NLS-1$
+					}
+					refreshStatus();
 				}
-
-				GerritClient gerrit = filesTab.getGerritClient();
-
-				AbandonCommand abandonCmd = gerrit.abandon(fChangeInfo.getChange_id());
-				AbandonInput abandonInput = new AbandonInput();
-				abandonInput.setMessage(inputDialog.getValue());
-
-				abandonCmd.setAbandonInput(abandonInput);
-
-				ChangeInfo abandonCmdResult = null;
-				try {
-					abandonCmdResult = abandonCmd.call();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(e3.getMessage());
-				} catch (ClientProtocolException e3) {
-					UIUtils.displayInformation(null, TITLE,
-							e3.getLocalizedMessage() + "\n " + abandonCmd.formatRequest()); //$NON-NLS-1$
-				}
-				refreshStatus();
-
-			}
-
-		});
-
+			});
+		}
 		fRestore = new Button(c, SWT.PUSH);
 		fRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fRestore.setText("Restore");
 		fRestore.setEnabled(false);
-		fRestore.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fRestore.setToolTipText(anonymousUserToolTip);
+		} else {
+			fRestore.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
 
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message", "", "",
-						null);
-				if (inputDialog.open() != Window.OK) {
-					return;
+					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message", "",
+							"", null);
+					if (inputDialog.open() != Window.OK) {
+						return;
+					}
+
+					RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getChange_id());
+					RestoreInput restoreInput = new RestoreInput();
+					restoreInput.setMessage(inputDialog.getValue());
+
+					restoreCmd.setRestoreInput(restoreInput);
+
+					ChangeInfo restoreCmdResult = null;
+					try {
+						restoreCmdResult = restoreCmd.call();
+					} catch (EGerritException e3) {
+						EGerritCorePlugin.logError(e3.getMessage());
+					} catch (ClientProtocolException e3) {
+						UIUtils.displayInformation(null, TITLE,
+								e3.getLocalizedMessage() + "\n " + restoreCmd.formatRequest()); //$NON-NLS-1$
+					}
+					refreshStatus();
 				}
-
-				GerritClient gerrit = filesTab.getGerritClient();
-
-				RestoreCommand restoreCmd = gerrit.restore(fChangeInfo.getChange_id());
-				RestoreInput restoreInput = new RestoreInput();
-				restoreInput.setMessage(inputDialog.getValue());
-
-				restoreCmd.setRestoreInput(restoreInput);
-
-				ChangeInfo restoreCmdResult = null;
-				try {
-					restoreCmdResult = restoreCmd.call();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(e3.getMessage());
-				} catch (ClientProtocolException e3) {
-					UIUtils.displayInformation(null, TITLE,
-							e3.getLocalizedMessage() + "\n " + restoreCmd.formatRequest()); //$NON-NLS-1$
-				}
-				refreshStatus();
-			}
-		});
-
+			});
+		}
 		Button rebase = new Button(c, SWT.PUSH);
 		rebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rebase.setText("Rebase");
-		rebase.addSelectionListener(notAvailableListener());
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			rebase.setToolTipText(anonymousUserToolTip);
+			rebase.setEnabled(false);
+		} else {
+			rebase.addSelectionListener(notAvailableListener());
+		}
 
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -431,79 +448,84 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fReply.setText("Reply...");
-		fReply.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fReply.setToolTipText(anonymousUserToolTip);
+			fReply.setEnabled(false);
+		} else {
+			fReply.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
+					final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+					org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
 
-				final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
-				itemReply.setText("Reply...");
-				itemReply.addSelectionListener(new SelectionListener() {
+					final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
+					itemReply.setText("Reply...");
+					itemReply.addSelectionListener(new SelectionListener() {
 
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						// ignore
-						final ReplyDialog replyDialog = new ReplyDialog(itemReply.getParent().getShell(),
-								fChangeInfo.getPermittedLabels(), fChangeInfo.getLabels());
-						Display.getDefault().syncExec(new Runnable() {
-							public void run() {
-								int ret = replyDialog.open();
-								if (ret == IDialogConstants.OK_ID) {
-									//Fill the data structure for the reply
-									ReviewInput reviewInput = new ReviewInput();
-									reviewInput.setMessage(replyDialog.getMessage());
-									reviewInput.setLabels(replyDialog.getRadiosSelection());
-									reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-									// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
-									//Send the data
-									postReply(reviewInput);
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							// ignore
+							final ReplyDialog replyDialog = new ReplyDialog(itemReply.getParent().getShell(),
+									fChangeInfo.getPermittedLabels(), fChangeInfo.getLabels());
+							Display.getDefault().syncExec(new Runnable() {
+								public void run() {
+									int ret = replyDialog.open();
+									if (ret == IDialogConstants.OK_ID) {
+										//Fill the data structure for the reply
+										ReviewInput reviewInput = new ReviewInput();
+										reviewInput.setMessage(replyDialog.getMessage());
+										reviewInput.setLabels(replyDialog.getRadiosSelection());
+										reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
+										// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
+										//Send the data
+										postReply(reviewInput);
+									}
+
 								}
+							});
+						}
 
+						@Override
+						public void widgetDefaultSelected(SelectionEvent e) {
+							// ignore
+						}
+					});
+
+					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
+					itemCRPlus2.setText("Code-Review+2");
+					String latestPatchSet = filesTab.getLatestPatchSet();
+					itemCRPlus2
+							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
+									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+					if (itemCRPlus2.isEnabled()) {
+						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
+							@Override
+							public void widgetSelected(SelectionEvent e) {
+								super.widgetSelected(e);
+								// Code-Review +2
+								ReviewInput reviewInput = new ReviewInput();
+								reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
+								Map obj = new HashMap();
+								obj.put(CODE_REVIEW, "2");
+
+								reviewInput.setLabels(obj);
+								postReply(reviewInput);
 							}
 						});
 					}
 
-					@Override
-					public void widgetDefaultSelected(SelectionEvent e) {
-						// ignore
-					}
-				});
+					Point loc = fReply.getLocation();
+					Rectangle rect = fReply.getBounds();
 
-				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
-				itemCRPlus2.setText("Code-Review+2");
-				String latestPatchSet = filesTab.getLatestPatchSet();
-				itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
-						&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
-				if (itemCRPlus2.isEnabled()) {
-					itemCRPlus2.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							super.widgetSelected(e);
-							// Code-Review +2
-							ReviewInput reviewInput = new ReviewInput();
-							reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-							Map obj = new HashMap();
-							obj.put(CODE_REVIEW, "2");
+					Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
 
-							reviewInput.setLabels(obj);
-							postReply(reviewInput);
-						}
-					});
+					menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
+
+					menu.setVisible(true);
 				}
-
-				Point loc = fReply.getLocation();
-				Rectangle rect = fReply.getBounds();
-
-				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
-
-				menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
-
-				menu.setVisible(true);
-			}
-		});
-
+			});
+		}
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
 	}
@@ -514,18 +536,16 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param reviewInput
 	 */
 	private void postReply(ReviewInput reviewInput) {
-		GerritClient gerrit = filesTab.getGerritClient();
+		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getChange_id(),
+				fChangeInfo.getCurrentRevision());
+		reviewToEmit.setReviewInput(reviewInput);
 
-		SetReviewCommand command2 = gerrit.setReview(fChangeInfo.getChange_id(), fChangeInfo.getCurrentRevision());
-		command2.setReviewInput(reviewInput);
-
-		ReviewInfo result2 = null;
 		try {
-			result2 = command2.call();
+			reviewToEmit.call();
 		} catch (EGerritException e1) {
 			EGerritCorePlugin.logError(e1.getMessage());
 		} catch (ClientProtocolException e1) {
-			UIUtils.displayInformation(null, TITLE, e1.getLocalizedMessage() + "\n " + command2.formatRequest()); //$NON-NLS-1$
+			UIUtils.displayInformation(null, TITLE, e1.getLocalizedMessage() + "\n " + reviewToEmit.formatRequest()); //$NON-NLS-1$
 		}
 	}
 
@@ -542,7 +562,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 *            element
 	 */
 	private void setChangeInfo(GerritClient gerritClient, ChangeInfo element) {
-		filesTab.setGerritClient(gerritClient);
+		fGerritClient = gerritClient;
 		fChangeInfo.reset();
 
 		//Fill the data structure
@@ -557,15 +577,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setCodeReviewedTally(element.getCodeReviewedTally());
 		fChangeInfo.setVerifiedTally(element.getVerifiedTally());
 		fChangeInfo.setLabels(element.getLabels());
-
-		//This query fill the current revision
-		setCurrentRevisionAndMessageTab(gerritClient, element.getChange_id());
-
-		//Queries to fill the Summary Review tab data
-		summaryTab.setTabs(gerritClient, element);
-
-		buttonsEnablement();
-
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
@@ -604,8 +615,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void refreshStatus() {
-		ChangeInfo changeInfo = refreshChangeInfo(filesTab.getGerritClient(), fChangeInfo.getChange_id(),
-				new NullProgressMonitor());
+		ChangeInfo changeInfo = refreshChangeInfo(fGerritClient, fChangeInfo.getChange_id(), new NullProgressMonitor());
 		fChangeInfo.setStatus(changeInfo.getStatus());
 		fChangeInfo.setUpdated(changeInfo.getUpdated());
 		fChangeInfo.setActions(changeInfo.getActions());
@@ -770,42 +780,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	/*                                                             */
 	/************************************************************* */
 
-	private String getFilesContent(GerritClient gerrit, String change_id, String revision_id, String file,
-			IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			// Create query
-			GetContentCommand command = gerrit.getContent(change_id, revision_id, file);
-
-			String res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	/**
-	 * @param gerritClient
-	 * @param change_id
-	 * @param monitor
-	 * @return
-	 */
 	private ChangeInfo queryMessageTab(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
 		try {
-
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			// Create query
@@ -893,23 +869,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return bindingContext;
 	}
 
-/* (non-Javadoc)
- * @see org.eclipse.ui.part.WorkbenchPart#dispose()
- */
-	@Override
-	public void dispose() {
-		IEditorPart editorPart = null;
-		IWorkbench workbench = EGerritUIPlugin.getDefault().getWorkbench();
-		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		IWorkbenchPage page = null;
-		if (window != null) {
-			page = workbench.getActiveWorkbenchWindow().getActivePage();
-		}
-		page.closeEditor(chDetailEditor, false);
-
-		chDetailEditor = null;
-	}
-
 	private void addFillLabel(Group group, int count) {
 		//Add label for positioning
 		for (int i = 0; i < count; i++) {
@@ -946,6 +905,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 		setSite(site);
 		setInput(input);
+		setChangeInfo(((ChangeDetailEditorInput) input).getClient(), ((ChangeDetailEditorInput) input).getChange());
 	}
 
 	@Override
@@ -976,7 +936,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 
-				Repository localRepo = findLocalRepo(filesTab.getGerritClient(), summaryTab.getProject());
+				Repository localRepo = findLocalRepo(fGerritClient, summaryTab.getProject());
 
 				if (localRepo != null) {
 					//Find the current selected Patch set reference in the table

@@ -257,8 +257,6 @@ ITableColorProvider {
 					if (newCommentCount != 0) {
 						ret = ret + NEW + newCommentCount;
 					}
-					System.out.println("newCommentCount : " + newCommentCount);
-
 				}
 				return ret;
 

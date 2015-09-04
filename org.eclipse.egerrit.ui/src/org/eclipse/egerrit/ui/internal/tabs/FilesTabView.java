@@ -117,17 +117,12 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * The constructor.
-	 */
-	public FilesTabView() {
-	}
-
-	/**
 	 * @param tabFolder
 	 * @param ChangeInfo
 	 *            changeInfo
 	 */
-	public void create(TabFolder tabFolder, ChangeInfo changeInfo) {
+	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
+		this.gerritClient = gerritClient;
 		fChangeInfo = changeInfo;
 		filesTab(tabFolder);
 	}
@@ -379,10 +374,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	}
 
-	private Map<String, DisplayFileInfo> getfFilesDisplay() {
-		return fFilesDisplay;
-	}
-
 	/**
 	 *
 	 */
@@ -401,7 +392,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					setChanged();
 					notifyObservers();
 
-					setListCommentsPerPatchSet(getGerritClient(), fChangeInfo.getId(), selInfo.getCommit().getCommit());
+					setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), selInfo.getCommit().getCommit());
 					displayFilesTable();
 					setDiffAgainstCombo();
 				}
@@ -508,8 +499,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				tablePatchSetsViewer.getTable().setSelection(0);
 				setDiffAgainstCombo();
 				fCurrentRevision = listRevision.get(0);
-				setListCommentsPerPatchSet(getGerritClient(), fChangeInfo.getId(),
-						fCurrentRevision.getCommit().getCommit());
+				setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), fCurrentRevision.getCommit().getCommit());
 				displayFilesTable();
 			}
 
@@ -646,6 +636,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			String revision_id, IProgressMonitor monitor) {
 
 		try {
+			if (gerrit.getRepository().getServerInfo().isAnonymous()) {
+				return null;
+			}
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			ListDraftsCommand command = gerrit.listDraftsComments(change_id, revision_id);
@@ -680,13 +673,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 */
 	private void setRevisions(Map<String, RevisionInfo> revisions) {
 		this.fRevisions = revisions;
-	}
-
-	/**
-	 * @return the Gerrit
-	 */
-	public GerritClient getGerritClient() {
-		return gerritClient;
 	}
 
 	/**

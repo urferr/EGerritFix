@@ -109,8 +109,10 @@ public class CompareItemFactory {
 		try {
 			ListCommentsCommand getComments = gerrit.getListComments(change_id, revision_id);
 			allComments = getComments.call();
-			ListDraftsCommand getDrafts = gerrit.getDraftcomments(change_id, revision_id);
-			mergeComments(getDrafts.call(), allComments);
+			if (!gerrit.getRepository().getServerInfo().isAnonymous()) {
+				ListDraftsCommand getDrafts = gerrit.getDraftcomments(change_id, revision_id);
+				mergeComments(getDrafts.call(), allComments);
+			}
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
