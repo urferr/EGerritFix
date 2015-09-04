@@ -51,7 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Input to open a compare editor on a gerrit review 
+ * Input to open a compare editor on a gerrit review
+ * 
  * @since 1.0
  */
 public class GerritCompareInput extends SaveableCompareEditorInput {
@@ -275,6 +276,9 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 				@Override
 				//Perform the coloration of comments
 				public void applyTextPresentation(TextPresentation textPresentation) {
+					if (textPresentation == null) {
+						return;
+					}
 					if (performInitialColoring[0]) {
 						CompareItem coloredDocument = (CompareItem) sourceViewer.getDocument();
 						AnnotationModel commentsToColor = coloredDocument.getEditableComments();
