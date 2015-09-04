@@ -222,17 +222,6 @@ public abstract class GerritClient {
 	}
 
 	/**
-	 * Return a command to obtain the list of drafts related to a revision of a change set
-	 *
-	 * @param change_id
-	 * @param revision_id
-	 * @return ListDraftsCommand
-	 */
-	public ListDraftsCommand getDraftcomments(String change_id, String revision_id) {
-		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
-	}
-
-	/**
 	 * Return a command to create comments related to a revision of a change
 	 *
 	 * @param change_id
