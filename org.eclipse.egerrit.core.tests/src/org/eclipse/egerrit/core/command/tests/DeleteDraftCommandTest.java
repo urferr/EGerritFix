@@ -17,17 +17,16 @@ import static org.junit.Assert.fail;
 
 import java.net.URI;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.command.GetChangeCommand;
-import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
 import org.eclipse.jgit.api.Git;
@@ -36,12 +35,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.QueryChangesCommand}
+ * Test suite for {@link org.eclipse.egerrit.core.command.DeleteDraftCommand}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
-public class GetContentCommandTest {
+public class DeleteDraftCommandTest {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -78,6 +77,8 @@ public class GetContentCommandTest {
 			fRepository.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
 		}
 		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
+		fRepository.getCredentials().setHttpCredentials(USER, PASSWORD);
+
 		fGerrit = GerritFactory.create(fRepository);
 	}
 
@@ -90,28 +91,27 @@ public class GetContentCommandTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for
-	 * {@link org.eclipse.egerrit.core.command.GetChangeCommand#GetChangeCommand(org.eclipse.egerrit.core.GerritRepository)}
+	 * Test method for {@link org.eclipse.egerrit.core.command.DeleteDraftCommand#DeleteDraftCommand()}
 	 */
 	@Test
-	public void testGetChangeCommand() {
+	public void testDeleteDraftCommand() {
 		// Run test
-		GetChangeCommand command = fGerrit.getChange("");
+		DeleteDraftCommand command = fGerrit.deleteDraft("", "", "");
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", ChangeInfo.class, command.getReturnType());
+		assertEquals("Wrong return type", String.class, command.getReturnType());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetChangeCommand#formatRequest()}
+	 * Test method for {@link org.eclipse.egerrit.core.command.DeleteDraftCommand#formatRequest()}
 	 */
 	@Test
 	public void testFormatRequest() {
 		String EXPECTED_RESULT = null;
 
 		// Run test
-		GetChangeCommand command = fGerrit.getChange("");
+		DeleteDraftCommand command = fGerrit.deleteDraft("", "", "");
 		URI uri = command.formatRequest().getURI();
 
 		// Verify result
@@ -119,7 +119,7 @@ public class GetContentCommandTest {
 		assertEquals("Wrong host", Common.HOST, uri.getHost());
 		assertEquals("Wrong port", Common.PORT, uri.getPort());
 
-		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes/" + "/detail", uri.getPath());
+		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/a/changes//revisions//drafts/", uri.getPath());
 		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
 	}
 
@@ -129,33 +129,53 @@ public class GetContentCommandTest {
 
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
-	 *
-	 * @throws Exception
 	 */
 	@Test
-	public void testCall() throws Exception {
+	public void testCall() {
 
-		String commit_id = null, change_id = null;
-		GitAccess gAccess = new GitAccess();
-		Git git = gAccess.getGitProject();
+		String revision_id = null, change_id = null;
+		try {
+			GitAccess gAccess = new GitAccess();
+			Git git = gAccess.getGitProject();
 
-		gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers {community} !");
-		gAccess.pushFile();
+			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
+			gAccess.pushFile();
 
-		change_id = gAccess.getChangeId();
-		commit_id = gAccess.getCommitId();
+			change_id = gAccess.getChangeId();
 
-		// Run test
-		GetContentCommand command = fGerrit.getContent(change_id, commit_id, "EGerritTestReviewFile.java");
-		String result = null;
+			revision_id = gAccess.getCommitId();
+
+		} catch (Exception e1) {
+			fail(e1.getMessage());
+		}
+
+		// create a comment
+		CreateDraftCommand command = fGerrit.createDraftComments(change_id, revision_id);
+		CommentInfo commentInfo = new CommentInfo();
+		commentInfo.setLine(2);
+		commentInfo.setMessage("This is a test comment");
+		commentInfo.setPath("EGerritTestReviewFile.java");
+		command.setCommentInfo(commentInfo);
+
+		CommentInfo result = null;
 		try {
 			result = command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
+		} catch (ClientProtocolException e) {
+			fail(e.getMessage());
+		}
+		// Run test
+		DeleteDraftCommand command2 = fGerrit.deleteDraft(change_id, revision_id, result.getId());
+		String result2 = null;
+		try {
+			result2 = command2.call();
+		} catch (EGerritException | ClientProtocolException e) {
+			fail(e.getMessage());
 		}
 
 		// Verify result
-		assertEquals("Hello reviewers {community} !", StringUtils.newStringUtf8(Base64.decodeBase64(result)));
+		assert (result2.compareTo("HTTP/1.1 204 No Content") == 0);
 
 	}
 

@@ -15,6 +15,7 @@ package org.eclipse.egerrit.core.tests;
 import org.eclipse.egerrit.core.command.tests.AbandonCommandTest;
 import org.eclipse.egerrit.core.command.tests.AddReviewerCommandTest;
 import org.eclipse.egerrit.core.command.tests.CreateDraftCommandTest;
+import org.eclipse.egerrit.core.command.tests.DeleteDraftCommandTest;
 import org.eclipse.egerrit.core.command.tests.DeleteReviewerCommandTest;
 import org.eclipse.egerrit.core.command.tests.GerritCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetChangeCommandTest;
@@ -67,25 +68,35 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 		// org.eclipse.egerrit.core
-		EGerritCorePluginTest.class, GerritRepositoryTest.class, GerritClientAuthenticationTest.class,
-		GerritFactoryTest.class, GerritTest.class, Gerrit_2_9Test.class,
+		EGerritCorePluginTest.class,
+		GerritRepositoryTest.class,
+		GerritClientAuthenticationTest.class,
+		GerritFactoryTest.class,
+		GerritTest.class,
+		Gerrit_2_9Test.class,
 
 		// org.eclipse.egerrit.core.rest
 		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
 		ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
 		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
 		ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class, RelatedChangesInfoTest.class,
-		RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class, ReviewInputTest.class, SubmitInputTest.class,
-		SubmitInfoTest.class, AbandonInputTest.class, RestoreInputTest.class, AddReviewerInputTest.class,
+		RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class,
+		ReviewInputTest.class,
+		SubmitInputTest.class,
+		SubmitInfoTest.class,
+		AbandonInputTest.class,
+		RestoreInputTest.class,
+		AddReviewerInputTest.class,
 		AddReviewerResultTest.class,
 
 		// org.eclipse.egerrit.core.command
-		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class, GetContentCommandTest.class,
-		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class, ListReviewersCommandTest.class,
-		ListCommentsCommandTest.class, GetIncludedInCommandTest.class, GetRelatedChangesCommandTest.class,
-		CreateDraftCommandTest.class, SetReviewCommandTest.class, PublishDraftRevisionCommandTest.class,
-		ListDraftsCommandTest.class, SubmitCommandTest.class, RestoreCommandTest.class, AbandonCommandTest.class,
-		AddReviewerCommandTest.class, DeleteReviewerCommandTest.class })
+		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
+		GetContentCommandTest.class, GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
+		ListReviewersCommandTest.class, ListCommentsCommandTest.class, GetIncludedInCommandTest.class,
+		GetRelatedChangesCommandTest.class, CreateDraftCommandTest.class, SetReviewCommandTest.class,
+		PublishDraftRevisionCommandTest.class, ListDraftsCommandTest.class, SubmitCommandTest.class,
+		RestoreCommandTest.class, AbandonCommandTest.class, AddReviewerCommandTest.class,
+		DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------

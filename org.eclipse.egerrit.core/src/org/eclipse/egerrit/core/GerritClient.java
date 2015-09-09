@@ -15,6 +15,7 @@ package org.eclipse.egerrit.core;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.AddReviewerCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
@@ -36,8 +37,8 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
  * Gerrit v2.9.
  * <p>
- * The Gerrit REST commands are described in the
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
+ * The Gerrit REST commands are described in the <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
  * <p>
  * This class only offers methods to construct so-called command classes. Each Gerrit REST command is represented by one
  * such command class.
@@ -310,6 +311,16 @@ public abstract class GerritClient {
 	 */
 	public DeleteReviewerCommand deleteReviewer(String change_id, String accountId) {
 		return new DeleteReviewerCommand(fGerritRepository, change_id, accountId);
+	}
+
+	/**
+	 * @param change_id
+	 * @param accountId
+	 * @param draftId
+	 * @return DeleteDraftCommand.
+	 */
+	public DeleteDraftCommand deleteDraft(String change_id, String accountId, String draftId) {
+		return new DeleteDraftCommand(fGerritRepository, change_id, accountId, draftId);
 	}
 
 }
