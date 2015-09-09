@@ -11,11 +11,13 @@
 
 package org.eclipse.egerrit.ui.editors;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
@@ -245,7 +247,17 @@ public class ReplyDialog extends Dialog {
 		//Set into the variable the last setting of the radio
 		getLastLabelSet();
 
-		Iterator<Map.Entry<String, String[]>> iterator = permitted_labels.entrySet().iterator();
+		//Sort the Labels in chronological order
+		Map<String, String[]> sortedMap = new TreeMap<String, String[]>(new Comparator<String>() {
+
+			@Override
+			public int compare(String key1, String key2) {
+				return key1.compareTo(key2);
+			}
+		});
+		sortedMap.putAll(permitted_labels);
+
+		Iterator<Map.Entry<String, String[]>> iterator = sortedMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String[]> permittedlabel = iterator.next();
 			String[] listPermitted = permittedlabel.getValue();
@@ -486,7 +498,7 @@ public class ReplyDialog extends Dialog {
 
 	/**
 	 * This method return the hashMap of the selected radio buttons
-	 * 
+	 *
 	 * @return LinkedHashMap<String, String>
 	 */
 	public LinkedHashMap<String, String> getRadiosSelection() {
