@@ -31,6 +31,7 @@ import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
+import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 
 /**
@@ -321,6 +322,16 @@ public abstract class GerritClient {
 	 */
 	public DeleteDraftCommand deleteDraft(String change_id, String accountId, String draftId) {
 		return new DeleteDraftCommand(fGerritRepository, change_id, accountId, draftId);
+	}
+
+	/**
+	 * @param change_id
+	 * @param accountId
+	 * @param draftId
+	 * @return UpdateDraftCommand.
+	 */
+	public UpdateDraftCommand updateDraftComments(String change_id, String accountId, String draftId) {
+		return new UpdateDraftCommand(fGerritRepository, change_id, accountId, draftId);
 	}
 
 }
