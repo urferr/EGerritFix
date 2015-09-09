@@ -36,6 +36,11 @@ public class EGerritCorePlugin extends Plugin {
 	/** The shared instance */
 	private static EGerritCorePlugin fPlugin;
 
+	/**
+	 * User agent string used to communicate with the gerrit server
+	 */
+	private String userAgent;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -191,5 +196,18 @@ public class EGerritCorePlugin extends Plugin {
 	 */
 	public static void logError(String message, Throwable exception) {
 		log(IStatus.ERROR, message, exception);
+	}
+
+	/**
+	 * Return the http user agent
+	 */
+	String getUserAgent() {
+		if (userAgent == null) {
+			String productId = System.getProperty("eclipse.product", "unknownProduct");
+			String buildId = System.getProperty("eclipse.buildId", "unknownBuildId"); //$NON-NLS-1$ //$NON-NLS-2
+			String pluginVersion = getBundle().getVersion().toString();
+			userAgent = productId + '/' + buildId + ' ' + PLUGIN_ID + '/' + pluginVersion;
+		}
+		return userAgent;
 	}
 }
