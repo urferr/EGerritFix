@@ -405,6 +405,9 @@ public class SummaryTabView {
 	 * @param element
 	 */
 	private void setMergeable(GerritClient gerritClient, ChangeInfo element) {
+		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) {
+			return;
+		}
 		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getChange_id(), "",
 				new NullProgressMonitor());
 		if (mergeableInfo != null) {
