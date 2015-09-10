@@ -28,6 +28,7 @@ import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
@@ -332,6 +333,16 @@ public abstract class GerritClient {
 	 */
 	public UpdateDraftCommand updateDraftComments(String change_id, String accountId, String draftId) {
 		return new UpdateDraftCommand(fGerritRepository, change_id, accountId, draftId);
+	}
+
+	/**
+	 * Return a command to rebase a change
+	 *
+	 * @param change_id
+	 * @return RebaseCommand
+	 */
+	public RebaseCommand rebase(String change_id) {
+		return new RebaseCommand(fGerritRepository, change_id);
 	}
 
 }

@@ -29,6 +29,7 @@ import org.eclipse.egerrit.core.command.tests.ListDraftsCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListReviewersCommandTest;
 import org.eclipse.egerrit.core.command.tests.PublishDraftRevisionCommandTest;
 import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
+import org.eclipse.egerrit.core.command.tests.RebaseCommandTest;
 import org.eclipse.egerrit.core.command.tests.RestoreCommandTest;
 import org.eclipse.egerrit.core.command.tests.SetReviewCommandTest;
 import org.eclipse.egerrit.core.command.tests.SubmitCommandTest;
@@ -49,6 +50,7 @@ import org.eclipse.egerrit.core.rest.tests.IncludedInInfoTest;
 import org.eclipse.egerrit.core.rest.tests.LabelInfoTest;
 import org.eclipse.egerrit.core.rest.tests.MergeableInfoTest;
 import org.eclipse.egerrit.core.rest.tests.ProblemInfoTest;
+import org.eclipse.egerrit.core.rest.tests.RebaseInputTest;
 import org.eclipse.egerrit.core.rest.tests.RelatedChangeAndCommitInfoTest;
 import org.eclipse.egerrit.core.rest.tests.RelatedChangesInfoTest;
 import org.eclipse.egerrit.core.rest.tests.RestoreInputTest;
@@ -89,6 +91,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	RestoreInputTest.class,
 	AddReviewerInputTest.class,
 	AddReviewerResultTest.class,
+	RebaseInputTest.class,
 
 	// org.eclipse.egerrit.core.command
 	GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
@@ -97,7 +100,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	GetRelatedChangesCommandTest.class, CreateDraftCommandTest.class, SetReviewCommandTest.class,
 	PublishDraftRevisionCommandTest.class, ListDraftsCommandTest.class, SubmitCommandTest.class,
 	RestoreCommandTest.class, AbandonCommandTest.class, AddReviewerCommandTest.class,
-	DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class, UpdateDraftCommandTest.class })
+	DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class, UpdateDraftCommandTest.class,
+	RebaseCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
