@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -159,12 +160,21 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				Object element = sel.getFirstElement();
 				if (element instanceof FileInfo) {
+					FileInfo selectedFile = (FileInfo) element;
 					OpenCompareEditor compareEditor;
 					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
 					String diffSource = comboDiffAgainst.getText();
 					if (diffSource.equals(WORKSPACE)) {
-						compareEditor.compareAgainstWorkspace((FileInfo) element);
+						compareEditor.compareAgainstWorkspace(selectedFile);
+					} else if (diffSource.equals(BASE)) {
+						compareEditor.compareAgainstBase(fChangeInfo.getProject(), selectedFile);
 					} else {
+						RevisionInfo rev = getRevisionInfoByNumber(diffSource);
+						if (rev != null) {
+							compareEditor.compareTwoRevisions(rev.getFiles().get(selectedFile.getold_path()),
+									selectedFile);
+							return;
+						}
 						MessageDialog.openError(null, "Can not open compare editor",
 								"The compare editor can not yet show difference with " + diffSource);
 					}
@@ -806,4 +816,14 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		return psSelected;
 	}
 
+	private RevisionInfo getRevisionInfoByNumber(String number) {
+		int revisionNumber = Integer.valueOf(number);
+		Collection<RevisionInfo> revisions = fRevisions.values();
+		for (RevisionInfo candidate : revisions) {
+			if (candidate.getNumber() == revisionNumber) {
+				return candidate;
+			}
+		}
+		return null;
+	}
 }

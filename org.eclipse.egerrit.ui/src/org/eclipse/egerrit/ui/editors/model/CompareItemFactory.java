@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -39,11 +40,15 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.AnnotationModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory class to create compare items
  */
 public class CompareItemFactory {
+
+	private Logger logger = LoggerFactory.getLogger(CompareItemFactory.class);
 
 	private final static String TITLE = "Gerrit Server ";
 
@@ -103,6 +108,21 @@ public class CompareItemFactory {
 
 	}
 
+	/**
+	 * Create a simple compare item
+	 */
+	public CommitCompareItem createSimpleCompareItem(String projectId, String commitId, String filePath,
+			IProgressMonitor monitor) {
+		GetContentFromCommitCommand getContent = gerrit.getContentFromCommit(projectId, commitId, filePath);
+		String fileContent = ""; //$NON-NLS-1$
+		try {
+			fileContent = getContent.call();
+		} catch (ClientProtocolException | EGerritException e) {
+			logger.debug("Exception retrieving commitId", e); //$NON-NLS-1$
+		}
+		return new CommitCompareItem(commitId, filePath, StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)));
+	}
+
 	private Map<String, ArrayList<CommentInfo>> loadComments(GerritClient gerrit, String change_id,
 			String revision_id) {
 		Map<String, ArrayList<CommentInfo>> allComments = new HashMap<>();
@@ -113,12 +133,8 @@ public class CompareItemFactory {
 				ListDraftsCommand getDrafts = gerrit.listDraftsComments(change_id, revision_id);
 				mergeComments(getDrafts.call(), allComments);
 			}
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (EGerritException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ClientProtocolException | EGerritException e) {
+			logger.debug("Exception retrieving commitId", e); //$NON-NLS-1$
 		}
 
 		return allComments;

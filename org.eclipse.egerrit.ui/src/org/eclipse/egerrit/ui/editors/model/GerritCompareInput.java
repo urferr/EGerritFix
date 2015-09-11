@@ -14,9 +14,10 @@ package org.eclipse.egerrit.ui.editors.model;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.compare.CompareConfiguration;
-import org.eclipse.compare.ICompareInputLabelProvider;
+import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.Differencer;
@@ -29,6 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.text.IRegion;
@@ -38,11 +40,9 @@ import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Input to open a compare editor on a gerrit review
- * 
+ *
  * @since 1.0
  */
 public class GerritCompareInput extends SaveableCompareEditorInput {
@@ -62,11 +62,15 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private GerritClient gerrit;
 
-	private IFile left;
+	private IFile left; //Represents a local file in the workspace
 
-	private FileInfo fileInfo;
+	private FileInfo leftInfo; //Represents a remote file
+
+	private FileInfo rightInfo;
 
 	private String file;
+
+	private String projectId;
 
 	private boolean problemSavingChanges = false;
 
@@ -77,12 +81,39 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	//Also because if we do recolor things, it throw things off when the user starts editing.
 	final private Boolean[] performInitialColoring = new Boolean[] { Boolean.FALSE };
 
-	public GerritCompareInput(IFile left, String changeId, FileInfo info, GerritClient gerrit) {
+	/**
+	 * Create a compare input used to compare a workspace file with a remove file
+	 */
+	public GerritCompareInput(IFile left, String changeId, FileInfo right, GerritClient gerrit) {
 		super(createEditorConfiguration(), null);
 		this.left = left;
 		this.changeId = changeId;
-		this.fileInfo = info;
-		this.file = fileInfo.getold_path();
+		this.rightInfo = right;
+		this.file = rightInfo.getold_path();
+		this.gerrit = gerrit;
+	}
+
+	/**
+	 * Create a compare input used to compare two remote files
+	 */
+	public GerritCompareInput(String changeId, FileInfo left, FileInfo right, GerritClient gerrit) {
+		super(createEditorConfiguration(), null);
+		this.leftInfo = left;
+		this.changeId = changeId;
+		this.rightInfo = right;
+		this.file = rightInfo.getold_path();
+		this.gerrit = gerrit;
+	}
+
+	/**
+	 * Create a compare input used to compare a file from a commit with a remote file
+	 */
+	public GerritCompareInput(String changeId, String projectId, FileInfo right, GerritClient gerrit) {
+		super(createEditorConfiguration(), null);
+		this.changeId = changeId;
+		this.projectId = projectId;
+		this.rightInfo = right;
+		this.file = rightInfo.getold_path();
 		this.gerrit = gerrit;
 	}
 
@@ -93,29 +124,47 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + file)); //$NON-NLS-1$
 	}
 
-	@Override
 	/**
 	 * This method is made public for testing purpose
 	 */
+	@Override
 	public ICompareInput prepareCompareInput(IProgressMonitor pm) {
-		CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo, pm);
-		diffNode = new GerritDiffNode(null, Differencer.ADDITION, null, createFileElement(getLeft()), right);
+		ITypedElement leftInput = null;
+		ITypedElement rightInput = null;
+
+		if (left != null) {
+			leftInput = createFileElement(getLeft());
+		} else if (leftInfo != null) {
+			leftInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, leftInfo, pm);
+		} else if (projectId != null) {
+			leftInput = new CompareItemFactory(gerrit).createSimpleCompareItem(projectId, getBaseCommitId(),
+					rightInfo.getold_path(), pm);
+		}
+
+		rightInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo, pm);
+		diffNode = new GerritDiffNode(null, Differencer.ADDITION, null, leftInput, rightInput);
 		return diffNode;
+
+	}
+
+	private String getBaseCommitId() {
+		List<CommitInfo> parents = rightInfo.getContainingRevisionInfo().getCommit().getParents();
+		if (parents == null) {
+			return null;
+		}
+		return parents.get(0).getCommit();
 	}
 
 	@Override
 	public String getTitle() {
-		if (left != null) {
-			return super.getTitle();
-		}
-		return file + " / (no matching file in workspace)";
+		return file;
 	}
 
 	@Override
 	protected void fireInputChange() {
 		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the input is changed
 		try {
-			CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, fileInfo,
+			CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo,
 					new NullProgressMonitor());
 			((GerritDiffNode) getCompareResult()).setRight(right);
 			((GerritDiffNode) getCompareResult()).fireChange();
@@ -155,94 +204,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private static CompareConfiguration createEditorConfiguration() {
 		CompareConfiguration config = new CompareConfiguration();
-		config.setDefaultLabelProvider(new ICompareInputLabelProvider() {
-
-			@Override
-			public void removeListener(ILabelProviderListener listener) {
-				// ignore
-			}
-
-			@Override
-			public boolean isLabelProperty(Object element, String property) {
-				// ignore
-				return false;
-			}
-
-			@Override
-			public void dispose() {
-				// ignore
-			}
-
-			@Override
-			public void addListener(ILabelProviderListener listener) {
-				// ignore
-			}
-
-			@Override
-			public String getText(Object element) {
-				// ignore
-				return null;
-			}
-
-			@Override
-			public Image getImage(Object element) {
-				// ignore
-				return null;
-			}
-
-			@Override
-			public String getRightLabel(Object input) {
-				if (!(input instanceof GerritDiffNode)) {
-					return null;
-				}
-				if (((GerritDiffNode) input).getRight() instanceof CompareItem) {
-					return getLabel((CompareItem) ((GerritDiffNode) input).getRight());
-				}
-				return null;
-
-			}
-
-			@Override
-			public Image getRightImage(Object input) {
-				// ignore
-				return null;
-			}
-
-			@Override
-			public String getLeftLabel(Object input) {
-				if (!(input instanceof GerritDiffNode)) {
-					return null;
-				}
-				if (((GerritDiffNode) input).getLeft() instanceof CompareItem) {
-					return getLabel((CompareItem) ((GerritDiffNode) input).getLeft());
-				}
-				return ((GerritDiffNode) input).getRight().getName();
-			}
-
-			private String getLabel(CompareItem left) {
-				FileInfo fileInfo = left.getFileInfo();
-				return "Patch set " + fileInfo.getContainingRevisionInfo().getNumber() + " - " //$NON-NLS-2$
-						+ fileInfo.getold_path();
-			}
-
-			@Override
-			public Image getLeftImage(Object input) {
-				// ignore
-				return null;
-			}
-
-			@Override
-			public String getAncestorLabel(Object input) {
-				// ignore
-				return null;
-			}
-
-			@Override
-			public Image getAncestorImage(Object input) {
-				// ignore
-				return null;
-			}
-		});
+		config.setDefaultLabelProvider(new GerritCompareInputLabelProvider());
 		config.setRightEditable(true);
 		return config;
 	}

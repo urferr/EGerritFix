@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2015 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
@@ -41,8 +40,41 @@ public class OpenCompareEditor {
 		this.changeInfo = changeInfo;
 	}
 
-	public void compareAgainstWorkspace(FileInfo fileInfo) {
-		File potentialFile = locateFileInLocalGitRepo(fileInfo);
+	/**
+	 * Open the compare editor with the two provided FileInfo
+	 *
+	 * @param left
+	 *            the file to show in the left pane
+	 * @param right
+	 *            the file to show in the right pane
+	 */
+	public void compareTwoRevisions(FileInfo left, FileInfo right) {
+		GerritCompareInput ci = new GerritCompareInput(changeInfo.getChange_id(), left, right, gerrit);
+		openCompareEditor(ci);
+	}
+
+	/**
+	 * Open the compare editor with a file from the given commitId, and a FileInfo
+	 *
+	 * @param projectId
+	 *            the name of the gerrit project (this is necessary because we can't traverse our data model completely
+	 *            - e.g. we can't go from a FileInfo all the way up to the changeInfo)
+	 * @param right
+	 *            the file to show in the right pane
+	 */
+	public void compareAgainstBase(String projectId, FileInfo right) {
+		GerritCompareInput ci = new GerritCompareInput(changeInfo.getChange_id(), projectId, right, gerrit);
+		openCompareEditor(ci);
+	}
+
+	/**
+	 * Open the compare editor against a file from the workspace, and a FileInfo
+	 *
+	 * @param right
+	 *            the file to show in the right pane
+	 */
+	public void compareAgainstWorkspace(FileInfo right) {
+		File potentialFile = locateFileInLocalGitRepo(right);
 		IFile workspaceFile = null;
 		if (potentialFile == null) {
 			logger.debug("The corresponding file could not be found in any git repository known by the workspace."); //$NON-NLS-1$
@@ -55,7 +87,7 @@ public class OpenCompareEditor {
 						"The compare editor could not be opened because the corresponding file is not in the workspace."); //$NON-NLS-1$
 			}
 		}
-		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getChange_id(), fileInfo, gerrit);
+		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getChange_id(), right, gerrit);
 		openCompareEditor(ci);
 
 	}
