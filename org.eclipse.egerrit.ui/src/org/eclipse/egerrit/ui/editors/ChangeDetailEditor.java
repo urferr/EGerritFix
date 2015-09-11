@@ -435,11 +435,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		checkout.setText("Checkout");
 		checkout.addSelectionListener(checkoutButtonListener(parent));
 
-		Button pull = new Button(c, SWT.PUSH);
-		pull.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		pull.setText("Pull");
-		pull.addSelectionListener(notAvailableListener());
-
 		Button cherrypick = new Button(c, SWT.PUSH);
 		cherrypick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		cherrypick.setText("Cherry-Pick");
