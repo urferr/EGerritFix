@@ -13,7 +13,6 @@ package org.eclipse.egerrit.ui.editors.model;
 
 import org.eclipse.compare.ICompareInputLabelProvider;
 import org.eclipse.compare.ITypedElement;
-import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
@@ -79,19 +78,9 @@ class GerritCompareInputLabelProvider implements ICompareInputLabelProvider {
 
 	private String getLabelFromTypedElement(ITypedElement toPrint) {
 		if (toPrint == null) {
-			return null;
-		}
-
-		if (toPrint instanceof CompareItem) {
-			return getLabel((CompareItem) toPrint);
+			return ""; //$NON-NLS-1$
 		}
 		return toPrint.getName();
-	}
-
-	private String getLabel(CompareItem item) {
-		FileInfo fileInfo = item.getFileInfo();
-		return "Patch set " + fileInfo.getContainingRevisionInfo().getNumber() + " - " //$NON-NLS-2$
-				+ fileInfo.getold_path();
 	}
 
 	@Override

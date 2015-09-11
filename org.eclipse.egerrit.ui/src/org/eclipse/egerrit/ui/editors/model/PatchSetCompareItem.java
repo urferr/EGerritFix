@@ -38,7 +38,7 @@ import org.eclipse.swt.graphics.Image;
  *
  * @since 1.0
  */
-public class CompareItem extends Document
+public class PatchSetCompareItem extends Document
 		implements IStreamContentAccessor, ITypedElement, IModificationDate, IEditableContent {
 	private String fileName;
 
@@ -102,7 +102,8 @@ public class CompareItem extends Document
 
 	@Override
 	public String getName() {
-		return fileName;
+		return "Patch Set " + fileInfo.getContainingRevisionInfo().getNumber() + ": " //$NON-NLS-1$ //$NON-NLS-2$
+				+ GerritCompareHelper.extractFilename(fileName);
 	}
 
 	@Override
@@ -129,9 +130,9 @@ public class CompareItem extends Document
 				publishDraft.call();
 			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
-				throw new RuntimeException(CompareItem.class.getName(), e);
+				throw new RuntimeException(PatchSetCompareItem.class.getName(), e);
 			} catch (ClientProtocolException e) {
-				throw new RuntimeException(CompareItem.class.getName(), e);
+				throw new RuntimeException(PatchSetCompareItem.class.getName(), e);
 			}
 		}
 	}
@@ -144,7 +145,7 @@ public class CompareItem extends Document
 
 	/**
 	 * Return the file info object for which this compare item is created
-	 * 
+	 *
 	 * @return {@link FileInfo}
 	 */
 	public FileInfo getFileInfo() {
@@ -153,7 +154,7 @@ public class CompareItem extends Document
 
 	/**
 	 * Return an annotation model representing the comments
-	 * 
+	 *
 	 * @return {@link AnnotationModel}
 	 */
 	public AnnotationModel getEditableComments() {
