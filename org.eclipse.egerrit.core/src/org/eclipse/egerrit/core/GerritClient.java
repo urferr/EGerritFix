@@ -20,6 +20,7 @@ import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
+import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
@@ -343,6 +344,18 @@ public abstract class GerritClient {
 	 */
 	public RebaseCommand rebase(String change_id) {
 		return new RebaseCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * @param project
+	 * @param commit_id
+	 * @param file_id
+	 * @return GetContentFromCommitCommand a command to getcontent of a change
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Gerrit
+	 *      REST API: Get Content</a>
+	 */
+	public GetContentFromCommitCommand getContentFromCommit(String project, String commit_id, String file_id) {
+		return new GetContentFromCommitCommand(fGerritRepository, project, commit_id, file_id);
 	}
 
 }

@@ -21,6 +21,7 @@ import org.eclipse.egerrit.core.command.tests.GerritCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetChangeCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetCommitMsgCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetContentCommandTest;
+import org.eclipse.egerrit.core.command.tests.GetContentFromCommitCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetIncludedInCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetRelatedChangesCommandTest;
@@ -83,7 +84,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
 	GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
 	ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class, RelatedChangesInfoTest.class,
-	RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class,
+	RelatedChangeAndCommitInfoTest.class,
+	ReviewInfoTest.class,
 	ReviewInputTest.class,
 	SubmitInputTest.class,
 	SubmitInfoTest.class,
@@ -101,7 +103,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	PublishDraftRevisionCommandTest.class, ListDraftsCommandTest.class, SubmitCommandTest.class,
 	RestoreCommandTest.class, AbandonCommandTest.class, AddReviewerCommandTest.class,
 	DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class, UpdateDraftCommandTest.class,
-	RebaseCommandTest.class })
+	RebaseCommandTest.class ,	GetContentFromCommitCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
