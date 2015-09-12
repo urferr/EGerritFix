@@ -62,17 +62,22 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private GerritClient gerrit;
 
-	private IFile left; //Represents a local file in the workspace
+	//Represents a local file in the workspace
+	private IFile left;
 
-	private FileInfo leftInfo; //Represents a remote file
+	//Represents a remote file from a revision presented on the left
+	private FileInfo leftInfo;
 
+	//Represents a remote file from a revision file presented on the right
 	private FileInfo rightInfo;
 
 	private String file;
 
 	private String projectId;
 
-	private boolean problemSavingChanges = false;
+	//Flag used to detect when a failure happened while saving the comments to the server.
+	//It can take 3 values -1 (no problem), 0 problem on the left side, 1 problem on the right side
+	private byte problemSavingChanges = -1;
 
 	private GerritDiffNode diffNode;
 
@@ -129,6 +134,12 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	 */
 	@Override
 	public ICompareInput prepareCompareInput(IProgressMonitor pm) {
+		ITypedElement[] inputs = createCompareItems(pm);
+		diffNode = new GerritDiffNode(null, Differencer.ADDITION, null, inputs[0], inputs[1]);
+		return diffNode;
+	}
+
+	private ITypedElement[] createCompareItems(IProgressMonitor pm) {
 		ITypedElement leftInput = null;
 		ITypedElement rightInput = null;
 
@@ -142,9 +153,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		}
 
 		rightInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo, pm);
-		diffNode = new GerritDiffNode(null, Differencer.ADDITION, null, leftInput, rightInput);
-		return diffNode;
-
+		return new ITypedElement[] { leftInput, rightInput };
 	}
 
 	private String getBaseCommitId() {
@@ -164,9 +173,9 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	protected void fireInputChange() {
 		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the input is changed
 		try {
-			PatchSetCompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo,
-					new NullProgressMonitor());
-			((GerritDiffNode) getCompareResult()).setRight(right);
+			ITypedElement[] inputs = createCompareItems(new NullProgressMonitor());
+			((GerritDiffNode) getCompareResult()).setLeft(inputs[0]);
+			((GerritDiffNode) getCompareResult()).setRight(inputs[1]);
 			((GerritDiffNode) getCompareResult()).fireChange();
 		} finally {
 			performInitialColoring[0] = Boolean.FALSE;
@@ -178,10 +187,15 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		try {
 			super.saveChanges(monitor);
 		} catch (RuntimeException ex) {
-			//This works hand in hand with the CompareItem#setContent method which raises a very specific RuntimeException
+			//This works hand in hand with the PatchSetCompareItem#setContent method which raises a very specific RuntimeException
 			if (PatchSetCompareItem.class.getName().equals(ex.getMessage())) {
-				problemSavingChanges = true;
-				setRightDirty(true);
+				if (ex.getCause().getMessage().equals(((GerritDiffNode) getCompareResult()).getLeft())) {
+					problemSavingChanges = 0;
+					setLeftDirty(true);
+				} else {
+					problemSavingChanges = 1;
+					setRightDirty(true);
+				}
 				throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
 						"A problem occurred while sending the changes to the gerrit server"));
 			} else {
@@ -193,9 +207,13 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	@Override
 	public void setDirty(boolean dirty) {
-		if (problemSavingChanges) {
+		if (problemSavingChanges == 0) {
 			super.setDirty(true);
-			problemSavingChanges = false;
+			problemSavingChanges = -1;
+			setLeftDirty(true);
+		} else if (problemSavingChanges == 1) {
+			super.setDirty(true);
+			problemSavingChanges = -1;
 			setRightDirty(true);
 		} else {
 			super.setDirty(dirty);
@@ -219,11 +237,23 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
 		Viewer contentViewer = super.findContentViewer(oldViewer, input, parent);
-		setupCommentColorer(contentViewer);
+		if (isCommentable(input.getLeft())) {
+			setupCommentColorer(contentViewer, 0);
+		}
+		if (isCommentable(input.getRight())) {
+			setupCommentColorer(contentViewer, 1);
+		}
 		return contentViewer;
 	}
 
-	private void setupCommentColorer(Viewer contentViewer) {
+	private boolean isCommentable(ITypedElement element) {
+		if (element instanceof PatchSetCompareItem) {
+			return true;
+		}
+		return false;
+	}
+
+	private void setupCommentColorer(Viewer contentViewer, int side) {
 		if (!(contentViewer instanceof TextMergeViewer)) {
 			return;
 		}
@@ -233,11 +263,13 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		TextMergeViewer textMergeViewer = (TextMergeViewer) contentViewer;
 		try {
 			Class<TextMergeViewer> clazz = TextMergeViewer.class;
-			Field declaredField = clazz.getDeclaredField("fRight"); //$NON-NLS-1$
+			Field declaredField = clazz.getDeclaredField(side == 0 ? "fLeft" : "fRight"); //$NON-NLS-1$ //$NON-NLS-2$
 			declaredField.setAccessible(true);
+			@SuppressWarnings("restriction")
 			MergeSourceViewer rightSourceViewer = (MergeSourceViewer) declaredField.get(textMergeViewer);
 
-			Field sourceViewerField = MergeSourceViewer.class.getDeclaredField("fSourceViewer");
+			@SuppressWarnings("restriction")
+			Field sourceViewerField = MergeSourceViewer.class.getDeclaredField("fSourceViewer"); //$NON-NLS-1$
 			sourceViewerField.setAccessible(true);
 			final SourceViewer sourceViewer = (SourceViewer) sourceViewerField.get(rightSourceViewer);
 			sourceViewer.addTextPresentationListener(new ITextPresentationListener() {
@@ -250,7 +282,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 					if (performInitialColoring[0]) {
 						PatchSetCompareItem coloredDocument = (PatchSetCompareItem) sourceViewer.getDocument();
 						AnnotationModel commentsToColor = coloredDocument.getEditableComments();
-						Iterator commentsIterator = commentsToColor.getAnnotationIterator();
+						Iterator<?> commentsIterator = commentsToColor.getAnnotationIterator();
 						while (commentsIterator.hasNext()) {
 							Annotation comment = (Annotation) commentsIterator.next();
 							Position commentPosition = commentsToColor.getPosition(comment);

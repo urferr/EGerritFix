@@ -128,18 +128,17 @@ public class PatchSetCompareItem extends Document
 			newComment.setPath(fileName);
 			try {
 				publishDraft.call();
-			} catch (EGerritException e) {
+			} catch (EGerritException | ClientProtocolException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
-				throw new RuntimeException(PatchSetCompareItem.class.getName(), e);
-			} catch (ClientProtocolException e) {
-				throw new RuntimeException(PatchSetCompareItem.class.getName(), e);
+				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
+				throw new RuntimeException(PatchSetCompareItem.class.getName(),
+						new Throwable(String.valueOf(hashCode())));
 			}
 		}
 	}
 
 	@Override
 	public ITypedElement replace(ITypedElement dest, ITypedElement src) {
-		System.out.println("replace called");
 		return null;
 	}
 
