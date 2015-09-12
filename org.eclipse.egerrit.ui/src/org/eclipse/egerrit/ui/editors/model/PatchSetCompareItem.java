@@ -12,16 +12,12 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IModificationDate;
-import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -38,8 +34,7 @@ import org.eclipse.swt.graphics.Image;
  *
  * @since 1.0
  */
-public class PatchSetCompareItem extends Document
-		implements IStreamContentAccessor, ITypedElement, IModificationDate, IEditableContent {
+public class PatchSetCompareItem extends Document implements ITypedElement, IModificationDate, IEditableContent {
 	private String fileName;
 
 	private IDocument originalDocument;
@@ -82,11 +77,6 @@ public class PatchSetCompareItem extends Document
 
 	void setChange_id(String change_id) {
 		this.change_id = change_id;
-	}
-
-	@Override
-	public InputStream getContents() throws CoreException {
-		return new ByteArrayInputStream(get().getBytes());
 	}
 
 	@Override

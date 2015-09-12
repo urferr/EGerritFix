@@ -114,7 +114,7 @@ public class OpenCompareEditorTests {
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
 		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
 		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
-		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).getContents());
+		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class OpenCompareEditorTests {
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
 		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
 		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
-		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).getContents());
+		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
 	}
 
 	@Test
