@@ -315,4 +315,75 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 			performInitialColoring[0] = Boolean.FALSE;
 		}
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((changeId == null) ? 0 : changeId.hashCode());
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		result = prime * result + ((left == null) ? 0 : left.hashCode());
+		result = prime * result + ((leftInfo == null) ? 0 : leftInfo.hashCode());
+		result = prime * result + ((projectId == null) ? 0 : projectId.hashCode());
+		result = prime * result + ((rightInfo == null) ? 0 : rightInfo.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GerritCompareInput other = (GerritCompareInput) obj;
+		if (changeId == null) {
+			if (other.changeId != null) {
+				return false;
+			}
+		} else if (!changeId.equals(other.changeId)) {
+			return false;
+		}
+		if (file == null) {
+			if (other.file != null) {
+				return false;
+			}
+		} else if (!file.equals(other.file)) {
+			return false;
+		}
+		if (left == null) {
+			if (other.left != null) {
+				return false;
+			}
+		} else if (!left.equals(other.left)) {
+			return false;
+		}
+		if (leftInfo == null) {
+			if (other.leftInfo != null) {
+				return false;
+			}
+		} else if (!leftInfo.equals(other.leftInfo)) {
+			return false;
+		}
+		if (projectId == null) {
+			if (other.projectId != null) {
+				return false;
+			}
+		} else if (!projectId.equals(other.projectId)) {
+			return false;
+		}
+		if (rightInfo == null) {
+			if (other.rightInfo != null) {
+				return false;
+			}
+		} else if (!rightInfo.equals(other.rightInfo)) {
+			return false;
+		}
+		return true;
+	}
+
 }
