@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2015, Ericsson, Inc. All rights reserved. This program 
+	and the accompanying materials are made available under the terms of the 
+	Eclipse Public License v1.0 which accompanies this distribution, and is available 
+	at http://www.eclipse.org/legal/epl-v10.html -->
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.eclipse.egerrit</groupId>
+		<artifactId>org.eclipse.egerrit.parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<name>Publication script</name>
+	<artifactId>org.eclipse.egerrit.releng.publication</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+		<repoOnServer>${download-publish-path}</repoOnServer>
+		<repoBuilt>${project.build.directory}/repository</repoBuilt>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<compress>false</compress>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-eclipserun-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<!-- IMPORTANT: DO NOT split the arg line -->
+					<appArgLine>-application org.eclipse.ant.core.antRunner -buildfile composite-repo.xml p2.composite.add -Dsite.composite.name=EGerrit -Dsource.repository=${repoBuilt} -Dtarget.repository=${download-publish-path} -Dtarget.child.repository.relativePath=${buildId}</appArgLine>
+					<repositories>
+						<repository>
+							<id>luna</id>
+							<layout>p2</layout>
+							<url>http://download.eclipse.org/releases/luna</url>
+						</repository>
+					</repositories>
+					<dependencies>
+						<dependency>
+							<artifactId>org.eclipse.ant.core</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.apache.ant</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.p2.repository.tools</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.p2.core.feature</artifactId>
+							<type>eclipse-feature</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.p2.extras.feature</artifactId>
+							<type>eclipse-feature</type>
+						</dependency>
+						<dependency>
+							<artifactId>org.eclipse.equinox.ds</artifactId>
+							<type>eclipse-plugin</type>
+						</dependency>
+					</dependencies>
+				</configuration>
+				<executions>
+					<execution>
+						<id>add-p2-composite-repository</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>eclipse-run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
