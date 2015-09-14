@@ -85,7 +85,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	 * Create a compare input used to compare a workspace file with a remove file
 	 */
 	public GerritCompareInput(IFile left, String changeId, FileInfo right, GerritClient gerrit) {
-		super(createEditorConfiguration(), null);
+		super(createEditorConfiguration(true), null);
 		this.left = left;
 		this.changeId = changeId;
 		this.rightInfo = right;
@@ -97,7 +97,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	 * Create a compare input used to compare two remote files
 	 */
 	public GerritCompareInput(String changeId, FileInfo left, FileInfo right, GerritClient gerrit) {
-		super(createEditorConfiguration(), null);
+		super(createEditorConfiguration(true), null);
 		this.leftInfo = left;
 		this.changeId = changeId;
 		this.rightInfo = right;
@@ -109,7 +109,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	 * Create a compare input used to compare a file from a commit with a remote file
 	 */
 	public GerritCompareInput(String changeId, String projectId, FileInfo right, GerritClient gerrit) {
-		super(createEditorConfiguration(), null);
+		super(createEditorConfiguration(false), null);
 		this.changeId = changeId;
 		this.projectId = projectId;
 		this.rightInfo = right;
@@ -202,10 +202,11 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		}
 	}
 
-	private static CompareConfiguration createEditorConfiguration() {
+	private static CompareConfiguration createEditorConfiguration(boolean leftEditable) {
 		CompareConfiguration config = new CompareConfiguration();
 		config.setDefaultLabelProvider(new GerritCompareInputLabelProvider());
 		config.setRightEditable(true);
+		config.setLeftEditable(leftEditable);
 		return config;
 	}
 
