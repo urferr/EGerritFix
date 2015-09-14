@@ -13,7 +13,7 @@
 		<groupId>org.eclipse.egerrit</groupId>
 		<artifactId>org.eclipse.egerrit.parent</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 
 	<name>Publication script</name>
