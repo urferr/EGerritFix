@@ -32,6 +32,7 @@ import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
 import org.eclipse.egerrit.ui.editors.model.PatchSetCompareItem;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -97,7 +98,7 @@ public class OpenCompareEditorTests {
 		gitAccess.importProject("aProject/.project"); //$NON-NLS-1$
 	}
 
-//	@AfterClass
+	@AfterClass
 	public static void tearDownRepo() throws CoreException {
 		gitAccess.removeFromGitView();
 		gitAccess.removeProject("aProject"); //$NON-NLS-1$
@@ -113,7 +114,7 @@ public class OpenCompareEditorTests {
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
 		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
 		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
-		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).getContents());
+		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
 	}
 
 	@Test
@@ -137,7 +138,7 @@ public class OpenCompareEditorTests {
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
 		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
 		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
-		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).getContents());
+		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
 	}
 
 	@Test
