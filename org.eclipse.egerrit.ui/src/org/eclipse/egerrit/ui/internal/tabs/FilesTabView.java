@@ -418,8 +418,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private void setDiffAgainstCombo() {
 		List<String> listPatch = new ArrayList<String>();
 		//Always start the list with the following items
-		listPatch.add(WORKSPACE);
 		listPatch.add(BASE);
+		listPatch.add(WORKSPACE);
 		//Find the current Patchset selection
 		ISelection selected = tablePatchSetsViewer.getSelection();
 		if (!selected.isEmpty()) {
