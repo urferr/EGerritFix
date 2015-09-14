@@ -20,9 +20,4 @@
 	<artifactId>org.eclipse.egerrit.updatesite</artifactId>
 	<packaging>eclipse-repository</packaging>
 
-	<properties>
-		<repoOnServer>${download-publish-path}</repoOnServer>
-		<repoBuilt>${project.build.directory}/repository</repoBuilt>
-	</properties>
-
 </project>
