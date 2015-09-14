@@ -537,6 +537,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		try {
 			reviewToEmit.call();
+			refreshStatus();
 		} catch (EGerritException e1) {
 			EGerritCorePlugin.logError(e1.getMessage());
 		} catch (ClientProtocolException e1) {
@@ -549,7 +550,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/**
-	 * This is the entry pint to fill the editor with the Change info and the gerrit server being used.
+	 * This is the entry point to fill the editor with the Change info and the gerrit server being used.
 	 *
 	 * @param GerritClient
 	 *            gerritClient
@@ -569,8 +570,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setBranch(element.getBranch());
 		fChangeInfo.setUpdated(element.getUpdated());
 		fChangeInfo.setTopic(element.getTopic());
-		fChangeInfo.setCodeReviewedTally(element.getCodeReviewedTally());
-		fChangeInfo.setVerifiedTally(element.getVerifiedTally());
 		fChangeInfo.setLabels(element.getLabels());
 	}
 
@@ -611,12 +610,18 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private void refreshStatus() {
 		ChangeInfo changeInfo = refreshChangeInfo(fGerritClient, fChangeInfo.getChange_id(), new NullProgressMonitor());
-		fChangeInfo.setStatus(changeInfo.getStatus());
-		fChangeInfo.setUpdated(changeInfo.getUpdated());
-		fChangeInfo.setActions(changeInfo.getActions());
-		fChangeInfo.setPermittedLabels(changeInfo.getPermittedLabels());
+
+		//Reset the whole window
+		setChangeInfo(fGerritClient, changeInfo);
+
+		//This query fill the current revision
+		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
+
+		//Queries to fill the Summary Review tab data
+		summaryTab.setTabs(fGerritClient, fChangeInfo);
 
 		buttonsEnablement();
+
 	}
 
 	/**
@@ -715,6 +720,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		if (res != null) {
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
+
 			fChangeInfo.setLabels(res.getLabels());
 			fChangeInfo.setMessages(res.getMessages());
 			fChangeInfo.setPermittedLabels(res.getPermittedLabels());

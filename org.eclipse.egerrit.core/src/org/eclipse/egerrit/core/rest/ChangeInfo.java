@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.egerrit.core.model.PropertyChangeModel;
+import org.eclipse.egerrit.core.utils.Utils;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
@@ -150,6 +151,10 @@ public class ChangeInfo extends PropertyChangeModel {
 	// a calculated compilation of the verify values for this review (not part of the REST structure)
 	private int verifiedTally;
 
+	private static final String VERIFIED = "Verified";
+
+	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
+
 	// ------------------------------------------------------------------------
 	// The getters
 	// ------------------------------------------------------------------------
@@ -244,6 +249,10 @@ public class ChangeInfo extends PropertyChangeModel {
 	 */
 	public void setLabels(Map<String, LabelInfo> labels) {
 		firePropertyChange("labels", this.labels, this.labels = labels);
+
+		//Adjust the tally when new labels are received
+		setCodeReviewedTally(verifyTally(CODE_REVIEW));
+		setVerifiedTally(verifyTally(VERIFIED));
 	}
 
 	/**
@@ -814,4 +823,26 @@ public class ChangeInfo extends PropertyChangeModel {
 	public void setActions(Map<String, ActionInfo> actions) {
 		this.actions = actions;
 	}
+
+	private int verifyTally(String testLabels) {
+		int state = 0;
+		Map<String, LabelInfo> labels = getLabels();
+
+		if (labels != null && labels.get(testLabels) != null) {
+			for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+				if (entry.getKey() != null && entry.getKey().compareTo(testLabels) == 0) {
+					LabelInfo labelInfo = entry.getValue();
+					if (labelInfo.getAll() != null) {
+						for (ApprovalInfo it : labelInfo.getAll()) {
+							if (it.getValue() != null) {
+								state = Utils.getStateValue(it.getValue(), state);
+							}
+						}
+					}
+				}
+			}
+		}
+		return state;
+	}
+
 }

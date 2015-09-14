@@ -977,9 +977,23 @@ public class GerritTableView extends ViewPart {
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
 
 		gerritClient = gerritRepository.instantiateGerrit();
-		// Fetch the list of reviews and pre-populate the table
-		ChangeInfo[] reviews = getReviewList(repository, queryString);
+		ChangeInfo[] reviews = null;
+		if (gerritClient != null) {
+			// Fetch the list of reviews and pre-populate the table
+			reviews = getReviewList(repository, queryString);
+		} else {
+			//Reset the list to prevent bad request
+			reviews = new ChangeInfo[0];
+			fServerUtil.resetLastGerritServer();
 
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					setRepositoryVersionLabel("Invalid Server", "NO connection");
+				}
+			});
+
+		}
 		fReviewTable.init(reviews);
 		refresh();
 
