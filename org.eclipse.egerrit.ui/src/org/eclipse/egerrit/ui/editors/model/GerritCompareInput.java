@@ -291,6 +291,9 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 						}
 					} else {
 						IRegion newRegion = textPresentation.getCoverage();
+						if (newRegion == null) {
+							return;
+						}
 						textPresentation
 								.replaceStyleRange(createCommentStyle(newRegion.getOffset(), newRegion.getLength()));
 					}
