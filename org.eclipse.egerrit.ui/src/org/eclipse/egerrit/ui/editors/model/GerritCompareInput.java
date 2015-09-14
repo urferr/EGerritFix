@@ -164,7 +164,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	protected void fireInputChange() {
 		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the input is changed
 		try {
-			CompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo,
+			PatchSetCompareItem right = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo,
 					new NullProgressMonitor());
 			((GerritDiffNode) getCompareResult()).setRight(right);
 			((GerritDiffNode) getCompareResult()).fireChange();
@@ -179,7 +179,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 			super.saveChanges(monitor);
 		} catch (RuntimeException ex) {
 			//This works hand in hand with the CompareItem#setContent method which raises a very specific RuntimeException
-			if (CompareItem.class.getName().equals(ex.getMessage())) {
+			if (PatchSetCompareItem.class.getName().equals(ex.getMessage())) {
 				problemSavingChanges = true;
 				setRightDirty(true);
 				throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
@@ -243,7 +243,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 						return;
 					}
 					if (performInitialColoring[0]) {
-						CompareItem coloredDocument = (CompareItem) sourceViewer.getDocument();
+						PatchSetCompareItem coloredDocument = (PatchSetCompareItem) sourceViewer.getDocument();
 						AnnotationModel commentsToColor = coloredDocument.getEditableComments();
 						Iterator commentsIterator = commentsToColor.getAnnotationIterator();
 						while (commentsIterator.hasNext()) {

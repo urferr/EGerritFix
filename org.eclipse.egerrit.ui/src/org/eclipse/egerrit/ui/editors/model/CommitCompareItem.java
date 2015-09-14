@@ -25,11 +25,11 @@ import org.eclipse.core.runtime.CoreException;
  * @since 1.0
  */
 class CommitCompareItem implements IStreamContentAccessor, ITypedElement {
-	private final String contents, name, commitId;
+	private final String contents, fileName, commitId;
 
 	//Takes the commitId, the name of the file presented and its content
-	CommitCompareItem(String commitId, String name, String contents) {
-		this.name = name;
+	CommitCompareItem(String commitId, String fileName, String contents) {
+		this.fileName = fileName;
 		this.contents = contents;
 		this.commitId = commitId;
 	}
@@ -45,8 +45,10 @@ class CommitCompareItem implements IStreamContentAccessor, ITypedElement {
 	}
 
 	@Override
+	//This name is presented in the header of the text editor area
 	public String getName() {
-		return name;
+		return "Base: " + GerritCompareHelper.extractFilename(fileName) + ' ' //$NON-NLS-1$
+				+ '(' + GerritCompareHelper.shortenCommitId(commitId) + ')';
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class CompareItemFactory {
 
 	private GerritClient gerrit;
 
-	private CompareItem newCompareItem = new CompareItem();
+	private PatchSetCompareItem newCompareItem = new PatchSetCompareItem();
 
 	public CompareItemFactory(GerritClient gerrit) {
 		this.gerrit = gerrit;
@@ -65,7 +65,7 @@ public class CompareItemFactory {
 	/**
 	 * Create an instance of a CompareItem
 	 */
-	public CompareItem createCompareItem(String filename, String change_id, FileInfo fileInfo,
+	public PatchSetCompareItem createCompareItem(String filename, String change_id, FileInfo fileInfo,
 			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Obtaining revision content", IProgressMonitor.UNKNOWN);
