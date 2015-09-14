@@ -20,7 +20,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 
 /**
  * This class implements the review table view information.
- * 
+ *
  * @since 1.0
  */
 public class ReviewTableData {
@@ -111,6 +111,7 @@ public class ReviewTableData {
 		if (reviews != null) {
 			for (ChangeInfo review : reviews) {
 				fReviewList.put(review.getChange_id(), review);
+				review.setLabels(review.getLabels());
 			}
 		}
 	}

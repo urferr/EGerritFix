@@ -15,11 +15,8 @@
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -236,53 +233,13 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				return Utils.formatDate(reviewSummary.getUpdated(), formatTimeOut);
 			}
 			case 8: {
-				int codeReviewState = 0;
-				Map<String, LabelInfo> labels = reviewSummary.getLabels();
+				fCodeReviewState = reviewSummary.getCodeReviewedTally();
 
-				if (labels != null && labels.get(CODE_REVIEW) != null) {
-					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-						if (entry.getKey() != null && entry.getKey().compareTo(CODE_REVIEW) == 0) {
-							LabelInfo labelInfo = entry.getValue();
-							if (labelInfo.getAll() != null) {
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
-									}
-								}
-							}
-						}
-					}
-					fCodeReviewState = codeReviewState;
-					reviewSummary.setCodeReviewedTally(codeReviewState);
-				}
 				return EMPTY_STRING;
 			}
-//			case 8:
-//				value = reviewSummary.getAttribute(GerritTask.REVIEW_STATE);
-//				if (null != value && !value.equals(EMPTY_STRING)) {
-//					return formatValue (value);
-//				}
 			case 9: {
 
-				int verifyState = 0;
-				Map<String, LabelInfo> labels = reviewSummary.getLabels();
-				if (labels != null && labels.get(VERIFIED) != null) {
-					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-						if (entry.getKey() != null && entry.getKey().compareTo(VERIFIED) == 0) {
-							LabelInfo labelInfo = entry.getValue();
-							if (labelInfo.getAll() != null) {
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										verifyState = Utils.getStateValue(it.getValue(), verifyState);
-									}
-								}
-							}
-						}
-					}
-					fVerifyState = verifyState;
-					reviewSummary.setVerifiedTally(verifyState);
-
-				}
+				fVerifyState = reviewSummary.getVerifiedTally();
 
 				return EMPTY_STRING;
 			}

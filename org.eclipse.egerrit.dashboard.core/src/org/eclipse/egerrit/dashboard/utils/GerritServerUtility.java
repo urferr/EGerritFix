@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -198,6 +199,20 @@ public class GerritServerUtility {
 		}
 		serversStoreTimestamp = ServersStore.getStoreTimeStamp();
 		return ServersStore.getServer(lastServerId);
+	}
+
+	/**
+	 * Reset the last server stored
+	 */
+	public void resetLastGerritServer() {
+		//Check the cache
+		lastServerCache = null;
+		try {
+			saveLastGerritServer(new GerritServerInformation("", ""));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
 	}
 
 	/**
