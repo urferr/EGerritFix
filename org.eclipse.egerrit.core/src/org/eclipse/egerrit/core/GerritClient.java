@@ -24,6 +24,7 @@ import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
@@ -356,6 +357,18 @@ public abstract class GerritClient {
 	 */
 	public GetContentFromCommitCommand getContentFromCommit(String project, String commit_id, String file_id) {
 		return new GetContentFromCommitCommand(fGerritRepository, project, commit_id, file_id);
+	}
+
+	/**
+	 * Return a command to extract the list of actions related to a revision of a change set
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return GetRevisionActionsCommand
+	 */
+	public GetRevisionActionsCommand getRevisionActions(String change_id, String currentRevision) {
+		return new GetRevisionActionsCommand(fGerritRepository, change_id, currentRevision);
+
 	}
 
 }

@@ -43,6 +43,8 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
+import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
+import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
@@ -53,6 +55,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
+import org.eclipse.egerrit.core.rest.RebaseInput;
 import org.eclipse.egerrit.core.rest.RestoreInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
@@ -100,6 +103,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
+	private static final String REBASE = "rebase";
+
 	private static final String RESTORE = "restore";
 
 	private static final String ABANDON = "abandon";
@@ -148,6 +153,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Button fAbandon;
 
 	private Button fRestore;
+
+	private Button fRebase;
 
 	private Button fReply;
 
@@ -420,14 +427,42 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				}
 			});
 		}
-		Button rebase = new Button(c, SWT.PUSH);
-		rebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rebase.setText("Rebase");
+		fRebase = new Button(c, SWT.PUSH);
+		fRebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fRebase.setText("Rebase");
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			rebase.setToolTipText(anonymousUserToolTip);
-			rebase.setEnabled(false);
+			fRebase.setToolTipText(anonymousUserToolTip);
+			fRebase.setEnabled(false);
 		} else {
-			rebase.addSelectionListener(notAvailableListener());
+			fRebase.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
+
+					InputDialog inputDialog = new InputDialog(fRebase.getParent().getShell(),
+							"Code Review - Rebase Change", "Change parent revision", "", null);
+					if (inputDialog.open() != Window.OK) {
+						return;
+					}
+
+					RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getChange_id());
+					RebaseInput rebaseInput = new RebaseInput();
+					rebaseInput.setBase(inputDialog.getValue());
+
+					rebaseCmd.setRebaseInput(rebaseInput);
+
+					ChangeInfo rebaseCmdResult = null;
+					try {
+						rebaseCmdResult = rebaseCmd.call();
+					} catch (EGerritException e3) {
+						EGerritCorePlugin.logError(e3.getMessage());
+					} catch (ClientProtocolException e3) {
+						UIUtils.displayInformation(null, TITLE,
+								e3.getLocalizedMessage() + "\n " + rebaseCmd.formatRequest()); //$NON-NLS-1$
+					}
+					refreshStatus();
+				}
+			});
 		}
 
 		Button checkout = new Button(c, SWT.PUSH);
@@ -490,9 +525,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
 					String latestPatchSet = filesTab.getLatestPatchSet();
-					itemCRPlus2
-							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
-									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+					itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2
+							&& fChangeInfo.getVerifiedTally() >= 1
+							&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
@@ -630,6 +665,37 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private void buttonsEnablement() {
 		submitButtonEnablement();
 		abandonrestoreButtonEnablement();
+		rebaseButtonEnablement();
+	}
+
+	private void rebaseButtonEnablement() {
+		fRebase.setEnabled(false);
+
+		Map<String, ActionInfo> actions = getRevisionActions();
+		if (actions != null) {
+			ActionInfo rebase = actions.get(REBASE);
+
+			if (rebase != null) {
+				fRebase.setEnabled(true);
+			}
+		}
+
+	}
+
+	private Map<String, ActionInfo> getRevisionActions() {
+		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getChange_id(),
+				fChangeInfo.getCurrentRevision());
+
+		Map<String, ActionInfo> getRevisionActionsCmdResult = null;
+		try {
+			getRevisionActionsCmdResult = getRevisionActionsCmd.call();
+		} catch (EGerritException e3) {
+			EGerritCorePlugin.logError(e3.getMessage());
+		} catch (ClientProtocolException e3) {
+			UIUtils.displayInformation(null, TITLE,
+					e3.getLocalizedMessage() + "\n " + getRevisionActionsCmd.formatRequest()); //$NON-NLS-1$
+		}
+		return getRevisionActionsCmdResult;
 	}
 
 	/**
