@@ -21,8 +21,9 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<repoOnServer>${download-publish-path}</repoOnServer>
-		<repoBuilt>${project.build.directory}/repository</repoBuilt>
+		<repoTarget></repoTarget>
+		<repoSource></repoSource>
+		<repoChildName></repoChildName>
 	</properties>
 
 	<build>
@@ -41,7 +42,7 @@
 				<version>${tycho.version}</version>
 				<configuration>
 					<!-- IMPORTANT: DO NOT split the arg line -->
-					<appArgLine>-application org.eclipse.ant.core.antRunner -buildfile composite-repo.xml p2.composite.add -Dsite.composite.name=EGerrit -Dsource.repository=${repoBuilt} -Dtarget.repository=${download-publish-path} -Dtarget.child.repository.relativePath=${buildId}</appArgLine>
+					<appArgLine>-application org.eclipse.ant.core.antRunner -buildfile composite-repo.xml p2.composite.add -Dsite.composite.name=EGerrit -Dsource.repository=${repoSource} -Dtarget.repository=${repoTarget} -Dtarget.child.repository.relativePath=${repoChildName}</appArgLine>
 					<repositories>
 						<repository>
 							<id>luna</id>
