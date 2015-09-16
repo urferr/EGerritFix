@@ -349,7 +349,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						UIUtils.displayInformation(null, TITLE,
 								e3.getLocalizedMessage() + "\n " + submitCmd.formatRequest()); //$NON-NLS-1$
 					}
-					fSubmit.setEnabled(false);
+					refreshStatus();
 				}
 			});
 		}
@@ -525,9 +525,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
 					String latestPatchSet = filesTab.getLatestPatchSet();
-					itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2
-							&& fChangeInfo.getVerifiedTally() >= 1
-							&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+					itemCRPlus2
+							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
+									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
