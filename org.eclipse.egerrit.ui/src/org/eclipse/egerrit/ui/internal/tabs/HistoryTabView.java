@@ -129,6 +129,8 @@ public class HistoryTabView {
 
 			}
 		});
+		//Set the % of display data.70% table and 30% for the comment message
+		sashForm.setWeights(new int[] { 70, 30 });
 
 		//Set the binding for this section
 		hisTabDataBindings(listMessages);
