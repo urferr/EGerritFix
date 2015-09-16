@@ -35,7 +35,7 @@ public class SameTopicTableLabelProvider extends ObservableMapLabelProvider
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 //	// +2 Names of images used to represent review-checked
 //	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
