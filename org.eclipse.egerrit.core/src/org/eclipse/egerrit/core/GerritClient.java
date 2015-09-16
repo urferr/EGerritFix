@@ -25,6 +25,7 @@ import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
+import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
@@ -369,6 +370,16 @@ public abstract class GerritClient {
 	public GetRevisionActionsCommand getRevisionActions(String change_id, String currentRevision) {
 		return new GetRevisionActionsCommand(fGerritRepository, change_id, currentRevision);
 
+	}
+
+	/**
+	 * @param project
+	 * @return ListBranchesCommand a command to list branches of a project
+	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-branches" >Gerrit
+	 *      REST API: List Branches</a>
+	 */
+	public ListBranchesCommand listBranches(String project) {
+		return new ListBranchesCommand(fGerritRepository, project);
 	}
 
 }
