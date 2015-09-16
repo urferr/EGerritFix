@@ -52,7 +52,15 @@ public class GerritServerDialog extends Dialog {
 
 	private final String fCancelTooltip = "Do not save the information";
 
-	private final String fValidateTooltip = "Validate the URI format";
+	private final String COMMENT_TOOLTIP = "Enter the http(s) URL of your gerrit server, \nand the username and password to connect to it.";
+
+	private final String URI_TOOLTIP = "Enter the http(s) URL of your gerrit server.";
+
+	private final String URI_EXAMPLE_TOOLTIP = "Ex: https://git.eclipse.org/r";
+
+	private final String SHORTNAME_TOOLTIP = "Name to show in the Gerrit Server list";
+
+	private final String SHORTNAME_EXAMPLE_TOOLTIP = "Ex: Eclipse or Foundation";
 
 	private final String PORT_TOOLTIP = "-1: port not defined, so the default port is understood";
 
@@ -143,13 +151,21 @@ public class GerritServerDialog extends Dialog {
 		GridData gridDataText = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		gridDataText.horizontalAlignment = GridData.FILL;
 
+		//Header comments
+		Label labelComments = new Label(composite, SWT.NONE);
+		labelComments.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		labelComments.setText(COMMENT_TOOLTIP);
+		labelComments.setToolTipText(COMMENT_TOOLTIP);
+
 		//URI
 		Label labelServerURI = new Label(composite, SWT.NONE);
 		labelServerURI.setLayoutData(gridDataLBL);
 		labelServerURI.setText("URI:");
+		labelServerURI.setToolTipText(URI_TOOLTIP);
 
 		txtServerURI = new Text(composite, SWT.BORDER);
 		txtServerURI.setLayoutData(gridDataText);
+		txtServerURI.setToolTipText(URI_EXAMPLE_TOOLTIP);
 		txtServerURI.setText(workingCopy != null ? workingCopy.getServerURI() : ""); //$NON-NLS-1$
 		txtServerURI.addFocusListener(serverURIFocusListener());
 
@@ -157,9 +173,11 @@ public class GerritServerDialog extends Dialog {
 		Label labelServerName = new Label(composite, SWT.NONE);
 		labelServerName.setLayoutData(gridDataLBL);
 		labelServerName.setText("Shortname:");
+		labelServerName.setToolTipText(SHORTNAME_EXAMPLE_TOOLTIP);
 
 		txtServerName = new Text(composite, SWT.BORDER);
 		txtServerName.setLayoutData(gridDataText);
+		txtServerName.setToolTipText(SHORTNAME_TOOLTIP);
 		txtServerName.setText(workingCopy != null ? workingCopy.getName() : ""); //$NON-NLS-1$
 		txtServerName.addModifyListener(serverNameListener());
 
@@ -394,10 +412,14 @@ public class GerritServerDialog extends Dialog {
 						super.okPressed();
 					} else {
 						//Either off line or Invalid data provided
-						boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
-						if (bool) {
-							super.setReturnCode(IDialogConstants.OK_ID);
-							super.okPressed();
+						if (getServerInfo().getHostId().isEmpty()) {
+							Utils.displayInformation(null, TITLE, INVALID_MESSAGE);
+						} else {
+							boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
+							if (bool) {
+								super.setReturnCode(IDialogConstants.OK_ID);
+								super.okPressed();
+							}
 						}
 					}
 				} else {
@@ -422,13 +444,17 @@ public class GerritServerDialog extends Dialog {
 				workingCopy.getPort(), workingCopy.getPath());
 		repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), workingCopy.getPassword()));
 		// Run test connection
-		boolean b = repo.connect();
-		if (!b) {
-			//Test self signed automatically if needed
-			boolean bo = true;
-			workingCopy.setSelfSigned(bo);
-			repo.acceptSelfSignedCerts(bo);
+		boolean b = false;
+		if (!repo.getHostname().isEmpty()) {
 			b = repo.connect();
+			if (!b) {
+				//Test self signed automatically if needed
+				boolean bo = true;
+				workingCopy.setSelfSigned(bo);
+				repo.acceptSelfSignedCerts(bo);
+				b = repo.connect();
+			}
+
 		}
 		return b;
 	}

@@ -100,7 +100,12 @@ public class GerritRepository {
 		fScheme = scheme;
 		fHostname = host;
 		fPort = port;
-		fHost = new HttpHost(fHostname, fPort, fScheme);
+		if (!fHostname.isEmpty()) {
+			//Host name may not be blank
+			fHost = new HttpHost(fHostname, fPort, fScheme);
+		} else {
+			fHost = null;
+		}
 		fPath = path;
 	}
 
@@ -188,14 +193,14 @@ public class GerritRepository {
 	 * @return the host name
 	 */
 	public String getHostname() {
-		return fHost.getHostName();
+		return fHost != null ? fHost.getHostName() : "";
 	}
 
 	/**
 	 * @return the gerrit port
 	 */
 	public int getPort() {
-		return fHost.getPort();
+		return fHost != null ? fHost.getPort() : -1;
 	}
 
 	/**
