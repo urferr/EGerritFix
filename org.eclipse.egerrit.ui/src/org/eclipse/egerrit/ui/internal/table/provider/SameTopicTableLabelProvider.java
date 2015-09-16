@@ -304,12 +304,12 @@ public class SameTopicTableLabelProvider extends ObservableMapLabelProvider
 //				break;
 //			case 9:
 //				value = reviewSummary.getAttribute(GerritTask.VERIFY_STATE);
-
-				if (null != value && !value.equals(EMPTY_STRING)) {
-					int val = Integer.parseInt(value);
-					return getVerifyStateImage(val);
-				}
-				break;
+//
+//				if (null != value && !value.equals(EMPTY_STRING)) {
+//					int val = Integer.parseInt(value);
+//					return getVerifyStateImage(val);
+//				}
+//				break;
 			default:
 				return image;
 			}
