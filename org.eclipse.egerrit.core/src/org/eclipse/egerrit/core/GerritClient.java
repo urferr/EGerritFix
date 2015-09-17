@@ -14,6 +14,7 @@ package org.eclipse.egerrit.core;
 
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
@@ -380,6 +381,17 @@ public abstract class GerritClient {
 	 */
 	public ListBranchesCommand listBranches(String project) {
 		return new ListBranchesCommand(fGerritRepository, project);
+	}
+
+	/**
+	 * Return a command to Cherry picks a revision to a destination branch
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return CherryPickRevisionCommand
+	 */
+	public CherryPickRevisionCommand cherryPickRevision(String change_id, String revision_id) {
+		return new CherryPickRevisionCommand(fGerritRepository, change_id, revision_id);
 	}
 
 }
