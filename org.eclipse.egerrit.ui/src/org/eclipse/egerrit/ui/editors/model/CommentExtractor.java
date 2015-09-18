@@ -12,17 +12,12 @@
 package org.eclipse.egerrit.ui.editors.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
-import org.eclipse.compare.rangedifferencer.RangeDifference;
-import org.eclipse.compare.rangedifferencer.RangeDifferencer;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.AnnotationModel;
 
@@ -34,62 +29,220 @@ import org.eclipse.jface.text.source.AnnotationModel;
 //The algorithm goes through the differences from top to bottom, and creates comments.
 public class CommentExtractor {
 
-	//The document with all the comments stored in the text.
-	private IDocument documentWithOriginalComments;
+	//The annotation model carrying all the comments that existed in the original document
+	private AnnotationModel originalCommentsModel;
 
-	//The original comments represented as annotations over the document. This allows to capture the position of the comment, in the body of the text
-	private AnnotationModel commentsModel;
+	//The original annotations represented as a list.
+	private ArrayList<GerritCommentAnnotation> originalComments;
 
 	//The document that represents the results of the edition.
-	private IDocument documentWithNewComments;
+	private IDocument newDocument;
 
-	//This counts the number of lines that were not in the document when the comments are not inserter.
+	//The annotation model carrying all the annotations contained in the new document
+	//Note that all the GerritCommentAnnotation that are new have null has commentInfo
+	private AnnotationModel newCommentsModel;
+
+	//The annotations represented as a list.
+	private ArrayList<GerritCommentAnnotation> newComments;
+
+	//This counts the number of lines that were not in the document when the comments are not inserted.
 	//This is necessary in order to create comments at the appropriate line number.
 	private int numberOfRemovedLines = 0;
 
-	Set<GerritCommentAnnotation> countedComments = new HashSet<>();
+	private ArrayList<CommentInfo> addedComments = new ArrayList<>();
+
+	private ArrayList<CommentInfo> modifiedComments = new ArrayList<>();
+
+	private ArrayList<CommentInfo> removedComments = new ArrayList<>();
 
 	/**
 	 * Given two documents, compute the comments that have been added
 	 *
 	 * @param documentWithOriginalComments
-	 * @param commentsModel
+	 * @param originalCommentsModel
 	 * @param documentWithNewComments
-	 * @return
 	 */
-	public ArrayList<CommentInfo> extractComments(IDocument documentWithOriginalComments, AnnotationModel commentsModel,
-			IDocument documentWithNewComments) {
+	public void extractComments(IDocument documentWithOriginalComments, AnnotationModel originalCommentsModel,
+			IDocument documentWithNewComments, AnnotationModel commentsModelWithNewComments) {
 		//Short-circuit the case where nothing changed.
 		if (documentWithOriginalComments.get().equals(documentWithNewComments.get())) {
-			return new ArrayList<>(0);
+			return;
 		}
-		ArrayList<CommentInfo> newComments = new ArrayList<>();
-		this.commentsModel = commentsModel;
-		this.documentWithNewComments = documentWithNewComments;
-		this.documentWithOriginalComments = documentWithOriginalComments;
-		RangeDifference[] diffs = RangeDifferencer.findDifferences(new NullProgressMonitor(),
-				new LineComparator(documentWithOriginalComments), new LineComparator(documentWithNewComments));
-		for (RangeDifference aDiff : diffs) {
-			newComments.add(createCommentFor(aDiff));
+
+		this.originalCommentsModel = originalCommentsModel;
+		this.originalComments = toAnnotationList(originalCommentsModel, documentWithOriginalComments);
+		this.newDocument = documentWithNewComments;
+		this.newCommentsModel = commentsModelWithNewComments;
+		this.newComments = toAnnotationList(commentsModelWithNewComments, documentWithNewComments);
+
+		for (GerritCommentAnnotation newComment : newComments) {
+			GerritCommentAnnotation match = null;
+			if (newComment.getComment() == null) {
+				createNewComment(newComment);
+				continue;
+			}
+			if ((match = wasPresentAndUnmodified(newComment)) != null) {
+				numberOfRemovedLines += numberOfLines(newComment);
+				originalComments.remove(match);
+				continue;
+			}
+			if ((match = wasPresentButModified(newComment)) != null) {
+				originalComments.remove(match);
+				handleModifiedComment(newComment, match);
+				continue;
+			}
+
 		}
-		return newComments;
+		handleOldComments();
 	}
 
-	private CommentInfo createCommentFor(RangeDifference diff) {
-		numberOfRemovedLines += sizeOfPreviousComments(diff.leftStart());
-		int newCommentStart = diff.rightStart();
-		String comment = extractCommentMessage(documentWithNewComments, diff);
-		int lineCommented = diff.rightStart() - numberOfRemovedLines;
-		numberOfRemovedLines += documentWithNewComments.computeNumberOfLines(comment);
-		if (newCommentStart > 0) {
-			GerritCommentAnnotation commentRepliedto = isAnswerToExistingComment(diff.leftStart());
-			if (commentRepliedto == null || isDone(commentRepliedto)) {
-				return newComment(comment, lineCommented);
+	private void handleModifiedComment(GerritCommentAnnotation newComment, GerritCommentAnnotation match) {
+		numberOfRemovedLines += numberOfLines(newComment);
+
+		//The comment did not change. It probably just moved because of previous insertions so there is nothing to do
+		if (match.getComment().getMessage().equals(extractCommentMessage(newComment))) {
+			return;
+		}
+		modifiedComments.add(modifyComment(newComment));
+	}
+
+	private void handleOldComments() {
+		for (GerritCommentAnnotation comment : originalComments) {
+			removedComments.add(comment.getComment());
+		}
+	}
+
+	private CommentInfo modifyComment(GerritCommentAnnotation comment) {
+		CommentInfo infoToModify = comment.getComment();
+		infoToModify.setMessage(extractModifiedComment(comment));
+		return infoToModify;
+	}
+
+	//This deal with the case where the user typed in more content in an existing comment
+	//In this case, we need to remove the "pretty printing" that has been done such as the author name, and the date
+	private String extractModifiedComment(GerritCommentAnnotation newComment) {
+		String comment = extractCommentMessage(newComment);
+		String name = CommentPrettyPrinter.printName(newComment.getComment());
+		String date = CommentPrettyPrinter.printDate(newComment.getComment());
+		if (comment.startsWith(name)) {
+			comment = comment.substring(name.length());
+		}
+		int dateIdx = comment.lastIndexOf(date);
+		if (dateIdx > 0) {
+			comment = comment.substring(0, dateIdx);
+		}
+		return comment.trim();
+	}
+
+	private void createNewComment(GerritCommentAnnotation newComment) {
+		int lineCommented = getLineNumber(newComment) - numberOfRemovedLines;
+		String comment = extractCommentMessage(newComment);
+		numberOfRemovedLines += newDocument.computeNumberOfLines(comment);
+		if (lineCommented > 0) {
+			GerritCommentAnnotation commentRepliedTo = isAnswerToExistingComment(lineCommented);
+			if (commentRepliedTo == null) {
+				addedComments.add(newComment(comment, lineCommented));
 			} else {
-				return newComment(comment, commentRepliedto);
+				addedComments.add(newComment(comment, commentRepliedTo));
+			}
+		} else {
+			//Create file comment
+			addedComments.add(newComment(comment, 0));
+		}
+	}
+
+	//Return the line number where the annotation starts
+	private int getLineNumber(GerritCommentAnnotation newComment) {
+		Position commentPosition = newCommentsModel.getPosition(newComment);
+		try {
+			return newDocument.getLineOfOffset(commentPosition.getOffset());
+		} catch (BadLocationException e) {
+			//Can't happen
+			return -1;
+		}
+	}
+
+	//Given an annotation, return the number of lines it represents
+	private int numberOfLines(GerritCommentAnnotation comment) {
+		return newDocument.computeNumberOfLines(extractCommentMessage(comment));
+	}
+
+	//convert an annotation model to a list
+	private static ArrayList<GerritCommentAnnotation> toAnnotationList(AnnotationModel commentsModel,
+			IDocument associatedDocument) {
+		ArrayList<GerritCommentAnnotation> sortedComments = new ArrayList<>();
+		try {
+			Position[] positions = associatedDocument.getPositions(IDocument.DEFAULT_CATEGORY);
+			for (Position position : positions) {
+				Iterator<?> match = commentsModel.getAnnotationIterator(position.getOffset(), position.getLength(),
+						false, false);
+				if (match.hasNext()) {
+					sortedComments.add((GerritCommentAnnotation) match.next());
+				}
+			}
+		} catch (BadPositionCategoryException e) {
+			//Can't happen
+		}
+		return sortedComments;
+
+	}
+
+	//check if the comment existed in the original comments
+	private GerritCommentAnnotation wasPresentAndUnmodified(GerritCommentAnnotation newComment) {
+		if (newComment.getComment() == null) {
+			return null;
+		}
+		Iterator<?> it = originalCommentsModel.getAnnotationIterator();
+		Position positionNewComment = newCommentsModel.getPosition(newComment);
+		while (it.hasNext()) {
+			GerritCommentAnnotation object = (GerritCommentAnnotation) it.next();
+			Position positingExistingComment = originalCommentsModel.getPosition(object);
+			if (object.getComment().equals(newComment.getComment())
+					&& positingExistingComment.equals(positionNewComment)) {
+				return object;
 			}
 		}
-		return newComment(comment, lineCommented);
+		return null;
+	}
+
+	//Find a comment with the same id
+	private GerritCommentAnnotation wasPresentButModified(GerritCommentAnnotation newComment) {
+		if (newComment.getComment() == null) {
+			return null;
+		}
+		for (GerritCommentAnnotation commentInfo : originalComments) {
+			if (commentInfo.getComment().getId().equals(newComment.getComment().getId())) {
+				return commentInfo;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the list of comments that have been added
+	 *
+	 * @return list of {@link CommentInfo}
+	 */
+	public ArrayList<CommentInfo> getAddedComments() {
+		return addedComments;
+	}
+
+	/**
+	 * Get the list of comments that have been modified
+	 *
+	 * @return list of {@link CommentInfo}
+	 */
+	public ArrayList<CommentInfo> getModifiedComments() {
+		return modifiedComments;
+	}
+
+	/**
+	 * Get the list of comments that have been removed
+	 *
+	 * @return list of {@link CommentInfo}
+	 */
+	public ArrayList<CommentInfo> getRemovedComments() {
+		return removedComments;
 	}
 
 	private boolean isDone(GerritCommentAnnotation comment) {
@@ -97,44 +250,6 @@ public class CommentExtractor {
 			return false;
 		}
 		return comment.getComment().getMessage().equalsIgnoreCase("done\n");
-	}
-
-	private int sizeOfPreviousComments(int line) {
-		if (commentsModel == null) {
-			return 0;
-		}
-		IRegion lineInfo;
-		try {
-			lineInfo = documentWithOriginalComments.getLineInformation(line - 1);
-		} catch (BadLocationException e) {
-			return 0;
-		}
-		int count = 0;
-		Iterator<?> it = commentsModel.getAnnotationIterator(0, lineInfo.getOffset() + lineInfo.getLength(), true,
-				true);
-		while (it.hasNext()) {
-			GerritCommentAnnotation aComment = (GerritCommentAnnotation) it.next();
-			if (isCounted(aComment)) {
-				continue;
-			}
-			Position annotationPosition = commentsModel.getPosition(aComment);
-			try {
-				count += documentWithOriginalComments.computeNumberOfLines(documentWithOriginalComments
-						.get(annotationPosition.getOffset(), annotationPosition.getLength()));
-				countComment(aComment);
-			} catch (BadLocationException e) {
-				//Can't happen
-			}
-		}
-		return count;
-	}
-
-	private void countComment(GerritCommentAnnotation comment) {
-		countedComments.add(comment);
-	}
-
-	private boolean isCounted(GerritCommentAnnotation comment) {
-		return countedComments.contains(comment);
 	}
 
 	//Create a comment as a reply of a given one
@@ -156,38 +271,33 @@ public class CommentExtractor {
 	}
 
 	//Detect whether the new text at the given line is an answer to an existing comment
+	//An comment is a answer if has the same line number, the comment is not a draft and it is done "done"
 	private GerritCommentAnnotation isAnswerToExistingComment(int line) {
-		if (commentsModel == null) {
-			return null;
+		GerritCommentAnnotation match = null;
+		for (GerritCommentAnnotation comment : newComments) {
+			if (comment.getComment() == null) {
+				continue;
+			}
+			if (comment.getComment().getLine() == line && comment.getComment().getAuthor() != null) {
+				if (isDone(comment)) {
+					if (match != null && match.getComment().getId().equals(comment.getComment().getInReplyTo())) {
+						match = null;
+					}
+				} else {
+					match = comment;
+				}
+			}
 		}
-		IRegion lineInfo;
+		return match;
+	}
+
+	private String extractCommentMessage(GerritCommentAnnotation commentAnnotation) {
+		Position position = newCommentsModel.getPosition(commentAnnotation);
 		try {
-			lineInfo = documentWithOriginalComments.getLineInformation(line - 1);
+			return newDocument.get(position.offset, position.length);
 		} catch (BadLocationException e) {
-			return null;
-		}
-		Iterator<?> it = commentsModel.getAnnotationIterator(lineInfo.getOffset(), lineInfo.getLength(), true, true);
-		if (it.hasNext()) {
-			return ((GerritCommentAnnotation) it.next());
+			//Can't happen. The comment model have been constructed properly
 		}
 		return null;
-	}
-
-	private String extractCommentMessage(IDocument doc, RangeDifference diff) {
-		StringBuffer comment = new StringBuffer();
-		for (int line = diff.rightStart(); line < diff.rightStart() + diff.rightLength(); line++) {
-			comment.append(getLineContent(doc, line));
-			comment.append('\n');
-		}
-		return comment.toString();
-	}
-
-	private String getLineContent(IDocument doc, int line) {
-		try {
-			IRegion lineRegion = doc.getLineInformation(line);
-			return doc.get(lineRegion.getOffset(), lineRegion.getLength());
-		} catch (BadLocationException e) {
-			return ""; //Can't happen //$NON-NLS-1$
-		}
 	}
 }

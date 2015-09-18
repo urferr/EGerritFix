@@ -11,7 +11,6 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,7 +32,6 @@ import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -51,8 +49,6 @@ public class CompareItemFactory {
 	private Logger logger = LoggerFactory.getLogger(CompareItemFactory.class);
 
 	private final static String TITLE = "Gerrit Server ";
-
-	private final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
 	private GerritClient gerrit;
 
@@ -181,46 +177,30 @@ public class CompareItemFactory {
 			if (commentInfo.getSide() != null && !commentInfo.getSide().equals("REVISION")) { //$NON-NLS-1$
 				continue;
 			}
-			if (commentInfo.getLine() > 0) {
-				IRegion lineInfo;
-				try {
-					int insertionLineInDocument = commentInfo.getLine() - 1;
+			IRegion lineInfo;
+			try {
+				int insertionLineInDocument = 0;
+				int insertionPosition = 0;
+				String lineDelimiter = ""; //$NON-NLS-1$
+				if (commentInfo.getLine() > 0) {
+					insertionLineInDocument = commentInfo.getLine() - 1;
 					lineInfo = originalDocument.getLineInformation(insertionLineInDocument);
-					String lineDelimiter = originalDocument.getLineDelimiter(insertionLineInDocument);
-					int insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
+					lineDelimiter = originalDocument.getLineDelimiter(insertionLineInDocument);
+					insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
 							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
-					String formattedComment = formatComment(commentInfo, lineDelimiter != null,
-							originalDocument.getDefaultLineDelimiter());
-					originalDocument.replace(insertionPosition, 0, formattedComment);
-					newCompareItem.replace(insertionPosition, 0, formattedComment);
-					originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
-							new Position(insertionPosition, formattedComment.length()));
-					editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
-							new Position(insertionPosition, formattedComment.length()));
-				} catch (BadLocationException e) {
-					//Ignore and continue
 				}
-			} else {
-				try {
-					newCompareItem.replace(0, 0,
-							formatComment(commentInfo, true, newCompareItem.getDefaultLineDelimiter()));
-				} catch (BadLocationException e) {
-					//Ignore and continue
-				}
+				String formattedComment = CommentPrettyPrinter.printComment(commentInfo, lineDelimiter != null,
+						originalDocument.getDefaultLineDelimiter());
+				originalDocument.replace(insertionPosition, 0, formattedComment);
+				newCompareItem.replace(insertionPosition, 0, formattedComment);
+				originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+						new Position(insertionPosition, formattedComment.length()));
+				editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+						new Position(insertionPosition, formattedComment.length()));
+			} catch (BadLocationException e) {
+				logger.debug("Exception merging text and comments.",e); //$NON-NLS-1$
 			}
 		}
-	}
-
-	private static String formatComment(CommentInfo comment, boolean endsWithDelimiter, String defaultDelimiter) {
-		return (endsWithDelimiter ? "" : defaultDelimiter) + getName(comment) + '\t' + comment.getMessage() //$NON-NLS-1$
-				+ '\t' + Utils.formatDate(comment.getUpdated(), formatTimeOut) + defaultDelimiter;
-	}
-
-	private static String getName(CommentInfo comment) {
-		if (comment.getAuthor() == null) {
-			return "Draft"; //$NON-NLS-1$
-		}
-		return comment.getAuthor().getName();
 	}
 
 	private static void sortComments(ArrayList<CommentInfo> comments) {

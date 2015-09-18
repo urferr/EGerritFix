@@ -39,16 +39,11 @@ import org.junit.Test;
 
 public class OpenCompareEditorTests {
 
-	private static final String A_PROJECT_A_JAVA = "aProject/A.java"; //$NON-NLS-1$
+	private static final String A_PROJECT_A_JAVA = "A.java"; //$NON-NLS-1$
 
-	private static final String INITIAL_CONTENT_FILE_A = "public class A {\n" + "	\n"
-			+ "	public static void main(String[] args) {\n" + "		throw new RuntimeException();\n" + "	}\n" + "\n"
-			+ "	public void foo() {\n" + "		System.out.println(\"A\");\n" + "	}\n" + "\n" + "	\n"
-			+ "	public void bar() {\n" + "	}\n" + "}"; //$NON-NLS-3$
+	private static final String INITIAL_CONTENT_FILE_A = "Hello";
 
-	private static final String NEW_CONTENT_FILE_A = "public class A {\n" + "	\n"
-			+ "	public static void main(String[] args) {\n" + "		throw new RuntimeException();\n" + "	}\n" + "\n"
-			+ "	public void foo() {\n" + "		System.out.println(\"A\");\n" + "	}\n" + "\n" + "	\n" + "}";
+	private static final String NEW_CONTENT_FILE_A = "Hello reviewer community";
 
 	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"

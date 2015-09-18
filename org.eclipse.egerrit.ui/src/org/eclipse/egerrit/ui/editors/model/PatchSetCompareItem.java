@@ -12,14 +12,14 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
-import java.util.ArrayList;
-
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IModificationDate;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftCommand;
+import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
@@ -109,15 +109,40 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 	@Override
 	// Extracts newly added comments from the content passed in, and publish new comments on the gerrit server
 	public void setContent(byte[] newContent) {
-		ArrayList<CommentInfo> newComments = new CommentExtractor().extractComments(originalDocument, originalComments,
-				this);
-		for (CommentInfo newComment : newComments) {
+		CommentExtractor extractor = new CommentExtractor();
+		extractor.extractComments(originalDocument, originalComments, this, editableComments);
+		for (CommentInfo newComment : extractor.getAddedComments()) {
 			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id,
 					fileInfo.getContainingRevisionInfo().getId());
 			publishDraft.setCommentInfo(newComment);
 			newComment.setPath(fileName);
 			try {
 				publishDraft.call();
+			} catch (EGerritException | ClientProtocolException e) {
+				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
+				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
+				throw new RuntimeException(PatchSetCompareItem.class.getName(),
+						new Throwable(String.valueOf(hashCode())));
+			}
+		}
+		for (CommentInfo deletedComment : extractor.getRemovedComments()) {
+			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(change_id, fileInfo.getContainingRevisionInfo().getId(),
+					deletedComment.getId());
+			try {
+				deleteDraft.call();
+			} catch (EGerritException | ClientProtocolException e) {
+				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
+				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
+				throw new RuntimeException(PatchSetCompareItem.class.getName(),
+						new Throwable(String.valueOf(hashCode())));
+			}
+		}
+		for (CommentInfo modifiedComment : extractor.getModifiedComments()) {
+			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(change_id,
+					fileInfo.getContainingRevisionInfo().getId(), modifiedComment.getId());
+			modifyDraft.setCommentInfo(modifiedComment);
+			try {
+				modifyDraft.call();
 			} catch (EGerritException | ClientProtocolException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.

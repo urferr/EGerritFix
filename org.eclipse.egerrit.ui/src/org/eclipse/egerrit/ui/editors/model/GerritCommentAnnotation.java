@@ -47,4 +47,11 @@ public class GerritCommentAnnotation extends Annotation {
 		return comment;
 	}
 
+	@Override
+	public String toString() {
+		if (comment == null) {
+			return "No comment info"; //$NON-NLS-1$
+		}
+		return comment.toString();
+	}
 }
