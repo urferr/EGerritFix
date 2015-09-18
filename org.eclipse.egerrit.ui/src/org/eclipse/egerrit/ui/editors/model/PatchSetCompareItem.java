@@ -63,7 +63,7 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 		this.originalComments = gerritComments;
 	}
 
-	void setEditableComments(AnnotationModel gerritComments) {
+	public void setEditableComments(AnnotationModel gerritComments) {
 		this.editableComments = gerritComments;
 	}
 

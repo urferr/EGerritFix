@@ -299,6 +299,8 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 					}
 				}
 			});
+			EditionLimiter editionLimiter = new EditionLimiter(sourceViewer);
+			sourceViewer.getTextWidget().addVerifyListener(editionLimiter);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException t) {
 			logger.error("Problem while setting up coloration of comments", t); //$NON-NLS-1$
 		}
