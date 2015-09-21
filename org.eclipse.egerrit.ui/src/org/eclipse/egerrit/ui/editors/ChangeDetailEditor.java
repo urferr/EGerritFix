@@ -18,10 +18,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
@@ -42,8 +45,10 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
+import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
+import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
@@ -51,8 +56,10 @@ import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AbandonInput;
 import org.eclipse.egerrit.core.rest.ActionInfo;
+import org.eclipse.egerrit.core.rest.BranchInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
+import org.eclipse.egerrit.core.rest.CherryPickInput;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.RebaseInput;
@@ -155,6 +162,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Button fRestore;
 
 	private Button fRebase;
+
+	private Button fCherryPick;
 
 	private Button fReply;
 
@@ -470,10 +479,41 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		checkout.setText("Checkout");
 		checkout.addSelectionListener(checkoutButtonListener(parent));
 
-		Button cherrypick = new Button(c, SWT.PUSH);
-		cherrypick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		cherrypick.setText("Cherry-Pick");
-		cherrypick.addSelectionListener(notAvailableListener());
+		fCherryPick = new Button(c, SWT.PUSH);
+		fCherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fCherryPick.setText("Cherry-Pick");
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fCherryPick.setToolTipText(anonymousUserToolTip);
+			fCherryPick.setEnabled(false);
+		} else {
+			fCherryPick.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
+
+					BranchInfo[] listBranchesCmdResult = listBranches();
+
+					List<String> listBranchesRef = new ArrayList();
+					Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
+					while (it.hasNext()) {
+						listBranchesRef.add(it.next().getRef());
+					}
+
+					final CherryPickDialog cherryPickDialog = new CherryPickDialog(fCherryPick.getParent().getShell(),
+							listBranchesRef, fCommitInfo.getMessage());
+					Display.getDefault().syncExec(new Runnable() {
+						public void run() {
+							int ret = cherryPickDialog.open();
+							if (ret == IDialogConstants.OK_ID) {
+								cherryPickRevision(fChangeInfo.getChange_id(), fChangeInfo.getCurrentRevision(),
+										cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
+							}
+						}
+
+					});
+				}
+			});
+		}
 
 		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -525,9 +565,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
 					String latestPatchSet = filesTab.getLatestPatchSet();
-					itemCRPlus2
-							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
-									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+					itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2
+							&& fChangeInfo.getVerifiedTally() >= 1
+							&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
@@ -558,6 +598,38 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
+	}
+
+	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
+		CherryPickRevisionCommand cherryPickCmd = fGerritClient.cherryPickRevision(changeId, revisionId);
+		CherryPickInput cherryPickInput = new CherryPickInput();
+		cherryPickInput.setDestination(branch);
+		cherryPickInput.setMessage(message);
+
+		cherryPickCmd.setCherryPickInput(cherryPickInput);
+		ChangeInfo listBranchesCmdResult = null;
+		try {
+			listBranchesCmdResult = cherryPickCmd.call();
+		} catch (EGerritException e3) {
+			EGerritCorePlugin.logError(e3.getMessage());
+		} catch (ClientProtocolException e3) {
+			UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage() + "\n " + cherryPickCmd.formatRequest()); //$NON-NLS-1$
+		}
+		return listBranchesCmdResult;
+	}
+
+	private BranchInfo[] listBranches() {
+		ListBranchesCommand listBranchesCmd = fGerritClient.listBranches(fChangeInfo.getProject());
+
+		BranchInfo[] listBranchesCmdResult = null;
+		try {
+			listBranchesCmdResult = listBranchesCmd.call();
+		} catch (EGerritException e3) {
+			EGerritCorePlugin.logError(e3.getMessage());
+		} catch (ClientProtocolException e3) {
+			UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage() + "\n " + listBranchesCmd.formatRequest()); //$NON-NLS-1$
+		}
+		return listBranchesCmdResult;
 	}
 
 	/**
@@ -767,9 +839,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/************************************************************* */
-	/*                                                             */
-	/* Section to SET the data structure                           */
-	/*                                                             */
+/*                                                             */
+/* Section to SET the data structure                           */
+/*                                                             */
 	/************************************************************* */
 
 	/**
@@ -842,9 +914,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/***************************************************************/
-	/*                                                             */
-	/* Section to QUERY the data structure                         */
-	/*                                                             */
+/*                                                             */
+/* Section to QUERY the data structure                         */
+/*                                                             */
 	/************************************************************* */
 
 	private ChangeInfo queryMessageTab(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
@@ -911,9 +983,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/************************************************************* */
-	/*                                                             */
-	/* Section adjust the DATA binding                             */
-	/*                                                             */
+/*                                                             */
+/* Section adjust the DATA binding                             */
+/*                                                             */
 	/************************************************************* */
 
 	protected DataBindingContext headerSectionDataBindings() {
@@ -988,9 +1060,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/*********************************************/
-	/*                                           */
-	/*       Buttons Listener                    */
-	/*                                           */
+/*                                           */
+/*       Buttons Listener                    */
+/*                                           */
 	/*********************************************/
 
 	/**
@@ -1047,9 +1119,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/*********************************************/
-	/*                                           */
-	/*       Utility                             */
-	/*                                           */
+/*                                           */
+/*       Utility                             */
+/*                                           */
 	/*********************************************/
 
 	/**
