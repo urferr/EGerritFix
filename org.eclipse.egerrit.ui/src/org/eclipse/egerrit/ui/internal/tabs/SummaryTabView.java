@@ -561,7 +561,7 @@ public class SummaryTabView {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			// Create query
-			GetMergeableCommand command = gerritClient.getMergeable(change_id, revision_id);
+			GetMergeableCommand command = gerritClient.getMergeable(fChangeInfo.getId(), revision_id);
 
 			MergeableInfo res = null;
 			try {
@@ -594,7 +594,7 @@ public class SummaryTabView {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			GetIncludedInCommand command = gerritClient.getIncludedIn(change_id);
+			GetIncludedInCommand command = gerritClient.getIncludedIn(fChangeInfo.getId());
 			IncludedInInfo res = null;
 			try {
 				res = command.call();
@@ -620,7 +620,7 @@ public class SummaryTabView {
 
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(change_id, revision_id);
+			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(), revision_id);
 
 			RelatedChangesInfo res = null;
 			try {
@@ -645,7 +645,7 @@ public class SummaryTabView {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			ListReviewersCommand command = gerritClient.getReviewers(change_id);
+			ListReviewersCommand command = gerritClient.getReviewers(fChangeInfo.getId());
 
 			ReviewerInfo[] res = null;
 			try {
@@ -836,8 +836,8 @@ public class SummaryTabView {
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(e3.getMessage());
 							} catch (ClientProtocolException e3) {
-								UIUtils.displayInformation(null, TITLE,
-										e3.getLocalizedMessage() + "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
+								UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage()
+										+ "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
 							}
 							setReviewers(gerritClient);
 						}
@@ -857,8 +857,7 @@ public class SummaryTabView {
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-				null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
 		//
 //		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
 //		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
@@ -881,13 +880,12 @@ public class SummaryTabView {
 		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
 		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe( //$NON-NLS-1$
 				fMergeableInfo);
-		bindingContext.bindValue( //
+		bindingContext.bindValue(
+				//
 				observeTextGenStrategyDataObserveWidget, //
 				bytesMergeableinfogetSubmit_typeObserveValue, //
-				new UpdateValueStrategy()
-						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
-				new UpdateValueStrategy()
-						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
 
 		//
 		IObservableValue observeTextGenMessageDataObserveWidget = WidgetProperties.text().observe(genMessageData);
@@ -977,8 +975,7 @@ public class SummaryTabView {
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
-				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 

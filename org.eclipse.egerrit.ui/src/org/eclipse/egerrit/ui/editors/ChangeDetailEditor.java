@@ -721,7 +721,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//Reset the whole window
 		setChangeInfo(fGerritClient, changeInfo);
 
-		//This query fill the current revision
+		//This query fills the current revision
 		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
 
 		//Queries to fill the Summary Review tab data
@@ -755,7 +755,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Map<String, ActionInfo> getRevisionActions() {
-		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getChange_id(),
+		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getId(),
 				fChangeInfo.getCurrentRevision());
 
 		Map<String, ActionInfo> getRevisionActionsCmdResult = null;
@@ -867,7 +867,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 			//Set the file tab view
 			filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
-			setCurentCommitInfo(res.getCurrentRevision());
+			setCurrentCommitInfo(res.getCurrentRevision());
 
 			//Display the History tab
 			Collections.sort(fChangeInfo.getMessages(), new Comparator<ChangeMessageInfo>() {
@@ -894,7 +894,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param Object
 	 *            revision structure or a revision string
 	 */
-	private void setCurentCommitInfo(Object revision) {
+	private void setCurrentCommitInfo(Object revision) {
 		RevisionInfo match = null;
 		if (revision instanceof RevisionInfo) {
 			match = (RevisionInfo) revision;
@@ -922,9 +922,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private ChangeInfo queryMessageTab(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
 			// Create query
-			GetChangeCommand command = gerrit.getChange(change_id);
+
+			GetChangeCommand command = gerrit.getChange(fChangeInfo.getId());
 			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.ALL_FILES);
 			command.addOption(ChangeOption.ALL_REVISIONS);
@@ -962,7 +962,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
-			GetChangeCommand command = gerrit.getChange(change_id);
+			GetChangeCommand command = null;
+			command = gerrit.getChange(fChangeInfo.getId());
+
 			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
@@ -1158,7 +1160,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			FilesTabView fileTabView = (FilesTabView) arg0;
 
 			//Adjust the commit info for the Message Tab
-			setCurentCommitInfo(fileTabView.getCurrentRevision());
+			setCurrentCommitInfo(fileTabView.getCurrentRevision());
 		}
 	}
 

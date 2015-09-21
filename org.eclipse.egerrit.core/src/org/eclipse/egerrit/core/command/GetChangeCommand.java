@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -30,9 +31,8 @@ import org.eclipse.egerrit.core.rest.RevisionInfo;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
- * command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
- * structure.
+ * command. It returns a <a href=
+ * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a> structure.
  * <p>
  *
  * @since 1.0
@@ -61,7 +61,7 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 		//Setting requires to false, because even though this command can access user specific information
 		//It will still succeed when user-specific information is requested by anonymous.
 		//It will just not return the requested information
-		requiresAuthentication(false); 
+		requiresAuthentication(false);
 
 	}
 
@@ -236,7 +236,7 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 			if (fCount > 0) {
 				uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
 			}
-			uri = uriBuilder.build();
+			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
 		} catch (URISyntaxException e) {
 			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
 		}
