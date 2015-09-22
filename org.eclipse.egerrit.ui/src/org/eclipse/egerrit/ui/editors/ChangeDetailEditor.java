@@ -103,6 +103,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -141,11 +142,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private GerritClient fGerritClient = null;
 
-	private Label changeidData;
+	private Text changeidData;
 
 	private Label statusData;
 
-	private Label shortIdData;
+	private Text shortIdData;
 
 //	private StyledText msgAuthorData;
 
@@ -279,13 +280,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		Label lblId = new Label(group_header, SWT.NONE);
 		lblId.setText("ID:");
 
-		shortIdData = new Label(group_header, SWT.NONE);
+		shortIdData = new Text(group_header, SWT.NONE);
 		GridData gd_lblShortId = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		int maxShortChangeId = 10; //Max number of chars
 		int idWidth = fontSize.x * maxShortChangeId;
 		gd_lblShortId.minimumWidth = idWidth;
 		gd_lblShortId.widthHint = idWidth;
 		shortIdData.setLayoutData(gd_lblShortId);
+		shortIdData.setEditable(false);
+		shortIdData.setBackground(parent.getBackground());
 
 		Label lblChange = new Label(group_header, SWT.NONE);
 		GridData gd_lblChange = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -293,7 +296,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		lblChange.setLayoutData(gd_lblChange);
 		lblChange.setText("Change:");
 
-		changeidData = new Label(group_header, SWT.NONE);
+		changeidData = new Text(group_header, SWT.NONE);
 		GridData gd_lblChangeid = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_lblChangeid.horizontalIndent = 10;
 		int maxChangeId = 50; //Max number of chars
@@ -302,6 +305,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		gd_lblChangeid.widthHint = changeWidth;
 		changeidData.setLayoutData(gd_lblChangeid);
 		changeidData.setText("changeid");
+		changeidData.setEditable(false);
+		changeidData.setBackground(parent.getBackground());
 
 		statusData = new Label(group_header, SWT.RIGHT);
 		GridData gd_lblStatus = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
