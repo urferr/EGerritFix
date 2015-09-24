@@ -14,6 +14,7 @@ package org.eclipse.egerrit.core;
 
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
@@ -30,6 +31,7 @@ import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
+import org.eclipse.egerrit.core.command.PublishChangeEditCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
@@ -392,6 +394,26 @@ public abstract class GerritClient {
 	 */
 	public CherryPickRevisionCommand cherryPickRevision(String change_id, String revision_id) {
 		return new CherryPickRevisionCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command to edit the commit message of a change
+	 *
+	 * @param change_id
+	 * @return ChangeCommitMsgCommand
+	 */
+	public ChangeCommitMsgCommand editMessage(String change_id) {
+		return new ChangeCommitMsgCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to publish the commit message of a change
+	 *
+	 * @param change_id
+	 * @return PublishChangeEditCommand
+	 */
+	public PublishChangeEditCommand publishChangeEdit(String change_id) {
+		return new PublishChangeEditCommand(fGerritRepository, change_id);
 	}
 
 }

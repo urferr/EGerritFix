@@ -240,7 +240,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		Point hScrolBarSize = scrollView.getHorizontalBar().getSize();
 
 		messageTab = new MessageTabView();
-		messageTab.create(tabFolder, fCommitInfo, fChangeInfo);
+		messageTab.create(fGerritClient, tabFolder, fCommitInfo, fChangeInfo);
 
 		filesTab = new FilesTabView();
 		filesTab.create(fGerritClient, tabFolder, fChangeInfo);
@@ -268,6 +268,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		summaryTab.setTabs(fGerritClient, fChangeInfo);
 
 		buttonsEnablement();
+		messageTab.setfMessageBuffer(fCommitInfo.getMessage());
+
 	}
 
 	private Composite headerSection(final Composite parent, Point fontSize) {
@@ -683,6 +685,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setUpdated(element.getUpdated());
 		fChangeInfo.setTopic(element.getTopic());
 		fChangeInfo.setLabels(element.getLabels());
+		fChangeInfo.setOwner(element.getOwner());
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
@@ -743,6 +746,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
+		messageTab.editingAllowed(saveButtonEnablement());
 	}
 
 	private void rebaseButtonEnablement() {
@@ -841,6 +845,27 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 
 		}
+	}
+
+	private boolean saveButtonEnablement() {
+
+		if (fGerritClient.getRepository()
+				.getCredentials()
+				.getUsername()
+				.compareTo(fChangeInfo.getOwner().getUsername()) == 0
+				|| fGerritClient.getRepository()
+				.getCredentials()
+				.getUsername()
+				.compareTo(fChangeInfo.getOwner().getEmail()) == 0) {
+			return true;
+		}
+
+		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
+		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/************************************************************* */

@@ -13,10 +13,17 @@ package org.eclipse.egerrit.ui.internal.tabs;
 
 import java.text.SimpleDateFormat;
 
+import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
+import org.eclipse.egerrit.core.command.PublishChangeEditCommand;
+import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
@@ -24,6 +31,12 @@ import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -60,6 +73,14 @@ public class MessageTabView {
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
 
+	private final String TITLE = "Gerrit Server ";
+
+	private Button fBtnSave;
+
+	private boolean fIsEditingAllowed;
+
+	private String fMessageBuffer;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -71,15 +92,17 @@ public class MessageTabView {
 	}
 
 	/**
+	 * @param fGerritClient
 	 * @param tabFolder
 	 * @param listMessages
 	 *            List<ChangeMessageInfo>
 	 */
-	public void create(TabFolder tabFolder, CommitInfo commitInfo, ChangeInfo changeInfo) {
-		messagesTab(tabFolder, commitInfo, changeInfo);
+	public void create(GerritClient fGerritClient, TabFolder tabFolder, CommitInfo commitInfo, ChangeInfo changeInfo) {
+		messagesTab(fGerritClient, tabFolder, commitInfo, changeInfo);
 	}
 
-	private void messagesTab(TabFolder tabFolder, CommitInfo commitInfo, ChangeInfo changeInfo) {
+	private void messagesTab(final GerritClient fGerritClient, TabFolder tabFolder, CommitInfo commitInfo,
+			final ChangeInfo changeInfo) {
 
 		Point fontSize = UIUtils.computeFontSize(tabFolder);
 		final TabItem tabMessages = new TabItem(tabFolder, SWT.NONE);
@@ -161,17 +184,77 @@ public class MessageTabView {
 		msgChangeIdData = new Label(composite, SWT.NONE);
 		msgChangeIdData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		Button btnCancel = new Button(messagesGroup, SWT.NONE);
+		final Button btnCancel = new Button(messagesGroup, SWT.NONE);
 		GridData gd_btnCancel = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
 		gd_btnCancel.verticalIndent = 10;
 		btnCancel.setLayoutData(gd_btnCancel);
 		btnCancel.setText("Cancel");
+		btnCancel.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				msgTextData.setText(getfMessageBuffer());
+				fBtnSave.setEnabled(false);
+				btnCancel.setEnabled(false);
+			}
+		});
 
-		Button btnSave = new Button(messagesGroup, SWT.NONE);
+		fBtnSave = new Button(messagesGroup, SWT.NONE);
 		GridData gd_btnSave_1 = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
 		gd_btnSave_1.verticalIndent = 10;
-		btnSave.setLayoutData(gd_btnSave_1);
-		btnSave.setText("Save");
+		fBtnSave.setLayoutData(gd_btnSave_1);
+		fBtnSave.setText("Save");
+
+		ModifyListener modifyListener = new ModifyListener() {
+			public void modifyText(ModifyEvent event) {
+				fBtnSave.setEnabled(isEditingAllowed());
+				btnCancel.setEnabled(isEditingAllowed());
+			}
+		};
+
+		FocusListener focusListener = new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				msgTextData.setEditable(isEditingAllowed());
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+
+			}
+
+		};
+
+		msgTextData.addModifyListener(modifyListener);
+		msgTextData.addFocusListener(focusListener);
+
+		fBtnSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				ChangeCommitMsgCommand editMessageCmd = fGerritClient.editMessage(changeInfo.getId());
+				ChangeEditMessageInput changeEditMessageInput = new ChangeEditMessageInput();
+				changeEditMessageInput.setMessage(msgTextData.getText());
+				editMessageCmd.setChangeEditMessageInput(changeEditMessageInput);
+				PublishChangeEditCommand publishChangeEditCmd = fGerritClient.publishChangeEdit(changeInfo.getId());
+
+				String editMessageCmdResult = null, publishChangeEditCmdResult = null;
+				try {
+					editMessageCmdResult = editMessageCmd.call();
+					publishChangeEditCmdResult = publishChangeEditCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(e3.getMessage());
+				} catch (ClientProtocolException e3) {
+					UIUtils.displayInformation(null, TITLE,
+							e3.getLocalizedMessage() + "\n " + editMessageCmd.formatRequest()); //$NON-NLS-1$
+				}
+				fBtnSave.setEnabled(false);
+				btnCancel.setEnabled(false);
+				setfMessageBuffer(msgTextData.getText());
+
+			}
+		});
+
 		new Label(messagesGroup, SWT.NONE);
 
 		sc_msg.setContent(messagesGroup);
@@ -230,4 +313,33 @@ public class MessageTabView {
 		return bindingContext;
 	}
 
+	/**
+	 * Enable editing on this screen for the current session
+	 *
+	 * @param isEditingAllowed
+	 *            whether editing is enabled or not
+	 */
+	public void editingAllowed(boolean isEditingAllowed) {
+		fIsEditingAllowed = isEditingAllowed;
+
+	}
+
+	private boolean isEditingAllowed() {
+		return fIsEditingAllowed;
+	}
+
+	/**
+	 * @return the fMessageBuffer
+	 */
+	public String getfMessageBuffer() {
+		return fMessageBuffer;
+	}
+
+	/**
+	 * @param fMessageBuffer
+	 *            the fMessageBuffer to set
+	 */
+	public void setfMessageBuffer(String fMessageBuffer) {
+		this.fMessageBuffer = fMessageBuffer;
+	}
 }

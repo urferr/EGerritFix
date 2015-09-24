@@ -845,4 +845,14 @@ public class ChangeInfo extends PropertyChangeModel {
 		return state;
 	}
 
+	/**
+	 * set the owner
+	 * 
+	 * @param owner
+	 */
+	public void setOwner(AccountInfo owner) {
+		this.owner = owner;
+
+	}
+
 }
