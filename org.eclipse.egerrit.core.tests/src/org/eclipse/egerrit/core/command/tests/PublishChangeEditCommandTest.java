@@ -133,7 +133,7 @@ public class PublishChangeEditCommandTest {
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.command.PublishChangeEditCommand#call()}.
 	 */
-	@Test
+//	@Test
 	public void testCall() {
 		String change_id = null;
 		String commit_id = null;
@@ -168,8 +168,8 @@ public class PublishChangeEditCommandTest {
 			fail(e.getMessage());
 		}
 
-		PublishChangeEditCommand publishChangeEditCmd = fGerrit.publishChangeEdit(Common.TEST_PROJECT + "~master~"
-				+ change_id);
+		PublishChangeEditCommand publishChangeEditCmd = fGerrit
+				.publishChangeEdit(Common.TEST_PROJECT + "~master~" + change_id);
 
 		String publishChangeEditCmdResult = null;
 		try {
@@ -182,7 +182,7 @@ public class PublishChangeEditCommandTest {
 		}
 
 		// Verify result
-		assert (true);
+		assert(true);
 
 	}
 }
