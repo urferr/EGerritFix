@@ -256,8 +256,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		int minimumWidth = Math.max(ptHeader.x, ptButton.x);
 		minimumWidth = Math.max(minimumWidth, tabFolder.getSize().x);
-		int minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
-				+ hScrolBarSize.y;
+		int minimumHeight;
+		if (historytab != null) {
+			minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
+					+ hScrolBarSize.y;
+		} else {
+			minimumHeight = ptHeader.y + 2 * 5 + ptButton.y + hScrolBarSize.y;
+		}
 		scrollView.setMinSize(minimumWidth, minimumHeight);
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 
@@ -265,10 +270,14 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
 
 		//Queries to fill the Summary Review tab data
-		summaryTab.setTabs(fGerritClient, fChangeInfo);
+		if (summaryTab != null) {
+			summaryTab.setTabs(fGerritClient, fChangeInfo);
+		}
 
 		buttonsEnablement();
-		messageTab.setfMessageBuffer(fCommitInfo.getMessage());
+		if (messageTab != null) {
+			messageTab.setfMessageBuffer(fCommitInfo.getMessage());
+		}
 
 	}
 
@@ -571,10 +580,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
-					String latestPatchSet = filesTab.getLatestPatchSet();
-					itemCRPlus2.setEnabled(fChangeInfo.getCodeReviewedTally() != 2
-							&& fChangeInfo.getVerifiedTally() >= 1
-							&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+					String latestPatchSet = filesTab != null ? filesTab.getLatestPatchSet() : "";
+					itemCRPlus2
+							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
+									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
@@ -746,7 +755,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
-		messageTab.editingAllowed(saveButtonEnablement());
+		if (messageTab != null) {
+			messageTab.editingAllowed(saveButtonEnablement());
+		}
 	}
 
 	private void rebaseButtonEnablement() {
@@ -854,9 +865,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				.getUsername()
 				.compareTo(fChangeInfo.getOwner().getUsername()) == 0
 				|| fGerritClient.getRepository()
-				.getCredentials()
-				.getUsername()
-				.compareTo(fChangeInfo.getOwner().getEmail()) == 0) {
+						.getCredentials()
+						.getUsername()
+						.compareTo(fChangeInfo.getOwner().getEmail()) == 0) {
 			return true;
 		}
 
@@ -896,7 +907,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setActions(res.getActions());
 
 			//Set the file tab view
-			filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
+			if (filesTab != null) {
+				filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
+			}
 			setCurrentCommitInfo(res.getCurrentRevision());
 
 			//Display the History tab
@@ -929,7 +942,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		if (revision instanceof RevisionInfo) {
 			match = (RevisionInfo) revision;
 		} else if (revision instanceof String) {
-			match = filesTab.getRevisions().get(revision);
+			match = filesTab != null ? filesTab.getRevisions().get(revision) : null;
 		}
 		//Need to initialize the variables first
 		fCommitInfo.reset();
@@ -1201,6 +1214,5 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		// ignore
-
 	}
 }

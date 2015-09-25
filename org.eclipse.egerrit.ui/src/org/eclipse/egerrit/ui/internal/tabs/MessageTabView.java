@@ -107,13 +107,18 @@ public class MessageTabView {
 		Point fontSize = UIUtils.computeFontSize(tabFolder);
 		final TabItem tabMessages = new TabItem(tabFolder, SWT.NONE);
 		tabMessages.setText("Messages");
-		final ScrolledComposite sc_msg = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		sc_msg.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		sc_msg.setExpandHorizontal(true);
-		sc_msg.setExpandVertical(true);
-		final Group messagesGroup = new Group(sc_msg, SWT.NONE);
+//		final ScrolledComposite sc_msg = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+//		sc_msg.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+//		sc_msg.setExpandHorizontal(true);
+//		sc_msg.setExpandVertical(true);
+//
+//		final Group messagesGroup = new Group(sc_msg, SWT.NONE);
+//
+//		tabMessages.setControl(sc_msg);
+		final Group messagesGroup = new Group(tabFolder, SWT.NONE);
 
-		tabMessages.setControl(sc_msg);
+		tabMessages.setControl(messagesGroup);
+
 		GridLayout gl_messagesGroup = new GridLayout(4, false);
 		gl_messagesGroup.horizontalSpacing = 10;
 		gl_messagesGroup.marginTop = 3;
@@ -123,11 +128,15 @@ public class MessageTabView {
 		ScrolledComposite sc_msgtxt = new ScrolledComposite(messagesGroup, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		sc_msgtxt.setExpandHorizontal(true);
 		sc_msgtxt.setExpandVertical(true);
-		sc_msgtxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 
+//		sc_msgtxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		int minHeight = fontSize.y * 6; //minimum 6 lines
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+		grid.minimumHeight = minHeight;
+		sc_msgtxt.setLayoutData(grid);
 		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI);
 		sc_msgtxt.setContent(msgTextData);
-		int minHeight = fontSize.y * 6; //minimum 6 lines
+
 		sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, minHeight));
 
 		Composite composite = new Composite(messagesGroup, SWT.NONE);
@@ -257,7 +266,7 @@ public class MessageTabView {
 
 		new Label(messagesGroup, SWT.NONE);
 
-		sc_msg.setContent(messagesGroup);
+//		sc_msg.setContent(messagesGroup);
 
 		//Set the binding for this section
 		msgTabDataBindings(commitInfo, changeInfo);

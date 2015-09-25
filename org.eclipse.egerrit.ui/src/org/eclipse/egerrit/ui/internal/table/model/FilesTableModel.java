@@ -31,8 +31,8 @@ public enum FilesTableModel implements ITableModel {
 	REVIEWED("", 30, false, true, SWT.LEFT), //
 	MOD_TYPE("", 30, true, true, SWT.LEFT), //
 	FILE_PATH(Messages.FilesTableDefinition_filePath, 360, true, true, SWT.LEFT), //
-	COMMENTS(Messages.FilesTableDefinition_comments, 150, true, true, SWT.LEFT), //
-	SIZE(Messages.FilesTableDefinition_size, 120, false, true, SWT.LEFT);
+	COMMENTS(Messages.FilesTableDefinition_comments, 240, true, true, SWT.LEFT), //
+	SIZE(Messages.FilesTableDefinition_size, 100, false, true, SWT.LEFT);
 
 	private final String fHeader;
 

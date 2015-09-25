@@ -27,11 +27,9 @@ import java.util.Observable;
 import java.util.TreeMap;
 
 import org.apache.http.client.ClientProtocolException;
-import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -48,21 +46,25 @@ import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.DisplayFileInfo;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
-import org.eclipse.egerrit.ui.internal.table.UIPatchSetsTable;
-import org.eclipse.egerrit.ui.internal.table.provider.FilePatchSetTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
@@ -70,6 +72,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -89,7 +92,17 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private static final String WORKSPACE = "Workspace"; //$NON-NLS-1$
 
+	private static final String PATCHSET = "Patch Sets ";
+
+	private static final String SEPARATOR = "/"; //$NON-NLS-1$
+
 	private final String TITLE = "Gerrit Server ";
+
+	private final String TOTAL = "Total changes: ";
+
+	private final String DRAFTS = "Drafts: ";
+
+	private final String COMMENTS = "Comments: ";
 
 	private RevisionInfo fCurrentRevision = null;
 
@@ -111,7 +124,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private Combo comboDiffAgainst;
 
-	private TableViewer tablePatchSetsViewer;
+	private Label lblPatchSet;
+
+	private ComboViewer comboPatchsetViewer;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -128,29 +143,229 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		filesTab(tabFolder);
 	}
 
-	private void filesTab(TabFolder tabFolder) {
-		TabItem tbtmFiles = new TabItem(tabFolder, SWT.NONE);
+	private void filesTab(final TabFolder tabFolder) {
+		final TabItem tbtmFiles = new TabItem(tabFolder, SWT.NONE);
 		tbtmFiles.setText("Files");
 
-		ScrolledComposite scFilesTab = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		scFilesTab.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		scFilesTab.setExpandHorizontal(true);
-		scFilesTab.setExpandVertical(true);
+		final Group filesGroup = new Group(tabFolder, SWT.NONE);
+		tbtmFiles.setControl(filesGroup);
 
-		Group filesGroup = new Group(scFilesTab, SWT.NONE);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, false, 10, 1);
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		filesGroup.setLayoutData(grid);
+		filesGroup.setLayout(new GridLayout(1, false));
 
-		GridLayout gridLayout = new GridLayout(10, true);
-		gridLayout.verticalSpacing = 10;
-		filesGroup.setLayout(gridLayout);
+		final Composite composite = new Composite(filesGroup, SWT.NONE);
+		GridLayout gridLayoutComp = new GridLayout(10, false);
+		gridLayoutComp.verticalSpacing = 10;
+		composite.setLayout(gridLayoutComp);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 10, 1));
 
-		scFilesTab.setContent(filesGroup);
+		composite.addControlListener(new ControlListener() {
 
-		tbtmFiles.setControl(scFilesTab);
+			@Override
+			public void controlResized(ControlEvent e) {
+				composite.pack();
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+				// ignore
+
+			}
+		});
+		Point pt = UIUtils.computeFontSize(composite);
+
+		lblPatchSet = new Label(composite, SWT.NONE);
+		GridData gd_lblPatchSet = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		gd_lblPatchSet.verticalIndent = 5;
+		lblPatchSet.setLayoutData(gd_lblPatchSet);
+		lblPatchSet.setText("Patch Sets (    /    )");
+
+		comboPatchsetViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+
+		GridData gd_comboPatchSet = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
+		gd_comboPatchSet.verticalIndent = 5;
+		int numCharPatchSet = 55;
+		gd_comboPatchSet.minimumWidth = numCharPatchSet * pt.x;
+		gd_comboPatchSet.widthHint = numCharPatchSet * pt.x;
+
+		comboPatchsetViewer.getCombo().setLayoutData(gd_comboPatchSet);
+		comboPatchsetViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection selection = event.getSelection();
+				if (selection instanceof StructuredSelection) {
+					IStructuredSelection structSel = (IStructuredSelection) selection;
+					if (structSel.getFirstElement() instanceof RevisionInfo) {
+
+						setPatchSetLabelCombo();
+						setDiffAgainstCombo();
+						RevisionInfo revInfo = (RevisionInfo) structSel.getFirstElement();
+
+						setCurrentRevision(revInfo);
+						fillFiles(revInfo.getFiles());
+						setChanged();
+						notifyObservers();
+
+						setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), revInfo.getCommit().getCommit());
+						displayFilesTable();
+
+					}
+				}
+				//selection.
+
+			}
+		});
+
+		Label lblDiffAgainst = new Label(composite, SWT.NONE);
+		GridData gd_DiffAgainst = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
+		gd_DiffAgainst.verticalIndent = 5;
+		gd_DiffAgainst.horizontalIndent = 15;
+		lblDiffAgainst.setLayoutData(gd_DiffAgainst);
+		lblDiffAgainst.setText("Diff against:");
+
+		comboDiffAgainst = new Combo(composite, SWT.NONE);
+		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 2, 1);
+		gd_combo.verticalIndent = 5;
+		int numChar = 17;
+		gd_combo.minimumWidth = numChar * pt.x;
+		gd_combo.widthHint = numChar * pt.x;
+		comboDiffAgainst.setLayoutData(gd_combo);
+		System.err.println("Combo mini width = " + (numChar * pt.x));
+
+		Button btnPublish = new Button(composite, SWT.NONE);
+		GridData gd_btnPublish = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
+		gd_btnPublish.verticalIndent = 5;
+		gd_btnPublish.horizontalIndent = 25;
+		btnPublish.setLayoutData(gd_btnPublish);
+		btnPublish.setText("Publish");
+
+		Button btnDelete = new Button(composite, SWT.NONE);
+		GridData gd_btnDelete = new GridData(SWT.CENTER, SWT.TOP, false, false, 1, 1);
+		gd_btnDelete.verticalIndent = 5;
+		gd_btnDelete.horizontalIndent = 15;
+		btnDelete.setLayoutData(gd_btnDelete);
+		btnDelete.setText("Delete");
+
+		Label lblSummary = new Label(composite, SWT.NONE);
+		GridData gd_lblSummary = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+		lblSummary.setLayoutData(gd_lblSummary);
+		lblSummary.setText("Summary:");
+
+		lblTotal = new Label(composite, SWT.NONE);
+		GridData gd_lblTotal = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+		gd_lblTotal.minimumWidth = 12 * pt.x;
+		lblTotal.setLayoutData(gd_lblTotal);
+		lblTotal.setText("total");
+		lblTotal.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblTotal.getText();
+				String newCount = ""; //$NON-NLS-1$
+				int lineInserted = 0;
+				int lineDeleted = 0;
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					while (itr1.hasNext()) {
+						DisplayFileInfo fileInfo = itr1.next();
+						lineInserted += fileInfo.getLinesInserted();
+						lineDeleted += fileInfo.getLinesDeleted();
+					}
+					StringBuilder sb = new StringBuilder();
+					sb.append(TOTAL);
+					sb.append("+"); //$NON-NLS-1$
+					sb.append(Integer.toString(lineInserted));
+					sb.append("/"); //$NON-NLS-1$
+					sb.append("-"); //$NON-NLS-1$
+					sb.append(Integer.toString(lineDeleted));
+					newCount = sb.toString();
+				}
+				if (!old.equals(newCount)) {
+					lblTotal.setText(newCount);
+					lblTotal.pack();
+				}
+			}
+		});
+
+		lblDrafts = new Label(composite, SWT.NONE);
+		GridData gd_lblDrafts = new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1);
+		gd_lblDrafts.horizontalIndent = 10;
+		lblDrafts.setLayoutData(gd_lblDrafts);
+		lblDrafts.setText("drafts:");
+		lblDrafts.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblDrafts.getText();
+				String newCount = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
+
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					int numDrafts = 0;
+					sb.append(DRAFTS);
+					while (itr1.hasNext()) {
+						DisplayFileInfo displayFileInfo = itr1.next();
+						if (displayFileInfo.getDraftComments() != null) {
+							numDrafts += displayFileInfo.getDraftComments().size();
+						}
+					}
+					if (numDrafts > 0) {
+						sb.append(Integer.toString(numDrafts));
+					}
+				}
+				newCount = sb.toString();
+				if (!old.equals(newCount)) {
+					lblDrafts.setText(newCount);
+					lblDrafts.pack();
+				}
+			}
+		});
+
+		lblComments = new Label(composite, SWT.NONE);
+		GridData gd_lblComments = new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1);
+		lblComments.setLayoutData(gd_lblComments);
+		lblComments.setText("comments:");
+		lblComments.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				String old = lblComments.getText();
+				String newCount = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
+
+				if (!fFilesDisplay.isEmpty()) {
+					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+					int numComment = 0;
+					sb.append(COMMENTS);
+
+					while (itr1.hasNext()) {
+						DisplayFileInfo displayFileInfo = itr1.next();
+						if (displayFileInfo.getNewComments() != null) {
+							numComment += displayFileInfo.getNewComments().size();
+						}
+					}
+					if (numComment > 0) {
+						sb.append(Integer.toString(numComment));
+					}
+				}
+				newCount = sb.toString();
+				if (!old.equals(newCount)) {
+					lblComments.setText(newCount);
+					lblComments.pack();
+				}
+			}
+		});
+
+		composite.pack();
+
+		final SashForm sashForm = new SashForm(filesGroup, SWT.VERTICAL);
+		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		UIFilesTable tableUIFiles = new UIFilesTable();
-		tableUIFiles.createTableViewerSection(filesGroup, grid);
+		tableUIFiles.createTableViewerSection(sashForm, grid);
 
 		tableFilesViewer = tableUIFiles.getViewer();
 		tableFilesViewer.getTable();
@@ -182,181 +397,25 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 		});
 
-		Label lblSummary = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblSummary = new GridData(SWT.RIGHT, SWT.TOP, false, false, 5, 1);
-		gd_lblSummary.horizontalSpan = 6;
-		lblSummary.setLayoutData(gd_lblSummary);
-		lblSummary.setText("Summary:");
-
-		lblDrafts = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblDrafts = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
-		gd_lblDrafts.horizontalSpan = 1;
-		lblDrafts.setLayoutData(gd_lblDrafts);
-		lblDrafts.setText("drafts:");
-		lblDrafts.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblDrafts.getText();
-				String newCount = ""; //$NON-NLS-1$
-				StringBuilder sb = new StringBuilder();
-				sb.append("drafts:");
-
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					int numComment = 0;
-					while (itr1.hasNext()) {
-						DisplayFileInfo displayFileInfo = itr1.next();
-						if (displayFileInfo.getDraftComments() != null) {
-							numComment += displayFileInfo.getDraftComments().size();
-						}
-					}
-					if (numComment > 0) {
-						sb.append(Integer.toString(numComment));
-					}
-				}
-				newCount = sb.toString();
-				if (!old.equals(newCount)) {
-					lblDrafts.setText(newCount);
-					lblDrafts.pack();
-				}
-			}
-		});
-
-		lblComments = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblComments = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		gd_lblComments.horizontalSpan = 1;
-		lblComments.setLayoutData(gd_lblComments);
-		lblComments.setText("comments:");
-		lblComments.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblComments.getText();
-				String newCount = ""; //$NON-NLS-1$
-				StringBuilder sb = new StringBuilder();
-				sb.append("comments:");
-
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					int numComment = 0;
-					while (itr1.hasNext()) {
-						DisplayFileInfo displayFileInfo = itr1.next();
-						if (displayFileInfo.getNewComments() != null) {
-							numComment += displayFileInfo.getNewComments().size();
-						}
-					}
-					if (numComment > 0) {
-						sb.append(Integer.toString(numComment));
-					}
-				}
-				newCount = sb.toString();
-				if (!old.equals(newCount)) {
-					lblComments.setText(newCount);
-					lblComments.pack();
-				}
-			}
-		});
-
-		lblTotal = new Label(filesGroup, SWT.NONE);
-		GridData gd_lblTotal = new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1);
-		gd_lblTotal.horizontalSpan = 2;
-		lblTotal.setLayoutData(gd_lblTotal);
-		lblTotal.setText("total");
-		lblTotal.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblTotal.getText();
-				String newCount = ""; //$NON-NLS-1$
-				int lineInserted = 0;
-				int lineDeleted = 0;
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					while (itr1.hasNext()) {
-						DisplayFileInfo fileInfo = itr1.next();
-						lineInserted += fileInfo.getLinesInserted();
-						lineDeleted += fileInfo.getLinesDeleted();
-					}
-					StringBuilder sb = new StringBuilder();
-					sb.append("+"); //$NON-NLS-1$
-					sb.append(Integer.toString(lineInserted));
-					sb.append("/"); //$NON-NLS-1$
-					sb.append("-"); //$NON-NLS-1$
-					sb.append(Integer.toString(lineDeleted));
-					newCount = sb.toString();
-				}
-				if (!old.equals(newCount)) {
-					lblTotal.setText(newCount);
-					lblTotal.pack();
-				}
-			}
-		});
-
-		Button btnOpenAll = new Button(filesGroup, SWT.NONE);
-		GridData gd_btnOpenAll = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		gd_btnOpenAll.verticalIndent = 5;
-		btnOpenAll.setLayoutData(gd_btnOpenAll);
-		btnOpenAll.setText("Open All");
-
-		Label lblDiffAgainst = new Label(filesGroup, SWT.NONE);
-		GridData gd_DiffAgainst = new GridData(SWT.RIGHT, SWT.TOP, false, false, 2, 1);
-		gd_DiffAgainst.verticalIndent = 5;
-		lblDiffAgainst.setLayoutData(gd_DiffAgainst);
-		lblDiffAgainst.setText("Diff against:");
-
-		comboDiffAgainst = new Combo(filesGroup, SWT.NONE);
-		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 4, 1);
-		gd_combo.verticalIndent = 5;
-		int numChar = 25;
-		Point pt = UIUtils.computeFontSize(comboDiffAgainst);
-		gd_combo.minimumWidth = numChar * pt.x;
-		gd_combo.horizontalSpan = 2;
-		comboDiffAgainst.setLayoutData(gd_combo);
-		System.err.println("Combo mini width = " + (numChar * pt.x));
-
-		Button btnPublish = new Button(filesGroup, SWT.NONE);
-		GridData gd_btnPublish = new GridData(SWT.RIGHT, SWT.TOP, false, false, 3, 1);
-		gd_btnPublish.verticalIndent = 5;
-		btnPublish.setLayoutData(gd_btnPublish);
-		btnPublish.setText("Publish");
-
-		Button btnDelete = new Button(filesGroup, SWT.NONE);
-		GridData gd_btnDelete = new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1);
-		gd_btnDelete.verticalIndent = 5;
-		btnDelete.setLayoutData(gd_btnDelete);
-		btnDelete.setText("Delete");
-
-		UIPatchSetsTable tableUIPatchSetsTable = new UIPatchSetsTable();
-		tableUIPatchSetsTable.createTableViewerSection(filesGroup, new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-
-		tablePatchSetsViewer = tableUIPatchSetsTable.getViewer();
-		patchSetSelection();
-
-		filesGroup.pack();
-
-		scFilesTab.setMinSize(filesGroup.getSize());
+		sashForm.setWeights(new int[] { 100 });
 
 		//Set the binding for this section
-		filesTabDataBindings(tableFilesViewer, tablePatchSetsViewer);
+		filesTabDataBindings(tableFilesViewer);
 	}
 
-	protected void filesTabDataBindings(TableViewer tableFilesViewer, TableViewer tablePatchSetsViewer) {
-		//Set the PatchSetViewer
-		if (tablePatchSetsViewer != null) {
+	protected void filesTabDataBindings(TableViewer tableFilesViewer) {
+
+		//Set the PatchSet Combo viewer
+		if (comboPatchsetViewer != null) {
 			ObservableListContentProvider contentPatchSetProvider = new ObservableListContentProvider();
-			tablePatchSetsViewer.setContentProvider(contentPatchSetProvider);
-			WritableMap writeInfoMap = new WritableMap();
-			writeInfoMap.putAll(fRevisions);
-			WritableList writeInfoList = new WritableList(writeInfoMap.values(), Map.class);
-
-			DataBindingContext bindingContext = new DataBindingContext();
-
+			comboPatchsetViewer.setContentProvider(contentPatchSetProvider);
 			IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
 					BeanProperties.values(new String[] { "_number", "commit" }));
 
-			ViewerSupport.bind(tablePatchSetsViewer, writeInfoList, BeanProperties.values(new String[] { "commit" }));
-			tablePatchSetsViewer.setLabelProvider(new FilePatchSetTableLabelProvider(observePatchSetMaps));
+			comboPatchsetViewer.setLabelProvider(new ComboPatchSetLabelProvider(observePatchSetMaps));
+			// input must be a List
+			comboPatchsetViewer.setInput(null);
+
 		}
 
 		//Set the FilesViewer
@@ -366,49 +425,17 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 			WritableList writeInfoList = new WritableList(fFilesDisplay.values(), DisplayFileInfo.class);
 
+//			IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
+//					BeanProperties.values(new String[] { "fileInfo", "comments" }));
 			IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-					BeanProperties.values(new String[] { "fileInfo", "comments" }));
+					BeanProperties.values(new String[] { "fileInfo", "comments", "newComments", "draftComments" }));
 
-			ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
+//			ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
+			ViewerSupport.bind(tableFilesViewer, writeInfoList,
+					BeanProperties.values(new String[] { "fileInfo", "comments", "newComments", "draftComments" }));
 
 			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
 		}
-		//
-//		IObservableValue lblTotalTextDataWidget = WidgetProperties.text().observe(lblTotal);
-////		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(
-////				fFilesDisplay.entrySet().iterator());
-//
-//		IObservableValue lblTotalDataValue = BeanProperties.value("fFilesDisplay").observe(writeListFiles);
-//		bindingContext.bindValue(lblTotalTextDataWidget, lblTotalDataValue, null,
-//				new UpdateValueStrategy().setConverter(DataConverter.commentLineCounter()));
-
-	}
-
-	/**
-	 *
-	 */
-	private void patchSetSelection() {
-		tablePatchSetsViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-
-				Object element = sel.getFirstElement();
-				if (element instanceof RevisionInfo) {
-					RevisionInfo selInfo = (RevisionInfo) element;
-					setCurrentRevision(selInfo);
-					fillFiles(selInfo.getFiles());
-					setChanged();
-					notifyObservers();
-
-					setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), selInfo.getCommit().getCommit());
-					displayFilesTable();
-					setDiffAgainstCombo();
-				}
-			}
-
-		});
 	}
 
 	/**
@@ -421,7 +448,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		listPatch.add(BASE);
 		listPatch.add(WORKSPACE);
 		//Find the current Patchset selection
-		ISelection selected = tablePatchSetsViewer.getSelection();
+		ISelection selected = comboPatchsetViewer.getSelection();
+
 		if (!selected.isEmpty()) {
 			int psSelected = -1;
 			if (selected instanceof StructuredSelection) {
@@ -433,6 +461,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 			//Display the list of patchset without the current one
 			List<RevisionInfo> listRevision = new ArrayList<RevisionInfo>(fRevisions.values());
+			Collections.sort(listRevision, new Comparator<RevisionInfo>() {
+
+				@Override
+				public int compare(RevisionInfo rev1, RevisionInfo rev2) {
+					return rev2.getNumber() - rev1.getNumber();
+				}
+			});
 
 			Iterator<RevisionInfo> it = listRevision.iterator();
 			while (it.hasNext()) {
@@ -443,7 +478,34 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 
 			comboDiffAgainst.setItems(listPatch.toArray(new String[0]));
-			comboDiffAgainst.select(0);//Select the Workspace to compare with by default
+			comboDiffAgainst.select(0);//Select the Base to compare with by default
+
+		}
+	}
+
+	/**
+	 * - Fill the label showing which patch set is selected from the total list of patchset
+	 */
+	private void setPatchSetLabelCombo() {
+		//Find the current PatchSet selection
+		ISelection selected = comboPatchsetViewer.getSelection();
+		if (!selected.isEmpty()) {
+			int psSelected = -1;
+			if (selected instanceof StructuredSelection) {
+				Object element = ((IStructuredSelection) selected).getFirstElement();
+				if (element instanceof RevisionInfo) {
+					RevisionInfo selectInfo = (RevisionInfo) element;
+					psSelected = selectInfo.getNumber();
+				}
+			}
+			StringBuilder sb = new StringBuilder();
+			sb.append(PATCHSET);
+			sb.append(psSelected);
+			sb.append(SEPARATOR);
+			sb.append(fRevisions.size());
+
+			//Display the selected patchSet
+			lblPatchSet.setText(sb.toString());
 
 		}
 	}
@@ -463,7 +525,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				Entry<String, FileInfo> entryFile = fileIter.next();
 				DisplayFileInfo displayFileInfo = new DisplayFileInfo(entryFile.getValue());
 				displayFileInfo.setOld_path(entryFile.getKey());
-//				fFilesDisplay.put(entryFile.getKey(), displayFileInfo);
 				displayFilesMap.put(entryFile.getKey(), displayFileInfo);
 			}
 			setFilesDisplay(displayFilesMap);
@@ -482,7 +543,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 
 		sortedMap.putAll(displayFilesMap);
-		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = sortedMap);
+		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = sortedMap); //$NON-NLS-1$
 
 	}
 
@@ -502,18 +563,19 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 		writeInfoList = new WritableList(listRevision, List.class);
 
-		if (tablePatchSetsViewer != null) {
-			tablePatchSetsViewer.setInput(writeInfoList);
-			//If we have a patch set, we need to select the current which is the top one
-			if (!listRevision.isEmpty()) {
-				tablePatchSetsViewer.getTable().setSelection(0);
-				setDiffAgainstCombo();
-				fCurrentRevision = listRevision.get(0);
-				setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), fCurrentRevision.getCommit().getCommit());
-				displayFilesTable();
-			}
+		if (comboPatchsetViewer != null) {
+			comboPatchsetViewer.setInput(writeInfoList);
+			comboPatchsetViewer.getCombo().select(0); //select by default the first element
+			//Will need the following also
+			setDiffAgainstCombo();
+			setPatchSetLabelCombo();
+			setCurrentRevision(listRevision.get(0));
+			fillFiles(listRevision.get(0).getFiles());
+			setChanged();
+			notifyObservers();
 
-			tablePatchSetsViewer.refresh();
+			setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), fCurrentRevision.getCommit().getCommit());
+			displayFilesTable();
 		}
 	}
 
@@ -535,13 +597,14 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 */
 	private void displayFilesTable() {
 		WritableList writeInfoList;
-//					entry1.getValue().addPropertyChangeListener("old_path", this);
 		Iterator<Entry<String, DisplayFileInfo>> itrFileDisplay = fFilesDisplay.entrySet().iterator();
 		while (itrFileDisplay.hasNext()) {
 			Entry<String, DisplayFileInfo> entry1 = itrFileDisplay.next();
 
 			entry1.getValue().addPropertyChangeListener("fileInfo", this);
 			entry1.getValue().setOld_path(entry1.getKey());
+			entry1.getValue().addPropertyChangeListener("DisplayFileInfo.newComments", this);
+			entry1.getValue().addPropertyChangeListener("DisplayFileInfo.draftComments", this);
 		}
 
 		//Set the data fields in the Files Tab
@@ -700,13 +763,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
-	 * @return the tablePatchSetsViewer
-	 */
-	public TableViewer getTablePatchSetsViewer() {
-		return tablePatchSetsViewer;
-	}
-
-	/**
 	 * This method set this tab view with the current revision among the list of revisions
 	 *
 	 * @param Map
@@ -770,7 +826,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 */
 	public String getSelectedPatchSet() {
 		String psSelected = null;
-		ISelection selected = getTablePatchSetsViewer().getSelection();
+		ISelection selected = comboPatchsetViewer.getSelection();
 		if (!selected.isEmpty()) {
 			psSelected = findSelectedPatchsetRef(selected, psSelected);
 		}
@@ -781,7 +837,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 * @return the latest patchset as a string
 	 */
 	public String getLatestPatchSet() {
-		RevisionInfo topmost = (RevisionInfo) getTablePatchSetsViewer().getElementAt(0);
+		RevisionInfo topmost = (RevisionInfo) comboPatchsetViewer.getElementAt(0);
 		return topmost.getId();
 
 	}

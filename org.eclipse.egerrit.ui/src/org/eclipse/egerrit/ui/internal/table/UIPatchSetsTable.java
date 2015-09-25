@@ -152,7 +152,7 @@ public class UIPatchSetsTable {
 
 			GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			gribData.minimumWidth = tableInfo[index].getWidth();
-			gribData.minimumHeight = 100;
+//			gribData.minimumHeight = 100;
 			col.getColumn().getParent().setLayoutData(gribData);
 		}
 
