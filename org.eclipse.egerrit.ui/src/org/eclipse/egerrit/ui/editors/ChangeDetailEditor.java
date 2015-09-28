@@ -142,7 +142,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private GerritClient fGerritClient = null;
 
-	private Text changeidData;
+	private Text subjectData;
 
 	private Label statusData;
 
@@ -301,23 +301,23 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		shortIdData.setEditable(false);
 		shortIdData.setBackground(parent.getBackground());
 
-		Label lblChange = new Label(group_header, SWT.NONE);
-		GridData gd_lblChange = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_lblChange.horizontalIndent = 20;
-		lblChange.setLayoutData(gd_lblChange);
-		lblChange.setText("Change:");
+		Label lblSubject = new Label(group_header, SWT.NONE);
+		GridData gd_Subject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_Subject.horizontalIndent = 10;
+		lblSubject.setLayoutData(gd_Subject);
+		lblSubject.setText("Subject:");
 
-		changeidData = new Text(group_header, SWT.NONE);
-		GridData gd_lblChangeid = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_lblChangeid.horizontalIndent = 10;
-		int maxChangeId = 50; //Max number of chars
-		int changeWidth = fontSize.x * maxChangeId;
-		gd_lblChangeid.minimumWidth = changeWidth;
-		gd_lblChangeid.widthHint = changeWidth;
-		changeidData.setLayoutData(gd_lblChangeid);
-		changeidData.setText("changeid");
-		changeidData.setEditable(false);
-		changeidData.setBackground(parent.getBackground());
+		subjectData = new Text(group_header, SWT.NONE);
+		GridData gd_lblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_lblSubjectData.horizontalIndent = 10;
+		int maxSubjectLen = 90; //Max number of chars
+		int changeWidth = fontSize.x * maxSubjectLen;
+		gd_lblSubjectData.minimumWidth = changeWidth;
+		gd_lblSubjectData.widthHint = changeWidth;
+		subjectData.setLayoutData(gd_lblSubjectData);
+		subjectData.setText("subject");
+		subjectData.setEditable(false);
+		subjectData.setBackground(parent.getBackground());
 
 		statusData = new Label(group_header, SWT.RIGHT);
 		GridData gd_lblStatus = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
@@ -689,6 +689,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.setId(element.getId());
 		fChangeInfo.setChange_id(element.getChange_id());
 		fChangeInfo.setStatus(element.getStatus());
+		fChangeInfo.setSubject(element.getSubject());
 		fChangeInfo.setProject(element.getProject());
 		fChangeInfo.setBranch(element.getBranch());
 		fChangeInfo.setUpdated(element.getUpdated());
@@ -1042,8 +1043,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(true)));
 		//
-		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
+		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(subjectData);
+		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("subject").observe(fChangeInfo);
 		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
 		//
 		IObservableValue observeTextLblStatusObserveWidget = WidgetProperties.text().observe(statusData);
