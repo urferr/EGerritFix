@@ -39,11 +39,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	private static final String VERIFIED = "Verified";
-
-	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
+	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -200,13 +196,9 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *            column index
 	 * @return String text associated to the column
 	 */
-	@SuppressWarnings("restriction")
 	public String getColumnText(Object aObj, int aIndex) {
-		// GerritPlugin.Ftracer.traceWarning("getColumnText object: " + aObj
-		// + "\tcolumn: " + aIndex);
 		if (aObj instanceof ChangeInfo) {
 			ChangeInfo reviewSummary = (ChangeInfo) aObj;
-//			String value = null;
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
@@ -226,7 +218,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				String branch = reviewSummary.getBranch();
 				String topic = reviewSummary.getTopic();
 				if (topic != null && !topic.isEmpty()) {
-					branch += " (" + reviewSummary.getTopic() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+					branch += " (" + topic + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return branch;
 			case 7: {
@@ -243,39 +235,11 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 
 				return EMPTY_STRING;
 			}
-//			case 9:
-//				value = reviewSummary.getAttribute(GerritTask.IS_IPCLEAN);
-//				if (null != value && !value.equals(EMPTY_STRING)) {
-//					return formatValue (value);
-//				}
-//                return EMPTY_STRING;
-//			case 10:
-//				value = reviewSummary.getAttribute(GerritTask.VERIFY_STATE);
-//				if (null != value && !value.equals(EMPTY_STRING)) {
-//					return formatValue (value);
-//				}
-//                return EMPTY_STRING;
 			default:
 				return EMPTY_STRING;
 			}
 		}
 		return EMPTY_STRING;
-	}
-
-	/**
-	 * Format the numbering value to display
-	 *
-	 * @param aSt
-	 * @return String
-	 */
-	private String formatValue(String aSt) {
-		int val = aSt.equals("") ? 0 : Integer.parseInt(aSt, 10);
-		if (val > 0) {
-			String st = "+" + aSt;
-			return st;
-		}
-		return aSt;
-
 	}
 
 	/**
@@ -287,7 +251,6 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *            column index
 	 * @return Image Image according to the selected column
 	 */
-	@SuppressWarnings("restriction")
 	public Image getColumnImage(Object aObj, int aIndex) {
 		// GerritPlugin.Ftracer
 		// .traceWarning("getColumnImage column: " + aIndex);
@@ -384,7 +347,6 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	}
 
 	@Override
-	@SuppressWarnings("restriction")
 	public Color getBackground(Object aElement, int aColumnIndex) {
 		// logger.debug("getBackground column : " +
 		// aColumnIndex +
