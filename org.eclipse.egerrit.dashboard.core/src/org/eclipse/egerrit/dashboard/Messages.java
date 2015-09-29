@@ -50,18 +50,6 @@ public class Messages extends NLS {
 
 	public static String GerritTask_updated;
 
-	public static String Tracer_consoleLog;
-
-	public static String Tracer_debug;
-
-	public static String Tracer_error;
-
-	public static String Tracer_info;
-
-	public static String Tracer_logFile;
-
-	public static String Tracer_warning;
-
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
