@@ -448,6 +448,7 @@
       <page
             class="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage"
             id="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"
+            category="org.eclipse.team.ui.TeamPreferences"
             name="Gerrit Servers">
       </page>
    </extension>
