@@ -7,14 +7,9 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="%category.name"
-            id="org.eclipse.egerrit.dashboard.ui">
-      </category>
       <view
             name="%view.name"
             icon="icons/view16/EGerritcolor16.png"
-            category="org.eclipse.egerrit.ui"
             class="org.eclipse.egerrit.dashboard.ui.views.GerritTableView"
             id="org.eclipse.egerrit.dashboard.ui.views.GerritTableView">
       </view>
@@ -33,7 +28,7 @@
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"
                 icon="icons/view16/EGerritcolor16.png"
-                id="GerritDashboard.dropdown.toolbar.initiateGerrit"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.initiateGerrit"
                 label="Gerrit Dashboard"
                 style="pulldown">
           </command>
@@ -46,7 +41,7 @@
  -->
 	<!-- Add the menu item to the Gerrit Dashboard pulldown menu -->
       <menuContribution
-            locationURI="menu:GerritDashboard.dropdown.toolbar.initiateGerrit">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.initiateGerrit">
           <dynamic
                 class="org.eclipse.egerrit.dashboard.ui.internal.menus.DynamicMenuAddition"
                 id="org.eclipse.egerrit.dashboard.ui.dynamic1">
@@ -69,41 +64,29 @@
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"
                 icon="icons/view16/repository-middle.gif"
-                id="GerritDashboard.dropdown.toolbar.initiateGerrit"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.initiateGerrit"
                 label="%command.title"
                 style="pulldown">
           </command>
-	<!--          <separator
-                name="addition0"
-                visible="true">
-            </separator>
-            -->
+
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.allOpenReviews"
-                id="GerritDashboardUI.dropdown.toolbar.AddAllOpenReviews"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.AddAllOpenReviews"
                 label="%command.all"
                 style="pulldown"
                 tooltip="%command.tooltipAllOpen">
           </command>
-         <separator
-                name="addition1"
-                visible="true">
-            </separator>
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
-                id="GerritDashboardUI.dropdown.toolbar.MyWatchedChanges"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.MyWatchedChanges"
                 label="%command.my"
                 style="pulldown"
                 tooltip="%command.tooltipMyWatchedChanges">
           </command>
-         <separator
-                name="addition2"
-                visible="true">
-            </separator>
  <!--
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.projectList"
-                id="GerritDashboardUI.dropdown.toolbar.ProjectList"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList"
                 label="Projects"
                 style="pulldown"
                 tooltip="Find projects list reviews for the selected repository">
@@ -114,7 +97,7 @@
             </separator>
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.groupList"
-                id="GerritDashboardUI.dropdown.toolbar.GroupList"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList"
                 label="Groups"
                 style="pulldown"
                 tooltip="Find groups list reviews for the selected repository">
@@ -126,25 +109,21 @@
  -->
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.documentationIndex"
-                id="GerritDashboardUI.dropdown.toolbar.Documentation"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.Documentation"
                 label="%command.documentation"
                 style="pulldown"
                 tooltip="%command.tooltipDocumentation">
           </command>
-         <separator
-                name="additions"
-               	visible="true">
-            </separator>
 
       </menuContribution>
 
 	<!-- Add sub-menu for the All menu
 	-->
        <menuContribution
-            locationURI="menu:GerritDashboardUI.dropdown.toolbar.AddAllOpenReviews">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.AddAllOpenReviews">
          <command
                	commandId="org.eclipse.egerrit.dashboard.ui.allOpenReviews"
-               	id="GerritDashboardUI.dropdown.toolbar.addOpenReviews"
+               	id="org.eclipse.egerrit.dashboard.dropdown.toolbar.addOpenReviews"
                	label="%command.open"
                	style="push"
                	tooltip="%command.tooltipOpen">
@@ -173,7 +152,7 @@
    	<!-- Add sub-menu for the My menu
 	-->
        <menuContribution
-            locationURI="menu:GerritDashboardUI.dropdown.toolbar.MyWatchedChanges">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.MyWatchedChanges">
          <command
                 commandId="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
                 id="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
@@ -183,7 +162,7 @@
          </command>
          <command
                	commandId="org.eclipse.egerrit.dashboard.ui.myChanges"
-               	id="GerritDashboardUI.dropdown.toolbar.myChanges"
+               	id="org.eclipse.egerrit.dashboard.dropdown.toolbar.myChanges"
                	label="%command.changes"
                	style="push"
                	tooltip="%command.tooltipChanges">
@@ -219,10 +198,10 @@
     <!-- Add sub-menu for the Projects menu
 	-->
        <menuContribution
-            locationURI="menu:GerritDashboardUI.dropdown.toolbar.ProjectList">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList">
          <command
                	commandId="org.eclipse.egerrit.dashboard.ui.projectList"
-               	id="GerritDashboardUI.dropdown.toolbar.projectList"
+               	id="org.eclipse.egerrit.dashboard.dropdown.toolbar.projectList"
                	label="%command.projectList"
                	style="push"
                	tooltip="%command.tooltipProjectList">
@@ -237,10 +216,10 @@
     <!-- Add sub-menu for the Groups menu
 	-->
        <menuContribution
-            locationURI="menu:GerritDashboardUI.dropdown.toolbar.GroupList">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList">
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.groupList"
-               id="GerritDashboardUI.dropdown.toolbar.groupList"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.groupList"
                label="%command.groupList"
                style="push"
                tooltip="%command.tooltipGroupList">
@@ -255,17 +234,17 @@
     <!-- Add sub-menu for the Documentation menu
 	-->
        <menuContribution
-            locationURI="menu:GerritDashboardUI.dropdown.toolbar.Documentation">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.Documentation">
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationIndex"
-               id="GerritDashboardUI.dropdown.toolbar.documentationIndex"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationIndex"
                label="%command.documentIndex"
                style="push"
                tooltip="%command.tooltipDocumentIndex">
          </command>
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching"
-               id="GerritDashboardUI.dropdown.toolbar.documentationSearching"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationSearching"
                label="%command.documemtSearching"
                style="push"
                tooltip="%command.tooltipDocumentSearching">
@@ -273,7 +252,7 @@
 
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationUploading"
-               id="GerritDashboardUI.dropdown.toolbar.documentationUploading"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationUploading"
                label="%command.documentUploading"
                style="push"
                tooltip="%command.tooltipDocumentUploading">
@@ -281,7 +260,7 @@
 
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationAccessControls"
-               id="GerritDashboardUI.dropdown.toolbar.documentationAccessControls"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationAccessControls"
                label="%command.documentAccess"
                style="push"
                tooltip="%command.tooltipDocumentAccess">
@@ -289,7 +268,7 @@
 
          <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationRestAPI"
-               id="GerritDashboardUI.dropdown.toolbar.documentationRestAPI"
+               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationRestAPI"
                label="%command.documentRest"
                style="push"
                tooltip="%command.tooltipDocumentRest">
