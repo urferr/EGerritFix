@@ -108,7 +108,7 @@
             </separator>
  -->
           <command
-                commandId="org.eclipse.egerrit.dashboard.ui.documentationIndex"
+                commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching"
                 id="org.eclipse.egerrit.dashboard.dropdown.toolbar.Documentation"
                 label="%command.documentation"
                 style="pulldown"
@@ -236,42 +236,11 @@
        <menuContribution
             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.Documentation">
          <command
-               commandId="org.eclipse.egerrit.dashboard.ui.documentationIndex"
-               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationIndex"
-               label="%command.documentIndex"
-               style="push"
-               tooltip="%command.tooltipDocumentIndex">
-         </command>
-         <command
                commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching"
                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationSearching"
                label="%command.documemtSearching"
                style="push"
                tooltip="%command.tooltipDocumentSearching">
-         </command>
-
-         <command
-               commandId="org.eclipse.egerrit.dashboard.ui.documentationUploading"
-               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationUploading"
-               label="%command.documentUploading"
-               style="push"
-               tooltip="%command.tooltipDocumentUploading">
-         </command>
-
-         <command
-               commandId="org.eclipse.egerrit.dashboard.ui.documentationAccessControls"
-               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationAccessControls"
-               label="%command.documentAccess"
-               style="push"
-               tooltip="%command.tooltipDocumentAccess">
-         </command>
-
-         <command
-               commandId="org.eclipse.egerrit.dashboard.ui.documentationRestAPI"
-               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.documentationRestAPI"
-               label="%command.documentRest"
-               style="push"
-               tooltip="%command.tooltipDocumentRest">
          </command>
 
 
@@ -386,24 +355,8 @@
          <!-- The following are the commands under the "Documentation" sub-menu
          -->
        <command
-            	id="org.eclipse.egerrit.dashboard.ui.documentationIndex"
-            	name="%command.name.documentIndex">
-      </command>
-       <command
              	id="org.eclipse.egerrit.dashboard.ui.documentationSearching"
              	name="%command.name.documentSearching">
-      </command>
-       <command
-            	id="org.eclipse.egerrit.dashboard.ui.documentationUploading"
-            	name="%command.name.documentUploading">
-      </command>
-       <command
-            	id="org.eclipse.egerrit.dashboard.ui.documentationAccessControls"
-            	name="%command.name.documentAccess">
-      </command>
-       <command
-            	id="org.eclipse.egerrit.dashboard.ui.documentationRestAPI"
-            	name="%command.name.documentRestApi">
       </command>
 
           <!-- The following are the commands under the "Review TableList" sub-menu
@@ -413,16 +366,6 @@
             	name="%command.name.starReview">
       </command>
 
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching"
-            contextId="org.eclipse.egerrit.dashboard.ui.context"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="F1">
-      </key>
    </extension>
 
    <extension
@@ -489,40 +432,16 @@
           <!-- The following are the handlers under the "Documentation" sub-menu
          -->
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.IndexHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.documentationIndex">
-	      </handler>
-	      <handler
              	class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.SearchingHandler"
              	commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching">
 	      </handler>
-	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.UploadingHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.documentationUploading">
-	      </handler>
-	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.AccessControlHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.documentationAccessControls">
-	      </handler>
-	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.RestAPIHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.documentationRestAPI">
-	      </handler>
+
 	     <!-- The following are the handlers under the "Table review list" sub-menu
          -->
 	      <handler
 	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.adjustMyStarred">
 	      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.contexts">
-      <context
-            description="%context.descriptionView"
-            id="org.eclipse.egerrit.dashboard.ui.context"
-            name="%context.name"
-            parentId="org.eclipse.ui.contexts.window">
-      </context>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
