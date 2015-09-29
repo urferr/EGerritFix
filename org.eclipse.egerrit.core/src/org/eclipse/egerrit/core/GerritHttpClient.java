@@ -54,6 +54,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A wrapper for the actual HttpClient. Adds handling of authentication and self-signed certificates.
@@ -62,6 +64,8 @@ import org.apache.http.util.EntityUtils;
  */
 @SuppressWarnings("restriction")
 public class GerritHttpClient {
+
+	private static Logger logger = LoggerFactory.getLogger(GerritHttpClient.class);
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -218,10 +222,10 @@ public class GerritHttpClient {
 			if (gotKey) {
 				request.addHeader(X_GERRIT_AUTHORITY_TAG, fKey);
 			}
-			EGerritCorePlugin.logInfo("Request: " + uri.toString()); //$NON-NLS-1$
+			logger.debug("Request: " + uri.toString()); //$NON-NLS-1$
 			HttpResponse response = execute(request);
 			StatusLine statusLine = response.getStatusLine();
-			EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 			status = statusLine.getStatusCode();
 			EntityUtils.consume(response.getEntity());
 		} catch (ClientProtocolException e) {
@@ -276,10 +280,10 @@ public class GerritHttpClient {
 			HttpPost request = new HttpPost(uri);
 			List<NameValuePair> authParams = getAuthParams(userBecomesAnyAccount);
 			request.setEntity(new UrlEncodedFormEntity(authParams, Consts.UTF_8));
-			EGerritCorePlugin.logInfo("Request: " + uri.toString()); //$NON-NLS-1$
+			logger.debug("Request: " + uri.toString()); //$NON-NLS-1$
 			HttpResponse response = execute(request);
 			StatusLine statusLine = response.getStatusLine();
-			EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 			status = statusLine.getStatusCode();
 			EntityUtils.consume(response.getEntity());
 			if (status == HttpStatus.SC_MOVED_TEMPORARILY) {
@@ -371,10 +375,10 @@ public class GerritHttpClient {
 			URIBuilder builder = fRepository.getURIBuilder(false);
 			URI uri = builder.setPath(fCookiePath).build();
 			HttpGet request = new HttpGet(uri);
-			EGerritCorePlugin.logInfo("Request: " + uri.toString()); //$NON-NLS-1$
+			logger.debug("Request: " + uri.toString()); //$NON-NLS-1$
 			HttpResponse response = execute(request);
 			StatusLine statusLine = response.getStatusLine();
-			EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 			status = statusLine.getStatusCode();
 			if (status == HttpStatus.SC_OK) {
 				extractGerritAuthKey(response.getEntity());

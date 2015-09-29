@@ -34,6 +34,8 @@ import org.apache.http.entity.BufferedHttpEntity;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,6 +51,7 @@ import com.google.gson.stream.MalformedJsonException;
  * @since 1.0
  */
 public abstract class GerritCommand<T> implements Callable<T> {
+	private static Logger logger = LoggerFactory.getLogger(GerritCommand.class);
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -63,7 +66,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	/** Indicates that authentication is required */
 	protected boolean fAuthIsRequired;
 
-	public static String JSON_HEADER = "application/json";
+	public static String JSON_HEADER = "application/json"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Constructor
@@ -141,14 +144,14 @@ public abstract class GerritCommand<T> implements Callable<T> {
 			HttpRequestBase request = formatRequest();
 			setHeaders(request);
 
-			EGerritCorePlugin.logInfo("Request: " + request.getURI().toString()); //$NON-NLS-1$
+			logger.debug("Request: " + request.getURI().toString()); //$NON-NLS-1$
 
 			ResponseHandler<T> rh = new ResponseHandler<T>() {
 				@Override
 				public T handleResponse(final HttpResponse response) throws IOException {
 
 					StatusLine statusLine = response.getStatusLine();
-					EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					if (statusLine.getStatusCode() >= 300) {
 						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
 					}
