@@ -252,8 +252,6 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 * @return Image Image according to the selected column
 	 */
 	public Image getColumnImage(Object aObj, int aIndex) {
-		// GerritPlugin.Ftracer
-		// .traceWarning("getColumnImage column: " + aIndex);
 		Image image = null;
 		String value = null;
 		if (aObj instanceof ChangeInfo) {
@@ -279,13 +277,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 			case 6:
 				return image;
 			case 7:
-//				value = reviewSummary.getAttribute(GerritTask.REVIEW_STATE);
-				value = reviewSummary.getStatus().toString();
-				if (null != value && !value.equals(EMPTY_STRING)) {
-//					int val = Integer.parseInt(value);
-//					return getReviewStateImage(val);
-				}
-				break;
+				return image;
 			case 8:
 				return getReviewStateImage(fCodeReviewState);
 			case 9:

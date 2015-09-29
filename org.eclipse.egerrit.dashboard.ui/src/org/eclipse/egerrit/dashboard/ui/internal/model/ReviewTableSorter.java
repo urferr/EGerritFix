@@ -56,55 +56,60 @@ public class ReviewTableSorter extends ViewerSorter {
 	 * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("restriction")
 	public int compare(Viewer viewer, Object item1, Object item2) {
+
+		int sortDirection = SWT.NONE;
+		if (viewer instanceof TableViewer) {
+			sortDirection = ((TableViewer) viewer).getTable().getSortDirection();
+		} else if (viewer instanceof TreeViewer) {
+			sortDirection = ((TreeViewer) viewer).getTree().getSortDirection();
+		}
 
 		// The comparison result (< 0, == 0, > 0)
 		int result = 0;
 
-		// We are dealing with GerritTask:s but just in case...
+		// We are dealing with ChangeInfo but just in case...
 		if (viewer instanceof TableViewer && item1 instanceof ChangeInfo && item2 instanceof ChangeInfo) {
 
-			ChangeInfo task1 = (ChangeInfo) item1;
-			ChangeInfo task2 = (ChangeInfo) item2;
+			ChangeInfo changeInfo1 = (ChangeInfo) item1;
+			ChangeInfo changeInfo2 = (ChangeInfo) item2;
 
 			String val1 = null;
 			String val2 = null;
 
 			switch (fColumnIndex) {
 			case 0: // Star
-				val1 = new Boolean(task1.isStarred()).toString();
-				val2 = new Boolean(task2.isStarred()).toString();
+				val1 = new Boolean(changeInfo1.isStarred()).toString();
+				val2 = new Boolean(changeInfo2.isStarred()).toString();
 				if (val1 != null && val2 != null) {
 					result = val1.compareTo(val2);
 				}
 				break;
 			case 7: // Updated
-				val1 = task1.getUpdated();
-				val2 = task2.getUpdated();
+				val1 = changeInfo1.getUpdated();
+				val2 = changeInfo2.getUpdated();
 				if (val1 != null && val2 != null) {
 					result = val1.compareTo(val2);
 				}
 				break;
 			case 8: // Code Review
 
-				result = task2.getCodeReviewedTally() - task1.getCodeReviewedTally();
+				result = changeInfo2.getCodeReviewedTally() - changeInfo1.getCodeReviewedTally();
 				break;
 			case 9: // Verify
-				result = task2.getVerifiedTally() - task1.getVerifiedTally();
+				result = changeInfo2.getVerifiedTally() - changeInfo1.getVerifiedTally();
 				break;
 			case 10: // IPLog Clean
 			default:
 				result = defaultCompare(viewer, item1, item2);
 				break;
 			}
-
-			if (((TableViewer) viewer).getTable().getSortDirection() != SWT.UP) {
-				result = -result;
-			}
-
 		} else {
 			result = defaultCompare(viewer, item1, item2);
+		}
+
+		if (sortDirection != SWT.UP) {
+			result = -result;
 		}
 
 		return result;
@@ -139,9 +144,6 @@ public class ReviewTableSorter extends ViewerSorter {
 				String str1 = tv.getTable().getItems()[idx1].getText(this.fColumnIndex);
 				String str2 = tv.getTable().getItems()[idx2].getText(this.fColumnIndex);
 				order = str1.compareTo(str2);
-			}
-			if (tv.getTable().getSortDirection() != SWT.UP) {
-				order *= -1;
 			}
 			return order;
 		}
@@ -181,9 +183,6 @@ public class ReviewTableSorter extends ViewerSorter {
 				String str1 = tv.getTree().getItems()[idx1].getText(this.fColumnIndex);
 				String str2 = tv.getTree().getItems()[idx2].getText(this.fColumnIndex);
 				order = str1.compareTo(str2);
-				if (tv.getTree().getSortDirection() != SWT.UP) {
-					order *= -1;
-				}
 			}
 			return order;
 		}
@@ -208,6 +207,8 @@ public class ReviewTableSorter extends ViewerSorter {
 				public void widgetSelected(final SelectionEvent e) {
 					ReviewTableSorter sorter = new ReviewTableSorter(columnNum);
 					Table table = aTableViewer.getTable();
+					TableColumn currentColumn = (TableColumn) e.widget;
+					table.setSortColumn(currentColumn);
 					table.setSortDirection(table.getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
 					aTableViewer.setComparator(sorter);
 				}
