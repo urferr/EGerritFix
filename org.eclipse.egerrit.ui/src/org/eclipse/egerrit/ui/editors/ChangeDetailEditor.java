@@ -583,7 +583,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					String latestPatchSet = filesTab != null ? filesTab.getLatestPatchSet() : "";
 					itemCRPlus2
 							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
-									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0);
+									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0 && canRebase());
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
@@ -762,17 +762,20 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void rebaseButtonEnablement() {
-		fRebase.setEnabled(false);
+		fRebase.setEnabled(canRebase());
 
+	}
+
+	private boolean canRebase() {
 		Map<String, ActionInfo> actions = getRevisionActions();
 		if (actions != null) {
 			ActionInfo rebase = actions.get(REBASE);
 
 			if (rebase != null) {
-				fRebase.setEnabled(true);
+				return true;
 			}
 		}
-
+		return false;
 	}
 
 	private Map<String, ActionInfo> getRevisionActions() {
