@@ -36,7 +36,7 @@ class CommitCompareItem implements IStreamContentAccessor, ITypedElement {
 
 	@Override
 	public InputStream getContents() throws CoreException {
-		return new ByteArrayInputStream(contents.getBytes());
+		return new ByteArrayInputStream(contents == null ? new byte[0] : contents.getBytes());
 	}
 
 	@Override
