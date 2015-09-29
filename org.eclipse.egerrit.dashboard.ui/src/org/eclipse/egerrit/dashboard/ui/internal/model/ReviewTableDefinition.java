@@ -36,7 +36,7 @@ public enum ReviewTableDefinition {
 	OWNER(Messages.ReviewTableDefinition_owner, 140, true, true, SWT.LEFT), //
 	PROJECT(Messages.ReviewTableDefinition_project, 170, true, true, SWT.LEFT), //
 	BRANCH(Messages.ReviewTableDefinition_branch, 90, true, true, SWT.LEFT), //
-	UPDATED(Messages.ReviewTableDefinition_updated, 140, true, true, SWT.RIGHT), //
+	UPDATED(Messages.ReviewTableDefinition_updated, 140, true, true, SWT.LEFT), //
 	CR(Messages.ReviewTableDefinition_codeReview, 28, false, true, SWT.LEFT), //
 //	   IC(		"IC", 			28, 	false, 	true, SWT.LEFT),
 	VERIFY(Messages.ReviewTableDefinition_verify, 28, false, true, SWT.LEFT);
