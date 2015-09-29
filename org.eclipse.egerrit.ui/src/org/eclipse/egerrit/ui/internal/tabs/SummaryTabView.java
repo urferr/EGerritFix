@@ -139,7 +139,7 @@ public class SummaryTabView {
 
 	private ChangeInfo fChangeInfo;
 
-	private GerritClient gerritClient;
+	private GerritClient fGerritClient;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -268,7 +268,7 @@ public class SummaryTabView {
 	private void summaryReviewers(Group group) {
 
 		Group grpReviewers = new Group(group, SWT.NONE);
-		grpReviewers.setText("Reviewers()");
+		grpReviewers.setText("Reviewers");
 		grpReviewers.setLayout(new GridLayout(7, false));
 
 //		Point fontSize = computeFontSize(grpReviewers);
@@ -339,7 +339,7 @@ public class SummaryTabView {
 		Group grpSameTopic = new Group(group, SWT.NONE);
 		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, false, 5, 2);
 		grpSameTopic.setLayoutData(grid);
-		grpSameTopic.setText("Same Topic()");
+		grpSameTopic.setText("Same Topic");
 
 		GridLayout gl_grpSameTopic = new GridLayout(5, false);
 		gl_grpSameTopic.verticalSpacing = 9;
@@ -362,7 +362,7 @@ public class SummaryTabView {
 		gridLayout.marginTop = 5;
 		grpRelatedChanges.setLayout(gridLayout);
 		grpRelatedChanges.setLayoutData(grid);
-		grpRelatedChanges.setText("Related Changes()");
+		grpRelatedChanges.setText("Related Changes");
 
 		UIRelatedChangesTable tableUIRelatedChanges = new UIRelatedChangesTable();
 		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges, grid);
@@ -379,7 +379,7 @@ public class SummaryTabView {
 		Group grpConflictsWith = new Group(group, SWT.NONE);
 		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
 		grpConflictsWith.setLayoutData(grid);
-		grpConflictsWith.setText("Conflicts With ()");
+		grpConflictsWith.setText("Conflicts With");
 
 		GridLayout gridLayout = new GridLayout(5, false);
 		gridLayout.verticalSpacing = 9;
@@ -405,16 +405,16 @@ public class SummaryTabView {
 	 * @param element
 	 */
 	private void setMergeable(GerritClient gerritClient, ChangeInfo element) {
-		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) {
+		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) { //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
-		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getChange_id(), "",
+		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getChange_id(), "", //$NON-NLS-1$
 				new NullProgressMonitor());
 		if (mergeableInfo != null) {
 			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
 			fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
 		} else {
-			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ??
+			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ?? //$NON-NLS-1$
 			fMergeableInfo.setMergeable(true);// Reset the filed to be empty
 		}
 	}
@@ -541,10 +541,8 @@ public class SummaryTabView {
 					fConflictsWithChangeInfo.add(item);
 				}
 			}
-		} else {
-			//Need to reset that structure
-			System.err.println("Need to reset that structure fConflictsWithChangeInfo");
 		}
+
 		writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
 		tableConflictsWithViewer.setInput(writeInfoList);
 	}
@@ -761,7 +759,7 @@ public class SummaryTabView {
 						addReviewerInput.setConfirmed(true);
 						reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
 					}
-					setReviewers(gerritClient);
+					setReviewers(fGerritClient);
 				}
 			}
 
@@ -804,7 +802,6 @@ public class SummaryTabView {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				ViewerCell viewerCell = tableReviewersViewer.getCell(new Point(e.x, e.y));
-				String cellText = viewerCell.getText();
 				if (viewerCell.getColumnIndex() == 0) {
 					//Selected the first column, so we can send the delete option
 					//Otherwise, do not delete
@@ -836,10 +833,10 @@ public class SummaryTabView {
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(e3.getMessage());
 							} catch (ClientProtocolException e3) {
-								UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage()
-										+ "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
+								UIUtils.displayInformation(null, TITLE,
+										e3.getLocalizedMessage() + "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
 							}
-							setReviewers(gerritClient);
+							setReviewers(fGerritClient);
 						}
 					}
 				}
@@ -857,12 +854,9 @@ public class SummaryTabView {
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+				null);
 		//
-//		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(changeidData);
-//		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("change_id").observe(fChangeInfo);
-//		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-//		//
 		IObservableValue observeTextLblBranch_1ObserveWidget = WidgetProperties.text().observe(genBranchData);
 		IObservableValue branchFChangeInfoObserveValue = BeanProperties.value("branch").observe(fChangeInfo); //$NON-NLS-1$
 		bindingContext.bindValue(observeTextLblBranch_1ObserveWidget, branchFChangeInfoObserveValue, null, null);
@@ -884,8 +878,10 @@ public class SummaryTabView {
 				//
 				observeTextGenStrategyDataObserveWidget, //
 				bytesMergeableinfogetSubmit_typeObserveValue, //
-				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
-				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+				new UpdateValueStrategy()
+						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
+				new UpdateValueStrategy()
+						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
 
 		//
 		IObservableValue observeTextGenMessageDataObserveWidget = WidgetProperties.text().observe(genMessageData);
@@ -975,7 +971,8 @@ public class SummaryTabView {
 		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
 				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
+		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
+				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
 		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
 	}
 
@@ -1015,7 +1012,7 @@ public class SummaryTabView {
 	 * @return the gerritClient
 	 */
 	private GerritClient getGerritClient() {
-		return gerritClient;
+		return fGerritClient;
 	}
 
 	/**
@@ -1023,7 +1020,7 @@ public class SummaryTabView {
 	 *            the gerritClient to set
 	 */
 	private void setGerritClient(GerritClient gerritClient) {
-		this.gerritClient = gerritClient;
+		this.fGerritClient = gerritClient;
 	}
 
 }
