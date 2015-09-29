@@ -34,6 +34,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.osgi.framework.Version;
+import org.slf4j.LoggerFactory;
 
 /**
  * A GerritRepository represents the interface to a gerrit repository.
@@ -43,6 +44,8 @@ import org.osgi.framework.Version;
  * @since 1.0
  */
 public class GerritRepository {
+
+	private static org.slf4j.Logger logger = LoggerFactory.getLogger(GerritRepository.class);
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -295,14 +298,14 @@ public class GerritRepository {
 			String path = new StringBuilder(builder.getPath()).append(VERSION_REQUEST).toString();
 			URI uri = builder.setPath(path).build();
 			HttpUriRequest request = new HttpGet(uri);
-			EGerritCorePlugin.logInfo("Request: " + uri.toString()); //$NON-NLS-1$
+			logger.debug("Request: " + uri.toString()); //$NON-NLS-1$
 
 			ResponseHandler<String> rh = new ResponseHandler<String>() {
 				@Override
 				public String handleResponse(final HttpResponse response) throws IOException {
 					String result = null;
 					StatusLine statusLine = response.getStatusLine();
-					EGerritCorePlugin.logInfo("Result : " + statusLine.toString()); //$NON-NLS-1$
+					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					int status = statusLine.getStatusCode();
 					if (status < 200 || status >= 300) {
 						throw new ClientProtocolException("Unexpected response status: " + status); //$NON-NLS-1$
