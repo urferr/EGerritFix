@@ -50,14 +50,6 @@ public class Messages extends NLS {
 
 	public static String FilesTableDefinition_size;
 
-	public static String PatchSetsTableDefinition_patchSet;
-
-	public static String PatchSetsTableDefinition_commit;
-
-	public static String PatchSetsTableDefinition_date;
-
-	public static String PatchSetsTableDefinition_author;
-
 	public static String MergeIfNecessary;
 
 	public static String FastForwardOnly;
