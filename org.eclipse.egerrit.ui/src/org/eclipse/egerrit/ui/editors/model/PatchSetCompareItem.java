@@ -27,6 +27,8 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.graphics.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The compare item is the input to the compare editor, and it ALSO is the document that is shown in the compare editor.
@@ -35,6 +37,8 @@ import org.eclipse.swt.graphics.Image;
  * @since 1.0
  */
 public class PatchSetCompareItem extends Document implements ITypedElement, IModificationDate, IEditableContent {
+	private Logger logger = LoggerFactory.getLogger(PatchSetCompareItem.class);
+
 	private String fileName;
 
 	private IDocument originalDocument;
@@ -110,6 +114,8 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 	// Extracts newly added comments from the content passed in, and publish new comments on the gerrit server
 	public void setContent(byte[] newContent) {
 		CommentExtractor extractor = new CommentExtractor();
+		logger.debug("Sending additions: " + extractor.getAddedComments().size() + " removals: " //$NON-NLS-1$ //$NON-NLS-2$
+				+ extractor.getRemovedComments().size() + " modifications: " + extractor.getModifiedComments().size()); //$NON-NLS-1$
 		extractor.extractComments(originalDocument, originalComments, this, editableComments);
 		for (CommentInfo newComment : extractor.getAddedComments()) {
 			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id,
@@ -117,6 +123,7 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 			publishDraft.setCommentInfo(newComment);
 			newComment.setPath(fileName);
 			try {
+				logger.debug("Adding comment: " + newComment);
 				publishDraft.call();
 			} catch (EGerritException | ClientProtocolException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
@@ -129,6 +136,7 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(change_id, fileInfo.getContainingRevisionInfo().getId(),
 					deletedComment.getId());
 			try {
+				logger.debug("Deleting comment: " + deletedComment);
 				deleteDraft.call();
 			} catch (EGerritException | ClientProtocolException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
@@ -142,6 +150,7 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 					fileInfo.getContainingRevisionInfo().getId(), modifiedComment.getId());
 			modifyDraft.setCommentInfo(modifiedComment);
 			try {
+				logger.debug("Modifying comment: " + modifiedComment);
 				modifyDraft.call();
 			} catch (EGerritException | ClientProtocolException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
