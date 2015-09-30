@@ -18,6 +18,7 @@ import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
@@ -26,6 +27,7 @@ import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
@@ -37,6 +39,7 @@ import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
+import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -45,8 +48,8 @@ import org.eclipse.egerrit.core.exception.EGerritException;
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
  * Gerrit v2.9.
  * <p>
- * The Gerrit REST commands are described in the <a href=
- * "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
+ * The Gerrit REST commands are described in the
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"> Gerrit Documentation</a>.
  * <p>
  * This class only offers methods to construct so-called command classes. Each Gerrit REST command is represented by one
  * such command class.
@@ -416,4 +419,39 @@ public abstract class GerritClient {
 		return new PublishChangeEditCommand(fGerritRepository, change_id);
 	}
 
+	/**
+	 * Return a command that allow to mark a file as reviewed
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @param fileName
+	 * @return {@link SetReviewedCommand}
+	 */
+	public SetReviewedCommand setReviewed(String change_id, String revision_id, String fileName) {
+		return new SetReviewedCommand(fGerritRepository, change_id, revision_id, fileName);
+	}
+
+	/**
+	 * Return a command that allow to remove a reviewed mark from a file
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @param fileName
+	 * @return {@link DeleteReviewedCommand}
+	 */
+	public DeleteReviewedCommand deleteReviewed(String change_id, String revision_id, String fileName) {
+		return new DeleteReviewedCommand(fGerritRepository, change_id, revision_id, fileName);
+	}
+
+	/**
+	 * Return a command that allow to get the list of files that have been mark as reviewed
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @param fileName
+	 * @return {@link GetReviewedFilesCommand}
+	 */
+	public GetReviewedFilesCommand getReviewed(String change_id, String revision_id) {
+		return new GetReviewedFilesCommand(fGerritRepository, change_id, revision_id);
+	}
 }

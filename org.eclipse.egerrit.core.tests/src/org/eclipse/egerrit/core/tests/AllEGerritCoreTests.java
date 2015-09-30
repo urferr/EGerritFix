@@ -18,6 +18,7 @@ import org.eclipse.egerrit.core.command.tests.ChangeCommitMsgCommandTest;
 import org.eclipse.egerrit.core.command.tests.CherryPickRevisionCommandTest;
 import org.eclipse.egerrit.core.command.tests.CreateDraftCommandTest;
 import org.eclipse.egerrit.core.command.tests.DeleteDraftCommandTest;
+import org.eclipse.egerrit.core.command.tests.DeleteReviewedCommandTest;
 import org.eclipse.egerrit.core.command.tests.DeleteReviewerCommandTest;
 import org.eclipse.egerrit.core.command.tests.GerritCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetChangeCommandTest;
@@ -27,6 +28,7 @@ import org.eclipse.egerrit.core.command.tests.GetContentFromCommitCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetIncludedInCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetMergeableCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetRelatedChangesCommandTest;
+import org.eclipse.egerrit.core.command.tests.GetReviewedCommandTest;
 import org.eclipse.egerrit.core.command.tests.GetRevisionActionsCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListBranchesCommandTest;
 import org.eclipse.egerrit.core.command.tests.ListCommentsCommandTest;
@@ -79,40 +81,30 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 		// org.eclipse.egerrit.core
-		EGerritCorePluginTest.class,
-		GerritRepositoryTest.class,
-		GerritClientAuthenticationTest.class,
-		GerritFactoryTest.class,
-		GerritTest.class,
-		Gerrit_2_9Test.class,
+		EGerritCorePluginTest.class, GerritRepositoryTest.class, GerritClientAuthenticationTest.class,
+		GerritFactoryTest.class, GerritTest.class, Gerrit_2_9Test.class,
 
 		// org.eclipse.egerrit.core.rest
 		AccountInfoTest.class, ActionInfoTest.class, ApprovalInfoTest.class, ChangeInfoTest.class,
 		ChangeMessageInfoTest.class, CommitInfoTest.class, FetchInfoTest.class, FileInfoTest.class,
 		GitPersonInfoTest.class, LabelInfoTest.class, ProblemInfoTest.class, RevisionInfoTest.class,
 		ReviewerInfoTest.class, MergeableInfoTest.class, IncludedInInfoTest.class, RelatedChangesInfoTest.class,
-		RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class, ReviewInputTest.class,
-		SubmitInputTest.class,
-		SubmitInfoTest.class,
-		AbandonInputTest.class,
-		RestoreInputTest.class,
-		AddReviewerInputTest.class,
-		AddReviewerResultTest.class,
-		RebaseInputTest.class,
-		BranchInfoTest.class,
-		CherryPickInputTest.class,
+		RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class, ReviewInputTest.class, SubmitInputTest.class,
+		SubmitInfoTest.class, AbandonInputTest.class, RestoreInputTest.class, AddReviewerInputTest.class,
+		AddReviewerResultTest.class, RebaseInputTest.class, BranchInfoTest.class, CherryPickInputTest.class,
 		ChangeEditorMessageInputTest.class,
 
 		// org.eclipse.egerrit.core.command
-		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class,
-		GetContentCommandTest.class, GetCommitMsgCommandTest.class, GetMergeableCommandTest.class,
-		ListReviewersCommandTest.class, ListCommentsCommandTest.class, GetIncludedInCommandTest.class,
-		GetRelatedChangesCommandTest.class, CreateDraftCommandTest.class, SetReviewCommandTest.class,
-		PublishDraftRevisionCommandTest.class, ListDraftsCommandTest.class, SubmitCommandTest.class,
-		RestoreCommandTest.class, AbandonCommandTest.class, AddReviewerCommandTest.class,
-		DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class, UpdateDraftCommandTest.class,
-		RebaseCommandTest.class, GetContentFromCommitCommandTest.class, GetRevisionActionsCommandTest.class,
-		ListBranchesCommandTest.class, CherryPickRevisionCommandTest.class, ChangeCommitMsgCommandTest.class })
+		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class, GetContentCommandTest.class,
+		GetCommitMsgCommandTest.class, GetMergeableCommandTest.class, ListReviewersCommandTest.class,
+		ListCommentsCommandTest.class, GetIncludedInCommandTest.class, GetRelatedChangesCommandTest.class,
+		CreateDraftCommandTest.class, SetReviewCommandTest.class, PublishDraftRevisionCommandTest.class,
+		ListDraftsCommandTest.class, SubmitCommandTest.class, RestoreCommandTest.class, AbandonCommandTest.class,
+		AddReviewerCommandTest.class, DeleteReviewerCommandTest.class, DeleteDraftCommandTest.class,
+		UpdateDraftCommandTest.class, RebaseCommandTest.class, GetContentFromCommitCommandTest.class,
+		GetRevisionActionsCommandTest.class, ListBranchesCommandTest.class, CherryPickRevisionCommandTest.class,
+		ChangeCommitMsgCommandTest.class, GetReviewedCommandTest.class, SetReviewCommandTest.class,
+		DeleteReviewedCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
