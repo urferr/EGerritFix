@@ -12,6 +12,7 @@
 package org.eclipse.egerrit.ui.internal.table;
 
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
+import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewersTableModel;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.TableLayout;
@@ -71,21 +72,8 @@ public class UIReviewersTable {
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
-		// Set the content provider and the Label provider and the sorter
-//		fViewer.setContentProvider(new ReviewTableContentProvider());
-
-		// Set the viewer for the provider
-//		ReviewTableLabelProvider tableProvider = new ReviewTableLabelProvider();
-//		fViewer.setLabelProvider(tableProvider);
-//		ReviewTableSorter.bind(fViewer);
-//		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
-
-		// Create the help context id for the viewer's control
-		// PlatformUI
-		// .getWorkbench()
-		// .getHelpSystem()
-		// .setHelp(fViewer.getControl(),
-		// "org.eclipse.egerrit.dashboard.ui.viewer");
+		// Set the content sorter
+		ReviewTableSorter.bind(fViewer);
 
 		//
 		fViewer.getTable().addSelectionListener(new SelectionListener() {
@@ -99,9 +87,6 @@ public class UIReviewersTable {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
-		// Add a Key event and mouse down listener
-//		fViewer.getTable().addListener(SWT.MouseDown, mouseButtonListener);
 
 		return fViewer;
 
@@ -202,72 +187,5 @@ public class UIReviewersTable {
 	public TableViewer getViewer() {
 		return fViewer;
 	}
-//	private final Listener mouseButtonListener = new Listener() {
-//		public void handleEvent(Event aEvent) {
-//			logger.debug("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
-//			switch (aEvent.type) {
-//			case SWT.MouseDown:
-//				// Left Click
-//				if (aEvent.button == 1) {
-//
-//					// Process the Item table handling
-//					processItemSelection();
-//
-//				}
-//				// For now, use button 2 to modify the starred value column 1
-//				if (aEvent.button == 2) {
-//					// Select the new item in the table
-//					Table table = fViewer.getTable();
-//					table.deselectAll();
-//					Point p = new Point(aEvent.x, aEvent.y);
-//					TableItem tbi = fViewer.getTable().getItem(p);
-//					if (tbi != null) {
-//						table.setSelection(tbi);
-//					}
-//
-//					// Execute the command to adjust the column: ID with the
-//					// starred information
-//					AdjustMyStarredHandler handler = new AdjustMyStarredHandler();
-//					try {
-//						handler.execute(new ExecutionEvent());
-//					} catch (ExecutionException excutionException) {
-////						StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID,
-////								excutionException.getMessage(), excutionException));
-//						logger.error(excutionException.getMessage());
-//
-//					}
-//				}
-//				// Right Click
-//				if (aEvent.button == 3) {
-//					// Process the Item table handling
-//					// processItemSelection();
-//				}
-//				break;
-//			default:
-//				break;
-//			}
-//		}
-//
-//	};
 
-//	/**
-//	 * Process the selected data from the item table
-//	 */
-//	private void processItemSelection() {
-//		ISelection tableSelection = fViewer.getSelection();
-//		if (!tableSelection.isEmpty()) {
-//			if (tableSelection instanceof IStructuredSelection) {
-//				Object obj = ((IStructuredSelection) tableSelection).getFirstElement();
-//				if (obj instanceof ChangeInfo) {
-////					IAttributeContainer item = (IAttributeContainer) obj;
-//					logger.debug("Selected table OBJECT selection ID: " //$NON-NLS-1$
-//							+ ((ChangeInfo) obj).getChange_id() + "\t subject: " //$NON-NLS-1$
-//							+ ((ChangeInfo) obj).getSubject());
-////
-////							+ item.getAttribute(GerritTask.SHORT_CHANGE_ID) + "\t subject: " //$NON-NLS-1$
-////							+ item.getAttribute(GerritTask.SUBJECT));
-//				}
-//			}
-//		}
-//	}
 }

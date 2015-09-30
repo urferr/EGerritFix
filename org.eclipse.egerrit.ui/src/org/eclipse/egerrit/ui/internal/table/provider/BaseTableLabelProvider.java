@@ -112,7 +112,6 @@ public class BaseTableLabelProvider extends ObservableMapLabelProvider
 
 	@Override
 	public String getText(Object element) {
-		System.err.println("FileTableLabel getText()");
 		return getColumnText(element, 0);
 	}
 

@@ -13,6 +13,7 @@ package org.eclipse.egerrit.ui.internal.table;
 
 import org.eclipse.egerrit.ui.internal.table.model.ConflictWithTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
+import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -69,21 +70,8 @@ public class UIConflictsWithTable {
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
-		// Set the content provider and the Label provider and the sorter
-//		fViewer.setContentProvider(new ReviewTableContentProvider());
-
-		// Set the viewer for the provider
-//		ReviewTableLabelProvider tableProvider = new ReviewTableLabelProvider();
-//		fViewer.setLabelProvider(tableProvider);
-//		ReviewTableSorter.bind(fViewer);
-//		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
-
-		// Create the help context id for the viewer's control
-		// PlatformUI
-		// .getWorkbench()
-		// .getHelpSystem()
-		// .setHelp(fViewer.getControl(),
-		// "org.eclipse.egerrit.dashboard.ui.viewer");
+		// Set the content sorter
+		ReviewTableSorter.bind(fViewer);
 
 		//
 		fViewer.getTable().addSelectionListener(new SelectionListener() {
@@ -96,9 +84,6 @@ public class UIConflictsWithTable {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
-		// Add a Key event and mouse down listener
-//		fViewer.getTable().addListener(SWT.MouseDown, mouseButtonListener);
 
 		return fViewer;
 
@@ -131,47 +116,6 @@ public class UIConflictsWithTable {
 
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
-//		table.addControlListener(new ControlListener() {
-//
-//			@Override
-//			public void controlResized(ControlEvent e) {
-//				table.setRedraw(false);
-//				Point tableSize = table.getSize();
-//				Point parentSize = table.getParent().getSize();
-//				//Adjust the width  according to its parent
-//				int minimumTableWidth = ConfictWithTableDefinition.getMinimumWidth();
-//				int minHeadlineWidth = ConfictWithTableDefinition.HEADLINE.getWidth();
-//
-//				//Adjust the subject and project column to take the remaining space
-//				int scrollWidth = table.getVerticalBar().getSize().x;
-//				//If not visible, take the extra space
-//				if (!table.getVerticalBar().isVisible()) {
-//					scrollWidth = 0;
-//				}
-//
-//				int computeExtraWidth = parentSize.x - 10 - (minimumTableWidth) - scrollWidth;
-//				int newProjectWidth = minHeadlineWidth;
-//				//If extra space, redistribute it to specific column
-//				if (computeExtraWidth > 0) {
-//					//Assign some to subject and some to Project
-//					int value = 2 * computeExtraWidth / 3;
-//					newProjectWidth = minHeadlineWidth + computeExtraWidth - value; // 1/3 of the extra
-//				}
-//				//Headline column
-//				table.getColumn(1).setWidth(newProjectWidth);
-//
-//				table.setSize(parentSize.x - 10, tableSize.y);
-//				System.out.println("\tConflict tabel resize: " + table.getSize() + "parent table: "
-//						+ table.getParent().getSize() + "grand-parent size: " + table.getParent().getParent().getSize());
-//				table.setRedraw(true);
-//
-//			}
-//
-//			@Override
-//			public void controlMoved(ControlEvent e) {
-//
-//			}
-//		});
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);

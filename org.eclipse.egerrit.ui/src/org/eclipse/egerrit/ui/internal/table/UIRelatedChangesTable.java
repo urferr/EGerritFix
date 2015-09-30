@@ -13,6 +13,7 @@ package org.eclipse.egerrit.ui.internal.table;
 
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.RelatedChangesTableModel;
+import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -72,21 +73,8 @@ public class UIRelatedChangesTable {
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
-		// Set the content provider and the Label provider and the sorter
-//		fViewer.setContentProvider(new ReviewTableContentProvider());
-
-		// Set the viewer for the provider
-//		ReviewTableLabelProvider tableProvider = new ReviewTableLabelProvider();
-//		fViewer.setLabelProvider(tableProvider);
-//		ReviewTableSorter.bind(fViewer);
-//		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
-
-		// Create the help context id for the viewer's control
-		// PlatformUI
-		// .getWorkbench()
-		// .getHelpSystem()
-		// .setHelp(fViewer.getControl(),
-		// "org.eclipse.egerrit.dashboard.ui.viewer");
+		// Set the content sorter
+		ReviewTableSorter.bind(fViewer);
 
 		//
 		fViewer.getTable().addSelectionListener(new SelectionListener() {
