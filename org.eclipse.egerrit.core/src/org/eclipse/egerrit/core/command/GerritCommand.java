@@ -153,6 +153,9 @@ public abstract class GerritCommand<T> implements Callable<T> {
 					StatusLine statusLine = response.getStatusLine();
 					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					if (statusLine.getStatusCode() >= 300) {
+						if (errorsExpected()) {
+							return null;
+						}
 						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
 					}
 					if (statusLine.getStatusCode() == HttpURLConnection.HTTP_NO_CONTENT) {
@@ -230,5 +233,10 @@ public abstract class GerritCommand<T> implements Callable<T> {
 
 	protected T postProcessResult(T result) {
 		return result;
+	}
+
+	//Allow a command to say that errors are expected (e.g. GetContentFromCommitCommand)
+	protected boolean errorsExpected() {
+		return false;
 	}
 }

@@ -27,8 +27,8 @@ import org.eclipse.egerrit.core.GerritRepository;
 
 /**
  * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Get Content</a>
- * command. It returns a <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String"
- * ></a> base64 encoded.
+ * command. It returns a
+ * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String" ></a> base64 encoded.
  * <p>
  *
  * @since 1.0
@@ -152,5 +152,11 @@ public class GetContentFromCommitCommand extends QueryCommand<String> {
 	@Override
 	protected Map<String, String> headers() {
 		return null;
+	}
+
+	//Allow a command to say that errors are expected (e.g. GetContentFromCommitCommand)
+	@Override
+	protected boolean errorsExpected() {
+		return true;
 	}
 }
