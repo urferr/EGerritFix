@@ -153,6 +153,27 @@
 	-->
        <menuContribution
             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.MyWatchedChanges">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.myChanges"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.myChanges"
+                label="%command.changes"
+                style="push"
+                tooltip="%command.tooltipChanges">
+          </command>
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.myDrafts"
+                id="org.eclipse.egerrit.dashboard.ui.myDrafts"
+                label="%command.drafts"
+                style="push"
+                tooltip="%command.tooltipDrafts">
+          </command>
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments"
+                id="org.eclipse.egerrit.dashboard.ui.myDraftComments"
+                label="%command.draftComment"
+                style="push"
+                tooltip="%command.tooltipDraftComment">
+          </command>
          <command
                 commandId="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
                 id="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
@@ -161,32 +182,11 @@
                 tooltip="%command.tooltipWatchChanges">
          </command>
          <command
-               	commandId="org.eclipse.egerrit.dashboard.ui.myChanges"
-               	id="org.eclipse.egerrit.dashboard.dropdown.toolbar.myChanges"
-               	label="%command.changes"
-               	style="push"
-               	tooltip="%command.tooltipChanges">
-         </command>
-         <command
-               	commandId="org.eclipse.egerrit.dashboard.ui.myDrafts"
-               	id="org.eclipse.egerrit.dashboard.ui.myDrafts"
-               	label="%command.drafts"
-               	style="push"
-               	tooltip="%command.tooltipDrafts">
-         </command>
-         <command
             	commandId="org.eclipse.egerrit.dashboard.ui.myStarredChanges"
             	id="org.eclipse.egerrit.dashboard.ui.myStarredChanges"
             	label="%command.starred"
             	style="push"
             	tooltip="%command.tooltipStarred">
-         </command>
-         <command
-            	commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments"
-            	id="org.eclipse.egerrit.dashboard.ui.myDraftComments"
-            	label="%command.draftComment"
-            	style="push"
-            	tooltip="%command.tooltipDraftComment">
          </command>
 
          <separator
@@ -198,38 +198,36 @@
     <!-- Add sub-menu for the Projects menu
 	-->
        <menuContribution
-            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList">
-         <command
-               	commandId="org.eclipse.egerrit.dashboard.ui.projectList"
-               	id="org.eclipse.egerrit.dashboard.dropdown.toolbar.projectList"
-               	label="%command.projectList"
-               	style="push"
-               	tooltip="%command.tooltipProjectList">
-         </command>
-
-         <separator
-               name="additions"
-               visible="true">
-         </separator>
-      </menuContribution>
+             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.projectList"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.projectList"
+                label="%command.projectList"
+                style="push"
+                tooltip="%command.tooltipProjectList">
+          </command>
+          <separator
+                name="additions"
+                visible="true">
+          </separator>
+       </menuContribution>
 
     <!-- Add sub-menu for the Groups menu
 	-->
        <menuContribution
-            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList">
-         <command
-               commandId="org.eclipse.egerrit.dashboard.ui.groupList"
-               id="org.eclipse.egerrit.dashboard.dropdown.toolbar.groupList"
-               label="%command.groupList"
-               style="push"
-               tooltip="%command.tooltipGroupList">
-         </command>
-
-         <separator
-               name="additions"
-               visible="true">
-         </separator>
-      </menuContribution>
+             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.groupList"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.groupList"
+                label="%command.groupList"
+                style="push"
+                tooltip="%command.tooltipGroupList">
+          </command>
+          <separator
+                name="additions"
+                visible="true">
+          </separator>
+       </menuContribution>
 
     <!-- Add sub-menu for the Documentation menu
 	-->
