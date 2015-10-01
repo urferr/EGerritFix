@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,8 +36,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
+import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
+import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
@@ -61,10 +65,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
@@ -393,14 +400,92 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 						MessageDialog.openError(null, "Can not open compare editor",
 								"The compare editor can not yet show difference with " + diffSource);
 					}
+					setReviewedFlag(element);
 				}
 			}
+
 		});
+
+		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			tableFilesViewer.getTable().addMouseListener(toggleReviewedStateListener());
+		}
 
 		sashForm.setWeights(new int[] { 100 });
 
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	private void setReviewedFlag(Object element) {
+		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			DisplayFileInfo fileInfo = (DisplayFileInfo) element;
+			if (!fileInfo.getReviewed()) {
+				SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
+						fCurrentRevision.getCommit().getCommit(), fileInfo.getold_path());
+				try {
+					command.call();
+				} catch (EGerritException | ClientProtocolException ex) {
+					UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+				}
+
+				fileInfo.setReviewed(true);
+
+				tableFilesViewer.refresh();
+			}
+		}
+	}
+
+	/**
+	 * This method is the listener to toggle a file's reviewed state
+	 *
+	 * @return MouseAdapter
+	 */
+	private MouseAdapter toggleReviewedStateListener() {
+		return new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				ViewerCell viewerCell = tableFilesViewer.getCell(new Point(e.x, e.y));
+				if (viewerCell.getColumnIndex() == 0) {
+					//Selected the first column, so we can send the delete option
+					//Otherwise, do not delete
+					ISelection selection = tableFilesViewer.getSelection();
+					if (selection instanceof IStructuredSelection) {
+
+						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+
+						Object element = structuredSelection.getFirstElement();
+
+						DisplayFileInfo fileInfo = (DisplayFileInfo) element;
+						toggleReviewed(fileInfo);
+
+					}
+				}
+			}
+
+		};
+	}
+
+	private void toggleReviewed(DisplayFileInfo fileInfo) {
+		if (fileInfo.getReviewed()) {
+			DeleteReviewedCommand command = gerritClient.deleteReviewed(fChangeInfo.getId(),
+					fCurrentRevision.getCommit().getCommit(), fileInfo.getold_path());
+			try {
+				command.call();
+				fileInfo.setReviewed(false);
+			} catch (EGerritException | ClientProtocolException ex) {
+				UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+			}
+		} else {
+			SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
+					fCurrentRevision.getCommit().getCommit(), fileInfo.getold_path());
+			try {
+				command.call();
+			} catch (EGerritException | ClientProtocolException ex) {
+				UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+			}
+			fileInfo.setReviewed(true);
+		}
+		tableFilesViewer.refresh();
 	}
 
 	protected void filesTabDataBindings(TableViewer tableFilesViewer) {
@@ -652,6 +737,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					break;
 				}
 			}
+			// enable reviewed file status
+			if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+				String[] reviewedFiles = queryVerified(gerritClient, changeId, revisionId, new NullProgressMonitor());
+				List<String> reviewedFilesList = Arrays.asList(reviewedFiles);
+				for (String e : reviewedFilesList) {
+					if (e.compareTo(displayFileInfo.getold_path()) == 0) {
+						displayFileInfo.setReviewed(true);
+					}
+				}
+			}
 		}
 
 		Iterator<DisplayFileInfo> displayFile2 = fFilesDisplay.values().iterator();
@@ -687,6 +782,37 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			ListCommentsCommand command = gerrit.getListComments(change_id, revision_id);
 
 			Map<String, ArrayList<CommentInfo>> res = null;
+			try {
+				res = command.call();
+				return res;
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			} catch (ClientProtocolException e) {
+				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+			}
+		} catch (UnsupportedClassVersionError e) {
+			return null;
+		} finally {
+			monitor.done();
+		}
+
+		return null;
+
+	}
+
+	/***************************************************************/
+	/*                                                             */
+	/* Section to QUERY the files that were reviewed               */
+	/*                                                             */
+	/************************************************************* */
+	private String[] queryVerified(GerritClient gerrit, String change_id, String revision_id,
+			IProgressMonitor monitor) {
+		try {
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+
+			GetReviewedFilesCommand command = gerrit.getReviewed(change_id, revision_id);
+
+			String[] res = null;
 			try {
 				res = command.call();
 				return res;
