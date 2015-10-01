@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.Authenticator;
+import java.net.URI;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
@@ -29,6 +30,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -80,6 +82,9 @@ public class GitAccess {
 		gerritRepo = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
 		//TODO DEAL WITH HTTPS AND SUCH
 		gerritRepo.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
+		gerritRepo.setServerInfo(new GerritServerInformation(
+				new URI(Common.SCHEME, null, Common.HOST, Common.PORT, Common.PATH, null, null).toASCIIString(),
+				"Test server"));
 		gerrit = GerritFactory.create(gerritRepo);
 		if (fGit == null) {
 			cloneRepo();

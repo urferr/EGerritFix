@@ -14,6 +14,7 @@ package org.eclipse.egerrit.ui.tests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -24,6 +25,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.tests.Common;
@@ -37,7 +39,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class OpenCompareEditorTests {
+public class DisabledOpenCompareEditor {
 
 	private static final String A_PROJECT_A_JAVA = "A.java"; //$NON-NLS-1$
 
@@ -80,6 +82,8 @@ public class OpenCompareEditorTests {
 		}
 		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
 		fRepository.getCredentials().setHttpCredentials(USER, PASSWORD);
+		fRepository.setServerInfo(new GerritServerInformation(
+				new URI(SCHEME, null, HOST, PORT, PATH, null, null).toASCIIString(), "Test server"));
 	}
 
 	@BeforeClass

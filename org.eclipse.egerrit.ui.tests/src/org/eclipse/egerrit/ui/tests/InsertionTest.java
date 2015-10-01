@@ -24,7 +24,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class InsertionTests extends EditionLimiterTests {
+public class InsertionTest extends EditionLimiterTests {
 
 	@Parameters(name = "{index}, {0}")
 	public static List<Object[]> getInputs() {
