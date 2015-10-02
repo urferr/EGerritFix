@@ -445,7 +445,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				ViewerCell viewerCell = tableFilesViewer.getCell(new Point(e.x, e.y));
-				if (viewerCell.getColumnIndex() == 0) {
+				if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
 					//Selected the first column, so we can send the delete option
 					//Otherwise, do not delete
 					ISelection selection = tableFilesViewer.getSelection();
