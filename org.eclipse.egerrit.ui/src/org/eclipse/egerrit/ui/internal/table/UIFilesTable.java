@@ -13,6 +13,7 @@ package org.eclipse.egerrit.ui.internal.table;
 
 import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
+import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -53,6 +54,10 @@ public class UIFilesTable {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
+
+		// Set the content sorter
+		ReviewTableSorter.bind(fViewer);
+
 		return fViewer;
 
 	}
