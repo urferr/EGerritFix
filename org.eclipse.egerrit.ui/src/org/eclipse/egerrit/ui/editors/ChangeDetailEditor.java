@@ -75,7 +75,6 @@ import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -85,7 +84,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -150,12 +148,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 //	private StyledText msgAuthorData;
 
-	private TabFolder tabFolder;
-
-	private ScrolledComposite scrollView;
-
-	private Composite compButton;
-
 	private Button fSubmit;
 
 	private Button fAbandon;
@@ -181,63 +173,23 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		super();
 	}
 
-	private void createAdditionalToolbarActions() {
-		Action processDownload = new Action("Download") {
-			@Override
-			public void run() {
-				System.out.println("Download pressed !!!!!!!!!!");
-			}
-
-		};
-		Action processDownloadProtocol = new Action("Download protocol") {
-			@Override
-			public void run() {
-				System.out.println("Download protocol pressed !!!!!!!!!!");
-			}
-
-		};
-//		this.getViewSite().getActionBars().getToolBarManager().add(processDownload);
-
-//		IMenuManager menuManager = this.getViewSite().getActionBars().getMenuManager();
-//		menuManager.add(processDownload);
-//		menuManager.add(processDownloadProtocol);
-	}
-
 	@Override
 	public void createPartControl(final Composite parent) {
 		anonymousUserToolTip = "This button is disabled because you are connected anonymously to "
 				+ fGerritClient.getRepository().getServerInfo().getServerURI() + ".";
-		createAdditionalToolbarActions();
-		GridLayout gl_parent = new GridLayout(1, false);
-		parent.setLayout(gl_parent);
 
-		parent.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true, 1, 1));
-		scrollView = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		scrollView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		scrollView.setExpandHorizontal(true);
-		scrollView.setExpandVertical(true);
+		parent.setLayout(new GridLayout(1, false));
+		parent.setBackground(parent.getParent().getBackground());
 
-		Composite composite = new Composite(scrollView, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		composite.setLayout(new GridLayout(1, false));
+		Composite hd = headerSection(parent);
+		hd.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		scrollView.setContent(composite);
-
-		Point fontSize = UIUtils.computeFontSize(composite);
-
-		Composite hd = headerSection(composite, fontSize);
-
-		tabFolder = new TabFolder(composite, SWT.NONE);
-		tabFolder.setLayout(new GridLayout(1, false));
-		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-		//Create the button section before filling the tabfolder
-		compButton = buttonSection(composite);
+		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tabFolder.setBackground(parent.getBackground());
 
 		summaryTab = new SummaryTabView();
-		summaryTab.create(tabFolder, fChangeInfo);
-
-		Point hScrolBarSize = scrollView.getHorizontalBar().getSize();
+		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fCommitInfo, fChangeInfo);
@@ -247,23 +199,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		filesTab.addObserver(this);
 
 		historytab = new HistoryTabView();
-		historytab.create(tabFolder, fChangeInfo.getMessages());
-		tabFolder.pack();
+		historytab.create(fGerritClient, tabFolder, fChangeInfo.getMessages());
 
-		//Check for the minimum width
-		Point ptHeader = hd.getSize();
-		Point ptButton = compButton.getSize();
+		Composite compButton = buttonSection(parent);
+		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
-		int minimumWidth = Math.max(ptHeader.x, ptButton.x);
-		minimumWidth = Math.max(minimumWidth, tabFolder.getSize().x);
-		int minimumHeight;
-		if (historytab != null) {
-			minimumHeight = ptHeader.y + 2 * historytab.getTableHistoryViewer().getTable().getSize().y + ptButton.y
-					+ hScrolBarSize.y;
-		} else {
-			minimumHeight = ptHeader.y + 2 * 5 + ptButton.y + hScrolBarSize.y;
-		}
-		scrollView.setMinSize(minimumWidth, minimumHeight);
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 
 		//This query fill the current revision
@@ -281,54 +221,34 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	}
 
-	private Composite headerSection(final Composite parent, Point fontSize) {
+	private Composite headerSection(final Composite parent) {
 		Group group_header = new Group(parent, SWT.NONE);
-		GridData gd_group_header = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
-		gd_group_header.minimumWidth = 33;
-		group_header.setLayoutData(gd_group_header);
 		group_header.setLayout(new GridLayout(5, false));
+		group_header.setBackground(parent.getBackground());
 
 		Label lblId = new Label(group_header, SWT.NONE);
 		lblId.setText("ID:");
 
 		shortIdData = new Text(group_header, SWT.NONE);
-		GridData gd_lblShortId = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		int maxShortChangeId = 10; //Max number of chars
-		int idWidth = fontSize.x * maxShortChangeId;
-		gd_lblShortId.minimumWidth = idWidth;
-		gd_lblShortId.widthHint = idWidth;
-		shortIdData.setLayoutData(gd_lblShortId);
 		shortIdData.setEditable(false);
 		shortIdData.setBackground(parent.getBackground());
+		shortIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		Label lblSubject = new Label(group_header, SWT.NONE);
+		lblSubject.setText("Subject:");
 		GridData gd_Subject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_Subject.horizontalIndent = 10;
 		lblSubject.setLayoutData(gd_Subject);
-		lblSubject.setText("Subject:");
 
 		subjectData = new Text(group_header, SWT.NONE);
 		GridData gd_lblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_lblSubjectData.horizontalIndent = 10;
-		int maxSubjectLen = 90; //Max number of chars
-		int changeWidth = fontSize.x * maxSubjectLen;
-		gd_lblSubjectData.minimumWidth = changeWidth;
-		gd_lblSubjectData.widthHint = changeWidth;
 		subjectData.setLayoutData(gd_lblSubjectData);
-		subjectData.setText("subject");
 		subjectData.setEditable(false);
 		subjectData.setBackground(parent.getBackground());
 
 		statusData = new Label(group_header, SWT.RIGHT);
 		GridData gd_lblStatus = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-		gd_lblStatus.horizontalIndent = 10;
-		int maxStatus = 20; //Max number of chars
-		int statusWidth = fontSize.x * maxStatus;
-		gd_lblStatus.minimumWidth = statusWidth;
-		gd_lblStatus.widthHint = statusWidth;
 		statusData.setLayoutData(gd_lblStatus);
-		statusData.setText("Status");
-		group_header.pack();
 
 		//Set the binding for this section
 		headerSectionDataBindings();
@@ -336,9 +256,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Composite buttonSection(final Composite parent) {
+		final int NUMBER_OF_BUTTONS = 7;
 		final Composite c = new Composite(parent, SWT.NONE);
-		c.setLayout(new GridLayout(8, true));
-		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 8, 1));
+		c.setLayout(new GridLayout(NUMBER_OF_BUTTONS, true));
 
 		fSubmit = new Button(c, SWT.PUSH);
 		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -402,9 +322,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					abandonCmd.setAbandonInput(abandonInput);
 
-					ChangeInfo abandonCmdResult = null;
 					try {
-						abandonCmdResult = abandonCmd.call();
+						abandonCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
 					} catch (ClientProtocolException e3) {
@@ -756,9 +675,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
-		if (messageTab != null) {
-			messageTab.editingAllowed(saveButtonEnablement());
-		}
 	}
 
 	private void rebaseButtonEnablement() {

@@ -60,24 +60,23 @@ import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -96,8 +95,6 @@ public class SummaryTabView {
 	private static Color RED;
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
-
-	private Group summaryGroup;
 
 	private Label genProjectData;
 
@@ -152,246 +149,217 @@ public class SummaryTabView {
 	}
 
 	/**
+	 * @param fGerritClient2
 	 * @param tabFolder
 	 * @param listMessages
 	 *            List<ChangeMessageInfo>
 	 */
-	public void create(TabFolder tabFolder, ChangeInfo changeInfo) {
+	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
 		fChangeInfo = changeInfo;
-		summaryTab(tabFolder);
+		fGerritClient = gerritClient;
+		createContols(tabFolder);
 	}
 
-//	private void summaryTab(TabFolder tabFolder, int minimumWidth) {
-	private void summaryTab(TabFolder tabFolder) {
+	private void createContols(TabFolder tabFolder) {
 		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
+
 		TabItem tabSummary = new TabItem(tabFolder, SWT.NONE);
 		tabSummary.setText("Summary");
 
-		ScrolledComposite sc = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		sc.setExpandHorizontal(true);
-		sc.setExpandVertical(true);
-		summaryGroup = new Group(sc, SWT.NONE);
-		sc.setContent(summaryGroup);
-		tabSummary.setControl(sc);
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+		tabSummary.setControl(composite);
+		composite.setLayout(new GridLayout(6, true));
 
-		GridLayout gl_summaryGroup = new GridLayout(10, false);
-		gl_summaryGroup.horizontalSpacing = 10;
-		gl_summaryGroup.marginBottom = 3;
-		summaryGroup.setLayout(gl_summaryGroup);
+		Composite general = summaryGeneral(composite);
+		general.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
-		summaryGeneral(summaryGroup);
-		summaryReviewers(summaryGroup);
-		summaryIncluded(summaryGroup);
+		Composite reviewers = summaryReviewers(composite);
+		reviewers.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 
-		summarySameTopic(summaryGroup);
-		summaryRelatedChanges(summaryGroup);
-		summaryConflicts(summaryGroup);
+		Composite includedIn = summaryIncluded(composite);
+		includedIn.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
-		summaryGroup.pack();
-		new Label(summaryGroup, SWT.NONE);
-		System.err.println("SummaryGroup size: " + summaryGroup.getSize());
-		Point pt = summaryGroup.getSize();
-		sc.setMinSize(pt);
+		Composite sameTopic = summarySameTopic(composite);
+		sameTopic.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2));
 
+		Composite relatedChanges = summaryRelatedChanges(composite);
+		relatedChanges.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2));
+
+		Composite conflicts = summaryConflicts(composite);
+		conflicts.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 	}
 
-	private void summaryGeneral(Group group) {
+	private Composite summaryGeneral(Composite parent) {
+		Group composite = new Group(parent, SWT.NONE);
+		composite.setText("General");
+		composite.setLayout(new GridLayout(3, false));
+		composite.setLayoutData(new GridData(SWT.FILL));
 
-		Group grpGeneral = new Group(group, SWT.NONE);
-		grpGeneral.setText("General");
-		GridLayout gl_grpGeneral = new GridLayout(5, false);
-		gl_grpGeneral.verticalSpacing = 10;
-		grpGeneral.setLayout(gl_grpGeneral);
-
-		GridData grid = new GridData();
-		grid.horizontalAlignment = SWT.LEFT;
-		grid.horizontalSpan = 3;
-		grid.verticalAlignment = SWT.LEFT;
-		grid.grabExcessHorizontalSpace = false;
-		grpGeneral.setLayoutData(grid);
-
-		Label lblProject = new Label(grpGeneral, SWT.RIGHT);
+		//Project line
+		Label lblProject = new Label(composite, SWT.NONE);
 		lblProject.setText("Project:");
+		lblProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		Point fontSize = UIUtils.computeFontSize(grpGeneral);
+		genProjectData = new Label(composite, SWT.NONE);
+		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		genProjectData = new Label(grpGeneral, SWT.NONE);
-		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-
-		Label lblBranch = new Label(grpGeneral, SWT.RIGHT);
+		//Branch line
+		Label lblBranch = new Label(composite, SWT.NONE);
 		lblBranch.setText("Branch:");
+		lblBranch.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genBranchData = new Label(grpGeneral, SWT.NONE);
-		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		genBranchData = new Label(composite, SWT.NONE);
+		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		Label lblTopic = new Label(grpGeneral, SWT.RIGHT);
+		//Topic line
+		Label lblTopic = new Label(composite, SWT.NONE);
 		lblTopic.setText("Topic:");
+		lblTopic.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genTopicData = new Text(grpGeneral, SWT.BORDER);
+		genTopicData = new Text(composite, SWT.BORDER);
+		genTopicData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		GridData gd_txtTopic = new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1);
-		int numTopic = 30; //Max number of chars
-		gd_txtTopic.widthHint = fontSize.x * numTopic;
-		genTopicData.setLayoutData(gd_txtTopic);
-
-		Button btnSave = new Button(grpGeneral, SWT.NONE);
-		btnSave.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		Button btnSave = new Button(composite, SWT.NONE);
 		btnSave.setText("Save");
+		btnSave.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		Label lblStrategy = new Label(grpGeneral, SWT.RIGHT);
-		lblStrategy.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		//Strategy line
+		Label lblStrategy = new Label(composite, SWT.NONE);
 		lblStrategy.setText("Strategy:");
+		lblStrategy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genStrategyData = new Label(grpGeneral, SWT.NONE);
-		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-		gd_genStrategyData.widthHint = 146;
+		genStrategyData = new Label(composite, SWT.NONE);
+		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		genStrategyData.setLayoutData(gd_genStrategyData);
 
-		genMessageData = new Label(grpGeneral, SWT.NONE);
-		GridData gd_genMessageData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
-		int numStrategy = 16; //Max number of chars
-		gd_genMessageData.widthHint = fontSize.x * numStrategy;
+		genMessageData = new Label(composite, SWT.NONE);
+		GridData gd_genMessageData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		genMessageData.setLayoutData(gd_genMessageData);
 		genMessageData.setForeground(RED);
 
-		Label lblUpdated = new Label(grpGeneral, SWT.RIGHT);
+		//Updated line
+		Label lblUpdated = new Label(composite, SWT.NONE);
 		lblUpdated.setText("Updated:");
+		lblUpdated.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genUpdatedData = new Label(grpGeneral, SWT.NONE);
-		genUpdatedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		genUpdatedData = new Label(composite, SWT.NONE);
+		genUpdatedData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		//Set the binding for this section
 		sumGenDataBindings();
+		return composite;
 	}
 
-	private void summaryReviewers(Group group) {
-
+	private Composite summaryReviewers(Composite group) {
 		Group grpReviewers = new Group(group, SWT.NONE);
 		grpReviewers.setText("Reviewers");
-		grpReviewers.setLayout(new GridLayout(7, false));
+		grpReviewers.setLayout(new GridLayout(3, false));
 
-//		Point fontSize = computeFontSize(grpReviewers);
-
-		GridData grid = new GridData();
-		grid.horizontalAlignment = SWT.FILL;
-		grid.horizontalSpan = 7;
-		grid.verticalAlignment = SWT.TOP;
-		grid.grabExcessHorizontalSpace = true;
-		grpReviewers.setLayoutData(grid);
-
-		final Button buttonPlus = new Button(grpReviewers, SWT.NONE);
-		buttonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
-		buttonPlus.setText("+"); //$NON-NLS-1$
-		buttonPlus.addSelectionListener(buttonPlusListener(buttonPlus));
-
-		UIReviewersTable uiReviewersTable = new UIReviewersTable();
-		uiReviewersTable.createTableViewerSection(grpReviewers, grid);
-
-		tableReviewersViewer = uiReviewersTable.getViewer();
-		tableReviewersViewer.getTable().addMouseListener(deleteReviewerListener());
-
-		Label lblVoteSummary = new Label(grpReviewers, SWT.RIGHT);
-		lblVoteSummary.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 4, 1));
+		//Vote summary line
+		Label lblVoteSummary = new Label(grpReviewers, SWT.NONE);
+		lblVoteSummary.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		lblVoteSummary.setText("Vote Summary:");
 
 		genVoteData = new Label(grpReviewers, SWT.LEFT);
-		GridData gd_lblLblvote = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1);
-		gd_lblLblvote.widthHint = 70;
-		genVoteData.setLayoutData(gd_lblLblvote);
+		genVoteData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
+
+		//Table of reviewers
+		UIReviewersTable uiReviewersTable = new UIReviewersTable();
+		uiReviewersTable.createTableViewerSection(grpReviewers);
+
+		tableReviewersViewer = uiReviewersTable.getViewer();
+		tableReviewersViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			tableReviewersViewer.getTable().addMouseListener(deleteReviewerListener());
+		}
+
+		//Add
+		Label lblUserName = new Label(grpReviewers, SWT.NONE);
+		lblUserName.setText("Reviewer:");
+		lblUserName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+
+		final Text userName = new Text(grpReviewers, SWT.BORDER);
+		userName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		userName.setToolTipText("Enter the email of the reviewer to add.");
+
+		final Button buttonPlus = new Button(grpReviewers, SWT.NONE);
+		buttonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		buttonPlus.setText("Add"); //$NON-NLS-1$
+		buttonPlus.addSelectionListener(buttonPlusListener(buttonPlus, userName));
 
 		//Set the binding for this section
 		sumReviewerDataBindings();
+		return grpReviewers;
 	}
 
-	private void summaryIncluded(Group group) {
+	private Composite summaryIncluded(Composite group) {
 		Group grpIncludedIn = new Group(group, SWT.NONE);
 		grpIncludedIn.setText("Included In");
+		grpIncludedIn.setLayout(new GridLayout(2, false));
 
-		GridLayout gl_grpIncludedIn = new GridLayout(5, false);
-		gl_grpIncludedIn.verticalSpacing = 10;
-		grpIncludedIn.setLayout(gl_grpIncludedIn);
-
-		GridData grid = new GridData();
-		grid.horizontalAlignment = SWT.FILL;
-		grid.horizontalSpan = 4;
-		grid.verticalAlignment = SWT.TOP;
-		grid.grabExcessHorizontalSpace = true;
-		grpIncludedIn.setLayoutData(grid);
-
+		//Branches line
 		Label lblBranches = new Label(grpIncludedIn, SWT.RIGHT);
 		lblBranches.setText("Branches:");
+		lblBranches.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		incBranchesData = new Text(grpIncludedIn, SWT.BORDER);
-		incBranchesData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		incBranchesData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+		//Tags line
 		Label lblTags = new Label(grpIncludedIn, SWT.RIGHT);
 		lblTags.setText("Tags:");
+		lblTags.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		includedInTagsData = new Text(grpIncludedIn, SWT.BORDER);
-		includedInTagsData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		includedInTagsData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		//Set the binding for this section
 		sumIncludedDataBindings();
+		return grpIncludedIn;
 	}
 
-	private void summarySameTopic(Group group) {
+	private Composite summarySameTopic(Composite group) {
 		Group grpSameTopic = new Group(group, SWT.NONE);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, false, 5, 2);
-		grpSameTopic.setLayoutData(grid);
 		grpSameTopic.setText("Same Topic");
-
-		GridLayout gl_grpSameTopic = new GridLayout(5, false);
-		gl_grpSameTopic.verticalSpacing = 9;
-		grpSameTopic.setLayout(gl_grpSameTopic);
+		grpSameTopic.setLayout(new FillLayout());
 
 		UISameTopicTable tableUISameTopic = new UISameTopicTable();
-		tableUISameTopic.createTableViewerSection(grpSameTopic, grid);
+		tableUISameTopic.createTableViewerSection(grpSameTopic);
 
 		tableSameTopicViewer = tableUISameTopic.getViewer();
-
 		//Set the binding for this section
 		sumSameTopicDataBindings();
+		return grpSameTopic;
 	}
 
-	private void summaryRelatedChanges(Group group) {
-		new Label(summaryGroup, SWT.NONE);
+	private Composite summaryRelatedChanges(Composite group) {
 		Group grpRelatedChanges = new Group(group, SWT.NONE);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 2);
-		GridLayout gridLayout = new GridLayout(5, false);
-		gridLayout.marginTop = 5;
-		grpRelatedChanges.setLayout(gridLayout);
-		grpRelatedChanges.setLayoutData(grid);
 		grpRelatedChanges.setText("Related Changes");
+		grpRelatedChanges.setLayout(new FillLayout());
 
 		UIRelatedChangesTable tableUIRelatedChanges = new UIRelatedChangesTable();
-		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges, grid);
+		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges);
 
 		tableRelatedChangesViewer = tableUIRelatedChanges.getViewer();
 
 		//Set the binding for this section
 		sumRelatedChandesDataBindings();
+		return grpRelatedChanges;
 	}
 
-	private void summaryConflicts(Group group) {
-		new Label(summaryGroup, SWT.NONE);
-
+	private Composite summaryConflicts(Composite group) {
 		Group grpConflictsWith = new Group(group, SWT.NONE);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
-		grpConflictsWith.setLayoutData(grid);
 		grpConflictsWith.setText("Conflicts With");
-
-		GridLayout gridLayout = new GridLayout(5, false);
-		gridLayout.verticalSpacing = 9;
-		grpConflictsWith.setLayout(gridLayout);
+		grpConflictsWith.setLayout(new FillLayout());
 
 		UIConflictsWithTable tableUIConflictsWith = new UIConflictsWithTable();
-		tableUIConflictsWith.createTableViewerSection(grpConflictsWith, grid);
+		tableUIConflictsWith.createTableViewerSection(grpConflictsWith);
 
 		tableConflictsWithViewer = tableUIConflictsWith.getViewer();
 
 		//Set the binding for this section
 		sumConflictWithDataBindings();
+		return grpConflictsWith;
 	}
 
 	/************************************************************* */
@@ -726,24 +694,18 @@ public class SummaryTabView {
 	 * @param buttonPlus
 	 * @return SelectionAdapter
 	 */
-	private SelectionAdapter buttonPlusListener(final Button buttonPlus) {
+	private SelectionAdapter buttonPlusListener(final Button buttonPlus, final Text textWidget) {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 
-				InputDialog inputDialog = new InputDialog(buttonPlus.getParent().getShell(), "EGerrit Reviewer input",
-						"Add a reviewer or a review group name", "", null);
-
-				if (inputDialog.open() != Window.OK) {
-					return;
-				}
-				String reviewer = inputDialog.getValue().trim();
+				String reviewer = textWidget.getText().trim();
 
 				if (!reviewer.isEmpty()) {
 					AddReviewerCommand addReviewerCmd = getGerritClient().addReviewer(fChangeInfo.getChange_id());
 					AddReviewerInput addReviewerInput = new AddReviewerInput();
-					addReviewerInput.setReviewer(inputDialog.getValue());
+					addReviewerInput.setReviewer(reviewer);
 
 					addReviewerCmd.setReviewerInput(addReviewerInput);
 
@@ -760,6 +722,7 @@ public class SummaryTabView {
 						reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
 					}
 					setReviewers(fGerritClient);
+					textWidget.setText("");
 				}
 			}
 
@@ -819,17 +782,16 @@ public class SummaryTabView {
 							//Add a safety dialog to confirm the deletion
 
 							if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
-									"EGerrit delete reviewer",
-									"Are you sure you want to delete [ " + reviewerInfo.getName() + " ]")) {
+									"Delete reviewer",
+									"Are you sure you want to delete reviewer " + reviewerInfo.getName() + "?")) {
 								return;
 							}
 
 							DeleteReviewerCommand deleteReviewerCmd = getGerritClient().deleteReviewer(
 									fChangeInfo.getChange_id(), String.valueOf(reviewerInfo.get_account_id()));
 
-							String reviewerCmdResult = null;
 							try {
-								reviewerCmdResult = deleteReviewerCmd.call();
+								deleteReviewerCmd.call();
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(e3.getMessage());
 							} catch (ClientProtocolException e3) {

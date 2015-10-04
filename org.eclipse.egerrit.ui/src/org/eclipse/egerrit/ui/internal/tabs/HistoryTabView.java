@@ -18,6 +18,7 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
@@ -29,12 +30,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -50,8 +45,6 @@ public class HistoryTabView {
 
 	private Text msgTextData;
 
-	private ScrolledComposite sc_msgtxt = null;
-
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -63,31 +56,24 @@ public class HistoryTabView {
 	}
 
 	/**
+	 * @param fGerritClient
 	 * @param tabFolder
 	 * @param listMessages
 	 *            List<ChangeMessageInfo>
 	 */
-	public void create(TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
-		historyTab(tabFolder, listMessages);
+	public void create(GerritClient gerritClient, TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
+		createControls(tabFolder, listMessages);
 	}
 
-	private void historyTab(TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
-
+	private void createControls(TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
 		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
 		tbtmHistory.setText("History");
 
-		final Group group = new Group(tabFolder, SWT.NONE);
-		tbtmHistory.setControl(group);
-
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		group.setLayoutData(grid);
-		group.setLayout(new GridLayout(1, false));
-
-		SashForm sashForm = new SashForm(group, SWT.VERTICAL);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		SashForm sashForm = new SashForm(tabFolder, SWT.VERTICAL);
+		tbtmHistory.setControl(sashForm);
 
 		UIHistoryTable tableUIHistory = new UIHistoryTable();
-		tableUIHistory.createTableViewerSection(sashForm, grid);
+		tableUIHistory.createTableViewerSection(sashForm);
 
 		tableHistoryViewer = tableUIHistory.getViewer();
 		tableHistoryViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -99,36 +85,14 @@ public class HistoryTabView {
 				if (element instanceof ChangeMessageInfo) {
 					ChangeMessageInfo changeMessage = (ChangeMessageInfo) element;
 					msgTextData.setText(changeMessage.getMessage());
-					//set the size when data change
-					sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				}
 			}
 		});
 
-		//Build a text area to display the whole message
-		sc_msgtxt = new ScrolledComposite(sashForm, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		sc_msgtxt.setExpandHorizontal(true);
-		sc_msgtxt.setExpandVertical(true);
-		sc_msgtxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
-
-		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI);
+		msgTextData = new Text(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		msgTextData.setEditable(false);
-		sc_msgtxt.setContent(msgTextData);
-		sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		sc_msgtxt.addControlListener(new ControlListener() {
+		msgTextData.setBackground(tabFolder.getBackground());
 
-			@Override
-			public void controlResized(ControlEvent e) {
-				// ignore
-				sc_msgtxt.setMinSize(msgTextData.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-			}
-
-			@Override
-			public void controlMoved(ControlEvent e) {
-				// ignore
-
-			}
-		});
 		//Set the % of display data.70% table and 30% for the comment message
 		sashForm.setWeights(new int[] { 70, 30 });
 
@@ -137,7 +101,6 @@ public class HistoryTabView {
 	}
 
 	protected void hisTabDataBindings(List<ChangeMessageInfo> listMessages) {
-
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableHistoryViewer.setContentProvider(contentProvider);
 
@@ -151,7 +114,6 @@ public class HistoryTabView {
 
 		ViewerSupport.bind(tableHistoryViewer, writeInfoList, BeanProperties.values(new String[] { "messages" }));
 		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(observeMaps));
-
 	}
 
 	/**

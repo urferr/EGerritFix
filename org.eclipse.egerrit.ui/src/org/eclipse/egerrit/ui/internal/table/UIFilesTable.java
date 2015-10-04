@@ -49,11 +49,11 @@ public class UIFilesTable {
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent, GridData layoutData) {
+	public TableViewer createTableViewerSection(Composite aParent) {
 
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
-		fViewer = buildAndLayoutTable(fViewer);
+		buildAndLayoutTable();
 
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
@@ -68,8 +68,8 @@ public class UIFilesTable {
 	 * @param aParent
 	 * @param aViewer
 	 */
-	private TableViewer buildAndLayoutTable(final TableViewer aViewer) {
-		final Table table = aViewer.getTable();
+	private void buildAndLayoutTable() {
+		final Table table = fViewer.getTable();
 
 		//Get the review table definition
 		final ITableModel[] tableInfo = FilesTableModel.values();
@@ -90,8 +90,6 @@ public class UIFilesTable {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.pack();
-		return aViewer;
 	}
 
 	/**

@@ -14,18 +14,10 @@ package org.eclipse.egerrit.ui.internal.table;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewersTableModel;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -55,38 +47,13 @@ public class UIReviewersTable {
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent, GridData layoutData) {
-		// Create a form to maintain the search data
-		Composite viewerForm = UIUtils.createsGeneralComposite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
-
-		GridLayout layout = new GridLayout();
-		layout.numColumns = ReviewersTableModel.values().length;
-		layout.makeColumnsEqualWidth = false;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		viewerForm.setLayout(layout);
-
-		viewerForm.setLayoutData(layoutData);
-
+	public TableViewer createTableViewerSection(Composite aParent) {
 		// Create the table viewer to maintain the list of reviews
-		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
+		fViewer = new TableViewer(aParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
-
-		//
-		fViewer.getTable().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-//				logger.debug("Table selection: " + e.toString()); //$NON-NLS-1$
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
 
 		return fViewer;
 
@@ -109,56 +76,11 @@ public class UIReviewersTable {
 //			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 //					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
 //					+ tableInfo[index].getMoveable());
-			TableViewerColumn col = createTableViewerColumn(tableInfo[index]);
-
-			GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			gribData.minimumWidth = tableInfo[index].getWidth();
-			gribData.minimumHeight = 100;
-			col.getColumn().getParent().setLayoutData(gribData);
+			createTableViewerColumn(tableInfo[index]);
 		}
 
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
-
-		table.addControlListener(new ControlAdapter() {
-
-			@Override
-			public void controlResized(ControlEvent e) {
-				table.setRedraw(false);
-				Point tableSize = table.getSize();
-				Point parentSize = table.getParent().getSize();
-				//Adjust the width  according to its parent
-				int minimumTableWidth = tableInfo[0].getMinimumWidth();
-				int minIdWidth = ReviewersTableModel.ID.getWidth();
-				int minRoleWidth = ReviewersTableModel.ROLE.getWidth();
-
-				//Adjust the subject and project column to take the remaining space
-				int scrollWidth = table.getVerticalBar().getSize().x;
-				//If not visible, take the extra space
-				if (!table.getVerticalBar().isVisible()) {
-					scrollWidth = 0;
-				}
-
-				int computeExtraWidth = parentSize.x - 10 - (minimumTableWidth) - scrollWidth;
-				int newIdWidth = minIdWidth;
-				int newRoleWidth = minRoleWidth;
-				//If extra space, redistribute it to specific column
-				if (computeExtraWidth > 0) {
-					//Assign 1/2 to role and 1/2 to Id
-					newIdWidth = minIdWidth + computeExtraWidth / 2;
-					newRoleWidth = minRoleWidth + computeExtraWidth / 2;
-				}
-
-				//Id and Role column
-				table.getColumn(ReviewersTableModel.ID.ordinal()).setWidth(newIdWidth);
-				table.getColumn(ReviewersTableModel.ROLE.ordinal()).setWidth(newRoleWidth);
-
-				table.setSize(parentSize.x - 10, tableSize.y);
-				table.setRedraw(true);
-
-			}
-
-		});
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);

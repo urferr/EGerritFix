@@ -67,20 +67,13 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -104,12 +97,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private static final String SEPARATOR = "/"; //$NON-NLS-1$
 
 	private final String TITLE = "Gerrit Server ";
-
-	private final String TOTAL = "Total changes: ";
-
-	private final String DRAFTS = "Drafts: ";
-
-	private final String COMMENTS = "Comments: ";
 
 	private RevisionInfo fCurrentRevision = null;
 
@@ -147,55 +134,25 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
 		this.gerritClient = gerritClient;
 		fChangeInfo = changeInfo;
-		filesTab(tabFolder);
+		createControls(tabFolder);
 	}
 
-	private void filesTab(final TabFolder tabFolder) {
+	private void createControls(final TabFolder tabFolder) {
 		final TabItem tbtmFiles = new TabItem(tabFolder, SWT.NONE);
 		tbtmFiles.setText("Files");
 
-		final Group filesGroup = new Group(tabFolder, SWT.NONE);
-		tbtmFiles.setControl(filesGroup);
-
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		filesGroup.setLayoutData(grid);
-		filesGroup.setLayout(new GridLayout(1, false));
-
-		final Composite composite = new Composite(filesGroup, SWT.NONE);
-		GridLayout gridLayoutComp = new GridLayout(10, false);
-		gridLayoutComp.verticalSpacing = 10;
-		composite.setLayout(gridLayoutComp);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 10, 1));
-
-		composite.addControlListener(new ControlListener() {
-
-			@Override
-			public void controlResized(ControlEvent e) {
-				composite.pack();
-			}
-
-			@Override
-			public void controlMoved(ControlEvent e) {
-				// ignore
-
-			}
-		});
-		Point pt = UIUtils.computeFontSize(composite);
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+		tbtmFiles.setControl(composite);
+		composite.setLayout(new GridLayout(10, false));
 
 		lblPatchSet = new Label(composite, SWT.NONE);
-		GridData gd_lblPatchSet = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		gd_lblPatchSet.verticalIndent = 5;
+		GridData gd_lblPatchSet = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		lblPatchSet.setLayoutData(gd_lblPatchSet);
 		lblPatchSet.setText("Patch Sets (    /    )");
 
 		comboPatchsetViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 
-		GridData gd_comboPatchSet = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
-		gd_comboPatchSet.verticalIndent = 5;
-		int numCharPatchSet = 55;
-		gd_comboPatchSet.minimumWidth = numCharPatchSet * pt.x;
-		gd_comboPatchSet.widthHint = numCharPatchSet * pt.x;
-
+		GridData gd_comboPatchSet = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
 		comboPatchsetViewer.getCombo().setLayoutData(gd_comboPatchSet);
 		comboPatchsetViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -226,157 +183,25 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 
 		Label lblDiffAgainst = new Label(composite, SWT.NONE);
-		GridData gd_DiffAgainst = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-		gd_DiffAgainst.verticalIndent = 5;
-		gd_DiffAgainst.horizontalIndent = 15;
+		GridData gd_DiffAgainst = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
 		lblDiffAgainst.setLayoutData(gd_DiffAgainst);
 		lblDiffAgainst.setText("Diff against:");
 
 		comboDiffAgainst = new Combo(composite, SWT.NONE);
-		GridData gd_combo = new GridData(SWT.FILL, SWT.TOP, false, false, 2, 1);
+		GridData gd_combo = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
 		gd_combo.verticalIndent = 5;
-		int numChar = 17;
-		gd_combo.minimumWidth = numChar * pt.x;
-		gd_combo.widthHint = numChar * pt.x;
 		comboDiffAgainst.setLayoutData(gd_combo);
-		System.err.println("Combo mini width = " + (numChar * pt.x));
-
-		Button btnPublish = new Button(composite, SWT.NONE);
-		GridData gd_btnPublish = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 1);
-		gd_btnPublish.verticalIndent = 5;
-		gd_btnPublish.horizontalIndent = 25;
-		btnPublish.setLayoutData(gd_btnPublish);
-		btnPublish.setText("Publish");
-
-		Button btnDelete = new Button(composite, SWT.NONE);
-		GridData gd_btnDelete = new GridData(SWT.CENTER, SWT.TOP, false, false, 1, 1);
-		gd_btnDelete.verticalIndent = 5;
-		gd_btnDelete.horizontalIndent = 15;
-		btnDelete.setLayoutData(gd_btnDelete);
-		btnDelete.setText("Delete");
-
-		Label lblSummary = new Label(composite, SWT.NONE);
-		GridData gd_lblSummary = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		lblSummary.setLayoutData(gd_lblSummary);
-		lblSummary.setText("Summary:");
 
 		lblTotal = new Label(composite, SWT.NONE);
-		GridData gd_lblTotal = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-		gd_lblTotal.minimumWidth = 12 * pt.x;
+		GridData gd_lblTotal = new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1);
 		lblTotal.setLayoutData(gd_lblTotal);
-		lblTotal.setText("total");
-		lblTotal.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblTotal.getText();
-				String newCount = ""; //$NON-NLS-1$
-				int lineInserted = 0;
-				int lineDeleted = 0;
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					while (itr1.hasNext()) {
-						DisplayFileInfo fileInfo = itr1.next();
-						lineInserted += fileInfo.getLinesInserted();
-						lineDeleted += fileInfo.getLinesDeleted();
-					}
-					StringBuilder sb = new StringBuilder();
-					sb.append(TOTAL);
-					sb.append("+"); //$NON-NLS-1$
-					sb.append(Integer.toString(lineInserted));
-					sb.append("/"); //$NON-NLS-1$
-					sb.append("-"); //$NON-NLS-1$
-					sb.append(Integer.toString(lineDeleted));
-					newCount = sb.toString();
-				}
-				if (!old.equals(newCount)) {
-					lblTotal.setText(newCount);
-					lblTotal.pack();
-				}
-			}
-		});
-
-		lblDrafts = new Label(composite, SWT.NONE);
-		GridData gd_lblDrafts = new GridData(SWT.CENTER, SWT.TOP, false, false, 2, 1);
-		gd_lblDrafts.horizontalIndent = 10;
-		lblDrafts.setLayoutData(gd_lblDrafts);
-		lblDrafts.setText("drafts:");
-		lblDrafts.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblDrafts.getText();
-				String newCount = ""; //$NON-NLS-1$
-				StringBuilder sb = new StringBuilder();
-
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					int numDrafts = 0;
-					sb.append(DRAFTS);
-					while (itr1.hasNext()) {
-						DisplayFileInfo displayFileInfo = itr1.next();
-						if (displayFileInfo.getDraftComments() != null) {
-							numDrafts += displayFileInfo.getDraftComments().size();
-						}
-					}
-					if (numDrafts > 0) {
-						sb.append(Integer.toString(numDrafts));
-					}
-				}
-				newCount = sb.toString();
-				if (!old.equals(newCount)) {
-					lblDrafts.setText(newCount);
-					lblDrafts.pack();
-				}
-			}
-		});
-
-		lblComments = new Label(composite, SWT.NONE);
-		GridData gd_lblComments = new GridData(SWT.LEFT, SWT.TOP, false, false, 2, 1);
-		lblComments.setLayoutData(gd_lblComments);
-		lblComments.setText("comments:");
-		lblComments.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				String old = lblComments.getText();
-				String newCount = ""; //$NON-NLS-1$
-				StringBuilder sb = new StringBuilder();
-
-				if (!fFilesDisplay.isEmpty()) {
-					Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
-					int numComment = 0;
-					sb.append(COMMENTS);
-
-					while (itr1.hasNext()) {
-						DisplayFileInfo displayFileInfo = itr1.next();
-						if (displayFileInfo.getNewComments() != null) {
-							numComment += displayFileInfo.getNewComments().size();
-						}
-					}
-					if (numComment > 0) {
-						sb.append(Integer.toString(numComment));
-					}
-				}
-				newCount = sb.toString();
-				if (!old.equals(newCount)) {
-					lblComments.setText(newCount);
-					lblComments.pack();
-				}
-			}
-		});
-
-		composite.pack();
-
-		final SashForm sashForm = new SashForm(filesGroup, SWT.VERTICAL);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		lblTotal.setText("Total");
 
 		UIFilesTable tableUIFiles = new UIFilesTable();
-		tableUIFiles.createTableViewerSection(sashForm, grid);
+		tableUIFiles.createTableViewerSection(composite);
 
 		tableFilesViewer = tableUIFiles.getViewer();
-		tableFilesViewer.getTable();
-
+		tableFilesViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
 		tableFilesViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
@@ -410,10 +235,47 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			tableFilesViewer.getTable().addMouseListener(toggleReviewedStateListener());
 		}
 
-		sashForm.setWeights(new int[] { 100 });
-
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	private void computeTotals() {
+		int lineInserted = 0;
+		int lineDeleted = 0;
+		int numDrafts = 0;
+		int numComment = 0;
+		if (!fFilesDisplay.isEmpty()) {
+			Iterator<DisplayFileInfo> itr1 = fFilesDisplay.values().iterator();
+			while (itr1.hasNext()) {
+				DisplayFileInfo fileInfo = itr1.next();
+				lineInserted += fileInfo.getLinesInserted();
+				lineDeleted += fileInfo.getLinesDeleted();
+				if (fileInfo.getDraftComments() != null) {
+					numDrafts += fileInfo.getDraftComments().size();
+				}
+				if (fileInfo.getNewComments() != null) {
+					numComment += fileInfo.getNewComments().size();
+				}
+			}
+			StringBuilder sb = new StringBuilder();
+			sb.append("Summary:\tTotal changes: ");
+			sb.append("+"); //$NON-NLS-1$
+			sb.append(Integer.toString(lineInserted));
+			sb.append("/"); //$NON-NLS-1$
+			sb.append("-"); //$NON-NLS-1$
+			sb.append(Integer.toString(lineDeleted));
+			if (numDrafts != 0) {
+				sb.append("\t\t");
+				sb.append("Drafts: ");
+				sb.append(numDrafts);
+			}
+			if (numComment != 0) {
+				sb.append("\t\t");
+				sb.append("Comments: ");
+				sb.append(numComment);
+			}
+			lblTotal.setText(sb.toString());
+		}
 	}
 
 	private void setReviewedFlag(Object element) {
@@ -704,9 +566,10 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 * Fill the data fields included in the Files Tab
 	 */
 	private void setFileTabFields() {
-		lblDrafts.redraw();
-		lblComments.redraw();
-		lblTotal.redraw();
+//		lblDrafts.redraw();
+//		lblComments.redraw();
+//		lblTotal.redraw();
+		computeTotals();
 	}
 
 	/**
@@ -872,13 +735,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 */
 	private void setRevisions(Map<String, RevisionInfo> revisions) {
 		this.fRevisions = revisions;
-	}
-
-	/**
-	 * @param GerritClient
-	 */
-	public void setGerritClient(GerritClient gerrit) {
-		this.gerritClient = gerrit;
 	}
 
 	/**
