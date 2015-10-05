@@ -17,11 +17,10 @@ import java.util.Set;
 
 import org.eclipse.egerrit.core.model.PropertyChangeModel;
 
-import com.google.gerrit.common.data.ProjectInfo;
-
 /**
- * The <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info"
- * >ProjectAccessInfo</a> entity contains information about the project access.
+ * The
+ * <a href= "https://git.eclipse.org/r/Documentation/rest-api-access.html#project-access-info" >ProjectAccessInfo</a>
+ * entity contains information about the project access.
  * <p>
  * This structure is filled by GSON when parsing the corresponding JSON structure in an HTTP response.
  *

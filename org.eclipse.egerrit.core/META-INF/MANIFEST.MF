@@ -20,8 +20,3 @@ Export-Package: org.eclipse.egerrit.core,
  org.eclipse.egerrit.core.model,
  org.eclipse.egerrit.core.rest,
  org.eclipse.egerrit.core.utils
-Import-Package: com.google.gerrit.common;version="2.1.5",
- com.google.gerrit.common.auth;version="2.1.5",
- com.google.gerrit.common.data,
- com.google.gerrit.reviewdb;version="2.1.5",
- com.google.gwtorm.client;version="1.1.4"

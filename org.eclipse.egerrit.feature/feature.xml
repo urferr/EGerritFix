@@ -19,16 +19,6 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="com.google.gson"/>
-      <import plugin="com.google.gerrit.common"/>
-      <import plugin="com.google.gerrit.prettify"/>
-      <import plugin="com.google.gerrit.reviewdb"/>
-      <import plugin="com.google.gwtorm"/>
-      <import plugin="com.google.gwtjsonrpc"/>
-      <import plugin="com.google.gwt.servlet"/>
-   </requires>
-
    <plugin
          id="org.eclipse.egerrit.core"
          download-size="0"
@@ -52,48 +42,6 @@
 
    <plugin
          id="org.eclipse.egerrit.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gerrit.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gerrit.prettify"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gerrit.reviewdb"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gwtorm"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gwtjsonrpc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.google.gwt.servlet"
          download-size="0"
          install-size="0"
          version="0.0.0"
