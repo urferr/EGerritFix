@@ -48,8 +48,7 @@ Export-Package: org.eclipse.egerrit.dashboard.ui;x-internal:=true;
    org.osgi.framework,
    org.eclipse.ui.part,
    org.eclipse.swt.widgets"
-Import-Package: com.google.gerrit.reviewdb;version="2.1.5",
- org.apache.commons.codec.binary;version="1.6.0",
+Import-Package: org.apache.commons.codec.binary;version="1.6.0",
  org.eclipse.compare,
  org.eclipse.compare.structuremergeviewer,
  org.eclipse.egerrit.dashboard,

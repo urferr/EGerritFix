@@ -11,24 +11,18 @@
 
 package org.eclipse.egerrit.core.rest;
 
-import com.google.gwtorm.client.Column;
-
 /**
  * The structure is a sub-structure of the CommitInfo structure.
  *
  * @since 1.0
  */
 public class CommentRange {
-	@Column(id = 1)
 	protected int startLine;
 
-	@Column(id = 2)
 	protected int startCharacter;
 
-	@Column(id = 3)
 	protected int endLine;
 
-	@Column(id = 4)
 	protected int endCharacter;
 
 	public CommentRange() {
@@ -76,28 +70,32 @@ public class CommentRange {
 	}
 
 	/**
-	 * @param int sl
+	 * @param int
+	 *            sl
 	 */
 	public void setStartLine(int sl) {
 		startLine = sl;
 	}
 
 	/**
-	 * @param int sc
+	 * @param int
+	 *            sc
 	 */
 	public void setStartCharacter(int sc) {
 		startCharacter = sc;
 	}
 
 	/**
-	 * @param int el
+	 * @param int
+	 *            el
 	 */
 	public void setEndLine(int el) {
 		endLine = el;
 	}
 
 	/**
-	 * @param int ec
+	 * @param int
+	 *            ec
 	 */
 	public void setEndCharacter(int ec) {
 		endCharacter = ec;
