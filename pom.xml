@@ -295,7 +295,7 @@
 		</profile>
 		<profile>
 			<!--  based on the information provided in the following blog post http://www.codetrails.com/blog/sign-your-eclipse-project -->
-			<id>build-server</id>
+			<id>sign</id>
 			<build>
 				<plugins>
 					<plugin>
