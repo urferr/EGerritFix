@@ -439,6 +439,7 @@ public class GerritTableView extends ViewPart {
 						// save it
 						ServersStore.saveServers(listServers);
 
+						fServerUtil.saveLastGerritServer(dialogue.getServerInfo());
 						if (fSearchRequestText.getText().isEmpty()) {
 							processCommands("status:open");
 						} else {
