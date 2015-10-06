@@ -64,7 +64,8 @@
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.host.url></sonar.host.url>
 		<base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
-		<base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
+		<base.ui.test.vmargs>${base.test.vmargs}
+			-Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
 
 		<download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
 	</properties>
@@ -72,19 +73,8 @@
 	<pluginRepositories>
 
 		<pluginRepository>
-			<name>Eclipse Repository</name>
-			<id>${eclipse.version}</id>
-			<url>${eclipse-repo.url}</url>
-			<layout>p2</layout>
-		</pluginRepository>
-
-		<pluginRepository>
-			<name>Central Repository</name>
-			<id>central</id>
-			<url>http://repo.maven.apache.org/maven2</url>
-			<releases>
-				<updatePolicy>never</updatePolicy>
-			</releases>
+			<id>eclipse-cbi-releases</id>
+			<url>https://repo.eclipse.org/content/groups/cbi/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -234,7 +224,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -298,6 +288,69 @@
 								</property>
 							</properties>
 							<argLine>${tycho.testArgLine}</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!--  based on the information provided in the following blog post http://www.codetrails.com/blog/sign-your-eclipse-project -->
+			<id>build-server</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200a-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>pack200-normalize</id>
+								<goals>
+									<goal>normalize</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.cbi.maven.plugins</groupId>
+						<artifactId>eclipse-jarsigner-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200b-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>pack200-pack</id>
+								<goals>
+									<goal>pack</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>attach-p2-metadata</id>
+								<phase>package</phase>
+								<goals>
+									<goal>p2-metadata</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<defaultP2Metadata>false</defaultP2Metadata>
 						</configuration>
 					</plugin>
 				</plugins>
