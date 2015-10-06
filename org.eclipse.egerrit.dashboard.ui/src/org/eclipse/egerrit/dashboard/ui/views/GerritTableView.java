@@ -1311,6 +1311,7 @@ public class GerritTableView extends ViewPart {
 		if (!fRepositoryVersionResulLabel.isDisposed()) {
 			// e.g. "Eclipse.org Reviews - Gerrit 2.6.1"
 			fRepositoryVersionResulLabel.setText(NLS.bind(Messages.GerritTableView_gerritLabel, aRepo, aVersion));
+			fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_gerritLabelTooltip);
 		}
 	}
 

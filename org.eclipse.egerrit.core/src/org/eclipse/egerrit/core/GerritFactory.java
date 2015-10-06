@@ -58,7 +58,7 @@ public final class GerritFactory {
 		gerritRepository.connect();
 		Version version = gerritRepository.getVersion();
 		if (version == null) {
-			throw new EGerritException("Invalid gerrit version (null)"); //$NON-NLS-1$
+			return null; // Invalid Credential or server not available
 		}
 		if (version.compareTo(MINIMAL_VERSION) < 0) {
 			throw new EGerritException("Unsupported gerrit version (< " + MINIMAL_VERSION.toString() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
