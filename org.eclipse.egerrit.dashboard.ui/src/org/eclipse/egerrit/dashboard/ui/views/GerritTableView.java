@@ -56,6 +56,7 @@ import org.eclipse.egerrit.dashboard.ui.internal.model.ReviewTableData;
 import org.eclipse.egerrit.dashboard.ui.internal.model.UIReviewTable;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.SelectionDialog;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
+import org.eclipse.egerrit.dashboard.ui.preferences.GerritServerDialog;
 import org.eclipse.egerrit.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
@@ -67,6 +68,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -75,7 +77,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -95,6 +100,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
@@ -144,6 +150,25 @@ public class GerritTableView extends ViewPart {
 
 	private final String TITLE = "Gerrit Server ";
 
+	public static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$
+
+	public static final String ANONYMOUS_IMAGE = "personAnonymous.png"; //$NON-NLS-1$
+
+	public static final String INVALID_IMAGE = "personInvalid.png"; //$NON-NLS-1$
+	// For the images
+
+	private static ImageRegistry fImageRegistry = new ImageRegistry();
+
+	static {
+
+		String iconPath = "icons/view16/"; //$NON-NLS-1$
+
+		fImageRegistry.put(CHECKED_IMAGE, GerritUi.getImageDescriptor(iconPath + CHECKED_IMAGE));
+		fImageRegistry.put(ANONYMOUS_IMAGE, GerritUi.getImageDescriptor(iconPath + ANONYMOUS_IMAGE));
+		fImageRegistry.put(INVALID_IMAGE, GerritUi.getImageDescriptor(iconPath + INVALID_IMAGE));
+
+	}
+
 	// ------------------------------------------------------------------------
 	// Member variables
 	// ------------------------------------------------------------------------
@@ -152,7 +177,7 @@ public class GerritTableView extends ViewPart {
 
 	private static GerritTableView rtv = null;
 
-	private Label fRepositoryVersionResulLabel;
+	private CLabel fRepositoryVersionResulLabel;
 
 	private Label fReviewsTotalLabel;
 
@@ -178,34 +203,9 @@ public class GerritTableView extends ViewPart {
 
 	private GerritClient gerritClient = null;
 
-	//	GerritClient gerritClient = null;
-
 	// ------------------------------------------------------------------------
 	// TableRefreshJob
 	// ------------------------------------------------------------------------
-
-//	private TableRefreshJob fTableRefreshJob;
-
-	// Periodical refreshing job
-//	private final class TableRefreshJob extends DelayedRefreshJob {
-//
-//		private TableRefreshJob(TableViewer viewer, String name) {
-//			super(viewer, name);
-//		}
-//
-//		@Override
-//		protected void doRefresh(Object[] items) {
-//			Display.getDefault().syncExec(new Runnable() {
-//				@Override
-//				public void run() {
-//					fViewer.setInput(fReviewTable.getReviews());
-//					//Refresh the counter
-//					setReviewsTotalResultLabel(Integer.toString(fReviewTable.getReviews().length));
-//					fViewer.refresh(false, false);
-//				}
-//			});
-//		}
-//	}
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -233,8 +233,6 @@ public class GerritTableView extends ViewPart {
 	 */
 	@Override
 	public void dispose() {
-//		TasksUiPlugin.getTaskList().removeChangeListener(this);
-//		fTableRefreshJob.cancel();
 		cleanJobs();
 		rtv = null;
 	}
@@ -285,9 +283,6 @@ public class GerritTableView extends ViewPart {
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
-
-		// Start the periodic refresh job
-//		fTableRefreshJob = new TableRefreshJob(fViewer, Messages.GerritTableView_refreshTable);
 
 		sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
@@ -343,8 +338,9 @@ public class GerritTableView extends ViewPart {
 		leftSearchForm.setLayout(leftLayoutForm);
 
 		//Label to display the repository and the version
-		fRepositoryVersionResulLabel = new Label(leftSearchForm, SWT.NONE);
+		fRepositoryVersionResulLabel = new CLabel(leftSearchForm, SWT.LEFT_TO_RIGHT);
 		fRepositoryVersionResulLabel.setLayoutData(new GridData(REPO_WIDTH, SWT.DEFAULT));
+		fRepositoryVersionResulLabel.addMouseListener(connectToServerListener());
 
 		//Label to display Total reviews
 		fReviewsTotalLabel = new Label(leftSearchForm, SWT.NONE);
@@ -415,6 +411,44 @@ public class GerritTableView extends ViewPart {
 			}
 		});
 
+	}
+
+	/**
+	 * This method is the listener to let user connect to a server
+	 *
+	 * @return MouseAdapter
+	 */
+	private MouseAdapter connectToServerListener() {
+		return new MouseAdapter() {
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				List<GerritServerInformation> listServers = new ArrayList<GerritServerInformation>();
+				if ((gerritClient == null)
+						|| (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous())) {
+					GerritServerDialog dialogue = new GerritServerDialog(
+							PlatformUI.getWorkbench().getDisplay().getActiveShell(), defaultServerInfo);
+					int ret = dialogue.open();
+					if (ret == IDialogConstants.OK_ID) {
+						// get current list
+						listServers = ServersStore.getAllServers();
+						// remove the old one
+						listServers.remove(defaultServerInfo);
+						// add new one
+						listServers.add(dialogue.getServerInfo());
+						// save it
+						ServersStore.saveServers(listServers);
+
+						if (fSearchRequestText.getText().isEmpty()) {
+							processCommands("status:open");
+						} else {
+							processCommands(fSearchRequestText.getText());
+						}
+
+					}
+				}
+			}
+		};
 	}
 
 	private void hookContextMenu() {
@@ -691,8 +725,6 @@ public class GerritTableView extends ViewPart {
 		if (defaultServerInfo == null) {
 			UIUtils.showErrorDialog(Messages.GerritTableView_defineRepository,
 					Messages.GerritTableView_noGerritRepository);
-		} else {
-			//		fConnector.setStarred(fTaskRepository, taskID, starred, progressMonitor);
 		}
 	}
 
@@ -724,19 +756,6 @@ public class GerritTableView extends ViewPart {
 
 			}
 		}
-
-		//We should have a Gerrit Server information here, otherwise, the user need to define one
-//		if (defaultServerInfo != null) {
-//			if (setConnector(fConnector)) {
-//				GerritClient gerritClient = fConnector.getClient(fTaskRepository);
-//				try {
-//					version = gerritClient.getVersion(new NullProgressMonitor());
-//					logger.debug("Selected version: " + version.toString()); //$NON-NLS-1$
-//				} catch (GerritException e) {
-//					StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, e.getMessage(), e));
-//				}
-//			}
-		//}
 		return version;
 	}
 
@@ -1311,7 +1330,17 @@ public class GerritTableView extends ViewPart {
 		if (!fRepositoryVersionResulLabel.isDisposed()) {
 			// e.g. "Eclipse.org Reviews - Gerrit 2.6.1"
 			fRepositoryVersionResulLabel.setText(NLS.bind(Messages.GerritTableView_gerritLabel, aRepo, aVersion));
-			fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_gerritLabelTooltip);
+			if (gerritClient == null) {
+				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(INVALID_IMAGE));
+				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipInvalid);
+			} else if (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous()) {
+				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(ANONYMOUS_IMAGE));
+				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous);
+			} else {
+				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(CHECKED_IMAGE));
+				fRepositoryVersionResulLabel.setToolTipText(NLS.bind(Messages.GerritTableView_tooltipLoggedOnAs,
+						gerritClient.getRepository().getServerInfo().getUserName()));
+			}
 		}
 	}
 

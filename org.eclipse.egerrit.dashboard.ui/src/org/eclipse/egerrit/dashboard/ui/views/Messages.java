@@ -28,8 +28,6 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_gerritLabel;
 
-	public static String GerritTableView_gerritLabelTooltip;
-
 	public static String GerritTableView_missingGitConnector;
 
 	public static String GerritTableView_noGerritRepository;
@@ -57,6 +55,12 @@ public class Messages extends NLS {
 	public static String GerritTableView_starredName;
 
 	public static String GerritTableView_dashboardUiJob;
+
+	public static String GerritTableView_tooltipAnonymous;
+
+	public static String GerritTableView_tooltipLoggedOnAs;
+
+	public static String GerritTableView_tooltipInvalid;
 
 	static {
 		// initialize resource bundle
