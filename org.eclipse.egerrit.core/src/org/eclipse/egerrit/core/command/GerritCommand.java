@@ -201,7 +201,9 @@ public abstract class GerritCommand<T> implements Callable<T> {
 			result = postProcessResult(fGerritRepository.getHttpClient().execute(request, rh));
 
 		} catch (ClientProtocolException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+//			if (!e.getMessage().contentEquals("Bad Request")) { //Do not log as an error for the Bad Request
+//				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+//			}
 			throw e;
 		} catch (IOException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);

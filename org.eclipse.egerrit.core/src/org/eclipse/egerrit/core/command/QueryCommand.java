@@ -35,47 +35,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	public static final String BRANCH = "BRANCH"; //$NON-NLS-1$
-
-	public static final String BUG = "BUG"; //$NON-NLS-1$
-
-	public static final String COMMENT = "COMMENT"; //$NON-NLS-1$
-
-	public static final String COMMIT = "COMMIT"; //$NON-NLS-1$
-
-	public static final String FILE = "FILE"; //$NON-NLS-1$
-
-	public static final String SHORTFILE = "F"; //$NON-NLS-1$
-
-	public static final String LABEL = "LABEL"; //$NON-NLS-1$
-
-	public static final String MESSAGE = "MESSAGE"; //$NON-NLS-1$
-
 	public static final String OWNER = "OWNER"; //$NON-NLS-1$
-
-	public static final String SHORTOWNER = "O"; //$NON-NLS-1$
-
-	public static final String OWNERIN = "OWNERIN"; //$NON-NLS-1$
-
-	public static final String PARENTPROJECT = "PARENTPROJECT"; //$NON-NLS-1$
-
-	public static final String PATH = "PATH"; //$NON-NLS-1$
-
-	public static final String PREFIX = "PREFIX"; //$NON-NLS-1$
-
-	public static final String PROJECT = "PROJECT"; //$NON-NLS-1$
-
-	public static final String SHORTPROJECT = "P"; //$NON-NLS-1$
-
-	public static final String MANYPROJECT = "PROJECTS"; //$NON-NLS-1$
-
-	public static final String REF = "REF"; //$NON-NLS-1$
-
-	public static final String REVIEWER = "REVIEWER"; //$NON-NLS-1$
-
-	public static final String SHORTREVIEWER = "R"; //$NON-NLS-1$
-
-	public static final String REVIEWERIN = "REVIEWERIN"; //$NON-NLS-1$
 
 	public static final String STATE = "STATE"; //$NON-NLS-1$
 
@@ -85,31 +45,7 @@ public abstract class QueryCommand<T> extends GerritCommand<T> {
 
 	public static final String CONFLICTS = "CONFLICTS"; //$NON-NLS-1$
 
-	public static final String VISIBLETO = "VISIBLETO"; //$NON-NLS-1$
-
-	public static final String ISVISIBLE = "ISVISIBLE"; //$NON-NLS-1$
-
-	public static final String STARREDBY = "STARREDBY"; //$NON-NLS-1$
-
-	public static final String WATCHEDBY = "WATCHEDBY"; //$NON-NLS-1$
-
-	public static final String DRAFTBY = "DRAFTBY"; //$NON-NLS-1$
-
-	public static final String LIMIT = "LIMIT"; //$NON-NLS-1$
-
-	public static final String AGE = "AGE"; //$NON-NLS-1$
-
-	public static final String CHANGE = "CHANGE"; //$NON-NLS-1$
-
-	public static final String TR = "TR"; //$NON-NLS-1$
-
-	public static final String HAS = "HAS"; //$NON-NLS-1$
-
-	public static final String IS = "IS"; //$NON-NLS-1$
-
-	public static final String AND = "AND"; //$NON-NLS-1$
-
-	public static final String OR = "OR"; //$NON-NLS-1$
+	public static final String FREE = "FREE"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Attributes

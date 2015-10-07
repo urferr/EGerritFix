@@ -55,176 +55,59 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 	// Query fields
 	// ------------------------------------------------------------------------
 
+	/**
+	 * @param owner
+	 * @return
+	 */
 	public QueryChangesCommand addOwner(String owner) {
 		addParameter(OWNER, "owner:" + owner); //$NON-NLS-1$
 		fAuthIsRequired = ("self".equals(owner)); //$NON-NLS-1$
 		return this;
 	}
 
-	public QueryChangesCommand addShortOwner(String owner) {
-		addParameter(OWNER, "o:" + owner); //$NON-NLS-1$
-		fAuthIsRequired = ("self".equals(owner)); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addOwnerGroup(String group) {
-		addParameter(OWNERIN, "ownerin:" + group); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addReviewer(String reviewer) {
-		addParameter(REVIEWER, "reviewer:" + reviewer); //$NON-NLS-1$
-		fAuthIsRequired = ("self".equals(reviewer)); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addShortReviewer(String reviewer) {
-		addParameter(REVIEWER, "r:" + reviewer); //$NON-NLS-1$
-		fAuthIsRequired = ("self".equals(reviewer)); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addReviewerGroup(String group) {
-		addParameter(REVIEWERIN, "reviewerin:" + group); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addCommit(String sha1) {
-		addParameter(COMMIT, "commit:" + sha1); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addProject(String project) {
-		addParameter(PROJECT, "project:" + project); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addShortProject(String project) {
-		addParameter(PROJECT, "p:" + project); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addManyProjects(String prefix) {
-		addParameter(MANYPROJECT, "projects:" + prefix); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addParentProject(String project) {
-		addParameter(PARENTPROJECT, "parentproject:" + project); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addPrefix(String prefix) {
-		addParameter(PREFIX, "prefix:" + prefix); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addBranch(String branch) {
-		addParameter(BRANCH, "branch:" + branch); //$NON-NLS-1$
-		return this;
-	}
-
+	/**
+	 * @param topic
+	 * @return
+	 */
 	public QueryChangesCommand addTopic(String topic) {
 		addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
 		return this;
 	}
 
+	/**
+	 * @param conflicts
+	 * @return
+	 */
 	public QueryChangesCommand addConflicts(String conflicts) {
 		addParameter(CONFLICTS, "conflicts:" + conflicts); //$NON-NLS-1$
 		return this;
 	}
 
-	public QueryChangesCommand addReference(String ref) {
-		addParameter(REF, "ref:" + ref); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addBug(String bug) {
-		addParameter(BUG, "bug:" + bug); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addLabel(String label) {
-		addParameter(LABEL, "label:" + label); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addMessage(String message) {
-		addParameter(MESSAGE, "message:" + message); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addComment(String comment) {
-		addParameter(COMMENT, "comment:" + comment); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addPath(String path) {
-		addParameter(PATH, "path:" + path); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addFile(String file) {
-		addParameter(FILE, "file:" + file); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addShortFile(String file) {
-		addParameter(FILE, "f:" + file); //$NON-NLS-1$
-		return this;
-	}
-
+	/**
+	 * @param status
+	 * @return
+	 */
 	public QueryChangesCommand addStatus(ChangeStatus status) {
 		addParameter(STATUS, status.getValue());
 		return this;
 	}
 
+	/**
+	 * @param state
+	 * @return
+	 */
 	public QueryChangesCommand addState(ChangeState state) {
 		addParameter(STATE, state.getValue());
 		fAuthIsRequired |= state == ChangeState.IS_WATCHED;
 		return this;
 	}
 
-	public QueryChangesCommand addAnd(String value) {
-		addParameter(AND, value.toUpperCase());
-		return this;
-	}
-
-	public QueryChangesCommand addOr(String value) {
-		addParameter(OR, value.toUpperCase());
-		return this;
-	}
-	// ------------------------------------------------------------------------
-	// Magical operators
-	// ------------------------------------------------------------------------
-
-	public QueryChangesCommand addVisibleTo(String userOrGroup) {
-		addParameter(VISIBLETO, "visibleto:" + userOrGroup); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addVisible() {
-		addParameter(ISVISIBLE, "is:visible"); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addStarredBy(String user) {
-		addParameter(STARREDBY, "starredby:" + user); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addWatchedBy(String user) {
-		addParameter(WATCHEDBY, "watchedby:" + user); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addDraftBy(String user) {
-		addParameter(DRAFTBY, "draftby:" + user); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addLimit(int limit) {
-		addParameter(LIMIT, "limit:" + Integer.valueOf(limit).toString()); //$NON-NLS-1$
+	/**
+	 * @param value
+	 * @return
+	 */
+	public QueryChangesCommand addFreeText(String value) {
+		addParameter(FREE, value);
 		return this;
 	}
 
@@ -280,31 +163,6 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 		}
 
 		return new HttpGet(uri);
-	}
-
-	public QueryChangesCommand addIs(String value) {
-		addParameter(IS, "is:" + value); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addHas(String value) {
-		addParameter(HAS, "has:" + value); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addTr(String value) {
-		addParameter(TR, "tr:" + value); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addChange(String value) {
-		addParameter(CHANGE, "change:" + value); //$NON-NLS-1$
-		return this;
-	}
-
-	public QueryChangesCommand addAge(String value) {
-		addParameter(AGE, "age:" + value); //$NON-NLS-1$
-		return this;
 	}
 
 }
