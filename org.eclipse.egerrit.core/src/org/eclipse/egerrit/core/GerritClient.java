@@ -40,6 +40,7 @@ import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
+import org.eclipse.egerrit.core.command.SetTopicCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -453,5 +454,15 @@ public abstract class GerritClient {
 	 */
 	public GetReviewedFilesCommand getReviewed(String change_id, String revision_id) {
 		return new GetReviewedFilesCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Return a command that allows to set the topic of a review
+	 *
+	 * @param change_id
+	 * @return {@link SetTopicCommand}
+	 */
+	public SetTopicCommand setTopic(String change_id) {
+		return new SetTopicCommand(fGerritRepository, change_id);
 	}
 }

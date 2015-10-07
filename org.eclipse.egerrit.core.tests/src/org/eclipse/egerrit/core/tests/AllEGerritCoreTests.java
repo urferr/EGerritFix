@@ -39,6 +39,7 @@ import org.eclipse.egerrit.core.command.tests.QueryChangesCommandTest;
 import org.eclipse.egerrit.core.command.tests.RebaseCommandTest;
 import org.eclipse.egerrit.core.command.tests.RestoreCommandTest;
 import org.eclipse.egerrit.core.command.tests.SetReviewCommandTest;
+import org.eclipse.egerrit.core.command.tests.SetTopicCommandTest;
 import org.eclipse.egerrit.core.command.tests.SubmitCommandTest;
 import org.eclipse.egerrit.core.command.tests.UpdateDraftCommandTest;
 import org.eclipse.egerrit.core.rest.tests.AbandonInputTest;
@@ -105,7 +106,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		UpdateDraftCommandTest.class, RebaseCommandTest.class, GetContentFromCommitCommandTest.class,
 		GetRevisionActionsCommandTest.class, ListBranchesCommandTest.class, CherryPickRevisionCommandTest.class,
 		ChangeCommitMsgCommandTest.class, GetReviewedCommandTest.class, SetReviewCommandTest.class,
-		DeleteReviewedCommandTest.class })
+		DeleteReviewedCommandTest.class, SetTopicCommandTest.class })
 // ------------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------------
