@@ -70,6 +70,7 @@ import org.eclipse.egerrit.core.rest.tests.ReviewerInfoTest;
 import org.eclipse.egerrit.core.rest.tests.RevisionInfoTest;
 import org.eclipse.egerrit.core.rest.tests.SubmitInfoTest;
 import org.eclipse.egerrit.core.rest.tests.SubmitInputTest;
+import org.eclipse.egerrit.core.rest.tests.TopicInputTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -92,7 +93,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		RelatedChangeAndCommitInfoTest.class, ReviewInfoTest.class, ReviewInputTest.class, SubmitInputTest.class,
 		SubmitInfoTest.class, AbandonInputTest.class, RestoreInputTest.class, AddReviewerInputTest.class,
 		AddReviewerResultTest.class, RebaseInputTest.class, BranchInfoTest.class, CherryPickInputTest.class,
-		ChangeEditorMessageInputTest.class,
+		ChangeEditorMessageInputTest.class, TopicInputTest.class,
 
 		// org.eclipse.egerrit.core.command
 		GerritCommandTest.class, QueryChangesCommandTest.class, GetChangeCommandTest.class, GetContentCommandTest.class,
