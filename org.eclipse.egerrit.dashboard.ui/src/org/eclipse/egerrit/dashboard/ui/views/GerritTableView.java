@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Ericsson
+ * Copyright (c) 2013,2015 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -75,17 +75,21 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IViewPart;
@@ -196,6 +200,10 @@ public class GerritTableView extends ViewPart {
 
 	private GerritClient gerritClient = null;
 
+	private Composite parentComposite;
+
+	private boolean listShown = false;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -256,7 +264,43 @@ public class GerritTableView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite aParent) {
-		ScrolledComposite sc = new ScrolledComposite(aParent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		parentComposite = aParent;
+		if (fServerUtil.getLastSavedGerritServer() == null) {
+			createEmptyPage();
+		} else {
+			createReviewList();
+		}
+
+	}
+
+	private void createEmptyPage() {
+		removeExistingWidgets();
+		Color background = parentComposite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+
+		Composite composite = new Composite(parentComposite, SWT.NONE);
+		composite.setLayout(new GridLayout(1, false));
+
+		composite.setBackground(background);
+
+		Link link = new Link(composite, SWT.NONE);
+		link.setText("Welcome to the dashboard. To get started, please configure a <a>Gerrit Server</a>.");
+		link.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
+		link.setBackground(background);
+		link.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addOrChangeServerThenLoad();
+			}
+		});
+
+	}
+
+	private void createReviewList() {
+		if (listShown) {
+			return;
+		}
+		removeExistingWidgets();
+		ScrolledComposite sc = new ScrolledComposite(parentComposite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		sc.setExpandHorizontal(true);
 		Composite c = new Composite(sc, SWT.NONE);
 		sc.setContent(c);
@@ -274,6 +318,14 @@ public class GerritTableView extends ViewPart {
 		hookDoubleClickAction();
 
 		sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		listShown = true;
+		parentComposite.layout(true);
+	}
+
+	private void removeExistingWidgets() {
+		for (Control control : parentComposite.getChildren()) {
+			control.dispose();
+		}
 	}
 
 	private void createLayout(Composite aParent) {
@@ -415,27 +467,7 @@ public class GerritTableView extends ViewPart {
 				List<GerritServerInformation> listServers = new ArrayList<GerritServerInformation>();
 				if ((gerritClient == null)
 						|| (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous())) {
-					GerritServerDialog dialogue = new GerritServerDialog(
-							PlatformUI.getWorkbench().getDisplay().getActiveShell(), defaultServerInfo);
-					int ret = dialogue.open();
-					if (ret == IDialogConstants.OK_ID) {
-						// get current list
-						listServers = ServersStore.getAllServers();
-						// remove the old one
-						listServers.remove(defaultServerInfo);
-						// add new one
-						listServers.add(dialogue.getServerInfo());
-						// save it
-						ServersStore.saveServers(listServers);
-
-						fServerUtil.saveLastGerritServer(dialogue.getServerInfo());
-						if (fSearchRequestText.getText().isEmpty()) {
-							processCommands("status:open");
-						} else {
-							processCommands(fSearchRequestText.getText());
-						}
-
-					}
+					addOrChangeServerThenLoad();
 				}
 			}
 		};
@@ -517,7 +549,7 @@ public class GerritTableView extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		fViewer.getControl().setFocus();
+		parentComposite.setFocus();
 	}
 
 	/**
@@ -771,7 +803,7 @@ public class GerritTableView extends ViewPart {
 	 * @return
 	 */
 	private Object updateTable(final GerritServerInformation server, final String aQueryType) {
-
+		createReviewList();
 		String cmdMessage = NLS.bind(Messages.GerritTableView_commandMessage, server.getServerURI(), aQueryType);
 		final Job job = new Job(cmdMessage) {
 
@@ -1124,6 +1156,31 @@ public class GerritTableView extends ViewPart {
 			selection = taskSelection.getSelection();
 		}
 		return selection;
+	}
+
+	private void addOrChangeServerThenLoad() {
+		List<GerritServerInformation> listServers;
+		GerritServerDialog dialogue = new GerritServerDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+				defaultServerInfo);
+		int ret = dialogue.open();
+		if (ret == IDialogConstants.OK_ID) {
+			// get current list
+			listServers = ServersStore.getAllServers();
+			// remove the old one
+			listServers.remove(defaultServerInfo);
+			// add new one
+			listServers.add(dialogue.getServerInfo());
+			// save it
+			ServersStore.saveServers(listServers);
+
+			fServerUtil.saveLastGerritServer(dialogue.getServerInfo());
+			if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
+				processCommands("status:open");
+			} else {
+				processCommands(fSearchRequestText.getText());
+			}
+
+		}
 	}
 
 }
