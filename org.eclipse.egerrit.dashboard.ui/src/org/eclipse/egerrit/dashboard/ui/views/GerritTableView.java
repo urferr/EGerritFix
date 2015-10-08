@@ -72,7 +72,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -87,7 +86,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
@@ -136,8 +134,6 @@ public class GerritTableView extends ViewPart {
 
 	private static final int REPO_WIDTH = 350;
 
-	private static final int VERSION_WIDTH = 35;
-
 	//Numbers of menu items in the Search pulldown menu; SEARCH_SIZE_MENU_LIST + 1 will be the max
 	private static final int SEARCH_SIZE_MENU_LIST = 4;
 
@@ -178,8 +174,6 @@ public class GerritTableView extends ViewPart {
 
 	private Label fReviewsTotalLabel;
 
-	private Label fReviewsTotalResultLabel;
-
 	private Combo fSearchRequestText;
 
 	private Button fSearchRequestBtn;
@@ -203,6 +197,8 @@ public class GerritTableView extends ViewPart {
 	private Composite parentComposite;
 
 	private boolean listShown = false;
+
+	private Composite searchSection;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -255,6 +251,7 @@ public class GerritTableView extends ViewPart {
 				//Refresh the counter
 				setReviewsTotalResultLabel(Integer.toString(fReviewTable.getReviews().length));
 				fViewer.refresh(false, false);
+				searchSection.layout(true);
 			}
 		});
 	}
@@ -270,7 +267,6 @@ public class GerritTableView extends ViewPart {
 		} else {
 			createReviewList();
 		}
-
 	}
 
 	private void createEmptyPage() {
@@ -300,26 +296,21 @@ public class GerritTableView extends ViewPart {
 			return;
 		}
 		removeExistingWidgets();
-		ScrolledComposite sc = new ScrolledComposite(parentComposite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		sc.setExpandHorizontal(true);
-		Composite c = new Composite(sc, SWT.NONE);
-		sc.setContent(c);
-		sc.setExpandVertical(true);
+		Composite topComposite = new Composite(parentComposite, SWT.NONE);
+		topComposite.setLayout(new GridLayout(1, true));
 
-		createSearchSection(c);
+		searchSection = createSearchSection(topComposite);
+		searchSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		UIReviewTable reviewTable = new UIReviewTable();
-		fViewer = reviewTable.createTableViewerSection(c);
-
-		// Setup the view layout
-		createLayout(c);
+		reviewTable.createTableViewerSection(topComposite).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		fViewer = reviewTable.getViewer();
 
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 
-		sc.setMinSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		listShown = true;
-		parentComposite.layout(true);
+		parentComposite.layout(true); //Here we force a re-layout
 	}
 
 	private void removeExistingWidgets() {
@@ -328,82 +319,40 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
-	private void createLayout(Composite aParent) {
-
-		//Add a listener when the view is resized
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		layout.verticalSpacing = 1;
-		layout.makeColumnsEqualWidth = false;
-
-		aParent.setLayout(layout);
-	}
-
 	/**
 	 * Create a group to show the search command and a search text
 	 *
 	 * @param Composite
 	 *            aParent
 	 */
-	private void createSearchSection(Composite aParent) {
-
-		final Group formGroup = new Group(aParent, SWT.SHADOW_ETCHED_IN | SWT.H_SCROLL);
-
-		GridData gridDataGroup = new GridData(GridData.FILL_HORIZONTAL);
-		formGroup.setLayoutData(gridDataGroup);
-
+	private Composite createSearchSection(Composite aParent) {
+		final Composite searchComposite = new Composite(aParent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
+		layout.numColumns = 4;
 		layout.marginTop = 0;
 		layout.marginHeight = 0;
 		layout.verticalSpacing = 0;
 		layout.makeColumnsEqualWidth = false;
-
-		formGroup.setLayout(layout);
-
-		//Left side of the Group
-		//Create a form to maintain the search data
-		Composite leftSearchForm = UIUtils.createsGeneralComposite(formGroup, SWT.NONE);
-
-		GridData gridDataViewer = new GridData(GridData.FILL_HORIZONTAL);
-		leftSearchForm.setLayoutData(gridDataViewer);
-
-		GridLayout leftLayoutForm = new GridLayout();
-		leftLayoutForm.numColumns = 3;
-		leftLayoutForm.marginHeight = 0;
-		leftLayoutForm.makeColumnsEqualWidth = false;
-		leftLayoutForm.horizontalSpacing = 0;
-
-		leftSearchForm.setLayout(leftLayoutForm);
+		searchComposite.setLayout(layout);
 
 		//Label to display the repository and the version
-		fRepositoryVersionResulLabel = new CLabel(leftSearchForm, SWT.LEFT_TO_RIGHT);
-		fRepositoryVersionResulLabel.setLayoutData(new GridData(REPO_WIDTH, SWT.DEFAULT));
+		fRepositoryVersionResulLabel = new CLabel(searchComposite, SWT.LEFT_TO_RIGHT);
+		GridData labelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		fRepositoryVersionResulLabel.setLayoutData(labelGridData);
 		fRepositoryVersionResulLabel.addMouseListener(connectToServerListener());
 
 		//Label to display Total reviews
-		fReviewsTotalLabel = new Label(leftSearchForm, SWT.NONE);
-		fReviewsTotalLabel.setText(Messages.GerritTableView_totalReview);
-
-		fReviewsTotalResultLabel = new Label(leftSearchForm, SWT.NONE);
-		fReviewsTotalResultLabel.setLayoutData(new GridData(VERSION_WIDTH, SWT.DEFAULT));
-
-		//Right side of the Group
-		Composite rightSsearchForm = UIUtils.createsGeneralComposite(formGroup, SWT.NONE);
-		GridData gridDataViewer2 = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
-		rightSsearchForm.setLayoutData(gridDataViewer2);
-		GridLayout rightLayoutForm = new GridLayout();
-		rightLayoutForm.numColumns = 2;
-		rightLayoutForm.marginHeight = 0;
-		rightLayoutForm.makeColumnsEqualWidth = false;
-
-		rightSsearchForm.setLayout(rightLayoutForm);
+		fReviewsTotalLabel = new Label(searchComposite, SWT.NONE);
+		GridData totalLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		totalLabelGridData.horizontalIndent = 10;
+		fReviewsTotalLabel.setLayoutData(totalLabelGridData);
 
 		//Create a SEARCH text data entry
-		fSearchRequestText = new Combo(rightSsearchForm, SWT.NONE);
-		fSearchRequestText.setLayoutData(new GridData(SEARCH_WIDTH, SWT.DEFAULT));
+		fSearchRequestText = new Combo(searchComposite, SWT.NONE);
+		GridData searchGridData = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
+		searchGridData.widthHint = SEARCH_WIDTH;
+		searchGridData.minimumWidth = 100;
+		fSearchRequestText.setLayoutData(searchGridData);
 		fSearchRequestText.setToolTipText(Messages.GerritTableView_tooltipSearch);
 		//Get the last saved commands
 		fRequestList = fServerUtil.getListLastCommands();
@@ -442,8 +391,9 @@ public class GerritTableView extends ViewPart {
 		});
 
 		//Create a SEARCH button
-		fSearchRequestBtn = new Button(rightSsearchForm, SWT.NONE);
+		fSearchRequestBtn = new Button(searchComposite, SWT.NONE);
 		fSearchRequestBtn.setText(Messages.GerritTableView_search);
+		fSearchRequestBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false));
 		fSearchRequestBtn.addListener(SWT.Selection, new Listener() {
 
 			@Override
@@ -452,6 +402,7 @@ public class GerritTableView extends ViewPart {
 			}
 		});
 
+		return searchComposite;
 	}
 
 	/**
@@ -1140,12 +1091,13 @@ public class GerritTableView extends ViewPart {
 				fRepositoryVersionResulLabel.setToolTipText(NLS.bind(Messages.GerritTableView_tooltipLoggedOnAs,
 						gerritClient.getRepository().getServerInfo().getUserName()));
 			}
+			fRepositoryVersionResulLabel.layout(true);
 		}
 	}
 
 	private void setReviewsTotalResultLabel(String aSt) {
-		if (!fReviewsTotalResultLabel.isDisposed()) {
-			fReviewsTotalResultLabel.setText(aSt);
+		if (!fReviewsTotalLabel.isDisposed()) {
+			fReviewsTotalLabel.setText(Messages.GerritTableView_totalReview + aSt);
 		}
 	}
 
