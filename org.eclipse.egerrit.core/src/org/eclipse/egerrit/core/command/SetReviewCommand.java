@@ -31,7 +31,7 @@ import org.eclipse.egerrit.core.rest.ReviewInput;
 import com.google.gson.Gson;
 
 /**
- * The command: POST /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/review/
+ * The command: POST /changes/{change-id}/revisions/{revision-id}/review
  * <p>
  *
  * @since 1.0
@@ -110,7 +110,8 @@ public class SetReviewCommand extends PostCommand<ReviewInfo> {
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
 					.append(getId())
-					.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append("/revisions/") //$NON-NLS-1$
+					.append(getRevision())
 					.append("/review") //$NON-NLS-1$
 					.toString();
 			uriBuilder.setPath(path);
