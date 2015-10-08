@@ -82,7 +82,7 @@ public class ChangeDetailEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return change.get_number() + " - " + change.getSubject() + " - " + change.getChange_id(); //$NON-NLS-1$ //$NON-NLS-2$
+		return change.get_number() + " - " + change.getSubject() + " - " + change.getChange_id(); //$NON-NLS-1$ //$NON-NLS-2$	//Here we keep the change_id because it is shown to the user
 	}
 
 	@Override

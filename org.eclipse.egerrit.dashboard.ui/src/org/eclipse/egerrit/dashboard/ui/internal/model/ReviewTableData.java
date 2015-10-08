@@ -47,7 +47,7 @@ public class ReviewTableData {
 		// if (fQuery != aQuery) {
 		fReviewList = new ConcurrentHashMap<String, ChangeInfo>();
 		for (ChangeInfo review : aList) {
-			fReviewList.put(review.getChange_id(), review);
+			fReviewList.put(review.getId(), review);
 		}
 		fServerInfo = aServerInfo;
 		fQuery = aQuery;
@@ -65,7 +65,7 @@ public class ReviewTableData {
 	}
 
 	public void updateReviewItem(ChangeInfo task) {
-		fReviewList.put(task.getChange_id(), task);
+		fReviewList.put(task.getId(), task);
 	}
 
 	public void deleteReviewItem(String taskId) {
@@ -110,7 +110,7 @@ public class ReviewTableData {
 	public void init(ChangeInfo[] reviews) {
 		if (reviews != null) {
 			for (ChangeInfo review : reviews) {
-				fReviewList.put(review.getChange_id(), review);
+				fReviewList.put(review.getId(), review);
 				review.setLabels(review.getLabels());
 			}
 		}

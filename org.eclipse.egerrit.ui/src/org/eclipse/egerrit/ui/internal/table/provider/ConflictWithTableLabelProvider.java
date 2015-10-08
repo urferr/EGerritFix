@@ -48,7 +48,7 @@ public class ConflictWithTableLabelProvider extends BaseTableLabelProvider {
 			ChangeInfo changeInfo = (ChangeInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				return changeInfo.getChange_id();
+				return changeInfo.getChange_id(); //Here we keep the change_id because it is shown to the user
 			case 1:
 				return changeInfo.getSubject();
 			case 2:

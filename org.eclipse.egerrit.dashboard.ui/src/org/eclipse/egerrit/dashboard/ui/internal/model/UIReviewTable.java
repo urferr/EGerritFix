@@ -232,7 +232,7 @@ public class UIReviewTable {
 				if (obj instanceof ChangeInfo) {
 //					IAttributeContainer item = (IAttributeContainer) obj;
 					logger.debug("Selected table OBJECT selection ID: " //$NON-NLS-1$
-							+ ((ChangeInfo) obj).getChange_id() + "\t subject: " //$NON-NLS-1$
+							+ ((ChangeInfo) obj).getId() + "\t subject: " //$NON-NLS-1$
 							+ ((ChangeInfo) obj).getSubject());
 //
 //							+ item.getAttribute(GerritTask.SHORT_CHANGE_ID) + "\t subject: " //$NON-NLS-1$

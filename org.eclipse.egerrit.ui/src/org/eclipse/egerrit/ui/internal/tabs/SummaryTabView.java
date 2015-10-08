@@ -381,7 +381,7 @@ public class SummaryTabView {
 		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) { //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
-		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getChange_id(), "", //$NON-NLS-1$
+		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getId(), "", //$NON-NLS-1$
 				new NullProgressMonitor());
 		if (mergeableInfo != null) {
 			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
@@ -397,8 +397,7 @@ public class SummaryTabView {
 	 */
 	private void setIncludedIn(GerritClient gerritClient) {
 		try {
-			IncludedInInfo includedIn = queryIncludedIn(gerritClient, fChangeInfo.getChange_id(),
-					new NullProgressMonitor());
+			IncludedInInfo includedIn = queryIncludedIn(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
 			if (includedIn != null) {
 				fIncludedIn.setBranches(includedIn.getBranches());
 				fIncludedIn.setTags(includedIn.getTags());
@@ -417,7 +416,7 @@ public class SummaryTabView {
 	 */
 	private void setRelatedChanges(GerritClient gerritClient) {
 		WritableList writeInfoList;
-		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getChange_id(),
+		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getId(),
 				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
 		fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
 
@@ -437,7 +436,7 @@ public class SummaryTabView {
 	 */
 	private void setReviewers(GerritClient gerritClient) {
 		WritableList writeInfoList;
-		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getChange_id(), new NullProgressMonitor());
+		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
 		fReviewers.clear();
 		if (reviewers != null) {
 			//fReviewers = Arrays.asList(reviewers);
@@ -474,7 +473,7 @@ public class SummaryTabView {
 			litr = Arrays.asList(sameTopicChangeInfo).listIterator();
 			while (litr.hasNext()) {
 				ChangeInfo cur = litr.next();
-				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+				if (fChangeInfo.getId().compareTo(cur.getId()) != 0) { // dont' want the current one
 					ChangeInfo item = new ChangeInfo();
 					item.setChange_id(cur.getChange_id());
 					item.setSubject(cur.getSubject());
@@ -497,7 +496,7 @@ public class SummaryTabView {
 		fConflictsWithChangeInfo.clear();
 
 		try {
-			conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(),
+			conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(), //Here we keep the change_id because the conflicts call does not accept the full id
 					new NullProgressMonitor());
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -507,9 +506,10 @@ public class SummaryTabView {
 			litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
 			while (litr.hasNext()) {
 				ChangeInfo cur = litr.next();
+				//Here we compare with the change id because it is precise enough
 				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
 					ChangeInfo item = new ChangeInfo();
-					item.setChange_id(cur.getChange_id());
+					item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
 					item.setSubject(cur.getSubject());
 					fConflictsWithChangeInfo.add(item);
 				}
@@ -708,7 +708,7 @@ public class SummaryTabView {
 				String reviewer = textWidget.getText().trim();
 
 				if (!reviewer.isEmpty()) {
-					AddReviewerCommand addReviewerCmd = getGerritClient().addReviewer(fChangeInfo.getChange_id());
+					AddReviewerCommand addReviewerCmd = getGerritClient().addReviewer(fChangeInfo.getId());
 					AddReviewerInput addReviewerInput = new AddReviewerInput();
 					addReviewerInput.setReviewer(reviewer);
 
@@ -792,8 +792,8 @@ public class SummaryTabView {
 								return;
 							}
 
-							DeleteReviewerCommand deleteReviewerCmd = getGerritClient().deleteReviewer(
-									fChangeInfo.getChange_id(), String.valueOf(reviewerInfo.get_account_id()));
+							DeleteReviewerCommand deleteReviewerCmd = getGerritClient()
+									.deleteReviewer(fChangeInfo.getId(), String.valueOf(reviewerInfo.get_account_id()));
 
 							try {
 								deleteReviewerCmd.call();

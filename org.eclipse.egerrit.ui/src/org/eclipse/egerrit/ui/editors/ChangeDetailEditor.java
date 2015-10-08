@@ -207,7 +207,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 
 		//This query fill the current revision
-		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
+		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
 
 		//Queries to fill the Summary Review tab data
 		if (summaryTab != null) {
@@ -280,7 +280,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
 
-					SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getChange_id());
+					SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
 					SubmitInput submitInput = new SubmitInput();
 					submitInput.setWait_for_merge(false);
 
@@ -316,7 +316,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						return;
 					}
 
-					AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getChange_id());
+					AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
 					AbandonInput abandonInput = new AbandonInput();
 					abandonInput.setMessage(inputDialog.getValue());
 
@@ -352,7 +352,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						return;
 					}
 
-					RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getChange_id());
+					RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
 					RestoreInput restoreInput = new RestoreInput();
 					restoreInput.setMessage(inputDialog.getValue());
 
@@ -389,7 +389,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						return;
 					}
 
-					RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getChange_id());
+					RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId());
 					RebaseInput rebaseInput = new RebaseInput();
 					rebaseInput.setBase(inputDialog.getValue());
 
@@ -440,7 +440,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						public void run() {
 							int ret = cherryPickDialog.open();
 							if (ret == IDialogConstants.OK_ID) {
-								cherryPickRevision(fChangeInfo.getChange_id(), fChangeInfo.getCurrentRevision(),
+								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getCurrentRevision(),
 										cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
 							}
 						}
@@ -573,8 +573,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param reviewInput
 	 */
 	private void postReply(ReviewInput reviewInput) {
-		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getChange_id(),
-				fChangeInfo.getCurrentRevision());
+		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(), fChangeInfo.getCurrentRevision());
 		reviewToEmit.setReviewInput(reviewInput);
 
 		try {
@@ -606,7 +605,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//Fill the data structure
 		fChangeInfo.setNumber(element.get_number());
 		fChangeInfo.setId(element.getId());
-		fChangeInfo.setChange_id(element.getChange_id());
+		fChangeInfo.setChange_id(element.getChange_id()); //Keep changeid since we are doing a copy
 		fChangeInfo.setStatus(element.getStatus());
 		fChangeInfo.setSubject(element.getSubject());
 		fChangeInfo.setProject(element.getProject());
@@ -653,13 +652,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void refreshStatus() {
-		ChangeInfo changeInfo = refreshChangeInfo(fGerritClient, fChangeInfo.getChange_id(), new NullProgressMonitor());
+		ChangeInfo changeInfo = refreshChangeInfo(fGerritClient, fChangeInfo.getId(), new NullProgressMonitor());
 
 		//Reset the whole window
 		setChangeInfo(fGerritClient, changeInfo);
 
 		//This query fills the current revision
-		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getChange_id());
+		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
 
 		//Queries to fill the Summary Review tab data
 		summaryTab.setTabs(fGerritClient, fChangeInfo);
@@ -814,8 +813,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param String
 	 *            change_id
 	 */
-	private void setCurrentRevisionAndMessageTab(GerritClient gerritClient, String change_id) {
-		ChangeInfo res = queryMessageTab(gerritClient, change_id, new NullProgressMonitor());
+	private void setCurrentRevisionAndMessageTab(GerritClient gerritClient, String id) {
+		ChangeInfo res = queryMessageTab(gerritClient, id, new NullProgressMonitor());
 
 		if (res != null) {
 			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
@@ -883,12 +882,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 /*                                                             */
 	/************************************************************* */
 
-	private ChangeInfo queryMessageTab(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
+	private ChangeInfo queryMessageTab(GerritClient gerrit, String id, IProgressMonitor monitor) {
 		try {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 			// Create query
 
-			GetChangeCommand command = gerrit.getChange(fChangeInfo.getId());
+			GetChangeCommand command = gerrit.getChange(id);
 			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.ALL_FILES);
 			command.addOption(ChangeOption.ALL_REVISIONS);
