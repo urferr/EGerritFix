@@ -38,6 +38,7 @@ import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.SetTopicCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
@@ -47,6 +48,7 @@ import org.eclipse.egerrit.core.rest.MergeableInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
+import org.eclipse.egerrit.core.rest.TopicInput;
 import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
@@ -218,10 +220,13 @@ public class SummaryTabView {
 
 		genTopicData = new Text(composite, SWT.BORDER);
 		genTopicData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		genTopicData.setEnabled(isEditingAllowed());
 
 		Button btnSave = new Button(composite, SWT.NONE);
 		btnSave.setText("Save");
 		btnSave.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		btnSave.addSelectionListener(buttonSaveListener(genTopicData));
+		btnSave.setEnabled(isEditingAllowed());
 
 		//Strategy line
 		Label lblStrategy = new Label(composite, SWT.NONE);
@@ -806,6 +811,38 @@ public class SummaryTabView {
 		};
 	}
 
+	/**
+	 * This method is the listener to save a topic
+	 *
+	 * @param genTopicData2
+	 * @return SelectionAdapter
+	 */
+	private SelectionAdapter buttonSaveListener(final Text topicData) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+
+				String topic = topicData.getText().trim();
+				SetTopicCommand command = getGerritClient().setTopic(fChangeInfo.getChange_id());
+				TopicInput topicInput = new TopicInput();
+				topicInput.setTopic(topic);
+
+				command.setTopicInput(topicInput);
+
+				String result = null;
+				try {
+					result = command.call();
+				} catch (EGerritException ex) {
+					EGerritCorePlugin.logError(ex.getMessage());
+				} catch (ClientProtocolException ex) {
+					EGerritCorePlugin.logError(ex.getMessage());
+				}
+			}
+
+		};
+	}
+
 	/************************************************************* */
 	/*                                                             */
 	/* Section adjust the DATA binding                             */
@@ -985,4 +1022,7 @@ public class SummaryTabView {
 		this.fGerritClient = gerritClient;
 	}
 
+	private boolean isEditingAllowed() {
+		return !fGerritClient.getRepository().getServerInfo().isAnonymous();
+	}
 }
