@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 
 import org.eclipse.egerrit.core.rest.AccountInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.ui.editors.model.CommentAnnotationManager;
 import org.eclipse.egerrit.ui.editors.model.EditionLimiter;
 import org.eclipse.egerrit.ui.editors.model.GerritCommentAnnotation;
 import org.eclipse.egerrit.ui.editors.model.PatchSetCompareItem;
@@ -43,13 +44,16 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotStyledText;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
+@RunWith(Suite.class)
+@SuiteClasses({ InsertionTest.class, UndoTest.class })
 public class EditionLimiterTests {
 
 	IDocument document;
-
-	private AnnotationModel comments;
 
 	private TextViewer textViewer;
 
@@ -76,6 +80,7 @@ public class EditionLimiterTests {
 	}
 
 	public void assertExpectations() {
+		System.out.println(widgetUT.getText());
 		if (expectations.noModifications) {
 			assertEquals(inputData.document, widgetUT.getText());
 			return;
@@ -98,8 +103,15 @@ public class EditionLimiterTests {
 		try {
 			positions = document.getPositions(IDocument.DEFAULT_CATEGORY);
 			for (Position position : positions) {
-				assertEquals(expected, position);
+				if (expected.equals(position) && !position.isDeleted) {
+					return;
+				}
 			}
+			StringBuffer posList = new StringBuffer();
+			for (Position position : positions) {
+				posList.append(position).append(' ');
+			}
+			fail("Could not find position: " + expected + " Positions available are " + posList.toString());
 		} catch (BadPositionCategoryException e) {
 			fail();
 		}
@@ -107,7 +119,14 @@ public class EditionLimiterTests {
 
 	private void assertNumberOfComment(int expected) {
 		try {
-			assertEquals(expected, document.getPositions(IDocument.DEFAULT_CATEGORY).length);
+			int activeCommentCount = 0;
+			Position[] positions = document.getPositions(IDocument.DEFAULT_CATEGORY);
+			for (Position p : positions) {
+				if (!p.isDeleted) {
+					activeCommentCount++;
+				}
+			}
+			assertEquals(expected, activeCommentCount);
 		} catch (BadPositionCategoryException e) {
 			fail();
 		}
@@ -142,7 +161,6 @@ public class EditionLimiterTests {
 	private void initializeDocument() {
 		Object[] result = createDocumentWithComments(inputData.document, inputData.comments);
 		document = (IDocument) result[0];
-		comments = (AnnotationModel) result[1];
 		textViewer.setInput(document);
 	}
 
@@ -159,7 +177,7 @@ public class EditionLimiterTests {
 		PatchSetCompareItem document = new PatchSetCompareItem();
 		document.set(documentText);
 		int lineDelta = 0;
-		AnnotationModel commentModel = new AnnotationModel();
+		AnnotationModel commentModel = new CommentAnnotationManager();
 		if (comments != null) {
 			for (String comment : comments) {
 				int offset = documentText.indexOf(comment);

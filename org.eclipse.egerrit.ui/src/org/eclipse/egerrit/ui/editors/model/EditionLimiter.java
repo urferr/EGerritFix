@@ -65,6 +65,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		if (document == null) {
 			initialize();
 		}
+		logger.debug("offset: " + start + " length: " + length + " >" + text + "<");
 		printAnnotationsCount();
 		try {
 			//Text is deleted, check where this is happening
@@ -78,14 +79,24 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 					GerritCommentAnnotation comment = (GerritCommentAnnotation) it.next();
 					Position commentPosition = annotations.getPosition(comment);
 
+					try {
+						if (commentPosition.length == 0
+								&& (document.get(start, length).equals(textWidget.getLineDelimiter()))) {
+							annotations.removeAnnotation(comment);
+							return true;
+						}
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					//Bail if the impacted area is not completely included in the comment
 					if (!completelyIncludes(commentPosition, impactedArea)) {
 						return false; //we don't want the proposed modification to be performed
 					}
-					//if we are about to remove the last character from the comment, remove the annotation
-					if (commentPosition.getLength() == 0 || commentPosition.getLength() <= length) {
-						annotations.removeAnnotation(comment);
-					}
+//					//if we are about to remove the last character from the comment, remove the annotation
+//					if (commentPosition.getLength() == 0 || commentPosition.getLength() <= length) {
+//						annotations.removeAnnotation(comment);
+//					}
 				}
 
 				return true;
@@ -97,15 +108,20 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 			//The user is typing text in a non-authorized area
 			if (!isEditableLine(start, text.length())) {
 				int insertionPosition = start;
-				String newText = text;
+				String commentText = text.trim();
 				if (!fromDoc) {
-					if (!text.endsWith(textWidget.getLineDelimiter())) {
-						newText = text + textWidget.getLineDelimiter();
-					}
+//					if (!text.endsWith(textWidget.getLineDelimiter())) {
+//						newText = text + textWidget.getLineDelimiter();
+//					}
 
 					//Move insertion point to the next line if we are not inserting at the beginning of the line
 					if (!isBeginningOfLine(insertionPosition)) {
 						insertionPosition = getNextLine(start);
+//						if (text.equals("\n")) {
+//							annotations.addAnnotation(new GerritCommentAnnotation(null, ""),
+//									new Position(insertionPosition, 0));
+//							return true;
+//						}
 						//If there is no next line, we first insert one, then compute it's position and proceed as usual
 						if (insertionPosition == -1) {
 							try {
@@ -116,15 +132,17 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 							insertionPosition = getNextLine(start);
 						}
 					}
+					String insertedText = commentText + textWidget.getLineDelimiter();
 					try {
-						document.replace(insertionPosition, 0, newText);
+						document.replace(insertionPosition, 0, insertedText);
 					} catch (BadLocationException e) {
-						logger.debug("Exception inserting " + newText, e); //$NON-NLS-1$
+						logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
 					}
-					textWidget.setCaretOffset(insertionPosition + newText.length() - 1);
+					textWidget.setCaretOffset(insertionPosition + insertedText.length() - 1);
 				}
-				annotations.addAnnotation(new GerritCommentAnnotation(null, text),
-						new Position(insertionPosition, newText.length()));
+				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
+						new Position(insertionPosition, commentText.length()));
+//				}
 				return false;
 			}
 
@@ -162,14 +180,46 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				return true;
 			}
 		}
+		return isInsertingAtTheEndOfExistingComment(offset, length);
+	}
+
+	private boolean isInsertingAtTheEndOfExistingComment(int offset, int length) {
+		Iterator<?> it = annotations.getAnnotationIterator();
+		while (it.hasNext()) {
+			GerritCommentAnnotation annotation = (GerritCommentAnnotation) it.next();
+			if (annotation.getComment() == null || annotation.getComment().getAuthor() == null) {
+				Position position = annotations.getPosition(annotation);
+				if (position.getOffset() + position.getLength() == offset) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
 	private void printAnnotationsCount() {
 		try {
 			logger.debug("Annotation count " + document.getPositions(IDocument.DEFAULT_CATEGORY).length); //$NON-NLS-1$
+			printDetailedAnnotations();
 		} catch (BadPositionCategoryException e) {
 			//ignore
+		}
+	}
+
+	private void printDetailedAnnotations() {
+		Position[] positions;
+		try {
+			positions = document.getPositions(IDocument.DEFAULT_CATEGORY);
+			for (Position position : positions) {
+				System.out.print(position + " " + position.isDeleted() + " -> >"
+						+ document.get(position.getOffset(), position.getLength()) + "<\n");
+			}
+		} catch (BadPositionCategoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

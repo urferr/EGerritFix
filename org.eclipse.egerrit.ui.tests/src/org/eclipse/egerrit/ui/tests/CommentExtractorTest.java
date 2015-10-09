@@ -71,7 +71,7 @@ public class CommentExtractorTest {
 	public void addOneComment() {
 		setupOriginalDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null); //$NON-NLS-1$
 		setupNewDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", (String[]) null, //$NON-NLS-1$
-				new String[] { "aaaa\n" } //$NON-NLS-1$
+				new String[] { "aaaa" } //$NON-NLS-1$
 		);
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -79,7 +79,7 @@ public class CommentExtractorTest {
 		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
 		assertEquals(1, newComments.size());
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("aaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -91,14 +91,14 @@ public class CommentExtractorTest {
 	public void addOneCommentOnLastLine() {
 		setupOriginalDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null); //$NON-NLS-1$
 		setupNewDocument("000000000\n111111111\n222222222\n333333333\naaaa\n", //$NON-NLS-1$
-				(String[]) null, new String[] { "aaaa\n" }); //$NON-NLS-1$
+				(String[]) null, new String[] { "aaaa" }); //$NON-NLS-1$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
 		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
 		assertEquals(1, newComments.size());
 		assertEquals(4, newComments.get(0).getLine());
-		assertEquals("aaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -108,16 +108,16 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void addCommentAfterExistingOne() {
-		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa\n"); //$NON-NLS-1$ //$NON-NLS-2$
-		setupNewDocument("000000000\naaaa\n111111111\n222222222\nbbbb\n333333333\n", new String[] { "aaaa\n" }, //$NON-NLS-1$//$NON-NLS-2$
-				new String[] { "bbbb\n" }); //$NON-NLS-1$
+		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupNewDocument("000000000\naaaa\n111111111\n222222222\nbbbb\n333333333\n", new String[] { "aaaa" }, //$NON-NLS-1$//$NON-NLS-2$
+				new String[] { "bbbb" }); //$NON-NLS-1$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
 		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
 		assertEquals(1, newComments.size());
 		assertEquals(3, newComments.get(0).getLine());
-		assertEquals("bbbb\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -129,14 +129,14 @@ public class CommentExtractorTest {
 	public void addOneMultiLineComment() {
 		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", (String[]) null); //$NON-NLS-1$
 		setupNewDocument("000000000\naaaa\naaaa\n111111111\n222222222\n333333333\n", //$NON-NLS-1$
-				(String[]) null, new String[] { "aaaa\naaaa\n" }); //$NON-NLS-1$
+				(String[]) null, new String[] { "aaaa\naaaa" }); //$NON-NLS-1$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
 		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
 		assertEquals(1, newComments.size());
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("aaaa\naaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -148,7 +148,7 @@ public class CommentExtractorTest {
 	public void addMultipleComments() {
 		setupOriginalDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null); //$NON-NLS-1$
 		setupNewDocument("000000000\naaaa\naaaa\n111111111\n222222222\ncccc\n333333333\n", (String[]) null, //$NON-NLS-1$
-				new String[] { "aaaa\naaaa\n", "cccc\n" }); //$NON-NLS-1$ //$NON-NLS-2$
+				new String[] { "aaaa\naaaa", "cccc" }); //$NON-NLS-1$ //$NON-NLS-2$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
@@ -156,10 +156,10 @@ public class CommentExtractorTest {
 		assertEquals(2, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("aaaa\naaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
 		assertEquals(3, newComments.get(1).getLine());
-		assertEquals("cccc\n", newComments.get(1).getMessage()); //$NON-NLS-1$
+		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -169,10 +169,10 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void answerToComment() {
-		setupOriginalDocument("000000000\nauthorAaa\n111111111\n222222222\n333333333\n", "authorAaa\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\nauthorAaa\n111111111\n222222222\n333333333\n", "authorAaa"); //$NON-NLS-1$ //$NON-NLS-2$
 		setupNewDocument("000000000\nauthorAaa\nanAnswer\n111111111\n222222222\n333333333\n", //$NON-NLS-1$
-				new String[] { "authorAaa\n" }, //$NON-NLS-1$
-				new String[] { "anAnswer\n" }); //$NON-NLS-1$
+				new String[] { "authorAaa" }, //$NON-NLS-1$
+				new String[] { "anAnswer" }); //$NON-NLS-1$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
@@ -180,8 +180,8 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("anAnswer\n", newComments.get(0).getMessage()); //$NON-NLS-1$
-		assertEquals("ID-authorAaa\n", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
+		assertEquals("anAnswer", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("ID-authorAaa", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -191,9 +191,9 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void notAnAnswer() {
-		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa\n"); //$NON-NLS-1$ //$NON-NLS-2$
-		setupNewDocument("000000000\naaaa\nnotAnswer\n111111111\n222222222\n333333333\n", new String[] { "aaaa\n" }, //$NON-NLS-1$//$NON-NLS-2$
-				new String[] { "notAnswer\n" }); //$NON-NLS-1$
+		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupNewDocument("000000000\naaaa\nnotAnswer\n111111111\n222222222\n333333333\n", new String[] { "aaaa" }, //$NON-NLS-1$//$NON-NLS-2$
+				new String[] { "notAnswer" }); //$NON-NLS-1$
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
 
@@ -201,7 +201,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("notAnswer\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("notAnswer", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertNull(newComments.get(0).getInReplyTo());
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -212,10 +212,10 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void answerToMultilineComment() {
-		setupOriginalDocument("000000000\n111111111\n222222222\nauthoraaaa\nbbbb\n333333333\n", "authoraaaa\nbbbb\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\n111111111\n222222222\nauthoraaaa\nbbbb\n333333333\n", "authoraaaa\nbbbb"); //$NON-NLS-1$ //$NON-NLS-2$
 		setupNewDocument("000000000\n111111111\n222222222\nauthoraaaa\nbbbb\ncccc\n333333333\n", //$NON-NLS-1$
-				new String[] { "authoraaaa\nbbbb\n" }, //$NON-NLS-1$
-				new String[] { "cccc\n" }); //$NON-NLS-1$
+				new String[] { "authoraaaa\nbbbb" }, //$NON-NLS-1$
+				new String[] { "cccc" }); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -223,8 +223,8 @@ public class CommentExtractorTest {
 		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
 		assertEquals(1, newComments.size());
 		assertEquals(3, newComments.get(0).getLine());
-		assertEquals("cccc\n", newComments.get(0).getMessage()); //$NON-NLS-1$
-		assertEquals("ID-authoraaaa\nbbbb\n", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
+		assertEquals("cccc", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("ID-authoraaaa\nbbbb", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -234,10 +234,10 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void closingComment() {
-		setupOriginalDocument("000000000\nauthoraaaa\n111111111\n222222222\nauthorbbbb\n333333333\n", "authoraaaa\n"); //$NON-NLS-1$//$NON-NLS-2$
+		setupOriginalDocument("000000000\nauthoraaaa\n111111111\n222222222\nauthorbbbb\n333333333\n", "authoraaaa"); //$NON-NLS-1$//$NON-NLS-2$
 		setupNewDocument("000000000\nauthoraaaa\ndone\n111111111\n222222222\nauthorbbbb\n333333333\n", //$NON-NLS-1$
-				new String[] { "authoraaaa\n", }, //$NON-NLS-1$
-				new String[] { "done\n" }); //$NON-NLS-1$
+				new String[] { "authoraaaa", }, //$NON-NLS-1$
+				new String[] { "done" }); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -246,8 +246,8 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("done\n", newComments.get(0).getMessage()); //$NON-NLS-1$
-		assertEquals("ID-authoraaaa\n", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
+		assertEquals("done", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("ID-authoraaaa", newComments.get(0).getInReplyTo()); //$NON-NLS-1$
 
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -258,10 +258,10 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void anwerToCommentThenInsertANewComment() {
-		setupOriginalDocument("000000000\nauthor\n111111111\n222222222\n333333333\n", "author\n"); //$NON-NLS-1$//$NON-NLS-2$
+		setupOriginalDocument("000000000\nauthor\n111111111\n222222222\n333333333\n", "author"); //$NON-NLS-1$//$NON-NLS-2$
 		setupNewDocument("000000000\nauthor\nbbbb\n111111111\n222222222\ncccc\n333333333\n", //$NON-NLS-1$
-				new String[] { "author\n" }, //$NON-NLS-1$
-				new String[] { "bbbb\n", "cccc\n" }); //$NON-NLS-1$//$NON-NLS-2$
+				new String[] { "author" }, //$NON-NLS-1$
+				new String[] { "bbbb", "cccc" }); //$NON-NLS-1$//$NON-NLS-2$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -270,10 +270,10 @@ public class CommentExtractorTest {
 		assertEquals(2, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("bbbb\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 
 		assertEquals(3, newComments.get(1).getLine());
-		assertEquals("cccc\n", newComments.get(1).getMessage()); //$NON-NLS-1$
+		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -283,9 +283,9 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void insertANewCommentThenAnswerToExistingOne() {
-		setupOriginalDocument("000000000\n111111111\n222222222\ncccc\n333333333\n", "cccc\n"); //$NON-NLS-1$//$NON-NLS-2$
+		setupOriginalDocument("000000000\n111111111\n222222222\ncccc\n333333333\n", "cccc"); //$NON-NLS-1$//$NON-NLS-2$
 		setupNewDocument("000000000\naaaa\naaaa\n111111111\n222222222\ncccc\ndddd\n333333333\n", //$NON-NLS-1$
-				new String[] { "cccc\n" }, new String[] { "aaaa\naaaa\n", "dddd\n" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				new String[] { "cccc" }, new String[] { "aaaa\naaaa", "dddd" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -294,10 +294,10 @@ public class CommentExtractorTest {
 		assertEquals(2, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("aaaa\naaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
 		assertEquals(3, newComments.get(1).getLine());
-		assertEquals("dddd\n", newComments.get(1).getMessage()); //$NON-NLS-1$
+		assertEquals("dddd", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -309,7 +309,7 @@ public class CommentExtractorTest {
 	public void createFileComment() {
 		setupOriginalDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null); //$NON-NLS-1$
 		setupNewDocument("aaaa\naaaa\n000000000\n111111111\n222222222\n333333333\n", (String[]) null, //$NON-NLS-1$
-				new String[] { "aaaa\naaaa\n" }); //$NON-NLS-1$
+				new String[] { "aaaa\naaaa" }); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -318,7 +318,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 
 		assertEquals(0, newComments.get(0).getLine());
-		assertEquals("aaaa\naaaa\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
 	}
@@ -328,15 +328,17 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void createNewCommentAfterClosedComment() {
-		setupOriginalDocument("000000000\nauthor\ndone\n111111111\n222222222\n333333333\n", "author\n", "done\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		setupOriginalDocument("000000000\nauthor\ndone\n111111111\n222222222\n333333333\n", "author", "done"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setupNewDocument("000000000\nauthor\ndone\nbbbb\n111111111\n222222222\n333333333\n", //$NON-NLS-1$
-				new String[] { "author\n", "done\n" }, new String[] { "bbbb\n" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				new String[] { "author", "done" }, new String[] { "bbbb" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 		//We need to tweak the generated defaults to have done be a reply to "author"
 		Iterator<?> it = newComments.getAnnotationIterator();
 		while (it.hasNext()) {
 			GerritCommentAnnotation comment = (GerritCommentAnnotation) it.next();
 			if (comment.getComment() != null && comment.getComment().getMessage().startsWith("done")) { //$NON-NLS-1$
-				comment.getComment().setInReplyTo("ID-author\n"); //$NON-NLS-1$
+				comment.getComment().setInReplyTo("ID-author"); //$NON-NLS-1$
+				comment.getComment().setLine(1);
 			}
 		}
 
@@ -344,7 +346,8 @@ public class CommentExtractorTest {
 		while (it2.hasNext()) {
 			GerritCommentAnnotation comment = (GerritCommentAnnotation) it2.next();
 			if (comment.getComment() != null && comment.getComment().getMessage().startsWith("done")) { //$NON-NLS-1$
-				comment.getComment().setInReplyTo("ID-author\n"); //$NON-NLS-1$
+				comment.getComment().setInReplyTo("ID-author"); //$NON-NLS-1$
+				comment.getComment().setLine(1);
 			}
 		}
 
@@ -355,7 +358,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 
 		assertEquals(1, newComments.get(0).getLine());
-		assertEquals("bbbb\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertNull(newComments.get(0).getInReplyTo());
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -366,7 +369,7 @@ public class CommentExtractorTest {
 	 */
 	@Test
 	public void deleteExistingDraft() {
-		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa"); //$NON-NLS-1$ //$NON-NLS-2$
 		setupNewDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null, (String[]) null); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
@@ -378,12 +381,12 @@ public class CommentExtractorTest {
 		assertEquals(0, newComments.size());
 		assertEquals(1, deletedComments.size());
 		assertEquals(0, modifiedComments.size());
-		assertEquals("aaaa\n", deletedComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa", deletedComments.get(0).getMessage()); //$NON-NLS-1$
 	}
 
 	@Test
 	public void deleteExistingMultiLineDraft() {
-		setupOriginalDocument("000000000\naaaa\nbbbb\n111111111\n222222222\n333333333\n", "aaaa\nbbbb\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\naaaa\nbbbb\n111111111\n222222222\n333333333\n", "aaaa\nbbbb"); //$NON-NLS-1$ //$NON-NLS-2$
 		setupNewDocument("000000000\n111111111\n222222222\n333333333\n", (String[]) null, (String[]) null); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
@@ -395,14 +398,14 @@ public class CommentExtractorTest {
 		assertEquals(0, newComments.size());
 		assertEquals(1, deletedComments.size());
 		assertEquals(0, modifiedComments.size());
-		assertEquals("aaaa\nbbbb\n", deletedComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa\nbbbb", deletedComments.get(0).getMessage()); //$NON-NLS-1$
 	}
 
 	@Test
 	public void deleteFollowedByAdditionLowerDown() {
-		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\naaaa\n111111111\n222222222\n333333333\n", "aaaa"); //$NON-NLS-1$ //$NON-NLS-2$
 		setupNewDocument("000000000\n111111111\n222222222\nbbbb\n333333333\n", (String[]) null, //$NON-NLS-1$
-				new String[] { "bbbb\n" }); //$NON-NLS-1$
+				new String[] { "bbbb" }); //$NON-NLS-1$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -413,9 +416,28 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.size());
 		assertEquals(1, deletedComments.size());
 		assertEquals(0, modifiedComments.size());
-		assertEquals("bbbb\n", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 		assertEquals(3, newComments.get(0).getLine());
-		assertEquals("aaaa\n", deletedComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals("aaaa", deletedComments.get(0).getMessage()); //$NON-NLS-1$
+	}
+
+	@Test
+	public void insertOnFirstLineWithCommentsBelow() {
+		setupOriginalDocument("000000000\naaaa\nbbbb\n111111111\n222222222\n333333333\n", "aaaa", "bbbb"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupNewDocument("000000000\ncccc\naaaa\nbbbb\n111111111\n222222222\n333333333\n", //$NON-NLS-1$
+				new String[] { "aaaa", "bbbb" }, new String[] { "cccc" }); //$NON-NLS-3$
+
+		CommentExtractor extractor = new CommentExtractor();
+		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
+
+		ArrayList<CommentInfo> newComments = extractor.getAddedComments();
+		ArrayList<CommentInfo> deletedComments = extractor.getRemovedComments();
+		ArrayList<CommentInfo> modifiedComments = extractor.getModifiedComments();
+		assertEquals(1, newComments.size());
+		assertEquals(0, deletedComments.size());
+		assertEquals(0, modifiedComments.size());
+		assertEquals("cccc", newComments.get(0).getMessage()); //$NON-NLS-1$
+		assertEquals(1, newComments.get(0).getLine());
 	}
 
 	private void setupOriginalDocument(String documentText, String... comments) {

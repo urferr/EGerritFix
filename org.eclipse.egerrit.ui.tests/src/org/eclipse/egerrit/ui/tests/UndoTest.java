@@ -32,7 +32,7 @@ public class UndoTest extends EditionLimiterTests {
 		String initialDocument = "000000000\n111111111\n222222222\n333333333"; //$NON-NLS-1$
 		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "<UNDO>"), expectations(0, null) });
 		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "a", "<UNDO>"),
-				expectations(1, "a", new Position(10, 2)) });
+				expectations(1, "a", 1, new Position(10, 1)) });
 		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "aaa", "<UNDO>"), expectations(0, null) });
 		return things;
 	}

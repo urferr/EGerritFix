@@ -153,7 +153,7 @@ public class CompareItemFactory {
 	//The insertion of comments starts from by last comment and proceed toward the first one. This allows for the insertion line to always be correct.
 	private void mergeCommentsInText(String text, ArrayList<CommentInfo> comments) {
 		//Create a document and an associated annotation model to keep track of the original text w/ comments
-		AnnotationModel originalComments = new AnnotationModel();
+		AnnotationModel originalComments = new CommentAnnotationManager();
 		Document originalDocument = new Document(text);
 		originalDocument.set(text);
 		originalComments.connect(originalDocument);
@@ -161,7 +161,7 @@ public class CompareItemFactory {
 		newCompareItem.setOriginalDocument(originalDocument);
 
 		//Editable comments are a copy of the original comments but associated with the document that is presented in the UI
-		AnnotationModel editableComments = new AnnotationModel();
+		AnnotationModel editableComments = new CommentAnnotationManager();
 		newCompareItem.set(text);
 		editableComments.connect(newCompareItem);
 		newCompareItem.setEditableComments(editableComments);
@@ -189,16 +189,22 @@ public class CompareItemFactory {
 					insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
 							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
 				}
-				String formattedComment = CommentPrettyPrinter.printComment(commentInfo, lineDelimiter != null,
-						originalDocument.getDefaultLineDelimiter());
+				int commentTextIndex = insertionPosition;
+				String formattedComment = CommentPrettyPrinter.printComment(commentInfo);
+				int commentTextLength = formattedComment.length();
+				if (lineDelimiter == null) {
+					formattedComment = originalDocument.getDefaultLineDelimiter() + formattedComment;
+					commentTextIndex += originalDocument.getDefaultLineDelimiter().length();
+				}
+				formattedComment += originalDocument.getDefaultLineDelimiter();
 				originalDocument.replace(insertionPosition, 0, formattedComment);
 				newCompareItem.replace(insertionPosition, 0, formattedComment);
 				originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
-						new Position(insertionPosition, formattedComment.length()));
+						new Position(commentTextIndex, commentTextLength));
 				editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
-						new Position(insertionPosition, formattedComment.length()));
+						new Position(commentTextIndex, commentTextLength));
 			} catch (BadLocationException e) {
-				logger.debug("Exception merging text and comments.",e); //$NON-NLS-1$
+				logger.debug("Exception merging text and comments.", e); //$NON-NLS-1$
 			}
 		}
 	}

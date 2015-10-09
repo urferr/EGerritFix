@@ -55,6 +55,8 @@ public class CommentExtractor {
 
 	private ArrayList<CommentInfo> removedComments = new ArrayList<>();
 
+	private IDocument originalDocument;
+
 	/**
 	 * Given two documents, compute the comments that have been added
 	 *
@@ -72,6 +74,7 @@ public class CommentExtractor {
 		this.originalCommentsModel = originalCommentsModel;
 		this.originalComments = toAnnotationList(originalCommentsModel, documentWithOriginalComments);
 		this.newDocument = documentWithNewComments;
+		this.originalDocument = documentWithOriginalComments;
 		this.newCommentsModel = commentsModelWithNewComments;
 		this.newComments = toAnnotationList(commentsModelWithNewComments, documentWithNewComments);
 
@@ -100,7 +103,8 @@ public class CommentExtractor {
 		numberOfRemovedLines += numberOfLines(newComment);
 
 		//The comment did not change. It probably just moved because of previous insertions so there is nothing to do
-		if (match.getComment().getMessage().equals(extractCommentMessage(newComment))) {
+		if (extractCommentMessage(originalDocument, originalCommentsModel, match)
+				.equals(extractCommentMessage(newDocument, newCommentsModel, newComment))) {
 			return;
 		}
 		modifiedComments.add(modifyComment(newComment));
@@ -121,7 +125,7 @@ public class CommentExtractor {
 	//This deal with the case where the user typed in more content in an existing comment
 	//In this case, we need to remove the "pretty printing" that has been done such as the author name, and the date
 	private String extractModifiedComment(GerritCommentAnnotation newComment) {
-		String comment = extractCommentMessage(newComment);
+		String comment = extractCommentMessage(newDocument, newCommentsModel, newComment);
 		String name = CommentPrettyPrinter.printName(newComment.getComment());
 		String date = CommentPrettyPrinter.printDate(newComment.getComment());
 		if (comment.startsWith(name)) {
@@ -129,15 +133,20 @@ public class CommentExtractor {
 		}
 		int dateIdx = comment.lastIndexOf(date);
 		if (dateIdx > 0) {
-			comment = comment.substring(0, dateIdx);
+			if (dateIdx + date.length() + 1 == comment.length()) {
+				comment = comment.substring(0, dateIdx);
+			} else {
+				String end = comment.substring(dateIdx + date.length());
+				comment = comment.substring(0, dateIdx) + end;
+			}
 		}
 		return comment.trim();
 	}
 
 	private void createNewComment(GerritCommentAnnotation newComment) {
 		int lineCommented = getLineNumber(newComment) - numberOfRemovedLines;
-		String comment = extractCommentMessage(newComment);
-		numberOfRemovedLines += newDocument.computeNumberOfLines(comment);
+		String comment = extractCommentMessage(newDocument, newCommentsModel, newComment);
+		numberOfRemovedLines += newDocument.computeNumberOfLines(comment) + 1;
 		if (lineCommented > 0) {
 			GerritCommentAnnotation commentRepliedTo = isAnswerToExistingComment(lineCommented);
 			if (commentRepliedTo == null) {
@@ -164,7 +173,7 @@ public class CommentExtractor {
 
 	//Given an annotation, return the number of lines it represents
 	private int numberOfLines(GerritCommentAnnotation comment) {
-		return newDocument.computeNumberOfLines(extractCommentMessage(comment));
+		return newDocument.computeNumberOfLines(extractCommentMessage(newDocument, newCommentsModel, comment)) + 1;
 	}
 
 	//convert an annotation model to a list
@@ -249,7 +258,7 @@ public class CommentExtractor {
 		if (comment == null) {
 			return false;
 		}
-		return comment.getComment().getMessage().equalsIgnoreCase("done\n");
+		return comment.getComment().getMessage().equalsIgnoreCase("done");
 	}
 
 	//Create a comment as a reply of a given one
@@ -291,10 +300,11 @@ public class CommentExtractor {
 		return match;
 	}
 
-	private String extractCommentMessage(GerritCommentAnnotation commentAnnotation) {
-		Position position = newCommentsModel.getPosition(commentAnnotation);
+	private static String extractCommentMessage(IDocument document, AnnotationModel annotationModel,
+			GerritCommentAnnotation commentAnnotation) {
+		Position position = annotationModel.getPosition(commentAnnotation);
 		try {
-			return newDocument.get(position.offset, position.length);
+			return document.get(position.offset, position.length);
 		} catch (BadLocationException e) {
 			//Can't happen. The comment model have been constructed properly
 		}

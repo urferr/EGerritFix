@@ -19,6 +19,7 @@ class InputData {
 
 	String[] comments;
 
+	//Represent the input to the tests
 	static public InputData inputData(String document, String[] comments, int line, int offset, String... keys) {
 		InputData data = new InputData();
 		data.document = document;

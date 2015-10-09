@@ -23,6 +23,7 @@ class Expectations {
 
 	String contentAtLine;
 
+	//Create an expectation object with the criteria passed in arguments
 	static public Expectations expectations(int numberOfComments, Position... positions) {
 		Expectations expectations = new Expectations();
 		expectations.numberOfComments = numberOfComments;
@@ -30,16 +31,20 @@ class Expectations {
 		return expectations;
 	}
 
+	//Create an expectation object to express the fact that no modifications are expected
 	static public Expectations noModifications() {
 		Expectations expectations = new Expectations();
 		expectations.noModifications = true;
 		return expectations;
 	}
 
-	static public Expectations expectations(int line, String contentAtLine, Position... positions) {
+	//Create an expectation object with the criteria passed in arguments
+	static public Expectations expectations(int line, String contentAtLine, int numberOfComments,
+			Position... positions) {
 		Expectations expectations = new Expectations();
 		expectations.contentAtLine = contentAtLine;
 		expectations.line = line;
+		expectations.numberOfComments = numberOfComments;
 		expectations.positions = positions;
 		return expectations;
 	}

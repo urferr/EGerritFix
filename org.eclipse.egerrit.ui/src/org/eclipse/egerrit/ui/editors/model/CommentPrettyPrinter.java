@@ -20,9 +20,8 @@ import org.eclipse.egerrit.core.utils.Utils;
 public class CommentPrettyPrinter {
 	final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
-	static String printComment(CommentInfo comment, boolean endsWithDelimiter, String defaultDelimiter) {
-		return (endsWithDelimiter ? "" : defaultDelimiter) + CommentPrettyPrinter.printName(comment) + '\t' //$NON-NLS-1$
-				+ comment.getMessage() + '\t' + printDate(comment) + defaultDelimiter;
+	static String printComment(CommentInfo comment) {
+		return CommentPrettyPrinter.printName(comment) + '\t' + comment.getMessage() + '\t' + printDate(comment);
 	}
 
 	static String printDate(CommentInfo comment) {
