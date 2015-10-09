@@ -30,16 +30,16 @@ import org.eclipse.swt.SWT;
 public enum ReviewTableDefinition {
 	// 			Name 			                               Width 	Resize Moveable
 	STARRED("", 20, false, true, SWT.LEFT), //$NON-NLS-1$
-	ID(Messages.ReviewTableDefinition_id, 80, false, true, SWT.LEFT), //
+	ID(Messages.ReviewTableDefinition_id, 60, true, true, SWT.LEFT), //
 	SUBJECT(Messages.ReviewTableDefinition_subject, 180, true, true, SWT.LEFT), //
 	STATUS(Messages.ReviewTableDefinition_status, 100, true, true, SWT.LEFT), //
 	OWNER(Messages.ReviewTableDefinition_owner, 140, true, true, SWT.LEFT), //
 	PROJECT(Messages.ReviewTableDefinition_project, 170, true, true, SWT.LEFT), //
 	BRANCH(Messages.ReviewTableDefinition_branch, 90, true, true, SWT.LEFT), //
 	UPDATED(Messages.ReviewTableDefinition_updated, 140, true, true, SWT.LEFT), //
-	CR(Messages.ReviewTableDefinition_codeReview, 28, false, true, SWT.LEFT), //
+	CR(Messages.ReviewTableDefinition_codeReview, 33, true, true, SWT.LEFT), //
 //	   IC(		"IC", 			28, 	false, 	true, SWT.LEFT),
-	VERIFY(Messages.ReviewTableDefinition_verify, 28, false, true, SWT.LEFT);
+	VERIFY(Messages.ReviewTableDefinition_verify, 28, true, true, SWT.LEFT);
 
 	private final String fHeader;
 

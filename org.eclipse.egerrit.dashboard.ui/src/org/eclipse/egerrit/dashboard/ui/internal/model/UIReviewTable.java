@@ -14,9 +14,7 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
-import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
@@ -25,11 +23,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -66,21 +61,9 @@ public class UIReviewTable {
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent) {
-		// Create a form to maintain the search data
-		Composite viewerForm = UIUtils.createsGeneralComposite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
-
-		GridData gribDataViewer = new GridData(GridData.FILL_BOTH);
-		viewerForm.setLayoutData(gribDataViewer);
-
-		// Add a listener when the view is resized
-		GridLayout layout = new GridLayout();
-		layout.numColumns = ReviewTableDefinition.values().length;
-		layout.makeColumnsEqualWidth = false;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-
-		viewerForm.setLayout(layout);
+	public Composite createTableViewerSection(Composite aParent) {
+		Composite viewerForm = new Composite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
+		viewerForm.setLayout(new FillLayout());
 
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
@@ -95,31 +78,10 @@ public class UIReviewTable {
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
 
-		// Create the help context id for the viewer's control
-		// PlatformUI
-		// .getWorkbench()
-		// .getHelpSystem()
-		// .setHelp(fViewer.getControl(),
-		// "org.eclipse.egerrit.dashboard.ui.viewer");
-
-		//
-		fViewer.getTable().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				logger.debug("Table selection: " + e.toString()); //$NON-NLS-1$
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
 		// Add a Key event and mouse down listener
 		fViewer.getTable().addListener(SWT.MouseDown, mouseButtonListener);
 
-		return fViewer;
-
+		return viewerForm;
 	}
 
 	/**
@@ -139,17 +101,12 @@ public class UIReviewTable {
 			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
 					+ tableInfo[index].getMoveable());
-			TableViewerColumn col = createTableViewerColumn(tableInfo[index]);
-
-			GridData gribData = new GridData(GridData.FILL_BOTH);
-			gribData.minimumWidth = tableInfo[index].getWidth();
-			col.getColumn().getParent().setLayoutData(gribData);
+			createTableViewerColumn(tableInfo[index]);
 		}
 
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
 		table.addControlListener(new ControlListener() {
-
 			@Override
 			public void controlResized(ControlEvent e) {
 				table.setRedraw(false);
@@ -184,7 +141,6 @@ public class UIReviewTable {
 
 				table.setSize(parentSize.x - 10, tableSize.y);
 				table.setRedraw(true);
-
 			}
 
 			@Override
@@ -284,5 +240,9 @@ public class UIReviewTable {
 				}
 			}
 		}
+	}
+
+	public TableViewer getViewer() {
+		return fViewer;
 	}
 }

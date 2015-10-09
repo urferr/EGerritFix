@@ -204,7 +204,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				Boolean starred = reviewSummary.isStarred();
 				return starred.toString(); // Needed for the sorter
 			case 1:
-				return reviewSummary.getChange_id();
+				return Integer.toString(reviewSummary.get_number());
 			case 2:
 				return reviewSummary.getSubject();
 			case 3:
