@@ -13,7 +13,6 @@
 package org.eclipse.egerrit.ui.editors.model;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.compare.CompareConfiguration;
@@ -33,18 +32,17 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextPresentationListener;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextInputListener;
+import org.eclipse.jface.text.ITextViewerExtension4;
+import org.eclipse.jface.text.source.AnnotationPainter;
+import org.eclipse.jface.text.source.AnnotationPainter.HighlightingStrategy;
+import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
 import org.slf4j.Logger;
@@ -80,11 +78,6 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	private byte problemSavingChanges = -1;
 
 	private GerritDiffNode diffNode;
-
-	//This flag indicates whether the initial syntax coloring should be done.
-	//This is necessary so we don't spend our time recoloring things that have been already colored.
-	//Also because if we do recolor things, it throw things off when the user starts editing.
-	final private Boolean[] performInitialColoring = new Boolean[] { Boolean.FALSE };
 
 	/**
 	 * Create a compare input used to compare a workspace file with a remove file
@@ -171,15 +164,10 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	@Override
 	protected void fireInputChange() {
-		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the input is changed
-		try {
-			ITypedElement[] inputs = createCompareItems(new NullProgressMonitor());
-			((GerritDiffNode) getCompareResult()).setLeft(inputs[0]);
-			((GerritDiffNode) getCompareResult()).setRight(inputs[1]);
-			((GerritDiffNode) getCompareResult()).fireChange();
-		} finally {
-			performInitialColoring[0] = Boolean.FALSE;
-		}
+		ITypedElement[] inputs = createCompareItems(new NullProgressMonitor());
+		((GerritDiffNode) getCompareResult()).setLeft(inputs[0]);
+		((GerritDiffNode) getCompareResult()).setRight(inputs[1]);
+		((GerritDiffNode) getCompareResult()).fireChange();
 	}
 
 	@Override
@@ -272,33 +260,28 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 			Field sourceViewerField = MergeSourceViewer.class.getDeclaredField("fSourceViewer"); //$NON-NLS-1$
 			sourceViewerField.setAccessible(true);
 			final SourceViewer sourceViewer = (SourceViewer) sourceViewerField.get(rightSourceViewer);
-			sourceViewer.addTextPresentationListener(new ITextPresentationListener() {
+			final AnnotationPainter commentPainter = initializeCommentColoring(sourceViewer);
+
+			sourceViewer.addTextInputListener(new ITextInputListener() {
 				@Override
-				//Perform the coloration of comments
-				public void applyTextPresentation(TextPresentation textPresentation) {
-					if (textPresentation == null) {
-						return;
+				public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+					if (sourceViewer instanceof ITextViewerExtension4) {
+						((ITextViewerExtension4) sourceViewer).addTextPresentationListener(commentPainter);
 					}
-					if (performInitialColoring[0]) {
-						PatchSetCompareItem coloredDocument = (PatchSetCompareItem) sourceViewer.getDocument();
-						AnnotationModel commentsToColor = coloredDocument.getEditableComments();
-						Iterator<?> commentsIterator = commentsToColor.getAnnotationIterator();
-						while (commentsIterator.hasNext()) {
-							Annotation comment = (Annotation) commentsIterator.next();
-							Position commentPosition = commentsToColor.getPosition(comment);
-							textPresentation.replaceStyleRange(
-									createCommentStyle(commentPosition.getOffset(), commentPosition.getLength()));
+					sourceViewer.addPainter(commentPainter);
+				}
+
+				@Override
+				public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
+					if (oldInput != null) {
+						sourceViewer.removePainter(commentPainter);
+						if (sourceViewer instanceof ITextViewerExtension4) {
+							((ITextViewerExtension4) sourceViewer).addTextPresentationListener(commentPainter);
 						}
-					} else {
-						IRegion newRegion = textPresentation.getCoverage();
-						if (newRegion == null) {
-							return;
-						}
-						textPresentation
-								.replaceStyleRange(createCommentStyle(newRegion.getOffset(), newRegion.getLength()));
 					}
 				}
 			});
+
 			EditionLimiter editionLimiter = new EditionLimiter(sourceViewer);
 			sourceViewer.getTextWidget().addVerifyListener(editionLimiter);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException t) {
@@ -306,19 +289,22 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		}
 	}
 
-	private StyleRange createCommentStyle(int start, int length) {
-		return new StyleRange(start, length, Display.getCurrent().getSystemColor(SWT.COLOR_BLACK),
+	private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
+		AnnotationPainter commentPainter = new AnnotationPainter(viewer, null) {
+			@Override
+			//Override to force the annotation model to be the one that contains the comments
+			protected IAnnotationModel findAnnotationModel(ISourceViewer sourceViewer) {
+				return ((PatchSetCompareItem) sourceViewer.getDocument()).getEditableComments();
+			}
+		};
+		Object strategyID = new Object();
+		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();
+		commentPainter.addTextStyleStrategy(strategyID, paintingStrategy);
+		commentPainter.addAnnotationType(GerritCommentAnnotation.TYPE, strategyID);
+		commentPainter.setAnnotationTypeColor(GerritCommentAnnotation.TYPE,
 				Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
-	}
-
-	@Override
-	public Control createContents(Composite parent) {
-		performInitialColoring[0] = Boolean.TRUE; //We enable coloring when the editor is first created
-		try {
-			return super.createContents(parent);
-		} finally {
-			performInitialColoring[0] = Boolean.FALSE;
-		}
+		commentPainter.addHighlightAnnotationType(strategyID);
+		return commentPainter;
 	}
 
 	@Override

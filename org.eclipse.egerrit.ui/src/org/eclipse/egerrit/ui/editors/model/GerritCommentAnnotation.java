@@ -18,6 +18,8 @@ import org.eclipse.jface.text.source.Annotation;
  * Implements an annotation that help us connect the annotation in a document with a gerrit comment
  */
 public class GerritCommentAnnotation extends Annotation {
+	public static final String TYPE = GerritCommentAnnotation.class.getName();
+
 	private CommentInfo comment;
 
 	private String formattedComment;
@@ -53,5 +55,10 @@ public class GerritCommentAnnotation extends Annotation {
 			return "No comment info"; //$NON-NLS-1$
 		}
 		return comment.toString();
+	}
+
+	@Override
+	public String getType() {
+		return TYPE;
 	}
 }
