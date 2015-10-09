@@ -31,8 +31,7 @@ import org.eclipse.egerrit.core.rest.CherryPickInput;
 import com.google.gson.Gson;
 
 /**
- * The command: GET /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
- * result ChangeInfo
+ * The command: GET /changes/{change-id}/revisions/{revision-id}/cherrypick As result ChangeInfo
  * <p>
  *
  * @since 1.0

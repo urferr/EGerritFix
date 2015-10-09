@@ -31,7 +31,7 @@ import org.eclipse.egerrit.core.rest.SubmitInput;
 import com.google.gson.Gson;
 
 /**
- * The command: POST /changes/link:#change-id[\{change-id\}]/submit/
+ * The command: POST /changes/{change-id}/submit/
  * <p>
  *
  * @since 1.0
@@ -43,8 +43,6 @@ public class SubmitCommand extends PostCommand<ChangeInfo> {
 	// ------------------------------------------------------------------------
 
 	private String fChange_id;
-
-	private String fRevision;
 
 	private SubmitInput fSubmitInput;
 
@@ -68,7 +66,7 @@ public class SubmitCommand extends PostCommand<ChangeInfo> {
 
 	/**
 	 * gets fChange_id
-	 * 
+	 *
 	 * @return fChange_id
 	 */
 	public String getId() {
@@ -77,7 +75,7 @@ public class SubmitCommand extends PostCommand<ChangeInfo> {
 
 	/**
 	 * sets fChange_id
-	 * 
+	 *
 	 * @param change_id
 	 */
 	public void setId(String change_id) {
@@ -86,7 +84,7 @@ public class SubmitCommand extends PostCommand<ChangeInfo> {
 
 	/**
 	 * sets SubmitInput
-	 * 
+	 *
 	 * @param submitInput
 	 */
 	public void setSubmitInput(SubmitInput submitInput) {

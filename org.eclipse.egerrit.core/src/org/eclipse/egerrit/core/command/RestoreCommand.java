@@ -31,7 +31,7 @@ import org.eclipse.egerrit.core.rest.RestoreInput;
 import com.google.gson.Gson;
 
 /**
- * The command: POST /changes/link:#change-id[\{change-id\}]/restore
+ * The command: POST /changes/{change-id}/restore
  * <p>
  *
  * @since 1.0
@@ -43,8 +43,6 @@ public class RestoreCommand extends PostCommand<ChangeInfo> {
 	// ------------------------------------------------------------------------
 
 	private String fChange_id;
-
-	private String fRevision;
 
 	private RestoreInput fRestoreInput = new RestoreInput();
 

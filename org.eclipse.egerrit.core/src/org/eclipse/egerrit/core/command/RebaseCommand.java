@@ -31,7 +31,7 @@ import org.eclipse.egerrit.core.rest.RebaseInput;
 import com.google.gson.Gson;
 
 /**
- * The command: POST /changes/link:#change-id[\{change-id\}]/rebase
+ * The command: POST /changes/{change-id}/rebase
  * <p>
  *
  * @since 1.0

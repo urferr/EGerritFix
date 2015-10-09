@@ -31,7 +31,7 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import com.google.gson.Gson;
 
 /**
- * The command: POST /changes/link:#change-id[\{change-id\}]/abandon/
+ * The command: POST /changes/{change-id}/abandon/
  * <p>
  *
  * @since 1.0
@@ -43,8 +43,6 @@ public class AbandonCommand extends PostCommand<ChangeInfo> {
 	// ------------------------------------------------------------------------
 
 	private String fChange_id;
-
-	private String fRevision;
 
 	private AbandonInput fAbandonInput = new AbandonInput();
 

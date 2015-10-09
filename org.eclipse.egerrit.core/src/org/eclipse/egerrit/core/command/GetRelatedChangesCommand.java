@@ -25,9 +25,8 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Get Content</a>
- * command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String" ></a> base64 encoded.
+ * /changes/{change-id}/revisions/{revision-id}/related
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-related-changes
  * <p>
  *
  * @since 1.0
