@@ -470,18 +470,20 @@ public class SummaryTabView {
 			} catch (MalformedURLException e) {
 				EGerritCorePlugin.logError(e.getMessage());
 			}
-			litr = Arrays.asList(sameTopicChangeInfo).listIterator();
-			while (litr.hasNext()) {
-				ChangeInfo cur = litr.next();
+			if (sameTopicChangeInfo != null) {
+				litr = Arrays.asList(sameTopicChangeInfo).listIterator();
+				while (litr.hasNext()) {
+					ChangeInfo cur = litr.next();
 				if (fChangeInfo.getId().compareTo(cur.getId()) != 0) { // dont' want the current one
-					ChangeInfo item = new ChangeInfo();
-					item.setChange_id(cur.getChange_id());
-					item.setSubject(cur.getSubject());
-					fSameTopicChangeInfo.add(item);
+						ChangeInfo item = new ChangeInfo();
+						item.setChange_id(cur.getChange_id());
+						item.setSubject(cur.getSubject());
+						fSameTopicChangeInfo.add(item);
+					}
 				}
+				writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
+				tableSameTopicViewer.setInput(writeInfoList);
 			}
-			writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
-			tableSameTopicViewer.setInput(writeInfoList);
 		}
 	}
 

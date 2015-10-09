@@ -70,6 +70,8 @@ public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
 	 * @return
 	 */
 	public QueryChangesCommand addTopic(String topic) {
+		topic = "\"" + topic + "\""; //required when topic contains spaces and ellipsis
+
 		addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
 		return this;
 	}
