@@ -508,8 +508,8 @@ public class SummaryTabView {
 			litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
 			while (litr.hasNext()) {
 				ChangeInfo cur = litr.next();
-				//Here we compare with the change id because it is precise enough
-				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0) { // dont' want the current one
+				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0
+						&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
 					ChangeInfo item = new ChangeInfo();
 					item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
 					item.setSubject(cur.getSubject());
@@ -990,8 +990,6 @@ public class SummaryTabView {
 		//Queries to fill the Review tab data
 		setSameTopic(gerritClient, changeInfo);
 
-		setConflictsWith(gerritClient, changeInfo);
-
 		setMergeable(gerritClient, changeInfo);
 
 		setReviewers(gerritClient);
@@ -999,6 +997,15 @@ public class SummaryTabView {
 
 		//Need the current Revision set before setting the RelatedChanges
 		setRelatedChanges(gerritClient);
+
+//		if (changeInfo.getStatus().compareTo("MERGED") != 0 && fMergeableInfo.isMergeable()
+//				&& fChangeInfo.getCodeReviewedTally() >= 0 && fChangeInfo.isMergeable()) {
+//			setConflictsWith(gerritClient, changeInfo);
+//		}
+
+//		if (fMergeableInfo.isMergeable() && fChangeInfo.isMergeable()) {
+		setConflictsWith(gerritClient, changeInfo);
+//		}
 
 	}
 

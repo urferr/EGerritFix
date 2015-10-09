@@ -825,6 +825,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setStatus(res.getStatus());
 			fChangeInfo.setActions(res.getActions());
 			fChangeInfo.setTopic(res.getTopic());
+			fChangeInfo.setMergeable(res.isMergeable());
 
 			//Set the file tab view
 			if (filesTab != null) {
