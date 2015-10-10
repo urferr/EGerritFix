@@ -1077,17 +1077,19 @@ public class GerritTableView extends ViewPart {
 	private void setRepositoryVersionLabel(String aRepo, String aVersion) {
 		if (!fRepositoryVersionResulLabel.isDisposed()) {
 			// e.g. "Eclipse.org Reviews - Gerrit 2.6.1"
-			fRepositoryVersionResulLabel.setText(NLS.bind(Messages.GerritTableView_gerritLabel, aRepo, aVersion));
+			fRepositoryVersionResulLabel.setText(aRepo);
 			if (gerritClient == null) {
 				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(INVALID_IMAGE));
 				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipInvalid);
 			} else if (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous()) {
 				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(ANONYMOUS_IMAGE));
-				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous);
+				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous + '\n'
+						+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
 			} else {
 				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(CHECKED_IMAGE));
 				fRepositoryVersionResulLabel.setToolTipText(NLS.bind(Messages.GerritTableView_tooltipLoggedOnAs,
-						gerritClient.getRepository().getServerInfo().getUserName()));
+						gerritClient.getRepository().getServerInfo().getUserName()) + '\n'
+						+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
 			}
 			fRepositoryVersionResulLabel.layout(true);
 		}

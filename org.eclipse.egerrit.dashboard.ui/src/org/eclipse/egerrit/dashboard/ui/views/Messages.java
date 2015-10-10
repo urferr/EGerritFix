@@ -26,7 +26,7 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_defineRepository;
 
-	public static String GerritTableView_gerritLabel;
+	public static String GerritTableView_gerritVersion;
 
 	public static String GerritTableView_missingGitConnector;
 
