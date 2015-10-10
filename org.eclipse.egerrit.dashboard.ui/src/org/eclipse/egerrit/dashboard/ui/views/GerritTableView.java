@@ -45,12 +45,10 @@ import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
-import org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSiteHandler;
 import org.eclipse.egerrit.dashboard.ui.internal.model.ReviewTableData;
 import org.eclipse.egerrit.dashboard.ui.internal.model.UIReviewTable;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.SelectionDialog;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
-import org.eclipse.egerrit.dashboard.ui.preferences.GerritServerDialog;
 import org.eclipse.egerrit.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
@@ -99,7 +97,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.ViewPart;
@@ -640,8 +637,18 @@ public class GerritTableView extends ViewPart {
 		//We should have a Gerrit Server here, otherwise, the user need to define one
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
-			new AddGerritSiteHandler().execute(null);
-			return;
+			final AddOneServerDialog addOneServer = new AddOneServerDialog();
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					addOneServer.promptForNewServer(true);
+				}
+			});
+			defaultServerInfo = addOneServer.getServer();
+			if (defaultServerInfo == null) {
+				logger.debug("No new server entered by the user. ");
+				return;
+			}
 		}
 
 		//At this point we have a server, execute the query if we can
@@ -1155,26 +1162,18 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private void addOrChangeServerThenLoad() {
-		List<GerritServerInformation> listServers;
-		GerritServerDialog dialogue = new GerritServerDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
-				defaultServerInfo);
-		int ret = dialogue.open();
-		if (ret == IDialogConstants.OK_ID) {
-			// get current list
-			listServers = ServersStore.getAllServers();
-			// remove the old one
-			listServers.remove(defaultServerInfo);
-			// add new one
-			listServers.add(dialogue.getServerInfo());
-			// save it
-			ServersStore.saveServers(listServers);
+		final AddOneServerDialog addOneServer = new AddOneServerDialog();
+		addOneServer.promptToModifyServer(defaultServerInfo, true);
+		defaultServerInfo = addOneServer.getServer();
+		if (defaultServerInfo == null) {
+			logger.debug("No new server entered by the user.");
+			return;
+		}
 
-			fServerUtil.saveLastGerritServer(dialogue.getServerInfo());
-			if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
-				processCommands("status:open");
-			} else {
-				processCommands(fSearchRequestText.getText());
-			}
+		if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
+			processCommands("status:open");
+		} else {
+			processCommands(fSearchRequestText.getText());
 		}
 	}
 }
