@@ -65,7 +65,6 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		if (document == null) {
 			initialize();
 		}
-		logger.debug("offset: " + start + " length: " + length + " >" + text + "<");
 		printAnnotationsCount();
 		try {
 			//Text is deleted, check where this is happening
@@ -86,17 +85,12 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 							return true;
 						}
 					} catch (BadLocationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//Can't happen
 					}
 					//Bail if the impacted area is not completely included in the comment
 					if (!completelyIncludes(commentPosition, impactedArea)) {
 						return false; //we don't want the proposed modification to be performed
 					}
-//					//if we are about to remove the last character from the comment, remove the annotation
-//					if (commentPosition.getLength() == 0 || commentPosition.getLength() <= length) {
-//						annotations.removeAnnotation(comment);
-//					}
 				}
 
 				return true;
@@ -110,18 +104,9 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				int insertionPosition = start;
 				String commentText = text.trim();
 				if (!fromDoc) {
-//					if (!text.endsWith(textWidget.getLineDelimiter())) {
-//						newText = text + textWidget.getLineDelimiter();
-//					}
-
 					//Move insertion point to the next line if we are not inserting at the beginning of the line
 					if (!isBeginningOfLine(insertionPosition)) {
 						insertionPosition = getNextLine(start);
-//						if (text.equals("\n")) {
-//							annotations.addAnnotation(new GerritCommentAnnotation(null, ""),
-//									new Position(insertionPosition, 0));
-//							return true;
-//						}
 						//If there is no next line, we first insert one, then compute it's position and proceed as usual
 						if (insertionPosition == -1) {
 							try {
@@ -142,7 +127,6 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				}
 				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
 						new Position(insertionPosition, commentText.length()));
-//				}
 				return false;
 			}
 
@@ -200,26 +184,8 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 	private void printAnnotationsCount() {
 		try {
 			logger.debug("Annotation count " + document.getPositions(IDocument.DEFAULT_CATEGORY).length); //$NON-NLS-1$
-			printDetailedAnnotations();
 		} catch (BadPositionCategoryException e) {
 			//ignore
-		}
-	}
-
-	private void printDetailedAnnotations() {
-		Position[] positions;
-		try {
-			positions = document.getPositions(IDocument.DEFAULT_CATEGORY);
-			for (Position position : positions) {
-				System.out.print(position + " " + position.isDeleted() + " -> >"
-						+ document.get(position.getOffset(), position.getLength()) + "<\n");
-			}
-		} catch (BadPositionCategoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
