@@ -27,7 +27,10 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The command: PUT /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
@@ -47,7 +50,7 @@ public class CreateDraftCommand extends PutCommand<CommentInfo> {
 
 	private String fRevision;
 
-	private CommentInfo fCommentInfo = new CommentInfo();
+	private CommentInfo fCommentInfo;
 
 	// ------------------------------------------------------------------------
 	// Constructor
@@ -144,15 +147,33 @@ public class CreateDraftCommand extends PutCommand<CommentInfo> {
 
 		StringEntity input = null;
 		try {
-			input = new StringEntity(new Gson().toJson(fCommentInfo));
+			//We use this special exclusion strategy to make sure the "line" attribute is not included when the comment is on line 0 (aka file comment)
+			//If the attribute is included then the server returns an error (at least on 2.11.2)
+			Gson gson = new GsonBuilder().addSerializationExclusionStrategy(new ExclusionStrategy() {
+				@Override
+				public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+					if (fieldAttributes.getName().equals("line") && fCommentInfo.getLine() == 0) { //$NON-NLS-1$
+						return true;
+					}
+					return false;
+				}
+
+				@Override
+				public boolean shouldSkipClass(Class<?> aClass) {
+					return false;
+				}
+			}).create();
+			input = new StringEntity(gson.toJson(fCommentInfo));
 		} catch (UnsupportedEncodingException e) {
 			EGerritCorePlugin.logError("URI error encoding CommentInfo", e); //$NON-NLS-1$
 		}
 
-		if (input != null)
+		if (input != null) {
 			input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
+		}
 		httpPut.setEntity(input);
 
 		return httpPut;
 	}
+
 }
