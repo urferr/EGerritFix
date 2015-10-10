@@ -72,12 +72,15 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -402,7 +405,48 @@ public class GerritTableView extends ViewPart {
 			}
 		});
 
+		adaptSearchSectionLayout(searchComposite);
 		return searchComposite;
+	}
+
+	private void adaptSearchSectionLayout(final Composite composite) {
+		composite.addControlListener(new ControlListener() {
+			boolean searchOnly = false;
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				Rectangle size = composite.getClientArea();
+				if (size.width > 300 && searchOnly) {
+					//Show all widgets
+					((GridData) fRepositoryVersionResulLabel.getLayoutData()).exclude = false;
+					((GridData) fReviewsTotalLabel.getLayoutData()).exclude = false;
+					((GridData) fSearchRequestBtn.getLayoutData()).exclude = false;
+					fRepositoryVersionResulLabel.setVisible(true);
+					fReviewsTotalLabel.setVisible(true);
+					fSearchRequestBtn.setVisible(true);
+					searchOnly = false;
+					composite.layout(true);
+					return;
+				}
+				if (size.width < 300 && !searchOnly) {
+					//Hide all widgets except the search drop down
+					((GridData) fRepositoryVersionResulLabel.getLayoutData()).exclude = true;
+					((GridData) fReviewsTotalLabel.getLayoutData()).exclude = true;
+					((GridData) fSearchRequestBtn.getLayoutData()).exclude = true;
+					fRepositoryVersionResulLabel.setVisible(false);
+					fReviewsTotalLabel.setVisible(false);
+					fSearchRequestBtn.setVisible(false);
+					searchOnly = true;
+					composite.layout(true);
+					return;
+				}
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+
+			}
+		});
 	}
 
 	/**
@@ -1131,8 +1175,6 @@ public class GerritTableView extends ViewPart {
 			} else {
 				processCommands(fSearchRequestText.getText());
 			}
-
 		}
 	}
-
 }
