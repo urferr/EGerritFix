@@ -74,12 +74,14 @@ import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.egit.ui.internal.fetch.FetchGerritChangePage;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
@@ -1005,10 +1007,56 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					String psSelected = filesTab.getSelectedPatchSet();
 
 					if ((psSelected != null) && !psSelected.isEmpty()) {
-						FetchGerritChangeWizard fetchOp = new FetchGerritChangeWizard(localRepo, psSelected);
-						fetchOp.addPages();
-						WizardDialog wizardDialog = new WizardDialog(parent.getShell(), fetchOp);
+						class FetchGerritChangeWizardNoNext extends FetchGerritChangeWizard {
+
+							public FetchGerritChangeWizardNoNext(Repository repository, String refName) {
+								super(repository, refName);
+							}
+
+							@Override
+							public boolean canFinish() {
+								return true;
+							}
+
+						}
+						FetchGerritChangeWizardNoNext fetchOp = new FetchGerritChangeWizardNoNext(localRepo,
+								psSelected);
+
+						class FetchGerritChangePageNoNext extends FetchGerritChangePage {
+
+							public FetchGerritChangePageNoNext(Repository repository, String refName) {
+								super(repository, refName);
+							}
+
+							@Override
+							public boolean canFlipToNextPage() {
+								return false;
+							}
+
+						}
+						FetchGerritChangePageNoNext page = new FetchGerritChangePageNoNext(localRepo, psSelected);
+						fetchOp.addPage(page);
+
+						fetchOp.setForcePreviousAndNextButtons(false);
+
+						class WizardDialogNoNext extends WizardDialog {
+
+							public WizardDialogNoNext(Shell parentShell, IWizard newWizard) {
+								super(parentShell, newWizard);
+
+							}
+
+							@Override
+							protected void finishPressed() {
+								nextPressed();
+								super.finishPressed();
+							}
+
+						}
+						WizardDialogNoNext wizardDialog = new WizardDialogNoNext(parent.getShell(), fetchOp);
+
 						wizardDialog.create();
+
 						wizardDialog.open();
 					} else {
 						Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No patchset selected");
