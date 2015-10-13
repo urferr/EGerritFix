@@ -60,9 +60,20 @@ public class UIUtils {
 	 *            reason
 	 */
 	public static void showErrorDialog(String aMsg, String aReason) {
-		logger.warn(aMsg + "\t reason: " + aReason);
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, aMsg,
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				dialog.open();
+			}
+		});
+	}
+
+	public static void showNoServerMessage() {
+		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, null,
+				new Status(IStatus.INFO, GerritUi.PLUGIN_ID,
+						org.eclipse.egerrit.dashboard.ui.views.Messages.GerritTableView_defineRepository),
+				IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();

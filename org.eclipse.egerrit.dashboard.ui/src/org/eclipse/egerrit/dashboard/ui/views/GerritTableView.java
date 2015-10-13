@@ -595,8 +595,7 @@ public class GerritTableView extends ViewPart {
 
 		//We should have a Gerrit Server here, otherwise, the user need to define one
 		if (defaultServerInfo == null) {
-			UIUtils.showErrorDialog(Messages.GerritTableView_defineRepository,
-					Messages.GerritTableView_noGerritRepository);
+			UIUtils.showNoServerMessage();
 			new AddGerritSiteHandler().execute(null);
 			return;
 		}
@@ -695,8 +694,7 @@ public class GerritTableView extends ViewPart {
 	 */
 	public void setStarred(String taskID, boolean starred, IProgressMonitor progressMonitor) throws CoreException {
 		if (defaultServerInfo == null) {
-			UIUtils.showErrorDialog(Messages.GerritTableView_defineRepository,
-					Messages.GerritTableView_noGerritRepository);
+			UIUtils.showNoServerMessage();
 		}
 	}
 

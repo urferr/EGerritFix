@@ -30,8 +30,6 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_missingGitConnector;
 
-	public static String GerritTableView_noGerritRepository;
-
 	public static String GerritTableView_popupMenu;
 
 	public static String GerritTableView_refreshTable;
