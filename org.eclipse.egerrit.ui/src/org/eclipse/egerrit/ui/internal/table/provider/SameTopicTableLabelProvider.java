@@ -53,7 +53,10 @@ public class SameTopicTableLabelProvider extends BaseTableLabelProvider {
 			ChangeInfo changeInfo = (ChangeInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				return changeInfo.getChange_id(); //Here we keep the change_id because it is shown to the user
+				if (changeInfo.get_number() == -1) {
+					return EMPTY_STRING;
+				}
+				return Integer.toString(changeInfo.get_number());
 			case 1:
 				return changeInfo.getSubject();
 			case 2:

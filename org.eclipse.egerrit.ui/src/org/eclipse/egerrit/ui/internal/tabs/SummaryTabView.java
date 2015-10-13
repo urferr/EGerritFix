@@ -474,9 +474,10 @@ public class SummaryTabView {
 				litr = Arrays.asList(sameTopicChangeInfo).listIterator();
 				while (litr.hasNext()) {
 					ChangeInfo cur = litr.next();
-				if (fChangeInfo.getId().compareTo(cur.getId()) != 0) { // dont' want the current one
+					if (fChangeInfo.getId().compareTo(cur.getId()) != 0) { // dont' want the current one
 						ChangeInfo item = new ChangeInfo();
 						item.setChange_id(cur.getChange_id());
+						item.setNumber(cur.get_number());
 						item.setSubject(cur.getSubject());
 						fSameTopicChangeInfo.add(item);
 					}
@@ -512,6 +513,7 @@ public class SummaryTabView {
 						&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
 					ChangeInfo item = new ChangeInfo();
 					item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
+					item.setNumber(cur.get_number());
 					item.setSubject(cur.getSubject());
 					fConflictsWithChangeInfo.add(item);
 				}
