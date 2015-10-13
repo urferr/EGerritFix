@@ -132,8 +132,6 @@ public class GerritTableView extends ViewPart {
 
 	private static final int SEARCH_WIDTH = 350;
 
-	private static final int REPO_WIDTH = 350;
-
 	//Numbers of menu items in the Search pulldown menu; SEARCH_SIZE_MENU_LIST + 1 will be the max
 	private static final int SEARCH_SIZE_MENU_LIST = 4;
 
@@ -456,7 +454,6 @@ public class GerritTableView extends ViewPart {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				List<GerritServerInformation> listServers = new ArrayList<GerritServerInformation>();
 				if ((gerritClient == null)
 						|| (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous())) {
 					addOrChangeServerThenLoad();
@@ -590,7 +587,7 @@ public class GerritTableView extends ViewPart {
 					} catch (PartInitException e) {
 						logger.warn(e.getMessage());
 					}
-					logger.warn("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart);
+					logger.debug("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart);
 
 				}
 			}
@@ -628,7 +625,7 @@ public class GerritTableView extends ViewPart {
 	 *            aQuery
 	 */
 	public void processCommands(String aQuery) {
-		logger.debug("Process command :   " + aQuery);
+		logger.debug("Process command :   " + aQuery); //$NON-NLS-1$
 		defaultServerInfo = null;
 		aQuery = handleHttpInQuery(aQuery);
 
@@ -987,11 +984,7 @@ public class GerritTableView extends ViewPart {
 		}
 
 		// Format the query id
-		String queryId = rtv.getTitle() + " - " + queryType; //$NON-NLS-1$
-
-		String queryString = null;
-
-		queryString = queryType;
+		String queryString = queryType;
 
 		URI uri = null;
 		try {
