@@ -136,13 +136,13 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		ITypedElement leftInput = null;
 		ITypedElement rightInput = null;
 
-		if (left != null) {
-			leftInput = createFileElement(getLeft());
-		} else if (leftInfo != null) {
+		if (leftInfo != null) {
 			leftInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, leftInfo, pm);
 		} else if (projectId != null) {
 			leftInput = new CompareItemFactory(gerrit).createSimpleCompareItem(projectId, getBaseCommitId(),
 					rightInfo.getold_path(), pm);
+		} else {
+			leftInput = createFileElement(getLeft());
 		}
 
 		rightInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, rightInfo, pm);

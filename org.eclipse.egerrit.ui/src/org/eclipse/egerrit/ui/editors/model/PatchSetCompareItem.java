@@ -12,10 +12,15 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IModificationDate;
+import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
@@ -36,7 +41,8 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public class PatchSetCompareItem extends Document implements ITypedElement, IModificationDate, IEditableContent {
+public class PatchSetCompareItem extends Document
+		implements ITypedElement, IModificationDate, IEditableContent, IStreamContentAccessor {
 	private Logger logger = LoggerFactory.getLogger(PatchSetCompareItem.class);
 
 	private String fileName;
@@ -182,5 +188,10 @@ public class PatchSetCompareItem extends Document implements ITypedElement, IMod
 	 */
 	public AnnotationModel getEditableComments() {
 		return editableComments;
+	}
+
+	@Override
+	public InputStream getContents() throws CoreException {
+		return new ByteArrayInputStream(get().getBytes());
 	}
 }
