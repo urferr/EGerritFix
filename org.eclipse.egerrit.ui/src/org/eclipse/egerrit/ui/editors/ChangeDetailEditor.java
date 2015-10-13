@@ -358,9 +358,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					restoreCmd.setRestoreInput(restoreInput);
 
-					ChangeInfo restoreCmdResult = null;
 					try {
-						restoreCmdResult = restoreCmd.call();
+						restoreCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
 					} catch (ClientProtocolException e3) {
@@ -395,9 +394,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					rebaseCmd.setRebaseInput(rebaseInput);
 
-					ChangeInfo rebaseCmdResult = null;
 					try {
-						rebaseCmdResult = rebaseCmd.call();
+						rebaseCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
 					} catch (ClientProtocolException e3) {
@@ -428,7 +426,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					BranchInfo[] listBranchesCmdResult = listBranches();
 
-					List<String> listBranchesRef = new ArrayList();
+					List<String> listBranchesRef = new ArrayList<String>();
 					Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
 					while (it.hasNext()) {
 						listBranchesRef.add(it.next().getRef());
@@ -511,7 +509,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 								// Code-Review +2
 								ReviewInput reviewInput = new ReviewInput();
 								reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-								Map obj = new HashMap();
+								Map<String, String> obj = new HashMap<String, String>();
 								obj.put(CODE_REVIEW, "2");
 
 								reviewInput.setLabels(obj);
@@ -718,7 +716,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fSubmit.setEnabled(true);
 
 		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-		int maxVPermitted = findMaxPermitted(VERIFIED);
 		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
 			fSubmit.setEnabled(false);
 			return;
@@ -775,27 +772,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 
 		}
-	}
-
-	private boolean saveButtonEnablement() {
-
-		if (fGerritClient.getRepository()
-				.getCredentials()
-				.getUsername()
-				.compareTo(fChangeInfo.getOwner().getUsername()) == 0
-				|| fGerritClient.getRepository()
-						.getCredentials()
-						.getUsername()
-						.compareTo(fChangeInfo.getOwner().getEmail()) == 0) {
-			return true;
-		}
-
-		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/************************************************************* */
@@ -974,33 +950,14 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return bindingContext;
 	}
 
-	private void addFillLabel(Group group, int count) {
-		//Add label for positioning
-		for (int i = 0; i < count; i++) {
-//			Label lab1 = new Label(group, SWT.NONE);
-			Label lab1 = new Label(group, SWT.BORDER);
-			GridData grid = new GridData();
-			grid.horizontalAlignment = SWT.LEFT;
-			grid.horizontalSpan = 1;
-			grid.verticalAlignment = SWT.LEFT;
-			grid.grabExcessHorizontalSpace = true;
-			grid.grabExcessVerticalSpace = false;
-			lab1.setLayoutData(grid);
-			lab1.setText("Label " + (i + 1));
-		}
-
-	}
-
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// ignore
-
 	}
 
 	@Override
 	public void doSaveAs() {
 		// ignore
-
 	}
 
 	@Override
@@ -1062,25 +1019,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
 				}
 			}
-		};
-	}
-
-	/**
-	 * @return a Selection listener to any button not ready yet until implementation
-	 */
-	private SelectionAdapter notAvailableListener() {
-		return new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				if (event.getSource() instanceof Button) {
-					Button btn = (Button) event.getSource();
-					UIUtils.notInplementedDialog(btn.getText());
-				} else {
-					MenuItem mnuItem = (MenuItem) event.getSource();
-					UIUtils.notInplementedDialog(mnuItem.getText());
-				}
-			}
-
 		};
 	}
 
