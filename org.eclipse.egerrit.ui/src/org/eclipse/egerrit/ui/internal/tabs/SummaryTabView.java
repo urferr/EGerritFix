@@ -29,6 +29,7 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
@@ -64,6 +65,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvide
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
@@ -87,11 +89,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -151,6 +155,8 @@ public class SummaryTabView {
 	private ChangeInfo fChangeInfo;
 
 	private GerritClient fGerritClient;
+
+	private Label lblStrategy;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -241,9 +247,10 @@ public class SummaryTabView {
 		btnSave.setEnabled(isEditingAllowed());
 
 		//Strategy line
-		Label lblStrategy = new Label(composite, SWT.NONE);
+		lblStrategy = new Label(composite, SWT.NONE);
 		lblStrategy.setText("Strategy:");
-		lblStrategy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		GridData lblStrategyGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		lblStrategy.setLayoutData(lblStrategyGridData);
 
 		genStrategyData = new Label(composite, SWT.NONE);
 		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
@@ -254,6 +261,16 @@ public class SummaryTabView {
 		genMessageData.setLayoutData(gd_genMessageData);
 		genMessageData.setForeground(RED);
 
+		if ("MERGED".equals(fChangeInfo.getStatus()) //$NON-NLS-1$
+				|| "ABANDONED".equals(fChangeInfo.getStatus())) { //$NON-NLS-1$
+			lblStrategy.setVisible(false);
+			lblStrategyGridData.exclude = true;
+			genStrategyData.setVisible(false);
+			gd_genStrategyData.exclude = true;
+			genMessageData.setVisible(false);
+			gd_genMessageData.exclude = true;
+
+		}
 		//Updated line
 		Label lblUpdated = new Label(composite, SWT.NONE);
 		lblUpdated.setText("Updated:");
@@ -602,7 +619,7 @@ public class SummaryTabView {
 							&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
 						ChangeInfo item = new ChangeInfo();
 						item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
-					item.setNumber(cur.get_number());
+						item.setNumber(cur.get_number());
 						item.setSubject(cur.getSubject());
 						fConflictsWithChangeInfo.add(item);
 					}
@@ -951,7 +968,7 @@ public class SummaryTabView {
 	/*                                                             */
 	/************************************************************* */
 	protected DataBindingContext sumGenDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
+		final DataBindingContext bindingContext = new DataBindingContext();
 
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
@@ -990,6 +1007,33 @@ public class SummaryTabView {
 				.observe(fMergeableInfo);
 		bindingContext.bindValue(observeTextGenMessageDataObserveWidget, mergeableFMergeableInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
+
+		//Hide the "Strategy: ...." line if the review has been merged.
+		UpdateValueStrategy hideWidgetsStrategy = new UpdateValueStrategy() {
+			@Override
+			protected IStatus doSet(IObservableValue observableValue, Object value) {
+				Boolean visible = null;
+				if ("MERGED".equals(((ChangeInfo) value).getStatus()) //$NON-NLS-1$
+						|| "ABANDONED".equals(((ChangeInfo) value).getStatus())) { //$NON-NLS-1$
+					visible = Boolean.FALSE;
+				}
+				IStatus status = super.doSet(observableValue, visible);
+				Widget w = ((ISWTObservable) observableValue).getWidget();
+				if (!w.isDisposed() && w instanceof Control) {
+					((GridData) ((Control) w).getLayoutData()).exclude = !((Control) w).isVisible();
+					((Control) w).getParent().pack(true);
+				}
+				return status;
+			}
+		};
+		IObservableValue observeChangeInfoStatus = BeanProperties.value("status") //$NON-NLS-1$
+				.observe(fChangeInfo);
+		IObservableValue observeGenDataVisibility = WidgetProperties.visible().observe(genMessageData);
+		bindingContext.bindValue(observeGenDataVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
+		IObservableValue observeGenStrategyDataVisibility = WidgetProperties.visible().observe(genStrategyData);
+		bindingContext.bindValue(observeGenStrategyDataVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
+		IObservableValue observeStrategyLabelVisibility = WidgetProperties.visible().observe(lblStrategy);
+		bindingContext.bindValue(observeStrategyLabelVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
 
 		return bindingContext;
 	}
