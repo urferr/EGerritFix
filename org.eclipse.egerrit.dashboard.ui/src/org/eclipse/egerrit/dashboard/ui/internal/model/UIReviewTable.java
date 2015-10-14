@@ -139,7 +139,6 @@ public class UIReviewTable {
 				//Project column
 				table.getColumn(5).setWidth(newProjectWidth);
 
-				table.setSize(parentSize.x - 10, tableSize.y);
 				table.setRedraw(true);
 			}
 
