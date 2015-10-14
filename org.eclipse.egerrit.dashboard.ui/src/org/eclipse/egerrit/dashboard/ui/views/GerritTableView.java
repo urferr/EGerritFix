@@ -38,7 +38,6 @@ import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.egerrit.core.command.ChangeOption;
-import org.eclipse.egerrit.core.command.ChangeState;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -1087,34 +1086,11 @@ public class GerritTableView extends ViewPart {
 
 	private void setQuery(String query, QueryChangesCommand command) throws EGerritException {
 		if (!query.isEmpty()) {
-			if (query.compareTo(GerritQuery.MY_CHANGES) == 0) {
-				command.addOwner("self"); //$NON-NLS-1$
-			} else if (query.compareTo(GerritQuery.MY_WATCHED_CHANGES) == 0) {
-				// is:open is:watched
-				command.addState(ChangeState.IS_OPEN);
-				command.addState(ChangeState.IS_WATCHED);
-			} else if (query.compareTo(GerritQuery.QUERY_MY_STARRED_CHANGES) == 0) {
-				// is:starred
-				command.addState(ChangeState.IS_STARRED);
-			} else if (query.compareTo(GerritQuery.QUERY_MY_DRAFTS_CHANGES) == 0) {
-				// is:draft
-				command.addState(ChangeState.IS_DRAFT);
-			} else if (query.compareTo(GerritQuery.QUERY_MY_DRAFTS_COMMENTS_CHANGES) == 0) {
-				// has:draft
-				command.addState(ChangeState.HAS_DRAFT);
-			} else if (query.compareTo(GerritQuery.ALL_OPEN_CHANGES) == 0) {
-				// status:open (or is:open)
-				command.addState(ChangeState.IS_OPEN);
-			} else if (query.compareTo(GerritQuery.QUERY_ALL_MERGED_CHANGES) == 0) {
-				// status:merged
-				command.addState(ChangeState.IS_MERGED);
-			} else if (query.compareTo(GerritQuery.QUERY_ALL_ABANDONED_CHANGES) == 0) {
-				// status:abandoned
-				command.addState(ChangeState.IS_ABANDONED);
-			} else {
-				//Custom Queries
-				command.addFreeText(query);
+			if (gerritClient.getRepository().getServerInfo().isAnonymous() && (query.contains(":self") //$NON-NLS-1$
+					|| query.contains(":owner") || query.contains("is:reviewer") || query.contains("is:starred"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				throw new EGerritException("The query \"" + query + "\" can not be executed by anonymous users.");
 			}
+			command.addFreeText(query);
 		}
 	}
 
