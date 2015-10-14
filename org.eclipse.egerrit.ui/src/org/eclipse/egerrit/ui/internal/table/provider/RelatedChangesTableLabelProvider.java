@@ -53,7 +53,7 @@ public class RelatedChangesTableLabelProvider extends BaseTableLabelProvider {
 			RelatedChangeAndCommitInfo relatedChangesAndCommitInfo = (RelatedChangeAndCommitInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				return relatedChangesAndCommitInfo.getChange_id();
+				return relatedChangesAndCommitInfo.get_change_number();
 			case 1:
 				return relatedChangesAndCommitInfo.getCommit().getSubject();
 			case 2:
