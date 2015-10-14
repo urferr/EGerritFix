@@ -498,30 +498,32 @@ public class SummaryTabView {
 		ChangeInfo[] conflictsWithChangeInfo = null;
 		fConflictsWithChangeInfo.clear();
 
-		try {
-			conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(), //Here we keep the change_id because the conflicts call does not accept the full id
-					new NullProgressMonitor());
-		} catch (MalformedURLException e) {
-			EGerritCorePlugin.logError(e.getMessage());
-		}
+		if (!("MERGED".equals(element.getStatus())) && !("ABANDONED".equals(element.getStatus()))) {
+			try {
+				conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(), //Here we keep the change_id because the conflicts call does not accept the full id
+						new NullProgressMonitor());
+			} catch (MalformedURLException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			}
 
-		if (conflictsWithChangeInfo != null && conflictsWithChangeInfo.length > 0) {
-			litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
-			while (litr.hasNext()) {
-				ChangeInfo cur = litr.next();
-				if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0
-						&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
-					ChangeInfo item = new ChangeInfo();
-					item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
+			if (conflictsWithChangeInfo != null && conflictsWithChangeInfo.length > 0) {
+				litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
+				while (litr.hasNext()) {
+					ChangeInfo cur = litr.next();
+					if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0
+							&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
+						ChangeInfo item = new ChangeInfo();
+						item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
 					item.setNumber(cur.get_number());
-					item.setSubject(cur.getSubject());
-					fConflictsWithChangeInfo.add(item);
+						item.setSubject(cur.getSubject());
+						fConflictsWithChangeInfo.add(item);
+					}
 				}
 			}
-		}
 
-		writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
-		tableConflictsWithViewer.setInput(writeInfoList);
+			writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
+			tableConflictsWithViewer.setInput(writeInfoList);
+		}
 	}
 
 	/***************************************************************/
