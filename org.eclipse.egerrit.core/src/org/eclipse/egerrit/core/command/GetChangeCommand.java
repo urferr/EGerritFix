@@ -132,7 +132,7 @@ public class GetChangeCommand extends QueryCommand<ChangeInfo> {
 			// Set the query
 			String params = buildParametersList();
 			if (params.length() > 0) {
-				uriBuilder.setParameter("q", buildParametersList()); //$NON-NLS-1$
+				uriBuilder.setParameter("q", params); //$NON-NLS-1$
 			}
 
 			// Add the options

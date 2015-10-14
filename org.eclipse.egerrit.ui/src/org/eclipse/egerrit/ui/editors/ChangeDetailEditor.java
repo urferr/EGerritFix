@@ -126,7 +126,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
-	private final String TITLE = "Gerrit Server ";
+	private final static String TITLE = "Gerrit Server ";
 
 	private SummaryTabView summaryTab = null;
 
@@ -652,7 +652,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void refreshStatus() {
-		ChangeInfo changeInfo = refreshChangeInfo(fGerritClient, fChangeInfo.getId(), new NullProgressMonitor());
+		ChangeInfo changeInfo = QueryHelpers.lookupPartialChangeInfoFromChangeId(fGerritClient, fChangeInfo.getId(),
+				new NullProgressMonitor());
 
 		//Reset the whole window
 		setChangeInfo(fGerritClient, changeInfo);
@@ -777,9 +778,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/************************************************************* */
-/*                                                             */
-/* Section to SET the data structure                           */
-/*                                                             */
+	/*                                                             */
+	/* Section to SET the data structure                           */
+	/*                                                             */
 	/************************************************************* */
 
 	/**
@@ -856,9 +857,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	/***************************************************************/
-/*                                                             */
-/* Section to QUERY the data structure                         */
-/*                                                             */
+	/*                                                             */
+	/* Section to QUERY the data structure                         */
+	/*                                                             */
 	/************************************************************* */
 
 	private ChangeInfo queryMessageTab(GerritClient gerrit, String id, IProgressMonitor monitor) {
@@ -892,43 +893,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 	}
 
-	/**
-	 * @param gerritClient
-	 * @param change_id
-	 * @param monitor
-	 * @return
-	 */
-	private ChangeInfo refreshChangeInfo(GerritClient gerrit, String change_id, IProgressMonitor monitor) {
-		try {
-
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			GetChangeCommand command = null;
-			command = gerrit.getChange(fChangeInfo.getId());
-
-			command.addOption(ChangeOption.DETAILED_LABELS);
-			command.addOption(ChangeOption.CURRENT_ACTIONS);
-
-			ChangeInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-			}
-			return res;
-		} catch (UnsupportedClassVersionError e) {
-			return null;
-		} finally {
-			monitor.done();
-		}
-	}
-
 	/************************************************************* */
-/*                                                             */
-/* Section adjust the DATA binding                             */
-/*                                                             */
+	/*                                                             */
+	/* Section adjust the DATA binding                             */
+	/*                                                             */
 	/************************************************************* */
 
 	protected DataBindingContext headerSectionDataBindings() {

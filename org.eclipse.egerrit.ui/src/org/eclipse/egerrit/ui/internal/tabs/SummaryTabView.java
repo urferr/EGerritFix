@@ -49,6 +49,10 @@ import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
 import org.eclipse.egerrit.core.rest.TopicInput;
+import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
+import org.eclipse.egerrit.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
@@ -63,8 +67,11 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -84,6 +91,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 
 /**
  * This class is used in the editor to handle the Gerrit message view
@@ -332,6 +343,8 @@ public class SummaryTabView {
 		tableUISameTopic.createTableViewerSection(grpSameTopic);
 
 		tableSameTopicViewer = tableUISameTopic.getViewer();
+		tableSameTopicViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
+
 		//Set the binding for this section
 		sumSameTopicDataBindings();
 		return grpSameTopic;
@@ -346,6 +359,7 @@ public class SummaryTabView {
 		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges);
 
 		tableRelatedChangesViewer = tableUIRelatedChanges.getViewer();
+		tableRelatedChangesViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
 
 		//Set the binding for this section
 		sumRelatedChandesDataBindings();
@@ -361,10 +375,83 @@ public class SummaryTabView {
 		tableUIConflictsWith.createTableViewerSection(grpConflictsWith);
 
 		tableConflictsWithViewer = tableUIConflictsWith.getViewer();
+		tableConflictsWithViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
 
 		//Set the binding for this section
 		sumConflictWithDataBindings();
 		return grpConflictsWith;
+	}
+
+	/**
+	 * @return ISelectionChangedListener
+	 */
+	private IDoubleClickListener doubleClickSelectionChangeListener() {
+		return new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				StructuredSelection structuredSelection = (StructuredSelection) event.getSelection();
+				Object element = structuredSelection.getFirstElement();
+				String changeId = null;
+				String subject = null;
+				if (element instanceof ChangeInfo) {
+					ChangeInfo changeInfo = (ChangeInfo) element;
+					changeId = changeInfo.getChange_id();
+					if (changeId == null) {
+						subject = changeInfo.getSubject();
+					}
+				} else if (element instanceof RelatedChangeAndCommitInfo) {
+					RelatedChangeAndCommitInfo relChangeInfo = (RelatedChangeAndCommitInfo) element;
+					changeId = relChangeInfo.getChange_id();
+
+					if (changeId == null) {
+						subject = relChangeInfo.getCommit().getSubject();
+					}
+				}
+				//Open a new ChangeDetailEditor
+				createDetailEditor(changeId, subject);
+			}
+		};
+	}
+
+	/**
+	 * @param changeId
+	 *            String
+	 * @param subject
+	 *            String
+	 */
+	private void createDetailEditor(String changeId, String subject) {
+		ChangeInfo changeInfo = null;
+		if (changeId != null) {
+			changeInfo = QueryHelpers.lookupPartialChangeInfoFromChangeId(fGerritClient, changeId,
+					new NullProgressMonitor());
+		} else if (subject != null) {
+			ChangeInfo[] arrayChangeInfo = null;
+			try {
+				arrayChangeInfo = QueryHelpers.lookupPartialChangeInfoFromSubject(fGerritClient, subject,
+						new NullProgressMonitor());
+				if (arrayChangeInfo.length >= 1) {
+					changeInfo = arrayChangeInfo[0]; //Keep the first one, we should only have one anyway
+				}
+			} catch (MalformedURLException e) {
+				return;
+			}
+		}
+
+		IWorkbench workbench = EGerritUIPlugin.getDefault().getWorkbench();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		IWorkbenchPage page = null;
+		if (window != null) {
+			page = workbench.getActiveWorkbenchWindow().getActivePage();
+		}
+
+		if (page != null && changeInfo != null) {
+			try {
+				page.openEditor(new ChangeDetailEditorInput(fGerritClient, changeInfo), ChangeDetailEditor.EDITOR_ID);
+			} catch (PartInitException e) {
+				EGerritCorePlugin.logError(e.getMessage());
+			}
+		}
 	}
 
 	/************************************************************* */
@@ -1038,4 +1125,5 @@ public class SummaryTabView {
 	private boolean isEditingAllowed() {
 		return !fGerritClient.getRepository().getServerInfo().isAnonymous();
 	}
+
 }
