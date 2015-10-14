@@ -32,7 +32,7 @@ public final class GerritFactory {
 	/**
 	 * The minimal version supported
 	 */
-	private static final Version MINIMAL_VERSION = new Version(2, 8, 0);
+	private static final Version MINIMAL_VERSION = new Version(2, 9, 0);
 
 	// ------------------------------------------------------------------------
 	// The factory
@@ -84,7 +84,6 @@ public final class GerritFactory {
 		do {
 			switch (workVersion.toString()) {
 
-			case "2.8.0": //$NON-NLS-1$
 			case Gerrit_2_9.GERRIT_VERSION:
 				gerrit = new Gerrit_2_9(gerritRepository);
 				break;
