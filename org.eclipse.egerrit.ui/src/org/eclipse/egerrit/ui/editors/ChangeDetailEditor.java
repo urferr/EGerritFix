@@ -871,7 +871,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			command.addOption(ChangeOption.ALL_FILES);
 			command.addOption(ChangeOption.ALL_REVISIONS);
 			command.addOption(ChangeOption.ALL_COMMITS);
-			command.addOption(ChangeOption.DRAFT_COMMENTS);
 			command.addOption(ChangeOption.REVIEWED);
 			command.addOption(ChangeOption.MESSAGES);
 			command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
