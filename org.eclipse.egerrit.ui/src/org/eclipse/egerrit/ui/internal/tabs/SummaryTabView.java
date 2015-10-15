@@ -11,6 +11,7 @@
 
 package org.eclipse.egerrit.ui.internal.tabs;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -634,7 +635,15 @@ public class SummaryTabView {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
 			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+				if (e instanceof HttpResponseException) {
+					HttpResponseException httpException = (HttpResponseException) e;
+					if (!((httpException.getStatusCode() == HttpURLConnection.HTTP_CONFLICT)
+							&& fChangeInfo.getStatus().toUpperCase().equals("SUBMITTED"))) { //$NON-NLS-1$
+						//Display the information only if we are not submitted and not in conflict error 409
+						UIUtils.displayInformation(null, TITLE,
+								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
+					}
+				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
