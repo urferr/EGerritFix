@@ -436,11 +436,11 @@
 	      </handler>
 
 	     <!-- The following are the handlers under the "Table review list" sub-menu
-         -->
 	      <handler
 	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.adjustMyStarred">
 	      </handler>
+         -->
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
