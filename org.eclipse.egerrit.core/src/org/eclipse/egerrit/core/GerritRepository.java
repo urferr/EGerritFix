@@ -27,6 +27,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -339,7 +340,12 @@ public class GerritRepository {
 			}
 
 		} catch (ClientProtocolException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			if (e instanceof HttpResponseException) {
+				HttpResponseException httpException = (HttpResponseException) e;
+				if (httpException.getStatusCode() != 404) {
+					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+				}
+			}
 		} catch (SSLHandshakeException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 		} catch (IOException e) {

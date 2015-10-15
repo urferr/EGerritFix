@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
+import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -44,7 +45,7 @@ public class GerritServerDialog extends Dialog {
 	// ------------------------------------------------------------------------
 	private final int fWIDTH = 450;
 
-	private final int fHEIGHT = 250;
+	private final int fHEIGHT = 275;
 
 	private final String DIALOG_TITLE = "Gerrit Server Selection";
 
@@ -52,7 +53,7 @@ public class GerritServerDialog extends Dialog {
 
 	private final String fCancelTooltip = "Do not save the information";
 
-	private final String COMMENT_TOOLTIP = "Enter the http(s) URL of your gerrit server, \nand the username and password to connect to it.";
+	private final String COMMENT_TOOLTIP = "Enter the http(s) URL of your gerrit server, and the username and password to connect to it.";
 
 	private final String URI_TOOLTIP = "Enter the http(s) URL of your gerrit server.";
 
@@ -62,15 +63,7 @@ public class GerritServerDialog extends Dialog {
 
 	private final String SHORTNAME_EXAMPLE_TOOLTIP = "Ex: Eclipse or Foundation";
 
-	private final String PORT_TOOLTIP = "-1: port not defined, so the default port is understood";
-
-	private final String PATH_TOOLTIP = "Use / to append a path. ex /r";
-
-	private final String SCHEME_TOOLTIP = "http or https"; //$NON-NLS-1$
-
 	private final String INVALID_MESSAGE = "URI is NOT valid";
-
-	private final String PORT_INVALID = "Port should be a number";
 
 	private final static String TITLE = "Gerrit selection";
 
@@ -81,17 +74,9 @@ public class GerritServerDialog extends Dialog {
 	// Variables
 	// ------------------------------------------------------------------------
 
-	private Text txtScheme;
-
-	private Text txtHostId;
-
-	private Text txtPath;
-
 	private Text txtServerName;
 
 	private Text txtServerURI;
-
-	private Text txtPort;
 
 	private Text txtUserName;
 
@@ -144,113 +129,58 @@ public class GerritServerDialog extends Dialog {
 	}
 
 	private void buildDialog(Composite composite) {
-		//Grid data used by all LABEL data entry
-		GridData gridDataLBL = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-
-		//Grid data used by all text data entry
-		GridData gridDataText = new GridData(SWT.LEFT, SWT.CENTER, true, false);
-		gridDataText.horizontalAlignment = GridData.FILL;
-
 		//Header comments
-		Label labelComments = new Label(composite, SWT.NONE);
-		labelComments.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+		Label labelComments = new Label(composite, SWT.WRAP);
+		GridData labelData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
+		labelComments.setLayoutData(labelData);
 		labelComments.setText(COMMENT_TOOLTIP);
 		labelComments.setToolTipText(COMMENT_TOOLTIP);
 
 		//URI
 		Label labelServerURI = new Label(composite, SWT.NONE);
-		labelServerURI.setLayoutData(gridDataLBL);
+		labelServerURI.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		labelServerURI.setText("URI:");
 		labelServerURI.setToolTipText(URI_TOOLTIP);
 
 		txtServerURI = new Text(composite, SWT.BORDER);
-		txtServerURI.setLayoutData(gridDataText);
+		txtServerURI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtServerURI.setToolTipText(URI_EXAMPLE_TOOLTIP);
 		txtServerURI.setText(workingCopy != null ? workingCopy.getServerURI() : ""); //$NON-NLS-1$
 		txtServerURI.addFocusListener(serverURIFocusListener());
 
 		//Server Name
 		Label labelServerName = new Label(composite, SWT.NONE);
-		labelServerName.setLayoutData(gridDataLBL);
+		labelServerName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		labelServerName.setText("Shortname:");
 		labelServerName.setToolTipText(SHORTNAME_EXAMPLE_TOOLTIP);
 
 		txtServerName = new Text(composite, SWT.BORDER);
-		txtServerName.setLayoutData(gridDataText);
+		txtServerName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtServerName.setToolTipText(SHORTNAME_TOOLTIP);
 		txtServerName.setText(workingCopy != null ? workingCopy.getName() : ""); //$NON-NLS-1$
 		txtServerName.addModifyListener(serverNameListener());
 
 		Label separatorServerInfoUserInfo = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		GridData gridDataSep = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
-		gridDataSep.horizontalAlignment = SWT.FILL;
-		separatorServerInfoUserInfo.setLayoutData(gridDataSep);
+		separatorServerInfoUserInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 		Label labelUser = new Label(composite, SWT.NONE);
-		labelUser.setLayoutData(gridDataLBL);
+		labelUser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		labelUser.setText("User:");
 
 		txtUserName = new Text(composite, SWT.BORDER);
-		txtUserName.setLayoutData(gridDataText);
+		txtUserName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtUserName.setText(workingCopy != null ? workingCopy.getUserName() : ""); //$NON-NLS-1$
 		txtUserName.addModifyListener(userListener());
 
 		Label labelPassword = new Label(composite, SWT.NONE);
-		labelPassword.setLayoutData(gridDataLBL);
+		labelPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		labelPassword.setText("Password:");
 
 		txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
-		txtPassword.setLayoutData(gridDataText);
+		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtPassword.setText(workingCopy == null ? "" : (workingCopy.isPasswordProvided() ? "********" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		txtPassword.addModifyListener(passwdListener());
 
-		Label separatorUserInfoServerDetails = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		GridData gridDataSep2 = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
-		gridDataSep2.horizontalAlignment = SWT.FILL;
-		separatorUserInfoServerDetails.setLayoutData(gridDataSep2);
-
-		//Scheme
-		Label labelScheme = new Label(composite, SWT.NONE);
-		labelScheme.setLayoutData(gridDataLBL);
-		labelScheme.setText("Scheme:");
-		labelScheme.setToolTipText(SCHEME_TOOLTIP);
-
-		txtScheme = new Text(composite, SWT.BORDER);
-		txtScheme.setLayoutData(gridDataText);
-		txtScheme.setText(workingCopy != null ? workingCopy.getScheme() : ""); //$NON-NLS-1$
-		txtScheme.addModifyListener(serverSchemeListener());
-
-		//Host ID
-		Label labelHost = new Label(composite, SWT.NONE);
-		labelHost.setLayoutData(gridDataLBL);
-		labelHost.setText("Host Id:");
-
-		txtHostId = new Text(composite, SWT.BORDER);
-		txtHostId.setLayoutData(gridDataText);
-		txtHostId.setText(workingCopy != null ? workingCopy.getHostId() : ""); //$NON-NLS-1$
-		txtHostId.addModifyListener(serverIdListener());
-
-		//Server Port
-		Label labelPort = new Label(composite, SWT.NONE);
-		labelPort.setLayoutData(gridDataLBL);
-		labelPort.setText("Port:");
-		labelPort.setToolTipText(PORT_TOOLTIP);
-
-		txtPort = new Text(composite, SWT.BORDER);
-		txtPort.setLayoutData(gridDataText);
-		txtPort.setText(workingCopy != null ? Integer.toString(workingCopy.getPort()) : ""); //$NON-NLS-1$
-		txtPort.addModifyListener(serverPortListener());
-
-		//Server Path
-		Label labelPath = new Label(composite, SWT.NONE);
-		labelPath.setLayoutData(gridDataLBL);
-		labelPath.setText("Server Path:");
-		labelPath.setToolTipText(PATH_TOOLTIP);
-
-		txtPath = new Text(composite, SWT.BORDER);
-		txtPath.setLayoutData(gridDataText);
-		txtPath.setText(workingCopy != null ? workingCopy.getPath() : ""); //$NON-NLS-1$
-		txtPath.addModifyListener(serverPathListener());
 	}
 
 	private void isServerInfoReady() {
@@ -261,64 +191,6 @@ public class GerritServerDialog extends Dialog {
 				Utils.displayInformation(shell, DIALOG_TITLE, e1.getLocalizedMessage());
 			}
 		}
-	}
-
-	//Listener for each field
-	private ModifyListener serverSchemeListener() {
-		return new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setScheme(((Text) e.widget).getText());
-				txtServerURI.setText(workingCopy.getServerURI());
-			}
-
-		};
-	}
-
-	private ModifyListener serverIdListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setHostId(((Text) e.widget).getText());
-				txtServerURI.setText(workingCopy.getServerURI());
-			}
-		};
-	}
-
-	private ModifyListener serverPortListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				String st = (((Text) e.widget).getText()).trim();
-				if (!st.isEmpty()) {
-					if ((st.startsWith("-") && st.length() > 1) || !st.startsWith("-")) { //$NON-NLS-1$ //$NON-NLS-2$
-						try {
-							workingCopy.setPort(Integer.parseInt(st));
-							txtServerURI.setText(workingCopy.getServerURI());
-						} catch (NumberFormatException e2) {
-							Utils.displayInformation(shell, DIALOG_TITLE, e2.getLocalizedMessage());
-						}
-					} else if (!st.startsWith("-")) { //$NON-NLS-1$
-						Utils.displayInformation(shell, DIALOG_TITLE, PORT_INVALID);
-					}
-				}
-			}
-		};
-	}
-
-	private ModifyListener serverPathListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setPath(((Text) e.widget).getText());
-				txtServerURI.setText(workingCopy.getServerURI());
-			}
-		};
 	}
 
 	private ModifyListener serverNameListener() {
@@ -382,11 +254,7 @@ public class GerritServerDialog extends Dialog {
 				if (uri != null) {
 					workingCopy.setSeverInfo(uri);
 					//Update the fields with the computed data
-					txtScheme.setText(workingCopy.getScheme());
-					txtHostId.setText(workingCopy.getHostId());
-					txtPath.setText(workingCopy.getPath());
 					txtServerName.setText(workingCopy.getName());
-					txtPort.setText(Integer.toString(workingCopy.getPort()));
 					txtUserName.setText(workingCopy.getUserName());
 				}
 			}
@@ -440,23 +308,27 @@ public class GerritServerDialog extends Dialog {
 
 	private boolean validConnection() {
 		// Initialize
-		GerritRepository repo = new GerritRepository(workingCopy.getScheme(), workingCopy.getHostId(),
-				workingCopy.getPort(), workingCopy.getPath());
-		repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), workingCopy.getPassword()));
-		// Run test connection
-		boolean b = false;
-		if (!repo.getHostname().isEmpty()) {
-			b = repo.connect();
-			if (!b) {
-				//Test self signed automatically if needed
-				boolean bo = true;
-				workingCopy.setSelfSigned(bo);
-				repo.acceptSelfSignedCerts(bo);
+		GerritRepository repo;
+		try {
+			repo = new GerritRepository(workingCopy.getServerURI());
+			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), workingCopy.getPassword()));
+			// Run test connection
+			boolean b = false;
+			if (!repo.getHostname().isEmpty()) {
 				b = repo.connect();
-			}
+				if (!b) {
+					//Test self signed automatically if needed
+					boolean bo = true;
+					workingCopy.setSelfSigned(bo);
+					repo.acceptSelfSignedCerts(bo);
+					b = repo.connect();
+				}
 
+			}
+			return b;
+		} catch (EGerritException e) {
+			return false;
 		}
-		return b;
 	}
 
 	private Boolean validateURI() throws URISyntaxException {
