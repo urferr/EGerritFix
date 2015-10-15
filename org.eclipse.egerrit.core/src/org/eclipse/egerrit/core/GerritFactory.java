@@ -32,7 +32,7 @@ public final class GerritFactory {
 	/**
 	 * The minimal version supported
 	 */
-	private static final Version MINIMAL_VERSION = new Version(2, 9, 0);
+	public static final Version MINIMAL_VERSION = new Version(2, 9, 0);
 
 	// ------------------------------------------------------------------------
 	// The factory

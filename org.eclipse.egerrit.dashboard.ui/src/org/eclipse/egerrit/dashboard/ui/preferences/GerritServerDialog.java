@@ -15,6 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.egerrit.core.GerritCredentials;
+import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -295,7 +296,10 @@ public class GerritServerDialog extends Dialog {
 				}
 			} catch (URISyntaxException e) {
 				Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
+			} catch (EGerritException e) {
+				Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
 			}
+
 		}
 
 		// Cancel Button selected
@@ -306,14 +310,15 @@ public class GerritServerDialog extends Dialog {
 		}
 	}
 
-	private boolean validConnection() {
+	private boolean validConnection() throws EGerritException {
 		// Initialize
 		GerritRepository repo;
+		boolean b = false;
 		try {
 			repo = new GerritRepository(workingCopy.getServerURI());
 			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), workingCopy.getPassword()));
 			// Run test connection
-			boolean b = false;
+
 			if (!repo.getHostname().isEmpty()) {
 				b = repo.connect();
 				if (!b) {
@@ -325,10 +330,15 @@ public class GerritServerDialog extends Dialog {
 				}
 
 			}
-			return b;
+
 		} catch (EGerritException e) {
 			return false;
 		}
+		if (repo.getVersion().compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
+					+ " which is not supported by EGerrit.");
+		}
+		return b;
 	}
 
 	private Boolean validateURI() throws URISyntaxException {
