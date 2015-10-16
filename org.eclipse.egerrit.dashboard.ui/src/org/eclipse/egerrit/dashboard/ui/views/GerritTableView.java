@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
+import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.ServersStore;
@@ -627,10 +628,10 @@ public class GerritTableView extends ViewPart {
 		logger.debug("Process command :   " + aQuery); //$NON-NLS-1$
 		defaultServerInfo = null;
 		aQuery = handleHttpInQuery(aQuery);
-
 		initializeDefaultServer();
 
 		//We should have a Gerrit Server here, otherwise, the user need to define one
+
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
 			final AddOneServerDialog addOneServer = new AddOneServerDialog();
@@ -651,6 +652,27 @@ public class GerritTableView extends ViewPart {
 		if (aQuery != null && !aQuery.equals("")) { //$NON-NLS-1$
 			updateTable(defaultServerInfo, aQuery);
 		}
+		String SCHEME = defaultServerInfo.getScheme();
+		String HOST = defaultServerInfo.getHostId();
+		int PORT = defaultServerInfo.getPort();
+		String PATH = defaultServerInfo.getPath();
+		String USER = defaultServerInfo.getUserName();
+		String PASSWORD = defaultServerInfo.getPassword();
+		GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
+		// Initialize
+		GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
+		gerritRepository.setCredentials(creds);
+		gerritRepository.setServerInfo(defaultServerInfo);
+		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
+		gerritRepository.connect();
+		Version version = gerritRepository.getVersion();
+		if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+			UIUtils.showErrorDialog("Unsupported Gerrit server version",
+					"Server " + gerritRepository.getPath() + " runs version " + version.toString()
+							+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION
+							+ " supported by EGerrit.");
+		}
+
 	}
 
 	private void initializeDefaultServer() {
@@ -1138,7 +1160,6 @@ public class GerritTableView extends ViewPart {
 			logger.debug("No new server entered by the user.");
 			return;
 		}
-
 		if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
 			processCommands("status:open");
 		} else {

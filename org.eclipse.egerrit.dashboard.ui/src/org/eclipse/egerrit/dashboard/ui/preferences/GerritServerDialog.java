@@ -336,7 +336,7 @@ public class GerritServerDialog extends Dialog {
 		}
 		if (repo.getVersion().compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
-					+ " which is not supported by EGerrit.");
+					+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION + " supported by EGerrit.");
 		}
 		return b;
 	}
