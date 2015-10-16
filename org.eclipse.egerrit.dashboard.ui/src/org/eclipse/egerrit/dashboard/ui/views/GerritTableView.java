@@ -1145,10 +1145,11 @@ public class GerritTableView extends ViewPart {
 
 	private GerritServerInformation askUserToSelectRepo(List<GerritServerInformation> servers) {
 		GerritServerInformation selection = null;
-		SelectionDialog taskSelection = new SelectionDialog(fViewer.getTable().getShell(), servers);
+		SelectionDialog taskSelection = new SelectionDialog(null, servers);
 		if (taskSelection.open() == Window.OK) {
 			selection = taskSelection.getSelection();
 		}
+
 		return selection;
 	}
 
