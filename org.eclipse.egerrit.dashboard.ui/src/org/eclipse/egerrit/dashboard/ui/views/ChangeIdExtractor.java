@@ -34,7 +34,7 @@ public class ChangeIdExtractor {
 	/**
 	 * Create a changeIdExtractor using the specified server address as input Invoking this will cause the server and
 	 * change id to be extracted.
-	 * 
+	 *
 	 * @param serverAddress
 	 */
 	public ChangeIdExtractor(String serverAddress) {
@@ -53,6 +53,13 @@ public class ChangeIdExtractor {
 		Matcher matcher = pattern.matcher(serverAddress);
 		if (matcher.matches()) {
 			changeId = matcher.group(1);
+		} else { //Handle the second format found when Hudson put information in message
+			if (serverAddress.endsWith("/")) {
+				//Remove the "/" at the end if it exists
+				serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
+			}
+			int lastSlashIndex = serverAddress.lastIndexOf('/') + 1;
+			changeId = serverAddress.substring(lastSlashIndex);
 		}
 	}
 
@@ -90,7 +97,16 @@ public class ChangeIdExtractor {
 		int sharpSign = serverAddress.indexOf('#');
 		if (sharpSign != -1) {
 			serverAddress = serverAddress.substring(0, sharpSign);
+		} else {
+			//Handle the second format found when Hudson put information in message
+			if (serverAddress.endsWith("/")) {
+				//Remove the "/" at the end if it exists
+				serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
+			}
+			int lastSlashIndex = serverAddress.lastIndexOf('/') + 1;
+			serverAddress = serverAddress.substring(0, lastSlashIndex);
 		}
+
 		try {
 			server = new GerritServerInformation(serverAddress, serverAddress);
 			return;
