@@ -258,9 +258,21 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Composite buttonSection(final Composite parent) {
-		final int NUMBER_OF_BUTTONS = 7;
+		final int NUMBER_OF_BUTTONS = 8;
 		final Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout(NUMBER_OF_BUTTONS, true));
+
+		Button refresh = new Button(c, SWT.PUSH);
+		refresh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		refresh.setText("Refresh");
+		refresh.setToolTipText("Reload this change from the server.");
+		refresh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				refreshStatus();
+			}
+		});
 
 		fSubmit = new Button(c, SWT.PUSH);
 		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
