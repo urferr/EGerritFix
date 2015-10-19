@@ -315,8 +315,17 @@ public class GerritServerDialog extends Dialog {
 		GerritRepository repo;
 		boolean b = false;
 		try {
+			String password = workingCopy.getPassword();
+			if (workingCopy.isPasswordProvided()) {
+				if (workingCopy.isPasswordChanged()) {
+					password = workingCopy.getPassword();
+				} else {
+					password = original.getPassword();
+					workingCopy.setPassword(password);
+				}
+			}
 			repo = new GerritRepository(workingCopy.getServerURI());
-			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), workingCopy.getPassword()));
+			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), password));
 			// Run test connection
 
 			if (!repo.getHostname().isEmpty()) {

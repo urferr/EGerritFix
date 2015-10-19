@@ -305,6 +305,10 @@ public class GerritServerInformation {
 		return fPasswordProvided;
 	}
 
+	public boolean isPasswordChanged() {
+		return fPasswordChanged;
+	}
+
 	/**
 	 * Returns a boolean indicating if a user is provided for this connection
 	 */

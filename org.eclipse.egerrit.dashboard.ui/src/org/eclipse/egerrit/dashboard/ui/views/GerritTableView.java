@@ -675,7 +675,9 @@ public class GerritTableView extends ViewPart {
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
 		gerritRepository.connect();
 		Version version = gerritRepository.getVersion();
-		if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+		if (version == null) {
+			UIUtils.showErrorDialog("Invalid Gerrit server ", "Server " + defaultServerInfo.getServerURI());
+		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 			UIUtils.showErrorDialog("Unsupported Gerrit server version",
 					"Server " + gerritRepository.getPath() + " runs version " + version.toString()
 							+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION
