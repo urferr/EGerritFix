@@ -14,6 +14,11 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.text.SimpleDateFormat;
 
 import org.apache.http.client.ClientProtocolException;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -42,6 +47,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.services.IServiceLocator;
 
 /**
  * This class is used in the editor to handle the Gerrit message view
@@ -214,6 +222,7 @@ public class MessageTabView {
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
 					setfMessageBuffer(msgTextData.getText());
+					invokeRefreshCommand();
 
 				}
 			});
@@ -289,4 +298,28 @@ public class MessageTabView {
 	public void setfMessageBuffer(String fMessageBuffer) {
 		this.fMessageBuffer = fMessageBuffer;
 	}
+
+	public void invokeRefreshCommand() {
+		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
+		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+		// or a site from within a editor or view:
+		// IServiceLocator serviceLocator = getSite();
+
+		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+
+		try {
+			// Lookup commmand with its ID
+			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
+
+			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
+			command.executeWithChecks(new ExecutionEvent());
+
+		} catch (NotDefinedException | NotEnabledException | NotHandledException
+				| org.eclipse.core.commands.ExecutionException e) {
+
+			EGerritCorePlugin.logError(e.getMessage());
+
+		}
+	}
+
 }
