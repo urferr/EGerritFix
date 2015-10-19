@@ -21,7 +21,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -84,24 +83,6 @@ public class UIUtils {
 				MessageDialog.openInformation(shell, title, message);
 			}
 		});
-	}
-
-	/**
-	 * Creates view preference frame and return the child composite.
-	 *
-	 * @param aParent
-	 *            the parent composite.
-	 * @return the child composite.
-	 */
-	public static Composite createsGeneralComposite(Composite aParent, int style) {
-		Composite child = new Composite(aParent, style);
-		FormLayout layout = new FormLayout();
-		layout.marginWidth = 10;
-		layout.marginHeight = 0;
-		// child.setSize(WIDTH, HEIGHT);
-		child.setLayout(layout);
-		// child.minHeight = 100;
-		return child;
 	}
 
 	/**
