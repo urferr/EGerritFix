@@ -75,20 +75,24 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -177,33 +181,74 @@ public class SummaryTabView {
 		createContols(tabFolder);
 	}
 
-	private void createContols(TabFolder tabFolder) {
+	private void createContols(final TabFolder tabFolder) {
+		final int HEIGHT_FIRST_ROW = UIUtils.computeFontSize(tabFolder).y * 8;
+		final int HEIGHT_LISTS = 150;
+		final int SCROLL_AREA_HEIGHT = HEIGHT_FIRST_ROW + (HEIGHT_LISTS * 2);
+
 		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
 
 		TabItem tabSummary = new TabItem(tabFolder, SWT.NONE);
 		tabSummary.setText("Summary");
 
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-		tabSummary.setControl(composite);
-		composite.setLayout(new GridLayout(6, true));
+		final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
+		scrolledComposite.setExpandHorizontal(false);
+		scrolledComposite.setExpandVertical(true);
+		scrolledComposite.setMinHeight(SCROLL_AREA_HEIGHT);
+		scrolledComposite.setLayout(new FillLayout());
+		tabSummary.setControl(scrolledComposite);
+
+		final Composite composite = new Composite(scrolledComposite, SWT.NONE);
+		composite.setLayout(new GridLayout(6, false));
 
 		Composite general = summaryGeneral(composite);
-		general.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+		GridData generalGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
+		generalGridData.heightHint = HEIGHT_FIRST_ROW;
+		general.setLayoutData(generalGridData);
 
 		Composite reviewers = summaryReviewers(composite);
-		reviewers.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		GridData reviewersGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+		reviewersGridData.heightHint = HEIGHT_FIRST_ROW;
+		reviewers.setLayoutData(reviewersGridData);
 
 		Composite includedIn = summaryIncluded(composite);
 		includedIn.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		Composite sameTopic = summarySameTopic(composite);
-		sameTopic.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2));
+		GridData sameTopicGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2);
+		sameTopicGridData.heightHint = HEIGHT_LISTS;
+		sameTopic.setLayoutData(sameTopicGridData);
 
 		Composite relatedChanges = summaryRelatedChanges(composite);
 		relatedChanges.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2));
 
 		Composite conflicts = summaryConflicts(composite);
-		conflicts.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		GridData conflictsGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+		conflictsGridData.heightHint = HEIGHT_LISTS;
+		conflicts.setLayoutData(conflictsGridData);
+
+		scrolledComposite.setContent(composite);
+		Listener l = new Listener() {
+			public void handleEvent(Event e) {
+				Point size = scrolledComposite.getSize();
+				Point cUnrestrainedSize = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				if (size.y >= cUnrestrainedSize.y && size.x >= cUnrestrainedSize.x) {
+					composite.setSize(size);
+					return;
+				}
+				// does not fit
+				Rectangle hostRect = scrolledComposite.getBounds();
+				int border = scrolledComposite.getBorderWidth();
+				if (scrolledComposite.getVerticalBar().isVisible() || size.y <= SCROLL_AREA_HEIGHT) {
+					hostRect.width -= 2 * border;
+					hostRect.width -= scrolledComposite.getVerticalBar().getSize().x;
+				}
+				hostRect.height -= 2 * border;
+				composite.setSize(Math.max(cUnrestrainedSize.x, hostRect.width),
+						Math.max(cUnrestrainedSize.y, hostRect.height));
+			}
+		};
+		scrolledComposite.addListener(SWT.Resize, l);
 	}
 
 	private Composite summaryGeneral(Composite parent) {
