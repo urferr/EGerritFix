@@ -43,7 +43,7 @@ public class SelectReviewSiteHandler extends AbstractHandler implements IElement
 
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
-		GerritTableView reviewTableView = GerritTableView.getActiveView();
+		GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 
 		//Now, deal with the case where the user selected a server from the drop down
 		GerritServerInformation server = getServer(aEvent.getParameter(UIConstants.SELECT_SERVER_COMMAND_ID_PARAM));

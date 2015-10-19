@@ -31,6 +31,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.http.client.ClientProtocolException;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.NotEnabledException;
+import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -108,7 +113,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.services.IServiceLocator;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
 	private static final String REBASE = "rebase";
@@ -678,6 +685,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		buttonsEnablement();
 
+		invokeRefreshCommand();
+
 	}
 
 	/**
@@ -1100,5 +1109,28 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		// ignore
+	}
+
+	public void invokeRefreshCommand() {
+		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
+		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
+		// or a site from within a editor or view:
+		// IServiceLocator serviceLocator = getSite();
+
+		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+
+		try {
+			// Lookup commmand with its ID
+			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
+
+			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
+			command.executeWithChecks(new ExecutionEvent());
+
+		} catch (NotDefinedException | NotEnabledException | NotHandledException
+				| org.eclipse.core.commands.ExecutionException e) {
+
+			EGerritCorePlugin.logError(e.getMessage());
+
+		}
 	}
 }

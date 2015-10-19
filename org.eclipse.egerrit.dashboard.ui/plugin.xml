@@ -298,7 +298,11 @@
             id="org.eclipse.egerrit.dashboard.ui.addGerritSite"
             name="%command.name.addRepository">
       </command>
+      <command
 
+            id="org.eclipse.egerrit.dashboard.refresh"
+            name="refresh">
+      </command>
          <!-- The following are the commands under the "All" sub-menu
          -->
        <command
@@ -374,7 +378,10 @@
             class="org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSiteHandler"
             commandId="org.eclipse.egerrit.dashboard.ui.addGerritSite">
       </handler>
-
+      <handler
+            class="org.eclipse.egerrit.dashboard.ui.RefreshDashboardHandler"
+            commandId="org.eclipse.egerrit.dashboard.refresh">
+      </handler>
       <handler
             class="org.eclipse.egerrit.dashboard.ui.internal.commands.SelectReviewSiteHandler"
             commandId="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit">

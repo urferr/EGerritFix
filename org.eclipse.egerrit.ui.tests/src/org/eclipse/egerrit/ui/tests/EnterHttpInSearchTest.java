@@ -34,7 +34,7 @@ public class EnterHttpInSearchTest {
 
 //	@Test
 	public void enterANonExistantURL() {
-		final GerritTableView reviewTableView = GerritTableView.getActiveView();
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
@@ -55,7 +55,7 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(servers);
 
 		//Open the view enter something in it
-		final GerritTableView reviewTableView = GerritTableView.getActiveView();
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
@@ -78,7 +78,7 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(servers);
 
 		//Open the view enter something in it
-		final GerritTableView reviewTableView = GerritTableView.getActiveView();
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
@@ -92,7 +92,7 @@ public class EnterHttpInSearchTest {
 
 //	@Test
 	public void enterJustAURL() {
-		final GerritTableView reviewTableView = GerritTableView.getActiveView();
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override

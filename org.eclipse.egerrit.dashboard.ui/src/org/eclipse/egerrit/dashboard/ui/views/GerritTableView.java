@@ -573,11 +573,14 @@ public class GerritTableView extends ViewPart {
 		return fViewer;
 	}
 
-	public static GerritTableView getActiveView() {
+	public static GerritTableView getActiveView(boolean forceOpen) {
 		IViewPart viewPart = null;
 		if (rtv != null) {
 			return rtv;
 		} else {
+			if (!forceOpen) {
+				return null;
+			}
 			IWorkbench workbench = GerritUi.getDefault().getWorkbench();
 			IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 			IWorkbenchPage page = null;
@@ -1177,5 +1180,9 @@ public class GerritTableView extends ViewPart {
 		} else {
 			processCommands(fSearchRequestText.getText());
 		}
+	}
+
+	public void update() {
+		rtv.processCommands(fSearchRequestText.getText());
 	}
 }
