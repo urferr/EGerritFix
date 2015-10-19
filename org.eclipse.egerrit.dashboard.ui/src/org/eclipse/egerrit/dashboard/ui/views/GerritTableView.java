@@ -261,13 +261,13 @@ public class GerritTableView extends ViewPart {
 	public void createPartControl(Composite aParent) {
 		parentComposite = aParent;
 		if (fServerUtil.getLastSavedGerritServer() == null) {
-			createEmptyPage();
+			createEmptyPage(ServersStore.getAllServers().size() == 0);
 		} else {
 			createReviewList();
 		}
 	}
 
-	private void createEmptyPage() {
+	private void createEmptyPage(boolean enterNewServer) {
 		removeExistingWidgets();
 		Color background = parentComposite.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 
@@ -277,16 +277,25 @@ public class GerritTableView extends ViewPart {
 		composite.setBackground(background);
 
 		Link link = new Link(composite, SWT.NONE);
-		link.setText("Welcome to the dashboard. To get started, please configure a <a>Gerrit Server</a>.");
+		if (enterNewServer) {
+			link.setText("Welcome to the Gerrit dashboard. To get started, please configure a <a>Gerrit Server</a>.");
+			link.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					addOrChangeServerThenLoad();
+				}
+			});
+		} else {
+			link.setText("Welcome to the Gerrit dashboard. <a>Select a server</a> you have already entered.");
+			link.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					askUserToSelectRepo(ServersStore.getAllServers());
+				}
+			});
+		}
 		link.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, true, false));
 		link.setBackground(background);
-		link.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				addOrChangeServerThenLoad();
-			}
-		});
-
 	}
 
 	private void createReviewList() {
