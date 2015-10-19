@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Version;
 
 /**
  * @author Jacques Bouthillier
@@ -120,11 +121,10 @@ public class GerritServerDialog extends Dialog {
 		layout.marginRight = 5;
 		layout.marginLeft = 5;
 		composite.setLayout(layout);
+		// Set the minimum size for the window
 		composite.getShell().setMinimumSize(fWIDTH, fHEIGHT);
 
 		buildDialog(composite);
-
-		// Set the minimum size for the window
 
 		return composite;
 	}
@@ -334,7 +334,8 @@ public class GerritServerDialog extends Dialog {
 		} catch (EGerritException e) {
 			return false;
 		}
-		if (repo.getVersion().compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+		Version version = repo.getVersion();
+		if (version != null && version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
 					+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION + " supported by EGerrit.");
 		}
