@@ -54,9 +54,9 @@ public class GerritServerDialog extends Dialog {
 
 	private final String fCancelTooltip = "Do not save the information";
 
-	private final String COMMENT_TOOLTIP = "Enter the http(s) URL of your gerrit server, and the username and password to connect to it.";
+	private final String HEADER = "Enter the http(s) URL of your gerrit server, and the username and password to connect to it.\n\nThe URL you need to enter is the same than the one you use to connect to your Gerrit server on the web.";
 
-	private final String URI_TOOLTIP = "Enter the http(s) URL of your gerrit server.";
+	private final String URI_TOOLTIP = "For example, on Eclipse Gerrit server is https://git.eclipse.org/r/. Another way to determine the URL is to start from the URL of a change (e.g https://git.eclipse.org/r/#/c/58066/) and use as a URL the part up to the #.";
 
 	private final String URI_EXAMPLE_TOOLTIP = "Ex: https://git.eclipse.org/r";
 
@@ -120,11 +120,11 @@ public class GerritServerDialog extends Dialog {
 		layout.marginRight = 5;
 		layout.marginLeft = 5;
 		composite.setLayout(layout);
+		composite.getShell().setMinimumSize(fWIDTH, fHEIGHT);
 
 		buildDialog(composite);
 
 		// Set the minimum size for the window
-		composite.getShell().setMinimumSize(fWIDTH, fHEIGHT);
 
 		return composite;
 	}
@@ -134,8 +134,8 @@ public class GerritServerDialog extends Dialog {
 		Label labelComments = new Label(composite, SWT.WRAP);
 		GridData labelData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
 		labelComments.setLayoutData(labelData);
-		labelComments.setText(COMMENT_TOOLTIP);
-		labelComments.setToolTipText(COMMENT_TOOLTIP);
+		labelComments.setText(HEADER);
+		labelComments.setToolTipText(URI_TOOLTIP);
 
 		//URI
 		Label labelServerURI = new Label(composite, SWT.NONE);
@@ -152,7 +152,7 @@ public class GerritServerDialog extends Dialog {
 		//Server Name
 		Label labelServerName = new Label(composite, SWT.NONE);
 		labelServerName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelServerName.setText("Shortname:");
+		labelServerName.setText("Label:");
 		labelServerName.setToolTipText(SHORTNAME_EXAMPLE_TOOLTIP);
 
 		txtServerName = new Text(composite, SWT.BORDER);
