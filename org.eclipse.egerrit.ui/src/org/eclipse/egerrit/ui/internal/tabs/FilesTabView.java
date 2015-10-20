@@ -605,10 +605,12 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			// enable reviewed file status
 			if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
 				String[] reviewedFiles = queryVerified(gerritClient, changeId, revisionId, new NullProgressMonitor());
-				List<String> reviewedFilesList = Arrays.asList(reviewedFiles);
-				for (String e : reviewedFilesList) {
-					if (e.compareTo(displayFileInfo.getold_path()) == 0) {
-						displayFileInfo.setReviewed(true);
+				if (reviewedFiles != null) {//List can be null if there was a conflict  from the query
+					List<String> reviewedFilesList = Arrays.asList(reviewedFiles);
+					for (String e : reviewedFilesList) {
+						if (e.compareTo(displayFileInfo.getold_path()) == 0) {
+							displayFileInfo.setReviewed(true);
+						}
 					}
 				}
 			}
