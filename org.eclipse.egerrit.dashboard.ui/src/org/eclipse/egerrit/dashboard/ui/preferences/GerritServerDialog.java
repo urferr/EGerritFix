@@ -315,39 +315,55 @@ public class GerritServerDialog extends Dialog {
 		GerritRepository repo;
 		boolean b = false;
 		try {
-			String password = workingCopy.getPassword();
-			if (workingCopy.isPasswordProvided()) {
-				if (workingCopy.isPasswordChanged()) {
-					password = workingCopy.getPassword();
-				} else {
-					password = original.getPassword();
-					workingCopy.setPassword(password);
-				}
-			}
 			repo = new GerritRepository(workingCopy.getServerURI());
-			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), password));
 			// Run test connection
 
 			if (!repo.getHostname().isEmpty()) {
 				b = repo.connect();
-				if (!b) {
-					//Test self signed automatically if needed
-					boolean bo = true;
-					workingCopy.setSelfSigned(bo);
-					repo.acceptSelfSignedCerts(bo);
-					b = repo.connect();
-				}
-
 			}
-
 		} catch (EGerritException e) {
 			return false;
 		}
 		Version version = repo.getVersion();
-		if (version != null && version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+
+		//Test the Version if it is a valid Gerrit Server
+		if (version == null) {
+			throw new EGerritException("Server " + workingCopy.getServerURI() + " : " + INVALID_MESSAGE);
+		}
+
+		if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
 					+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION + " supported by EGerrit.");
 		}
+
+		//Second pass to verify with the available credentials
+		String password = workingCopy.getPassword();
+		if (workingCopy.isPasswordProvided()) {
+			if (workingCopy.isPasswordChanged()) {
+				password = workingCopy.getPassword();
+			} else {
+				password = original.getPassword();
+				workingCopy.setPassword(password);
+			}
+		}
+		repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), password));
+		// Run test connection with a user if provided
+
+		if (!repo.getHostname().isEmpty()) {
+			b = repo.connect();
+			if (!b) {
+				//Test self signed automatically if needed
+				boolean bo = true;
+				workingCopy.setSelfSigned(bo);
+				repo.acceptSelfSignedCerts(bo);
+				b = repo.connect();
+			}
+		}
+		if (repo.getHttpClient() == null) {
+			throw new EGerritException(
+					"Server [ " + workingCopy.getServerURI() + " ] has an invalid User and/or password ");
+		}
+
 		return b;
 	}
 

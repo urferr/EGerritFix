@@ -148,6 +148,7 @@ public class GerritRepository {
 
 	public GerritRepository setCredentials(GerritCredentials credentials) {
 		fCredentials = credentials;
+		fHttpClient = null;//need to reset the HttpClient when resetting the Credentials
 		return this;
 	}
 
