@@ -331,8 +331,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
 
-					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message", "",
-							"", null);
+					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message",
+							"Enter the abandon message", "", null);
 					if (inputDialog.open() != Window.OK) {
 						return;
 					}
@@ -367,8 +367,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
 
-					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message", "",
-							"", null);
+					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message",
+							"Enter the restore message", "", null);
 					if (inputDialog.open() != Window.OK) {
 						return;
 					}
@@ -404,7 +404,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					super.widgetSelected(e);
 
 					InputDialog inputDialog = new InputDialog(fRebase.getParent().getShell(),
-							"Code Review - Rebase Change", "Change parent revision", "", null);
+							"Code Review - Rebase Change",
+							"Change parent revision (leave empty to rebase on targeted branch)", "", null);
 					if (inputDialog.open() != Window.OK) {
 						return;
 					}
