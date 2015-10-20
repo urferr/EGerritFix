@@ -290,7 +290,11 @@ public class GerritTableView extends ViewPart {
 			link.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					askUserToSelectRepo(ServersStore.getAllServers());
+					GerritServerInformation server = askUserToSelectRepo(ServersStore.getAllServers());
+					if (server != null) {
+						fServerUtil.saveLastGerritServer(server);
+						processCommands("status:open");
+					}
 				}
 			});
 		}
@@ -1164,6 +1168,9 @@ public class GerritTableView extends ViewPart {
 			selection = taskSelection.getSelection();
 		}
 
+		if (selection != null) {
+			createReviewList();
+		}
 		return selection;
 	}
 
