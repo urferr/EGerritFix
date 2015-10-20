@@ -48,8 +48,8 @@ public class OpenCompareEditor {
 	 * @param right
 	 *            the file to show in the right pane
 	 */
-	public void compareTwoRevisions(FileInfo left, FileInfo right) {
-		GerritCompareInput ci = new GerritCompareInput(changeInfo.getId(), left, right, gerrit);
+	public void compareTwoRevisions(FileInfo left, FileInfo right, Runnable saveListener) {
+		GerritCompareInput ci = new GerritCompareInput(changeInfo.getId(), left, right, gerrit, saveListener);
 		openCompareEditor(ci);
 	}
 
@@ -62,8 +62,8 @@ public class OpenCompareEditor {
 	 * @param right
 	 *            the file to show in the right pane
 	 */
-	public void compareAgainstBase(String projectId, FileInfo right) {
-		GerritCompareInput ci = new GerritCompareInput(changeInfo.getId(), projectId, right, gerrit);
+	public void compareAgainstBase(String projectId, FileInfo right, Runnable saveListener) {
+		GerritCompareInput ci = new GerritCompareInput(changeInfo.getId(), projectId, right, gerrit, saveListener);
 		openCompareEditor(ci);
 	}
 
@@ -73,7 +73,7 @@ public class OpenCompareEditor {
 	 * @param right
 	 *            the file to show in the right pane
 	 */
-	public void compareAgainstWorkspace(FileInfo right) {
+	public void compareAgainstWorkspace(FileInfo right, Runnable saveListener) {
 		File potentialFile = locateFileInLocalGitRepo(right);
 		IFile workspaceFile = null;
 		if (potentialFile == null) {
@@ -87,7 +87,7 @@ public class OpenCompareEditor {
 						"The compare editor could not be opened because the corresponding file is not in the workspace."); //$NON-NLS-1$
 			}
 		}
-		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getId(), right, gerrit);
+		GerritCompareInput ci = new GerritCompareInput(workspaceFile, changeInfo.getId(), right, gerrit, saveListener);
 		openCompareEditor(ci);
 
 	}

@@ -112,10 +112,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private TableViewer tableFilesViewer;
 
-	private Label lblDrafts;
-
-	private Label lblComments;
-
 	private Label lblTotal;
 
 	private Combo comboDiffAgainst;
@@ -214,14 +210,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
 					String diffSource = comboDiffAgainst.getText();
 					if (diffSource.equals(WORKSPACE)) {
-						compareEditor.compareAgainstWorkspace(selectedFile);
+						compareEditor.compareAgainstWorkspace(selectedFile,
+								getParticipant(selectedFile.getContainingRevisionInfo().getId()));
 					} else if (diffSource.equals(BASE)) {
-						compareEditor.compareAgainstBase(fChangeInfo.getProject(), selectedFile);
+						compareEditor.compareAgainstBase(fChangeInfo.getProject(), selectedFile,
+								getParticipant(selectedFile.getContainingRevisionInfo().getId()));
 					} else {
 						RevisionInfo rev = getRevisionInfoByNumber(diffSource);
 						if (rev != null) {
 							compareEditor.compareTwoRevisions(rev.getFiles().get(selectedFile.getold_path()),
-									selectedFile);
+									selectedFile, getParticipant(selectedFile.getContainingRevisionInfo().getId()));
 							return;
 						}
 						MessageDialog.openError(null, "Can not open compare editor",
@@ -239,6 +237,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	private Runnable getParticipant(final String revisionId) {
+		return new Runnable() {
+
+			@Override
+			public void run() {
+				update();
+			}
+		};
 	}
 
 	private void computeTotals() {
@@ -883,5 +891,18 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 		}
 		return null;
+	}
+
+	public void update() {
+		RevisionInfo revInfo = fCurrentRevision;
+
+		setCurrentRevision(revInfo);
+		fillFiles(revInfo.getFiles());
+		setChanged();
+		notifyObservers();
+
+		setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), revInfo.getCommit().getCommit());
+		displayFilesTable();
+
 	}
 }

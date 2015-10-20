@@ -79,10 +79,13 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	private GerritDiffNode diffNode;
 
+	private Runnable postSaveListener;
+
 	/**
 	 * Create a compare input used to compare a workspace file with a remove file
 	 */
-	public GerritCompareInput(IFile left, String changeId, FileInfo right, GerritClient gerrit) {
+	public GerritCompareInput(IFile left, String changeId, FileInfo right, GerritClient gerrit,
+			Runnable postSaveListener) {
 		super(createEditorConfiguration(true, gerrit), null);
 		this.left = left;
 		this.changeId = changeId;
@@ -93,26 +96,32 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 
 	/**
 	 * Create a compare input used to compare two remote files
+	 *
+	 * @param postSaveListener
 	 */
-	public GerritCompareInput(String changeId, FileInfo left, FileInfo right, GerritClient gerrit) {
+	public GerritCompareInput(String changeId, FileInfo left, FileInfo right, GerritClient gerrit,
+			Runnable postSaveListener) {
 		super(createEditorConfiguration(true, gerrit), null);
 		this.leftInfo = left;
 		this.changeId = changeId;
 		this.rightInfo = right;
 		this.file = rightInfo.getold_path();
 		this.gerrit = gerrit;
+		this.postSaveListener = postSaveListener;
 	}
 
 	/**
 	 * Create a compare input used to compare a file from a commit with a remote file
 	 */
-	public GerritCompareInput(String changeId, String projectId, FileInfo right, GerritClient gerrit) {
+	public GerritCompareInput(String changeId, String projectId, FileInfo right, GerritClient gerrit,
+			Runnable postSaveListener) {
 		super(createEditorConfiguration(false, gerrit), null);
 		this.changeId = changeId;
 		this.projectId = projectId;
 		this.rightInfo = right;
 		this.file = rightInfo.getold_path();
 		this.gerrit = gerrit;
+		this.postSaveListener = postSaveListener;
 	}
 
 	private IFile getLeft() {
@@ -191,6 +200,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 				throw ex;
 			}
 		}
+		postSaveListener.run();
 	}
 
 	@Override

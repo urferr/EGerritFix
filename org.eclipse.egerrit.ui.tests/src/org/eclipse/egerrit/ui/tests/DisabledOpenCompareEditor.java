@@ -180,7 +180,7 @@ public class DisabledOpenCompareEditor {
 		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerrit(), changeInfo);
 		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();
 		Entry<String, RevisionInfo> theRevision = revisions.entrySet().iterator().next();
-		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next());
+//		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next());
 		return compareHelper.getCompareInput();
 	}
 }
