@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.NotEnabledException;
@@ -78,7 +77,6 @@ import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangePage;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -151,7 +149,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Text subjectData;
 
-	private Label statusData;
+	private Text statusData;
 
 	private Text shortIdData;
 
@@ -254,10 +252,24 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		subjectData.setLayoutData(gd_lblSubjectData);
 		subjectData.setEditable(false);
 		subjectData.setBackground(parent.getBackground());
+		subjectData.addListener(SWT.Modify, new Listener() {
 
-		statusData = new Label(group_header, SWT.RIGHT);
+			@Override
+			public void handleEvent(Event event) {
+				subjectData.getParent().layout();
+			}
+		});
+		statusData = new Text(group_header, SWT.RIGHT);
 		GridData gd_lblStatus = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
 		statusData.setLayoutData(gd_lblStatus);
+		statusData.setEditable(false);
+		statusData.addListener(SWT.Modify, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				statusData.getParent().layout();
+			}
+		});
 
 		//Set the binding for this section
 		headerSectionDataBindings();
