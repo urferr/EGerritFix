@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -170,8 +169,6 @@ public class RebaseCommandTest {
 			result2 = setReviewcommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		// now do test and submit ...
@@ -185,8 +182,6 @@ public class RebaseCommandTest {
 		try {
 			submitCmdResult = submitCmd.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 
@@ -207,8 +202,6 @@ public class RebaseCommandTest {
 		try {
 			rebaseCmdResult = rebaseCmd.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 
@@ -253,8 +246,6 @@ public class RebaseCommandTest {
 			result2 = setReviewcommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		// now do test and submit ...
@@ -268,8 +259,6 @@ public class RebaseCommandTest {
 		try {
 			submitCmdResult = submitCmd.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 	}

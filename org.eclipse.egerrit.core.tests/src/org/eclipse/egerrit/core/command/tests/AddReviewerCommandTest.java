@@ -18,8 +18,6 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -168,9 +166,6 @@ public class AddReviewerCommandTest {
 			reviewerCmdResult = command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
-			return;
 		}
 
 		// Verify result
@@ -214,8 +209,6 @@ public class AddReviewerCommandTest {
 			reviewerCmdResult = command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		// Verify result
@@ -255,17 +248,10 @@ public class AddReviewerCommandTest {
 
 		command.setReviewerInput(addreviewerInput);
 
-		AddReviewerResult reviewerCmdResult = null;
 		try {
-			reviewerCmdResult = command.call();
+			command.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			if (e instanceof HttpResponseException) {
-				HttpResponseException httpException = (HttpResponseException) e;
-				assertEquals("Wrong status code", 422, httpException.getStatusCode());
-				assertEquals("Wrong message", "Unprocessable Entity", httpException.getMessage());
-			} else {
+			if (e.getCode() != EGerritException.SHOWABLE_MESSAGE) {
 				fail(e.getMessage());
 			}
 		}

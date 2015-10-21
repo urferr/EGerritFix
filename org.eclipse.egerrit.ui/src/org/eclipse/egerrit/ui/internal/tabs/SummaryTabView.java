@@ -11,7 +11,6 @@
 
 package org.eclipse.egerrit.ui.internal.tabs;
 
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,8 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -643,7 +640,7 @@ public class SummaryTabView {
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
 
 			// Create query
-			GetMergeableCommand command = gerritClient.getMergeable(fChangeInfo.getId(), revision_id);
+			GetMergeableCommand command = gerritClient.getMergeable(fChangeInfo);
 
 			MergeableInfo res = null;
 			try {
@@ -651,16 +648,6 @@ public class SummaryTabView {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				if (e instanceof HttpResponseException) {
-					HttpResponseException httpException = (HttpResponseException) e;
-					if (!((httpException.getStatusCode() == HttpURLConnection.HTTP_CONFLICT)
-							&& fChangeInfo.getStatus().toUpperCase().equals("SUBMITTED"))) { //$NON-NLS-1$
-						//Display the information only if we are not submitted and not in conflict error 409
-						UIUtils.displayInformation(null, TITLE,
-								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-					}
-				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -690,8 +677,6 @@ public class SummaryTabView {
 				res = command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -718,8 +703,6 @@ public class SummaryTabView {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -743,8 +726,6 @@ public class SummaryTabView {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -774,8 +755,6 @@ public class SummaryTabView {
 				res = command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -800,8 +779,6 @@ public class SummaryTabView {
 				res = command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -860,18 +837,12 @@ public class SummaryTabView {
 				try {
 					reviewerCmdResult = addReviewerCmd.call();
 				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(e3.getMessage());
-				} catch (ClientProtocolException e3) {
-					if (e3 instanceof HttpResponseException) {
-						HttpResponseException httpException = (HttpResponseException) e3;
-						if (httpException.getStatusCode() == 422) {
-							String message = addReviewerCmd.getReviewerInput().getReviewer()
-									+ " does not identify a registered user or group";
-							UIUtils.displayInformation(null, TITLE, message);
-						}
+					if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
+						String message = addReviewerCmd.getReviewerInput().getReviewer()
+								+ " does not identify a registered user or group";
+						UIUtils.displayInformation(null, TITLE, message);
 					} else {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + addReviewerCmd.formatRequest()); //$NON-NLS-1$
+						EGerritCorePlugin.logError(e3.getMessage());
 					}
 				}
 				return reviewerCmdResult;
@@ -918,9 +889,6 @@ public class SummaryTabView {
 								deleteReviewerCmd.call();
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(e3.getMessage());
-							} catch (ClientProtocolException e3) {
-								UIUtils.displayInformation(null, TITLE,
-										e3.getLocalizedMessage() + "\n " + deleteReviewerCmd.formatRequest()); //$NON-NLS-1$
 							}
 							setReviewers(fGerritClient);
 						}
@@ -949,12 +917,9 @@ public class SummaryTabView {
 
 				command.setTopicInput(topicInput);
 
-				String result = null;
 				try {
-					result = command.call();
+					command.call();
 				} catch (EGerritException ex) {
-					EGerritCorePlugin.logError(ex.getMessage());
-				} catch (ClientProtocolException ex) {
 					EGerritCorePlugin.logError(ex.getMessage());
 				}
 			}

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -165,7 +164,7 @@ public class QueryChangesCommandTest {
 	 */
 	@Test
 	public void testSetTopic() {
-		String EXPECTED_RESULT = "q=" + "topic:" + TOPIC;
+		String EXPECTED_RESULT = "q=" + "topic:\"" + TOPIC + "\"";
 
 		// Run test
 		QueryChangesCommand command = fGerrit.queryChanges();
@@ -307,7 +306,7 @@ public class QueryChangesCommandTest {
 		// Verify result
 		String query = uri.getQuery();
 		assertTrue("Missing owner", query.contains("owner:" + OWNER));
-		assertTrue("Missing topic", query.contains("topic:" + TOPIC));
+		assertTrue("Missing topic", query.contains("topic:\"" + TOPIC + "\""));
 		assertTrue("Missing status", query.contains(STATUS1.getValue()));
 		assertTrue("Missing state", query.contains(STATE1.getValue()));
 		assertTrue("Missing option", query.contains("o=" + OPTION.getValue()));
@@ -345,8 +344,6 @@ public class QueryChangesCommandTest {
 		try {
 			result = command.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 

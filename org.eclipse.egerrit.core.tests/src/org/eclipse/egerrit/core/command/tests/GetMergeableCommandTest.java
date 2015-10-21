@@ -18,13 +18,13 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
@@ -94,7 +94,9 @@ public class GetMergeableCommandTest {
 	@Test
 	public void testGetMergeableCommand() {
 		// Run test
-		GetMergeableCommand command = fGerrit.getMergeable("", "");
+		ChangeInfo emptyChangeInfo = new ChangeInfo();
+		emptyChangeInfo.setId("");
+		GetMergeableCommand command = fGerrit.getMergeable(emptyChangeInfo);
 
 		// Verify result
 		assertEquals("Wrong repository", fRepository, command.getRepository());
@@ -109,7 +111,9 @@ public class GetMergeableCommandTest {
 		String EXPECTED_RESULT = null;
 
 		// Run test
-		GetMergeableCommand command = fGerrit.getMergeable("", "");
+		ChangeInfo emptyChangeInfo = new ChangeInfo();
+		emptyChangeInfo.setId("");
+		GetMergeableCommand command = fGerrit.getMergeable(emptyChangeInfo);
 		URI uri = command.formatRequest().getURI();
 
 		// Verify result
@@ -148,13 +152,13 @@ public class GetMergeableCommandTest {
 			e1.printStackTrace();
 		}
 		// Run test
-		GetMergeableCommand command = fGerrit.getMergeable(change_id, commit_id);
+		ChangeInfo changeInfo = new ChangeInfo();
+		changeInfo.setId(change_id);
+		GetMergeableCommand command = fGerrit.getMergeable(changeInfo);
 		MergeableInfo result = null;
 		try {
 			result = command.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 

@@ -14,7 +14,6 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,8 +27,6 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.TreeMap;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
@@ -54,7 +51,6 @@ import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -296,8 +292,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 						fCurrentRevision.getCommit().getCommit(), fileInfo.getold_path());
 				try {
 					command.call();
-				} catch (EGerritException | ClientProtocolException ex) {
-					UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+				} catch (EGerritException ex) {
+					EGerritCorePlugin.logError(ex.getMessage());
 				}
 
 				fileInfo.setReviewed(true);
@@ -344,16 +340,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			try {
 				command.call();
 				fileInfo.setReviewed(false);
-			} catch (EGerritException | ClientProtocolException ex) {
-				UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+			} catch (EGerritException ex) {
+				EGerritCorePlugin.logError(ex.getMessage());
 			}
 		} else {
 			SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
 					fCurrentRevision.getCommit().getCommit(), fileInfo.getold_path());
 			try {
 				command.call();
-			} catch (EGerritException | ClientProtocolException ex) {
-				UIUtils.displayInformation(null, TITLE, ex.getLocalizedMessage() + "\n " + command.formatRequest());
+			} catch (EGerritException ex) {
+				EGerritCorePlugin.logError(ex.getMessage());
 			}
 			fileInfo.setReviewed(true);
 		}
@@ -662,16 +658,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				if (e instanceof HttpResponseException) {
-					HttpResponseException httpException = (HttpResponseException) e;
-					if (!((httpException.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND)
-							&& fChangeInfo.getStatus().toUpperCase().equals("SUBMITTED"))) { //$NON-NLS-1$
-						//Display the information only if we are not submitted and not found: error 404
-						UIUtils.displayInformation(null, TITLE,
-								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-					}
-				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -701,16 +687,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				if (e instanceof HttpResponseException) {
-					HttpResponseException httpException = (HttpResponseException) e;
-					if (!((httpException.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND)
-							&& fChangeInfo.getStatus().toUpperCase().equals("SUBMITTED"))) { //$NON-NLS-1$
-						//Display the information only if we are not submitted and not found: error 404
-						UIUtils.displayInformation(null, TITLE,
-								e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
-					}
-				}
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -738,8 +714,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				return res;
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;

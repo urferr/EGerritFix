@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
@@ -25,6 +27,7 @@ import org.apache.http.protocol.HTTP;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
 
@@ -148,5 +151,18 @@ public class AddReviewerCommand extends PostCommand<AddReviewerResult> {
 		httpPost.setEntity(input);
 
 		return httpPost;
+	}
+
+	@Override
+	protected boolean handleHttpException(ClientProtocolException exception) throws EGerritException {
+		if (exception instanceof HttpResponseException) {
+			HttpResponseException httpException = (HttpResponseException) exception;
+			if (httpException.getStatusCode() == 422) {
+				EGerritException gerritException = new EGerritException(exception.getLocalizedMessage());
+				gerritException.setCode(EGerritException.SHOWABLE_MESSAGE);
+				throw gerritException;
+			}
+		}
+		return false;
 	}
 }

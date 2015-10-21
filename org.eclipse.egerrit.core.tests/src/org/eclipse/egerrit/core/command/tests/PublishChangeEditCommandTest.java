@@ -18,7 +18,6 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -164,8 +163,6 @@ public class PublishChangeEditCommandTest {
 			editMessageCmdResult = editMessageCmd.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		PublishChangeEditCommand publishChangeEditCmd = fGerrit
@@ -177,12 +174,10 @@ public class PublishChangeEditCommandTest {
 
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		// Verify result
-		assert(true);
+		assert (true);
 
 	}
 }

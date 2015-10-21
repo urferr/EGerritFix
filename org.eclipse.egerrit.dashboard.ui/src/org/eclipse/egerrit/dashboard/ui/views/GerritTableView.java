@@ -24,7 +24,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -1103,8 +1102,6 @@ public class GerritTableView extends ViewPart {
 				res = command.call();
 			} catch (EGerritException e) {
 				Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
-			} catch (ClientProtocolException e) {
-				Utils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + query); //$NON-NLS-1$
 			}
 			final String queryText = query;
 			Display.getDefault().syncExec(new Runnable() {

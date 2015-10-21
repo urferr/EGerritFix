@@ -19,7 +19,6 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -197,9 +196,6 @@ public class DeleteReviewerCommandTest {
 			reviewerCmdResult = addCommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
-			return;
 		}
 
 		// Verify result
@@ -212,8 +208,6 @@ public class DeleteReviewerCommandTest {
 		try {
 			delReviewerCmdResult = delCommand.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 		assertNull("Deletion fail", delReviewerCmdResult);

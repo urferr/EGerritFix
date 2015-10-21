@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -168,15 +167,13 @@ public class ListDraftsCommandTest {
 			result = command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 		// Run test
 		ListDraftsCommand command2 = fGerrit.listDraftsComments(change_id, revision_id);
 		Map<String, ArrayList<CommentInfo>> result2 = null;
 		try {
 			result2 = command2.call();
-		} catch (EGerritException | ClientProtocolException e) {
+		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
 

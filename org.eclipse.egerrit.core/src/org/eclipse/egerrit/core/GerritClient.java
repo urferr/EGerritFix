@@ -44,6 +44,7 @@ import org.eclipse.egerrit.core.command.SetTopicCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeInfo;
 
 /**
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
@@ -185,8 +186,8 @@ public abstract class GerritClient {
 	 * @param revision
 	 * @return a default {@link GetChangeCommand} used to retrieve a change's MergeableInfo from the Gerrit repository
 	 */
-	public GetMergeableCommand getMergeable(String change_id, String revision_id) {
-		return new GetMergeableCommand(fGerritRepository, change_id, revision_id);
+	public GetMergeableCommand getMergeable(ChangeInfo change) {
+		return new GetMergeableCommand(fGerritRepository, change);
 	}
 
 	/**

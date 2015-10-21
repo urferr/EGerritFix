@@ -18,7 +18,6 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
@@ -162,8 +161,6 @@ public class UpdateDraftCommandTest {
 			result = command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
-			fail(e.getMessage());
 		}
 
 		// Run test
@@ -178,8 +175,6 @@ public class UpdateDraftCommandTest {
 		try {
 			updResult = updCommand.call();
 		} catch (EGerritException e) {
-			fail(e.getMessage());
-		} catch (ClientProtocolException e) {
 			fail(e.getMessage());
 		}
 

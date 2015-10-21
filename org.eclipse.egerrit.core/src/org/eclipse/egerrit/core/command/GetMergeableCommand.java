@@ -12,15 +12,20 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.MergeableInfo;
 
 /**
@@ -37,9 +42,7 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 	// Attributes
 	// ------------------------------------------------------------------------
 
-	private String fChange_id;
-
-	private String fRevision;
+	private ChangeInfo change;
 
 	// ------------------------------------------------------------------------
 	// Constructor
@@ -55,29 +58,18 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 	 * @param revision
 	 *            revisions-id
 	 */
-	public GetMergeableCommand(GerritRepository gerritRepository, String id, String revision) {
+	public GetMergeableCommand(GerritRepository gerritRepository, ChangeInfo info) {
 		super(gerritRepository, MergeableInfo.class);
-		this.setId(id);
-		this.setRevision(revision);
+		this.setChangeInfo(info);
 
 	}
 
-	private void setRevision(String revision) {
-		fRevision = revision;
-
+	public ChangeInfo getChangeInfo() {
+		return change;
 	}
 
-	private String getRevision() {
-		return fRevision;
-
-	}
-
-	public String getId() {
-		return fChange_id;
-	}
-
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
+	public void setChangeInfo(ChangeInfo info) {
+		this.change = info;
 	}
 
 	// ------------------------------------------------------------------------
@@ -99,8 +91,7 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 		try {
 			// Set the path
 			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-//			.append("/revisions/").append(getRevision())//$NON-NLS-1$
+					.append(getChangeInfo().getId())
 					.append("/revisions/current")//$NON-NLS-1$
 					.append("/mergeable") //$NON-NLS-1$
 					.toString();
@@ -113,4 +104,13 @@ public class GetMergeableCommand extends QueryCommand<MergeableInfo> {
 		return new HttpGet(uri);
 	}
 
+	@Override
+	protected boolean handleHttpException(ClientProtocolException e) throws EGerritException {
+		HttpResponseException httpException = (HttpResponseException) e;
+		if (!((httpException.getStatusCode() == HttpURLConnection.HTTP_CONFLICT)
+				&& change.getStatus().toUpperCase().equals("SUBMITTED"))) { //$NON-NLS-1$
+			throw new EGerritException(e.getLocalizedMessage());
+		}
+		return true;
+	}
 }

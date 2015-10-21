@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
@@ -32,7 +31,6 @@ import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
@@ -85,8 +83,6 @@ public class CompareItemFactory {
 					}
 				} catch (EGerritException e) {
 					EGerritCorePlugin.logError(e.getMessage());
-				} catch (ClientProtocolException e) {
-					UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 				}
 			} else {
 				fileContent = ""; //$NON-NLS-1$
@@ -113,7 +109,7 @@ public class CompareItemFactory {
 		String fileContent = ""; //$NON-NLS-1$
 		try {
 			fileContent = getContent.call();
-		} catch (ClientProtocolException | EGerritException e) {
+		} catch (EGerritException e) {
 			logger.debug("Exception retrieving commitId", e); //$NON-NLS-1$
 		}
 		return new CommitCompareItem(commitId, filePath, StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)));
@@ -129,7 +125,7 @@ public class CompareItemFactory {
 				ListDraftsCommand getDrafts = gerrit.listDraftsComments(change_id, revision_id);
 				mergeComments(getDrafts.call(), allComments);
 			}
-		} catch (ClientProtocolException | EGerritException e) {
+		} catch (EGerritException e) {
 			logger.debug("Exception retrieving commitId", e); //$NON-NLS-1$
 		}
 

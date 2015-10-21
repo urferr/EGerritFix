@@ -311,9 +311,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						submitCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
-					} catch (ClientProtocolException e3) {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + submitCmd.formatRequest()); //$NON-NLS-1$
 					}
 					refreshStatus();
 				}
@@ -347,9 +344,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						abandonCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
-					} catch (ClientProtocolException e3) {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + abandonCmd.formatRequest()); //$NON-NLS-1$
 					}
 					refreshStatus();
 				}
@@ -383,9 +377,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						restoreCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
-					} catch (ClientProtocolException e3) {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + restoreCmd.formatRequest()); //$NON-NLS-1$
 					}
 					refreshStatus();
 				}
@@ -420,9 +411,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						rebaseCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
-					} catch (ClientProtocolException e3) {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + rebaseCmd.formatRequest()); //$NON-NLS-1$
 					}
 					refreshStatus();
 				}
@@ -567,8 +555,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			listBranchesCmdResult = cherryPickCmd.call();
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(e3.getMessage());
-		} catch (ClientProtocolException e3) {
-			UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage() + "\n " + cherryPickCmd.formatRequest()); //$NON-NLS-1$
 		}
 		return listBranchesCmdResult;
 	}
@@ -581,8 +567,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			listBranchesCmdResult = listBranchesCmd.call();
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(e3.getMessage());
-		} catch (ClientProtocolException e3) {
-			UIUtils.displayInformation(null, TITLE, e3.getLocalizedMessage() + "\n " + listBranchesCmd.formatRequest()); //$NON-NLS-1$
 		}
 		return listBranchesCmdResult;
 	}
@@ -601,8 +585,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			refreshStatus();
 		} catch (EGerritException e1) {
 			EGerritCorePlugin.logError(e1.getMessage());
-		} catch (ClientProtocolException e1) {
-			UIUtils.displayInformation(null, TITLE, e1.getLocalizedMessage() + "\n " + reviewToEmit.formatRequest()); //$NON-NLS-1$
 		}
 	}
 
@@ -725,9 +707,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			getRevisionActionsCmdResult = getRevisionActionsCmd.call();
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(e3.getMessage());
-		} catch (ClientProtocolException e3) {
-			UIUtils.displayInformation(null, TITLE,
-					e3.getLocalizedMessage() + "\n " + getRevisionActionsCmd.formatRequest()); //$NON-NLS-1$
 		}
 		return getRevisionActionsCmdResult;
 	}
@@ -904,8 +883,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				res = command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {

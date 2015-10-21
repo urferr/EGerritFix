@@ -138,7 +138,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 	 * @see java.util.concurrent.Callable#call()
 	 */
 	@Override
-	public T call() throws EGerritException, ClientProtocolException {
+	public T call() throws EGerritException {
 		T result = null;
 		try {
 			HttpRequestBase request = formatRequest();
@@ -201,15 +201,18 @@ public abstract class GerritCommand<T> implements Callable<T> {
 			result = postProcessResult(fGerritRepository.getHttpClient().execute(request, rh));
 
 		} catch (ClientProtocolException e) {
-//			if (!e.getMessage().contentEquals("Bad Request")) { //Do not log as an error for the Bad Request
-//				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-//			}
-			throw e;
+			if (!handleHttpException(e)) {
+				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			}
 		} catch (IOException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 		}
 
 		return result;
+	}
+
+	protected boolean handleHttpException(ClientProtocolException e) throws EGerritException {
+		return false;
 	}
 
 	private void setHeaders(HttpRequestBase request) {

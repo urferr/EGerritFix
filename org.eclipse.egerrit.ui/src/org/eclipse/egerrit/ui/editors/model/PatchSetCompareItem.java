@@ -15,7 +15,6 @@ package org.eclipse.egerrit.ui.editors.model;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IModificationDate;
 import org.eclipse.compare.IStreamContentAccessor;
@@ -131,7 +130,7 @@ public class PatchSetCompareItem extends Document
 			try {
 				logger.debug("Adding comment: " + newComment);
 				publishDraft.call();
-			} catch (EGerritException | ClientProtocolException e) {
+			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
 				throw new RuntimeException(PatchSetCompareItem.class.getName(),
@@ -144,7 +143,7 @@ public class PatchSetCompareItem extends Document
 			try {
 				logger.debug("Deleting comment: " + deletedComment);
 				deleteDraft.call();
-			} catch (EGerritException | ClientProtocolException e) {
+			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
 				throw new RuntimeException(PatchSetCompareItem.class.getName(),
@@ -158,7 +157,7 @@ public class PatchSetCompareItem extends Document
 			try {
 				logger.debug("Modifying comment: " + modifiedComment);
 				modifyDraft.call();
-			} catch (EGerritException | ClientProtocolException e) {
+			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
 				throw new RuntimeException(PatchSetCompareItem.class.getName(),

@@ -215,9 +215,6 @@ public class MessageTabView {
 						publishChangeEditCmd.call();
 					} catch (EGerritException e3) {
 						EGerritCorePlugin.logError(e3.getMessage());
-					} catch (ClientProtocolException e3) {
-						UIUtils.displayInformation(null, TITLE,
-								e3.getLocalizedMessage() + "\n " + editMessageCmd.formatRequest()); //$NON-NLS-1$
 					}
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);

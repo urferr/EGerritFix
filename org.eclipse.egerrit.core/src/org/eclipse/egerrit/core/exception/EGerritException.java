@@ -26,6 +26,10 @@ public class EGerritException extends Exception {
 	/** The unique UID */
 	private static final long serialVersionUID = 6095759214041370311L;
 
+	public static final int SHOWABLE_MESSAGE = 1;
+
+	private int errorCode;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -38,4 +42,11 @@ public class EGerritException extends Exception {
 		this(exception.getMessage());
 	}
 
+	public void setCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public int getCode() {
+		return errorCode;
+	}
 }

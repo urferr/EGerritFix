@@ -13,7 +13,6 @@ package org.eclipse.egerrit.ui.editors;
 
 import java.net.MalformedURLException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
@@ -22,10 +21,9 @@ import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 
 /**
- * A helper class wrapping the common server queries. 
+ * A helper class wrapping the common server queries.
  */
 public class QueryHelpers {
 	private final static String TITLE = "Gerrit Server "; //$NON-NLS-1$
@@ -56,9 +54,7 @@ public class QueryHelpers {
 				command.addFreeText(setFreeText(subject));
 				return command.call();
 			} catch (EGerritException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + setFreeText(subject)); //$NON-NLS-1$
+				EGerritCorePlugin.logError(e.getMessage());
 			}
 			return null;
 		} finally {
@@ -103,8 +99,6 @@ public class QueryHelpers {
 				return command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(e.getMessage());
-			} catch (ClientProtocolException e) {
-				UIUtils.displayInformation(null, TITLE, e.getLocalizedMessage() + "\n " + command.formatRequest()); //$NON-NLS-1$
 			}
 			return null;
 		} finally {
