@@ -184,7 +184,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				+ fGerritClient.getRepository().getServerInfo().getServerURI() + ".";
 
 		parent.setLayout(new GridLayout(1, false));
-		parent.setBackground(parent.getParent().getBackground());
+		parent.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
 		Composite hd = headerSection(parent);
 		hd.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
