@@ -12,8 +12,8 @@
 package org.eclipse.egerrit.ui.internal.tabs;
 
 import java.text.SimpleDateFormat;
+import java.util.Observable;
 
-import org.apache.http.client.ClientProtocolException;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.NotEnabledException;
@@ -32,7 +32,6 @@ import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -56,7 +55,7 @@ import org.eclipse.ui.services.IServiceLocator;
  *
  * @since 1.0
  */
-public class MessageTabView {
+public class MessageTabView extends Observable {
 
 	private Text msgTextData;
 
@@ -201,6 +200,9 @@ public class MessageTabView {
 
 		if (isEditingAllowed()) {
 			fBtnSave.addSelectionListener(new SelectionAdapter() {
+				/**
+				 *
+				 */
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
@@ -219,6 +221,7 @@ public class MessageTabView {
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
 					setfMessageBuffer(msgTextData.getText());
+					notifyObservers();
 					invokeRefreshCommand();
 
 				}
@@ -296,6 +299,9 @@ public class MessageTabView {
 		this.fMessageBuffer = fMessageBuffer;
 	}
 
+	/**
+	 * Invoke a handler to update the Dashboard
+	 */
 	public void invokeRefreshCommand() {
 		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
 		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
@@ -305,7 +311,7 @@ public class MessageTabView {
 		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
 
 		try {
-			// Lookup commmand with its ID
+			// Lookup command with its ID
 			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
 
 			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
@@ -317,6 +323,15 @@ public class MessageTabView {
 			EGerritCorePlugin.logError(e.getMessage());
 
 		}
+	}
+
+	/**
+	 * Notify the registered observer
+	 */
+	@Override
+	public void notifyObservers() {
+		setChanged();
+		super.notifyObservers();
 	}
 
 }

@@ -198,6 +198,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fCommitInfo, fChangeInfo);
+		messageTab.addObserver(this);
 
 		filesTab = new FilesTabView();
 		filesTab.create(fGerritClient, tabFolder, fChangeInfo);
@@ -813,6 +814,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setMessages(res.getMessages());
 			fChangeInfo.setPermittedLabels(res.getPermittedLabels());
 			fChangeInfo.setStatus(res.getStatus());
+			fChangeInfo.setSubject(res.getSubject());
 			fChangeInfo.setActions(res.getActions());
 			fChangeInfo.setTopic(res.getTopic());
 			fChangeInfo.setMergeable(res.isMergeable());
@@ -1040,7 +1042,20 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 			//Adjust the commit info for the Message Tab
 			setCurrentCommitInfo(fileTabView.getCurrentRevision());
+		} else if (arg0 instanceof MessageTabView) {
+			//in this case, we need to update the Subject. The following request do more
+			//but at least, less than the whole refresh
+			setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
+			setEditorTitle();
 		}
+	}
+
+	private void setEditorTitle() {
+		//Change the window title if needed
+		if (fChangeInfo != null) {
+			setPartName(fChangeInfo.getSubject());
+		}
+
 	}
 
 	/**
