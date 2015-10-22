@@ -202,10 +202,12 @@ public abstract class GerritCommand<T> implements Callable<T> {
 
 		} catch (ClientProtocolException e) {
 			if (!handleHttpException(e)) {
-				EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+				EGerritCorePlugin.logError("Transport error occured " + formatRequest().getMethod() + ' ' //$NON-NLS-1$
+						+ formatRequest().getURI().toASCIIString(), e);
 			}
 		} catch (IOException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			EGerritCorePlugin.logError("Transport error occured " + formatRequest().getMethod() + ' ' //$NON-NLS-1$
+					+ formatRequest().getURI().toASCIIString(), e);
 		}
 
 		return result;
