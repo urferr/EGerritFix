@@ -33,6 +33,7 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
@@ -54,6 +55,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -75,6 +77,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * This class is used in the editor to handle the Gerrit history view
@@ -203,6 +206,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				if (element instanceof FileInfo) {
 					FileInfo selectedFile = (FileInfo) element;
 					OpenCompareEditor compareEditor;
+					if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+						showEditorTip();
+					}
 					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
 					String diffSource = comboDiffAgainst.getText();
 					if (diffSource.equals(WORKSPACE)) {
@@ -233,6 +239,25 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	private void showEditorTip() {
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
+
+		Preferences editorPrefs = prefs.node("editor");
+		boolean choice = editorPrefs.getBoolean("editortip", false);
+
+		if (choice) {
+			return;
+		}
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
+				tableFilesViewer.getControl().getShell(), Messages.FileTabView_EGerriTip,
+				Messages.FileTabView_EGerriTipValue, Messages.FileTabView_EGerriTipShowAgain, false, null, null);
+
+		if (dialog.getToggleState()) {
+			editorPrefs.putBoolean("editortip", true);
+		}
+		return;
 	}
 
 	private Runnable getParticipant(final String revisionId) {
