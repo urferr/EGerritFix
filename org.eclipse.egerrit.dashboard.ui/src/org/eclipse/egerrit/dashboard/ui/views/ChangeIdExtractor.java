@@ -54,12 +54,13 @@ public class ChangeIdExtractor {
 		if (matcher.matches()) {
 			changeId = matcher.group(1);
 		} else { //Handle the second format found when Hudson put information in message
-			if (serverAddress.endsWith("/")) {
-				//Remove the "/" at the end if it exists
-				serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
-			}
+			serverAddress = removeTrailingSlash(serverAddress);
 			int lastSlashIndex = serverAddress.lastIndexOf('/') + 1;
-			changeId = serverAddress.substring(lastSlashIndex);
+			String last = serverAddress.substring(lastSlashIndex);
+			if (isInteger(last)) {
+				changeId = serverAddress.substring(lastSlashIndex);
+			}
+
 		}
 	}
 
@@ -98,13 +99,13 @@ public class ChangeIdExtractor {
 		if (sharpSign != -1) {
 			serverAddress = serverAddress.substring(0, sharpSign);
 		} else {
-			//Handle the second format found when Hudson put information in message
-			if (serverAddress.endsWith("/")) {
-				//Remove the "/" at the end if it exists
-				serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
-			}
+			serverAddress = removeTrailingSlash(serverAddress);
 			int lastSlashIndex = serverAddress.lastIndexOf('/') + 1;
-			serverAddress = serverAddress.substring(0, lastSlashIndex);
+			String last = serverAddress.substring(lastSlashIndex);
+			if (isInteger(last)) {
+				//Remove the change id at the end
+				serverAddress = serverAddress.substring(0, lastSlashIndex);
+			}
 		}
 
 		try {
@@ -113,5 +114,31 @@ public class ChangeIdExtractor {
 		} catch (URISyntaxException e) {
 			//Ignore because by that time we will have already checked it is a valid URI
 		}
+	}
+
+	/**
+	 * @param s
+	 * @return boolean
+	 */
+	private boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+			return true;
+		} catch (NumberFormatException ex) {
+			return false;
+		}
+	}
+
+	/**
+	 * @param serverAddress
+	 * @return
+	 */
+	private String removeTrailingSlash(String serverAddress) {
+		//Handle the second format found when Hudson put information in message
+		if (serverAddress.endsWith("/")) {
+			//Remove the "/" at the end if it exists
+			serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
+		}
+		return serverAddress;
 	}
 }
