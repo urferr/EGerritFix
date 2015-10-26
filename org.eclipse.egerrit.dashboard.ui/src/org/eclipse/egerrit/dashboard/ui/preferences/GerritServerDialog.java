@@ -329,9 +329,11 @@ public class GerritServerDialog extends Dialog {
 		//Test the Version if it is a valid Gerrit Server
 		if (version == null) {
 			throw new EGerritException("Server " + workingCopy.getServerURI() + " : " + INVALID_MESSAGE);
-		}
-
-		if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+		} else if (version.equals(GerritRepository.NO_VERSION)) {
+			throw new EGerritException(
+					"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
+							+ GerritFactory.MINIMAL_VERSION + ".");
+		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
 					+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION + " supported by EGerrit.");
 		}

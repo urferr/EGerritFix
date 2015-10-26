@@ -52,6 +52,8 @@ public class GerritRepository {
 	// Attributes
 	// ------------------------------------------------------------------------
 
+	public final static Version NO_VERSION = new Version(0, 0, 0);
+
 	/** The gerrit scheme */
 	private final String fScheme;
 
@@ -310,7 +312,7 @@ public class GerritRepository {
 					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					int status = statusLine.getStatusCode();
 					if (status < 200 || status >= 300) {
-						throw new ClientProtocolException("Unexpected response status: " + status); //$NON-NLS-1$
+						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
 					}
 					HttpEntity entity = response.getEntity();
 					if (entity == null) {
@@ -343,6 +345,9 @@ public class GerritRepository {
 		} catch (ClientProtocolException e) {
 			if (e instanceof HttpResponseException) {
 				HttpResponseException httpException = (HttpResponseException) e;
+				if (httpException.getStatusCode() == 404) {
+					version = NO_VERSION;
+				}
 				if (httpException.getStatusCode() != 404) {
 					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 				}
