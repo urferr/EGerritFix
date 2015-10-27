@@ -32,7 +32,7 @@ public class ChangeIdExtractorTest {
 	public void justAServer() {
 		ChangeIdExtractor extractor = new ChangeIdExtractor("https://git.eclipse.org/r/1234");
 		assertEquals("https://git.eclipse.org/r", extractor.getServer().getServerURI());
-		assertNull(extractor.getChangeId());
+		assertEquals("1234", extractor.getChangeId());
 	}
 
 	@Test
