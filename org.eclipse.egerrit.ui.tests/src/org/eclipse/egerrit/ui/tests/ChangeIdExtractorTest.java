@@ -30,9 +30,9 @@ public class ChangeIdExtractorTest {
 	@Test
 	//Test the case where just server is specified
 	public void justAServer() {
-		ChangeIdExtractor extractor = new ChangeIdExtractor("https://git.eclipse.org/r/1234");
+		ChangeIdExtractor extractor = new ChangeIdExtractor("https://git.eclipse.org/r/");
 		assertEquals("https://git.eclipse.org/r", extractor.getServer().getServerURI());
-		assertEquals("1234", extractor.getChangeId());
+		assertNull(extractor.getChangeId());
 	}
 
 	@Test
