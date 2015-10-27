@@ -52,7 +52,7 @@
        <explicit>${base-aut}</explicit>
                 <injections>
             <injection>
-                <site>http://download.eclipse.org/releases/mars</site>
+                <site>http://download.eclipse.org/releases/neon</site>
                 <features>
                     <feature>org.eclipse.egit.feature.group</feature>
                     <feature>org.eclipse.jgit.feature.group</feature>
@@ -63,6 +63,12 @@
                 <site>http://download.eclipse.org/egerrit/updates/nightly</site>
                 <features>
                     <feature>org.eclipse.egerrit.feature.feature.group</feature>
+                </features>      
+            </injection>
+            <injection>
+                <site>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</site>
+                <features>
+                    <feature>org.slf4j.api</feature>
                 </features>      
             </injection>
         </injections>
