@@ -16,24 +16,6 @@ Entry-Name: .content
 get-editor ".*" | get-button Restore | click
 with [get-window "Restore message"] {
     with [get-editbox] {
-        set-text "This re"
-        set-text "This rev"
-        set-text "This revi"
-        set-text "This revie"
-        set-text "This review "
-        set-text "This review m"
-        set-text "This review mu"
-        set-text "This review mus"
-        set-text "This review must "
-        set-text "This review must b"
-        set-text "This review must be "
-        set-text "This review must be r"
-        set-text "This review must be re"
-        set-text "This review must be res"
-        set-text "This review must be rest"
-        set-text "This review must be resto"
-        set-text "This review must be restor"
-        set-text "This review must be restore"
         set-text "This review must be restored"
     }
     get-button OK | click

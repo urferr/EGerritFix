@@ -16,25 +16,6 @@ Entry-Name: .content
 get-editor ".*" | get-button Abandon | click
 with [get-window "Abandon message"] {
     with [get-editbox] {
-        set-text "This re"
-        set-text "This rev"
-        set-text "This revi"
-        set-text "This revie"
-        set-text "This review "
-        set-text "This review m"
-        set-text "This review mu"
-        set-text "This review mus"
-        set-text "This review must "
-        set-text "This review must b"
-        set-text "This review must be "
-        set-text "This review must be a"
-        set-text "This review must be ab"
-        set-text "This review must be abo"
-        set-text "This review must be abon"
-        set-text "This review must be abond"
-        set-text "This review must be abondo"
-        set-text "This review must be abondon"
-        set-text "This review must be abondone"
         set-text "This review must be abondoned"
     }
     get-button OK | click

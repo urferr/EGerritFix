@@ -15,7 +15,7 @@ Entry-Name: .content
 
 get-menu "Window/Show View/Other..." | click
 with [get-window "Show View"] {
-    get-tree | select "Other/Gerrit Dashboard (EGerrit)"
+    get-tree | select "Git/Gerrit Dashboard (EGerrit)"
     get-button OK | click
 }
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find all Open Reviews for the selected repository" | click -arrow
