@@ -31,8 +31,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: %providerName
 Export-Package: org.eclipse.egerrit.dashboard.ui;x-internal:=true;
-  uses:="org.eclipse.egerrit.dashboard.trace,
-   org.eclipse.jface.resource,
+  uses:="org.eclipse.jface.resource,
    org.eclipse.ui.plugin,
    org.osgi.framework",
  org.eclipse.egerrit.dashboard.ui.internal.commands;x-internal:=true;uses:="org.eclipse.core.commands",
