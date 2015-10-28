@@ -45,7 +45,10 @@
         <extensions>true</extensions>
        <configuration>
        <aut>
-       
+                     <vmArgs>
+<vmArg>${argLine}</vmArg>
+    </vmArgs>        
+        
        <explicit>${base-aut}</explicit>
                 <injections>
             <injection>
