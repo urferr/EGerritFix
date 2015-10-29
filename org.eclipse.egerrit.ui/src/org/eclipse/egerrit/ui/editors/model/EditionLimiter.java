@@ -123,7 +123,8 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 					} catch (BadLocationException e) {
 						logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
 					}
-					textWidget.setCaretOffset(insertionPosition + insertedText.length() - 1);
+					textWidget.setCaretOffset(
+							insertionPosition + insertedText.length() - textWidget.getLineDelimiter().length());
 				}
 				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
 						new Position(insertionPosition, commentText.length()));

@@ -127,6 +127,14 @@ public class InsertionTest extends EditionLimiterTests {
 					expectations(0, "b", 2, new Position(0, 1), new Position(12, 6)) });
 		}
 
+		{
+			//Bug 481048
+			final String documentWithPublishedComment = "aaa\r\nauthor\n";
+			final String[] publishedComments = new String[] { "author" };
+			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 0, 3, "b", "b"),
+					expectations(1, "bb", 2, new Position(5, 2), new Position(9, 6)) });
+
+		}
 		//Insert between two comments and reply to the first one
 
 		//"Enter" followed by a comment
