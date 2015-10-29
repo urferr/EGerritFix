@@ -1,91 +1,107 @@
 <project>
- <modelVersion>4.0.0</modelVersion>
- <artifactId>org.eclipse.egerrit.ui.rcptt.tests</artifactId>
- <packaging>rcpttTest</packaging>
- 
- <parent>
- <groupId>org.eclipse.egerrit</groupId>
- <artifactId>org.eclipse.egerrit.parent</artifactId>
- <version>0.1.0-SNAPSHOT</version>
- <relativePath>..</relativePath>
- </parent>
- 
- 
- <pluginRepositories>
-    <pluginRepository>
-      <id>rcptt-releases</id>
-      <name>RCPTT Maven repository</name>
-      <url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>rcptt-snapshots</id>
-      <name>RCPTT Maven Snapshots repository</name>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <url>https://repo.eclipse.org/content/repositories/rcptt-snapshots/</url>
-    </pluginRepository>
-  </pluginRepositories> 
-  <properties>
-    <rcptt-maven-version>2.0.0</rcptt-maven-version>
-    <!-- 
-    <base-aut>/home/lmcgupe/gitopen/org.eclipse.egerrit/org.eclipse.egerrit.ui.rcptt.tests/target/eclipse-SDK-4.5-linux-gtk-x86_64.tar.gz</base-aut>
-   
-        -->
-    <base-aut>http://download.eclipse.org/eclipse/downloads/drops4/R-4.5-201506032000/eclipse-SDK-4.5-linux-gtk-x86_64.tar.gz</base-aut>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.eclipse.egerrit.ui.rcptt.tests</artifactId>
+	<packaging>rcpttTest</packaging>
 
-  </properties> 
+	<parent>
+		<groupId>org.eclipse.egerrit</groupId>
+		<artifactId>org.eclipse.egerrit.parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 
- <build>
-   <plugins>
-     <plugin>
-       <groupId>org.eclipse.rcptt</groupId>
-        <artifactId>rcptt-maven-plugin</artifactId>
-        <version>${rcptt-maven-version}</version>
-        <extensions>true</extensions>
-       <configuration>
-       <aut>
-                     <vmArgs>
-<vmArg>${argLine}</vmArg>
-    </vmArgs>        
-        
-       <explicit>${base-aut}</explicit>
-                <injections>
-            <injection>
-                <site>http://download.eclipse.org/releases/neon</site>
-                <features>
-                    <feature>org.eclipse.egit.feature.group</feature>
-                    <feature>org.eclipse.jgit.feature.group</feature>
-                    <feature>org.eclipse.emf.feature.group</feature>
-                </features>      
-            </injection>            
-            <injection>
-                <site>http://download.eclipse.org/egerrit/updates/nightly</site>
-                <features>
-                    <feature>org.eclipse.egerrit.feature.feature.group</feature>
-                </features>      
-            </injection>
-            <injection>
-                <site>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</site>
-                <features>
-                    <feature>org.slf4j.api</feature>
-                </features>      
-            </injection>
-        </injections>
-       </aut>
-       <runner>
-                 <!-- version of RCPTT Runner 
-        <explicit>http://www.eclipse.org/downloads/download.php?file=/rcptt/release/2.0.0/ide/rcptt.ide-2.0.0-linux.gtk.x86_64.tar.gz</explicit>
-<explicit>http://download.eclipse.org/rcptt/nightly/2.1.0/201508232321/runner/rcptt.runner-2.1.0-N201508232321.zip</explicit>
-<explicit>http://download.eclipse.org/rcptt/nightly/2.1.0/201508232321/ide/rcptt.ide-2.1.0-N201508232321-linux.gtk.x86_64.zip</explicit>
--->
-<version>2.0.0</version>
+	<dependencies>
+	     <!-- we use this dependency to obtain the archive of the plug-ins to test -->
+		<dependency>
+			<groupId>org.eclipse.egerrit</groupId>
+			<artifactId>org.eclipse.egerrit.updatesite</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>zip</type>
+		</dependency>
+	</dependencies>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>rcptt-releases</id>
+			<name>RCPTT Maven repository</name>
+			<url>https://repo.eclipse.org/content/repositories/rcptt-releases/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>rcptt-snapshots</id>
+			<name>RCPTT Maven Snapshots repository</name>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<url>https://repo.eclipse.org/content/repositories/rcptt-snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<properties>
+		<rcptt-maven-version>2.0.0</rcptt-maven-version>
+		<base-aut>http://download.eclipse.org/eclipse/downloads/drops4/R-4.5-201506032000/eclipse-SDK-4.5-linux-gtk-x86_64.tar.gz</base-aut>
+	</properties>
 
-                      
-            </runner>
-         <!-- The main configuration section goes here -->
-       </configuration>
-     </plugin>
-   </plugins>
- </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/p2repo</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.rcptt</groupId>
+				<artifactId>rcptt-maven-plugin</artifactId>
+				<version>${rcptt-maven-version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<aut>
+						<vmArgs>
+							<vmArg>${argLine}</vmArg>
+						</vmArgs>
+
+						<explicit>${base-aut}</explicit>
+						<injections>
+							<injection>
+								<site>http://download.eclipse.org/releases/neon</site>
+								<features>
+									<feature>org.eclipse.egit.feature.group</feature>
+									<feature>org.eclipse.jgit.feature.group</feature>
+									<feature>org.eclipse.emf.feature.group</feature>
+								</features>
+							</injection>
+							<injection>
+								<site>file:${project.build.directory}/p2repo/</site>
+								<features>
+									<feature>org.eclipse.egerrit.feature.feature.group</feature>
+								</features>
+							</injection>
+							<injection>
+								<site>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</site>
+								<features>
+									<feature>org.slf4j.api</feature>
+								</features>
+							</injection>
+						</injections>
+					</aut>
+					<runner>
+						<version>${rcptt-maven-version}</version>
+					</runner>
+					<!-- The main configuration section goes here -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

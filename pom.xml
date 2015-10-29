@@ -64,8 +64,7 @@
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.host.url></sonar.host.url>
 		<base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
-		<base.ui.test.vmargs>${base.test.vmargs}
-			-Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
+		<base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
 
 		<download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
 	</properties>
@@ -166,12 +165,6 @@
 						<configuration>
 							<excludes>
 								<plugin id="com.google.gson" />
-								<plugin id="com.google.gerrit.common" />
-								<plugin id="com.google.gerrit.prettify" />
-								<plugin id="com.google.gerrit.reviewdb" />
-								<plugin id="com.google.gwtorm" />
-								<plugin id="com.google.gwtjsonrpc" />
-								<plugin id="com.google.gwt.servlet" />
 							</excludes>
 						</configuration>
 					</execution>
@@ -182,12 +175,6 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.4.201502262128</version>
-				<configuration>
-					<includes>
-						<include>org.eclipse.egerrit.*</include>
-					</includes>
-					<destFile>${project.basedir}/../target/jacoco.exec</destFile>
-				</configuration>
 				<executions>
 					<execution>
 						<id>pre-test</id>
@@ -224,14 +211,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compile-plugin</artifactId>
-<version>3.3.3</version>
-						<configuration>
-<debug>true</debug>
-						</configuration>
 			</plugin>
 		</plugins>
 
@@ -372,12 +351,13 @@
 		<module>org.eclipse.egerrit.core.tests</module>
 		<module>org.eclipse.egerrit.ui</module>
 		<module>org.eclipse.egerrit.ui.tests</module>
-		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
 		<module>org.eclipse.egerrit.dashboard.core</module>
 		<module>org.eclipse.egerrit.dashboard.ui</module>
 
 		<module>org.eclipse.egerrit.feature</module>
 		<module>org.eclipse.egerrit.updatesite</module>
+		
+		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
 	</modules>
 
 </project>
