@@ -295,7 +295,7 @@
 									<value>org.sonar.java.jacoco.JUnitListener</value>
 								</property>
 							</properties>
-							<argLine>${tycho.testArgLine} ${ArgLine}</argLine>
+							<argLine>${tycho.testArgLine}</argLine>
 						</configuration>
 					</plugin>
 				</plugins>
