@@ -24,6 +24,7 @@ import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
+import org.junit.Test;
 
 public class EnterHttpInSearchTest {
 
@@ -32,7 +33,8 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(new ArrayList<GerritServerInformation>());
 	}
 
-//	@Test
+	@Test
+	//This tests the case where no server information was known by the plugin
 	public void enterANonExistantURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
@@ -46,7 +48,8 @@ public class EnterHttpInSearchTest {
 
 	}
 
-//	@Test
+	@Test
+	//This tests the case where the server was already entered
 	public void enterAnExistingURL() throws URISyntaxException {
 		//Setup, we create a server
 		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
@@ -55,7 +58,7 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(servers);
 
 		//Open the view enter something in it
-		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
@@ -66,7 +69,7 @@ public class EnterHttpInSearchTest {
 		});
 	}
 
-//	@Test
+	@Test
 	public void preferServerWithUsername() throws URISyntaxException {
 		//Setup, we create two servers, one anonymous, the other with a user
 		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
@@ -78,7 +81,7 @@ public class EnterHttpInSearchTest {
 		ServersStore.saveServers(servers);
 
 		//Open the view enter something in it
-		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
@@ -90,13 +93,27 @@ public class EnterHttpInSearchTest {
 		});
 	}
 
-//	@Test
-	public void enterJustAURL() {
-		final GerritTableView reviewTableView = GerritTableView.getActiveView(false);
-		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
+	@Test
+	public void enterTheDashboardURL() {
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
+		reviewTableView.processCommands("https://git.eclipse.org/r/#/q/status:open");
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {
+				assertTrue(1 == ServersStore.getAllServers().size());
+				assertTrue(1 < reviewTableView.getTableViewer().getTable().getItemCount());
+			}
+		});
+	}
+
+	@Test
+	public void enterJustTheRootURL() {
+		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
+		reviewTableView.processCommands("https://git.eclipse.org/r/");
+		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				assertTrue(1 == ServersStore.getAllServers().size());
 				assertTrue(1 < reviewTableView.getTableViewer().getTable().getItemCount());
 			}
 		});
