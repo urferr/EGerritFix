@@ -20,6 +20,9 @@ If you want more recent builds, please consult the list of our [p2 repositories]
 # Documentation
 You can find preliminary documentation [here](https://wiki.eclipse.org/EGerrit/p2_repositories).
 
+# 2 minutes introduction video
+<iframe width="420" height="315" src="https://www.youtube.com/embed/HM6FuBqOMKU" frameborder="0" allowfullscreen></iframe>
+
 # Screenshots
 ## Gerrit dashboard view
 ![EGerrit dashboard view](images/EGerritDashboard.png)
