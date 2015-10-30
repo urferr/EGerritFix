@@ -31,7 +31,7 @@
 	<name>EGerrit Parent</name>
 	<groupId>org.eclipse.egerrit</groupId>
 	<artifactId>org.eclipse.egerrit.parent</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -43,7 +43,7 @@
 
 		<!-- EGerrit info -->
 		<egerrit.groupId>org.eclipse.egerrit</egerrit.groupId>
-		<egerrit.version>0.1.0-SNAPSHOT</egerrit.version>
+		<egerrit.version>${project.version}</egerrit.version>
 
 		<!-- Eclipse repository -->
 		<eclipse.version>eclipse-luna</eclipse.version>
