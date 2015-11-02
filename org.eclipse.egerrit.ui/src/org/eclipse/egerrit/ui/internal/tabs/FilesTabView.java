@@ -77,6 +77,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -255,6 +256,11 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		if (dialog.getToggleState()) {
 			editorPrefs.putBoolean("editortip", true);
+			try {
+				editorPrefs.flush();
+			} catch (BackingStoreException e) {
+				//There is not much we can do
+			}
 		}
 		return;
 	}
