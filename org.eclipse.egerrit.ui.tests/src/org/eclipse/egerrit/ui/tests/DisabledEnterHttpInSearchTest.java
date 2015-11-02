@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
 
-public class EnterHttpInSearchTest {
+public class DisabledEnterHttpInSearchTest {
 
 	@Before
 	public void cleanUpStore() {
