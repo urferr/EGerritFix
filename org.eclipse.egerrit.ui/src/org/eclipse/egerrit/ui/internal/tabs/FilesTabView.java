@@ -186,7 +186,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		comboDiffAgainst = new Combo(composite, SWT.NONE);
 		GridData gd_combo = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
-		gd_combo.verticalIndent = 5;
 		comboDiffAgainst.setLayoutData(gd_combo);
 
 		lblTotal = new Label(composite, SWT.NONE);
