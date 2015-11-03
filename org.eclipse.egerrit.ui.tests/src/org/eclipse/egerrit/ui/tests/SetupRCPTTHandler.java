@@ -19,8 +19,6 @@ import java.util.Map;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.egerrit.core.tests.support.GitAccess;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.ui.commands.IElementUpdater;
 import org.eclipse.ui.menus.UIElement;
 
@@ -36,11 +34,9 @@ public class SetupRCPTTHandler extends AbstractHandler implements IElementUpdate
 	public Object execute(final ExecutionEvent aEvent) {
 
 		try {
-			GitAccess gAccess = new GitAccess();
-			Git git = gAccess.getGitProject();
-
-			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !\n This is the second line \n");
-			gAccess.pushFile();
+			RCPTTInitialSetOfReviews setup = new RCPTTInitialSetOfReviews();
+			RCPTTInitialSetOfReviews.setupRepo();
+			setup.setUp();
 
 		} catch (Exception e1) {
 			fail(e1.getMessage());

@@ -157,6 +157,13 @@ public class GitAccess {
 	 * Commits and pushes to gerrit server
 	 */
 	public void pushFile() throws Exception {
+		pushFile("Test commit message");
+	}
+
+	/**
+	 * Commits and pushes to gerrit server
+	 */
+	public void pushFile(String commitMsg) throws Exception {
 		Authenticator.setDefault(null);
 		CommitCommand command = fGit.commit();
 		String refSpec = "HEAD:refs/for/master";
@@ -164,7 +171,7 @@ public class GitAccess {
 		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
 				.setCommitter(Common.USER, Common.EMAIL)
 				.setInsertChangeId(true)
-				.setMessage("Test commit message")
+				.setMessage(commitMsg)
 				.call();
 		int cid = call.getFullMessage().indexOf("Change-Id: ");
 		fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
