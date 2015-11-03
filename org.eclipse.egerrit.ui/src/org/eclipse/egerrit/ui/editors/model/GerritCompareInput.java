@@ -200,7 +200,9 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 				throw ex;
 			}
 		}
-		postSaveListener.run();
+		if (postSaveListener != null) {
+			postSaveListener.run();
+		}
 	}
 
 	@Override

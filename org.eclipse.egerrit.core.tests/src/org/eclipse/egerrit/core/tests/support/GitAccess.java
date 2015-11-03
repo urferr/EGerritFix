@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.util.Collection;
 
@@ -74,6 +75,10 @@ public class GitAccess {
 
 	private final String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
 			+ Common.TEST_PROJECT;
+
+	static {
+		setDefaultAuthenticator();
+	}
 
 	/**
 	 * Instantiates a local git repo connected to the server.
@@ -156,7 +161,6 @@ public class GitAccess {
 		CommitCommand command = fGit.commit();
 		String refSpec = "HEAD:refs/for/master";
 		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD);
-		System.out.println("isInteractive: " + creds.isInteractive());
 		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
 				.setCommitter(Common.USER, Common.EMAIL)
 				.setInsertChangeId(true)
@@ -315,5 +319,16 @@ public class GitAccess {
 
 	public GerritClient getGerrit() {
 		return gerrit;
+	}
+
+	//This is necessary to avoid being prompted for username/pwd when we are pushing commit to the git repo
+	private static void setDefaultAuthenticator() {
+		Authenticator.setDefault(new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				// ignore
+				return new PasswordAuthentication(Common.USER, Common.PASSWORD.toCharArray());
+			}
+		});
 	}
 }

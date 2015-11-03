@@ -11,6 +11,7 @@
 
 package org.eclipse.egerrit.ui.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -39,7 +40,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DisabledOpenCompareEditor {
+public class OpenCompareEditorTest {
 
 	private static final String A_PROJECT_A_JAVA = "A.java"; //$NON-NLS-1$
 
@@ -124,7 +125,10 @@ public class DisabledOpenCompareEditor {
 		gitAccess.pushFile();
 		gitAccess.resetTo(beforeMods);
 
-		assertTrue(getCompareInputFor(gitAccess.getChangeId()).getTitle().contains("(no matching file in workspace)"));
+		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
+		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
+		assertEquals("Patch Set 1: b.txt", compareInput.getRight().getName()); //$NON-NLS-1$
+		assertEquals("b.txt", compareInput.getLeft().getName()); //$NON-NLS-1$
 	}
 
 	@Test
@@ -138,23 +142,6 @@ public class DisabledOpenCompareEditor {
 		ICompareInput compareInput = input.prepareCompareInput(new NullProgressMonitor());
 		assertTrue(compareInput.getLeft() instanceof LocalResourceTypedElement);
 		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
-	}
-
-	@Test
-	public void repoUnknown() throws Exception {
-		gitAccess.removeFromGitView();
-		try {
-			String beforeMods = gitAccess.getLastLocalCommitId();
-			gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
-			gitAccess.pushFile();
-			gitAccess.resetTo(beforeMods);
-
-			assertTrue(
-					getCompareInputFor(gitAccess.getChangeId()).getTitle().contains("(no matching file in workspace)"));
-		} finally {
-			gitAccess.addToGitView();
-		}
-
 	}
 
 	//This subclass is just here so we can access the value of compareinput
@@ -180,7 +167,7 @@ public class DisabledOpenCompareEditor {
 		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerrit(), changeInfo);
 		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();
 		Entry<String, RevisionInfo> theRevision = revisions.entrySet().iterator().next();
-//		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next());
+		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next(), null);
 		return compareHelper.getCompareInput();
 	}
 }
