@@ -40,15 +40,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<tycho.version>0.24.0</tycho.version>
 		<antrun.version>1.8</antrun.version>
-
-		<!-- EGerrit info -->
-		<egerrit.groupId>org.eclipse.egerrit</egerrit.groupId>
-		<egerrit.version>${project.version}</egerrit.version>
-
-		<!-- Eclipse repository -->
-		<eclipse.version>eclipse-luna</eclipse.version>
-		<eclipse-repo.url>http://download.eclipse.org/releases/luna</eclipse-repo.url>
-
+		<cbi.version>1.1.0</cbi.version>
+		
 		<!-- Target platform -->
 		<egerrit.target.artifact>org.eclipse.egerrit.target</egerrit.target.artifact>
 		<egerrit.target.platform>eGerrit-Eclipse_4.4-luna</egerrit.target.platform>
@@ -98,10 +91,10 @@
 				<configuration>
 					<target>
 						<artifact>
-							<groupId>${egerrit.groupId}</groupId>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>${egerrit.target.artifact}</artifactId>
 							<classifier>${egerrit.target.platform}</classifier>
-							<version>${egerrit.version}</version>
+							<version>${project.version}</version>
 						</artifact>
 					</target>
 					<environments>
@@ -301,6 +294,7 @@
 					<plugin>
 						<groupId>org.eclipse.cbi.maven.plugins</groupId>
 						<artifactId>eclipse-jarsigner-plugin</artifactId>
+						<version>${cbi.version}</version>
 						<executions>
 							<execution>
 								<id>sign</id>
