@@ -113,6 +113,8 @@ import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.services.IServiceLocator;
 
+import com.ibm.icu.text.NumberFormat;
+
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
 	private static final String REBASE = "rebase";
 
@@ -921,8 +923,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//
 		IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
 		IObservableValue idFChangeInfoObserveValue = BeanProperties.value("_number").observe(fChangeInfo);
+		NumberFormat numberFormat = NumberFormat.getInstance();
+		numberFormat.setGroupingUsed(false);
 		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null,
-				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(true)));
+				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(numberFormat, true)));
 		//
 		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(subjectData);
 		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("subject").observe(fChangeInfo);

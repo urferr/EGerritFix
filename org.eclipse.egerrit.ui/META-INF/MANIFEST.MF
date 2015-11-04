@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.text;bundle-version="3.5.200",
  org.eclipse.team.ui;bundle-version="3.6.201",
  org.eclipse.ui.workbench.texteditor;bundle-version="3.8.0",
- org.eclipse.jface.text;bundle-version="3.8.2"
+ org.eclipse.jface.text;bundle-version="3.8.2",
+ com.ibm.icu
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
