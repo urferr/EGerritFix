@@ -240,6 +240,18 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		shortIdData.setBackground(parent.getBackground());
 		shortIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
+		statusData = new Text(group_header, SWT.LEFT);
+		GridData gd_lblStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		statusData.setLayoutData(gd_lblStatus);
+		statusData.setEditable(false);
+		statusData.addListener(SWT.Modify, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				statusData.getParent().layout();
+			}
+		});
+
 		Label lblSubject = new Label(group_header, SWT.NONE);
 		lblSubject.setText("Subject:");
 		GridData gd_Subject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -247,7 +259,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		lblSubject.setLayoutData(gd_Subject);
 
 		subjectData = new Text(group_header, SWT.NONE);
-		GridData gd_lblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		GridData gd_lblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		subjectData.setLayoutData(gd_lblSubjectData);
 		subjectData.setEditable(false);
 		subjectData.setBackground(parent.getBackground());
@@ -256,17 +268,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			@Override
 			public void handleEvent(Event event) {
 				subjectData.getParent().layout();
-			}
-		});
-		statusData = new Text(group_header, SWT.RIGHT);
-		GridData gd_lblStatus = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
-		statusData.setLayoutData(gd_lblStatus);
-		statusData.setEditable(false);
-		statusData.addListener(SWT.Modify, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				statusData.getParent().layout();
 			}
 		});
 
