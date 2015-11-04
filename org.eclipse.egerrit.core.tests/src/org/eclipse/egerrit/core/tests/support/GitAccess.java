@@ -100,7 +100,7 @@ public class GitAccess {
 	private void cloneRepo() throws Exception {
 		CloneCommand cloneCmd = Git.cloneRepository();
 		checkoutFolder = createTempFolder("egerrit");
-		System.out.println(checkoutFolder);
+		System.out.println("Checking out " + fUrl + " into " + checkoutFolder);
 		cloneCmd.setGitDir(new File(checkoutFolder, ".git")).setURI(fUrl).setDirectory(checkoutFolder);
 		cloneCmd.setBare(false).setBranch("master").setNoCheckout(false);
 		fGit = cloneCmd.call();
