@@ -124,5 +124,12 @@ define gerrit::site (
     require => [Exec["start $envid"], File["$envbase/admin.id_rsa"]],
     creates => "$envbase/git/org.eclipse.egerrit.test.git"
   }
+  
+ exec { "create RCPTT project for $envid":
+    command => "$ssh gerrit create-project --name org.eclipse.egerrit.RCPTTtest --empty-commit",
+    #    user => "$gerrit::userOwner",
+    require => [Exec["start $envid"], File["$envbase/admin.id_rsa"]],
+    creates => "$envbase/git/org.eclipse.egerrit.RCPTTtest.git"
+  }
  
 }
