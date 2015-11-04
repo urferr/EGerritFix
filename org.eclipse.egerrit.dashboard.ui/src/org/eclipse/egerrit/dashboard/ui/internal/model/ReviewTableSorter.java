@@ -85,6 +85,9 @@ public class ReviewTableSorter extends ViewerSorter {
 					result = val1.compareTo(val2);
 				}
 				break;
+			case 1: // ID
+				result = changeInfo2.get_number() - changeInfo1.get_number();
+				break;
 			case 7: // Updated
 				val1 = changeInfo1.getUpdated();
 				val2 = changeInfo2.getUpdated();
