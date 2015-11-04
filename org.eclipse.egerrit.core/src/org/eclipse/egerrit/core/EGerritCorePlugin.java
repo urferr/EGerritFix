@@ -13,9 +13,12 @@
 package org.eclipse.egerrit.core;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
 
 /**
  * The EGerritCorePlugin class controls the plug-in life cycle
@@ -123,7 +126,11 @@ public class EGerritCorePlugin extends Plugin {
 	 * @param exception
 	 */
 	private static void log(int status, String message, Throwable exception) {
-		log(new Status(status, PLUGIN_ID, message, exception));
+		String version = getBundleVersion();
+		StringBuilder sb = new StringBuilder();
+		sb.append("Plug-in Version: " + version + "\n");
+		sb.append(message);
+		log(new Status(status, PLUGIN_ID, sb.toString(), exception));
 	}
 
 	// LogInfo
@@ -209,5 +216,21 @@ public class EGerritCorePlugin extends Plugin {
 			userAgent = productId + '/' + buildId + ' ' + PLUGIN_ID + '/' + pluginVersion;
 		}
 		return userAgent;
+	}
+
+	/**
+	 * Getting the bundle version is public to allow the JUNIT
+	 * 
+	 * @return String
+	 */
+	public static String getBundleVersion() {
+		//Testing for the eclipse runtime here
+		String ret = "";
+		final Bundle bdleEgerritUi = Platform.getBundle(PLUGIN_ID);
+		if (bdleEgerritUi != null) {
+			Version version = bdleEgerritUi.getVersion();
+			ret = version.toString();
+		}
+		return ret;
 	}
 }

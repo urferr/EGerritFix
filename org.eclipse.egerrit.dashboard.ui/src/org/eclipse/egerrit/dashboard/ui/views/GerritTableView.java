@@ -526,7 +526,9 @@ public class GerritTableView extends ViewPart {
 								page.openEditor(new ChangeDetailEditorInput(gerritClient, (ChangeInfo) element),
 										ChangeDetailEditor.EDITOR_ID);
 							} catch (PartInitException e) {
-								EGerritCorePlugin.logError(e.getMessage());
+								EGerritCorePlugin.logError(gerritClient != null
+										? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
+										: e.getMessage());
 							}
 						}
 					}
@@ -1034,7 +1036,9 @@ public class GerritTableView extends ViewPart {
 		try {
 			uri = new URI(repository.getServerURI());
 		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError(e.getMessage());
+			EGerritCorePlugin.logError(gerritClient != null
+					? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
+					: e.getMessage());
 
 		}
 		if (uri != null) {
@@ -1084,7 +1088,9 @@ public class GerritTableView extends ViewPart {
 		try {
 			reviews = performQuery(aQuery, new NullProgressMonitor());
 		} catch (MalformedURLException e) {
-			EGerritCorePlugin.logError(e.getMessage());
+			EGerritCorePlugin.logError(gerritClient != null
+					? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
+					: e.getMessage());
 
 		}
 

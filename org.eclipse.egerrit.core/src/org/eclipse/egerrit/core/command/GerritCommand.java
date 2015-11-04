@@ -191,7 +191,7 @@ public abstract class GerritCommand<T> implements Callable<T> {
 							result1 = (T) buf;
 							reader.close();
 						} catch (MalformedJsonException e2) {
-							EGerritCorePlugin.logError(e2.getMessage());
+							EGerritCorePlugin.logError(fGerritRepository.formatGerritVersion() + e2.getMessage());
 							result1 = (T) "Invalid format";
 						}
 					}
@@ -202,12 +202,12 @@ public abstract class GerritCommand<T> implements Callable<T> {
 
 		} catch (ClientProtocolException e) {
 			if (!handleHttpException(e)) {
-				EGerritCorePlugin.logError("Transport error occured " + formatRequest().getMethod() + ' ' //$NON-NLS-1$
-						+ formatRequest().getURI().toASCIIString(), e);
+				EGerritCorePlugin.logError(fGerritRepository.formatGerritVersion() + "Transport error occured " //$NON-NLS-1$
+						+ formatRequest().getMethod() + ' ' + formatRequest().getURI().toASCIIString(), e);
 			}
 		} catch (IOException e) {
-			EGerritCorePlugin.logError("Transport error occured " + formatRequest().getMethod() + ' ' //$NON-NLS-1$
-					+ formatRequest().getURI().toASCIIString(), e);
+			EGerritCorePlugin.logError(fGerritRepository.formatGerritVersion() + "Transport error occured " //$NON-NLS-1$
+					+ formatRequest().getMethod() + ' ' + formatRequest().getURI().toASCIIString(), e);
 		}
 
 		return result;

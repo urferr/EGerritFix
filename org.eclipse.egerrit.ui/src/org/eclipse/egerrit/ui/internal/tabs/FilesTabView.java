@@ -323,7 +323,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				try {
 					command.call();
 				} catch (EGerritException ex) {
-					EGerritCorePlugin.logError(ex.getMessage());
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
 				}
 
 				fileInfo.setReviewed(true);
@@ -371,7 +371,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				command.call();
 				fileInfo.setReviewed(false);
 			} catch (EGerritException ex) {
-				EGerritCorePlugin.logError(ex.getMessage());
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
 			}
 		} else {
 			SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
@@ -379,7 +379,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			try {
 				command.call();
 			} catch (EGerritException ex) {
-				EGerritCorePlugin.logError(ex.getMessage());
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
 			}
 			fileInfo.setReviewed(true);
 		}
@@ -687,7 +687,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				res = command.call();
 				return res;
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -716,7 +716,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				res = command.call();
 				return res;
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;
@@ -743,7 +743,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				res = command.call();
 				return res;
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 		} catch (UnsupportedClassVersionError e) {
 			return null;

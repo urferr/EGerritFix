@@ -216,7 +216,8 @@ public class MessageTabView extends Observable {
 						editMessageCmd.call();
 						publishChangeEditCmd.call();
 					} catch (EGerritException e3) {
-						EGerritCorePlugin.logError(e3.getMessage());
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 					}
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
@@ -320,7 +321,7 @@ public class MessageTabView extends Observable {
 		} catch (NotDefinedException | NotEnabledException | NotHandledException
 				| org.eclipse.core.commands.ExecutionException e) {
 
-			EGerritCorePlugin.logError(e.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
 
 		}
 	}

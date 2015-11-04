@@ -25,7 +25,7 @@ import org.junit.Test;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.EGerritCorePlugin}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -131,6 +131,11 @@ public class EGerritCorePluginTest implements ILogListener {
 	public void testLogInfoString() {
 
 		String MESSAGE = "testLogInfo_String";
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 
 		// Initialize
 		fLoggingPlugin = null;
@@ -141,7 +146,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.INFO, fStatus.getSeverity());
 		assertNull("Wrong exception", fStatus.getException());
 	}
@@ -154,6 +159,11 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		String MESSAGE = "testLogInfo_String_Throwable";
 		Exception EXCEPTION = new Exception(MESSAGE);
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 
 		// Initialize
 		fLoggingPlugin = null;
@@ -164,7 +174,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.INFO, fStatus.getSeverity());
 		assertEquals("Wrong exception", EXCEPTION, fStatus.getException());
 	}
@@ -180,7 +190,11 @@ public class EGerritCorePluginTest implements ILogListener {
 	public void testLogWarningString() {
 
 		String MESSAGE = "testLogWarning_String";
-
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 		// Initialize
 		fLoggingPlugin = null;
 		fStatus = null;
@@ -190,7 +204,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.WARNING, fStatus.getSeverity());
 		assertNull("Wrong exception", fStatus.getException());
 	}
@@ -204,6 +218,11 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		String MESSAGE = "testLogWarning_String_Throwable";
 		Exception EXCEPTION = new Exception(MESSAGE);
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 
 		// Initialize
 		fLoggingPlugin = null;
@@ -214,7 +233,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.WARNING, fStatus.getSeverity());
 		assertEquals("Wrong exception", EXCEPTION, fStatus.getException());
 	}
@@ -230,6 +249,11 @@ public class EGerritCorePluginTest implements ILogListener {
 	public void testLogErrorString() {
 
 		String MESSAGE = "testLogError_String";
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 
 		// Initialize
 		fLoggingPlugin = null;
@@ -240,7 +264,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.ERROR, fStatus.getSeverity());
 		assertNull("Wrong exception", fStatus.getException());
 	}
@@ -254,6 +278,11 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		String MESSAGE = "testLogError_String_Throwable";
 		Exception EXCEPTION = new Exception(MESSAGE);
+		//Build the result value
+		String version = EGerritCorePlugin.getBundleVersion();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Plug-in Version: " + version + "\n");
+		ret.append(MESSAGE);
 
 		// Initialize
 		fLoggingPlugin = null;
@@ -264,7 +293,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 		// Verify result
 		assertEquals("Wrong plugin", EGerritCorePlugin.PLUGIN_ID, fLoggingPlugin);
-		assertEquals("Wrong message", MESSAGE, fStatus.getMessage());
+		assertEquals("Wrong message", ret.toString(), fStatus.getMessage());
 		assertEquals("Wrong status", IStatus.ERROR, fStatus.getSeverity());
 		assertEquals("Wrong exception", EXCEPTION, fStatus.getException());
 	}
