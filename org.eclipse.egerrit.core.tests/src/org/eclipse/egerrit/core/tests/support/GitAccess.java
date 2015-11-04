@@ -224,6 +224,9 @@ public class GitAccess {
 	 * Remove git repo from the list of repositories known by egit
 	 */
 	public void removeFromGitView() {
+		if (fGit == null) {
+			return;
+		}
 		RepositoryUtil repoUtil = Activator.getDefault().getRepositoryUtil();
 		repoUtil.removeDir(fGit.getRepository().getDirectory());
 	}
