@@ -55,17 +55,17 @@ public class GerritServerDialog extends Dialog {
 
 	private final String fCancelTooltip = "Do not save the information";
 
-	private final String HEADER = "Enter the http(s) URL of your gerrit server, and the username and password to connect to it.\n\nThe URL you need to enter is the same than the one you use to connect to your Gerrit server on the web.";
+	private final String HEADER = "Enter the http(s) URL of your Gerrit server, and the username and password to connect to it.\n\nThe URL you need to enter is the same than the one you use to connect to your Gerrit server on the web.";
 
-	private final String URI_TOOLTIP = "For example, on Eclipse Gerrit server is https://git.eclipse.org/r/. Another way to determine the URL is to start from the URL of a change (e.g https://git.eclipse.org/r/#/c/58066/) and use as a URL the part up to the #.";
+	private final String URL_TOOLTIP = "For example, on Eclipse Gerrit server is https://git.eclipse.org/r/. Another way to determine the URL is to start from the URL of a change (e.g https://git.eclipse.org/r/#/c/58066/) and use as a URL the part up to the #.";
 
-	private final String URI_EXAMPLE_TOOLTIP = "Ex: https://git.eclipse.org/r";
+	private final String URL_EXAMPLE_TOOLTIP = "Example: https://git.eclipse.org/r";
 
 	private final String SHORTNAME_TOOLTIP = "Name to show in the Gerrit Server list";
 
-	private final String SHORTNAME_EXAMPLE_TOOLTIP = "Ex: Eclipse or Foundation";
+	private final String SHORTNAME_EXAMPLE_TOOLTIP = "Example: Eclipse or Foundation";
 
-	private final String INVALID_MESSAGE = "URI is NOT valid";
+	private final String INVALID_MESSAGE = "URL is NOT valid";
 
 	private final static String TITLE = "Gerrit selection";
 
@@ -78,7 +78,7 @@ public class GerritServerDialog extends Dialog {
 
 	private Text txtServerName;
 
-	private Text txtServerURI;
+	private Text txtServerURL;
 
 	private Text txtUserName;
 
@@ -135,19 +135,19 @@ public class GerritServerDialog extends Dialog {
 		GridData labelData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1);
 		labelComments.setLayoutData(labelData);
 		labelComments.setText(HEADER);
-		labelComments.setToolTipText(URI_TOOLTIP);
+		labelComments.setToolTipText(URL_TOOLTIP);
 
-		//URI
+		//URL
 		Label labelServerURI = new Label(composite, SWT.NONE);
 		labelServerURI.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelServerURI.setText("URI:");
-		labelServerURI.setToolTipText(URI_TOOLTIP);
+		labelServerURI.setText("URL:");
+		labelServerURI.setToolTipText(URL_TOOLTIP);
 
-		txtServerURI = new Text(composite, SWT.BORDER);
-		txtServerURI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtServerURI.setToolTipText(URI_EXAMPLE_TOOLTIP);
-		txtServerURI.setText(workingCopy != null ? workingCopy.getServerURI() : ""); //$NON-NLS-1$
-		txtServerURI.addFocusListener(serverURIFocusListener());
+		txtServerURL = new Text(composite, SWT.BORDER);
+		txtServerURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		txtServerURL.setToolTipText(URL_EXAMPLE_TOOLTIP);
+		txtServerURL.setText(workingCopy != null ? workingCopy.getServerURI() : ""); //$NON-NLS-1$
+		txtServerURL.addFocusListener(serverURIFocusListener());
 
 		//Server Name
 		Label labelServerName = new Label(composite, SWT.NONE);
@@ -200,7 +200,7 @@ public class GerritServerDialog extends Dialog {
 			public void modifyText(ModifyEvent e) {
 				isServerInfoReady();
 				workingCopy.setServerName(((Text) e.widget).getText());
-				txtServerURI.setText(workingCopy.getServerURI());
+				txtServerURL.setText(workingCopy.getServerURI());
 			}
 		};
 	}
@@ -275,7 +275,7 @@ public class GerritServerDialog extends Dialog {
 		// Ok button selected
 		if (aButtonId == IDialogConstants.OK_ID) {
 			try {
-				if (validateURI()) {
+				if (validateURL()) {
 					if (validConnection()) {
 						super.setReturnCode(IDialogConstants.OK_ID);
 						super.okPressed();
@@ -369,7 +369,7 @@ public class GerritServerDialog extends Dialog {
 		return b;
 	}
 
-	private Boolean validateURI() throws URISyntaxException {
+	private Boolean validateURL() throws URISyntaxException {
 		Boolean b = true;
 		if (workingCopy != null) {
 			if (!workingCopy.isValid()) {

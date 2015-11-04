@@ -89,7 +89,7 @@ public class GerritServerInformation {
 	}
 
 	private String removeTrailingSlash(String server) {
-		if (server.endsWith("/")) { //$NON-NLS-1$
+		if (server != null && server.endsWith("/")) { //$NON-NLS-1$
 			return server.substring(0, server.length() - 1);
 		}
 		return server;
