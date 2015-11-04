@@ -321,7 +321,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					try {
 						submitCmd.call();
 					} catch (EGerritException e3) {
-						EGerritCorePlugin.logError(e3.getMessage());
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 					}
 					refreshStatus();
 				}
@@ -354,7 +355,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					try {
 						abandonCmd.call();
 					} catch (EGerritException e3) {
-						EGerritCorePlugin.logError(e3.getMessage());
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 					}
 					refreshStatus();
 				}
@@ -387,7 +389,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					try {
 						restoreCmd.call();
 					} catch (EGerritException e3) {
-						EGerritCorePlugin.logError(e3.getMessage());
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 					}
 					refreshStatus();
 				}
@@ -421,7 +424,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					try {
 						rebaseCmd.call();
 					} catch (EGerritException e3) {
-						EGerritCorePlugin.logError(e3.getMessage());
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 					}
 					refreshStatus();
 				}
@@ -565,7 +569,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		try {
 			listBranchesCmdResult = cherryPickCmd.call();
 		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(e3.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
 		return listBranchesCmdResult;
 	}
@@ -577,7 +581,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		try {
 			listBranchesCmdResult = listBranchesCmd.call();
 		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(e3.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
 		return listBranchesCmdResult;
 	}
@@ -595,7 +599,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			reviewToEmit.call();
 			refreshStatus();
 		} catch (EGerritException e1) {
-			EGerritCorePlugin.logError(e1.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
 	}
 
@@ -717,7 +721,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		try {
 			getRevisionActionsCmdResult = getRevisionActionsCmd.call();
 		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(e3.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
 		return getRevisionActionsCmdResult;
 	}
@@ -894,7 +898,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			try {
 				res = command.call();
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			return res;
 		} catch (UnsupportedClassVersionError e) {
@@ -1020,13 +1024,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			gerritToGitMap = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
 					projectName);
 		} catch (URISyntaxException e2) {
-			EGerritCorePlugin.logError(e2.getMessage());
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
 		}
 		Repository jgitRepo = null;
 		try {
 			jgitRepo = gerritToGitMap.find();
 		} catch (IOException e2) {
-			EGerritCorePlugin.logError(e2.getMessage());
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
 		}
 		return jgitRepo;
 	}
@@ -1076,7 +1080,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
 
 		try {
-			// Lookup commmand with its ID
+			// Lookup command with its ID
 			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
 
 			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
@@ -1085,7 +1089,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		} catch (NotDefinedException | NotEnabledException | NotHandledException
 				| org.eclipse.core.commands.ExecutionException e) {
 
-			EGerritCorePlugin.logError(e.getMessage());
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
 
 		}
 	}

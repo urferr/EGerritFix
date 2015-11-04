@@ -82,7 +82,7 @@ public class CompareItemFactory {
 						fileContent = ""; //$NON-NLS-1$
 					}
 				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(e.getMessage());
+					EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 				}
 			} else {
 				fileContent = ""; //$NON-NLS-1$

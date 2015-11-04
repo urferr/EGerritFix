@@ -54,7 +54,7 @@ public class QueryHelpers {
 				command.addFreeText(setFreeText(subject));
 				return command.call();
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			return null;
 		} finally {
@@ -98,7 +98,7 @@ public class QueryHelpers {
 			try {
 				return command.call();
 			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(e.getMessage());
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			return null;
 		} finally {

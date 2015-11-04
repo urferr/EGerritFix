@@ -401,8 +401,24 @@ public class GerritRepository {
 		try {
 			gerrit = GerritFactory.create(this);
 		} catch (EGerritException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
+			EGerritCorePlugin.logError(formatGerritVersion() + e.getLocalizedMessage(), e);
 		}
 		return gerrit;
+	}
+
+	/**
+	 * Format a string with the Gerrit version if available
+	 *
+	 * @return String
+	 */
+	public String formatGerritVersion() {
+		String gerritVersion = ""; //$NON-NLS-1$
+		StringBuilder sb = new StringBuilder();
+		sb.append("Gerrit server: " + (serverInfo != null ? serverInfo.getServerURI() : "Unknown"));
+		sb.append("\nVersion: ");
+		gerritVersion = fVersion != null ? fVersion.toString() : "Unknown";
+		sb.append(gerritVersion);
+		sb.append("\n"); //$NON-NLS-1$
+		return sb.toString();
 	}
 }
