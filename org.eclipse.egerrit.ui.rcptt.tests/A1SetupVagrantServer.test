@@ -22,14 +22,14 @@ get-window Preferences | get-tree | select "Team/Gerrit Servers"
 with [get-window Preferences] {
     get-button "New..." | click
     with [get-window "Gerrit Server Selection"] {
-        with [get-editbox -after [get-label "URI:"]] {
+        with [get-editbox -after [get-label "URL:"]] {
             click-text
             key-type "M1+v"
             set-text "http://192.168.50.4:28112/gerrit-2.11.2"
             click-text 2 
         }
         get-editbox -after [get-label "Label:"] | click-text
-        get-editbox -after [get-label "URI:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+        get-editbox -after [get-label "URL:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
         get-editbox -after [get-label "Label:"] | set-text "vagrant2.11.2"
         with [get-editbox -after [get-label "User:"]] {
             set-text "admin"
