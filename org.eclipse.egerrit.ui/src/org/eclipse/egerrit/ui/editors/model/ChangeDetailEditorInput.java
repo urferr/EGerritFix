@@ -112,6 +112,8 @@ public class ChangeDetailEditorInput implements IEditorInput {
 			if (other.change != null) {
 				return false;
 			}
+		} else if (change.getId().equals(other.change.getId())) {
+			return true;
 		} else if (!change.equals(other.change)) {
 			return false;
 		}
