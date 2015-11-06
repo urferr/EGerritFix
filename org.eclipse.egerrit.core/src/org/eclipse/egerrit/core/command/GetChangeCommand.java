@@ -13,161 +13,39 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Get Change</a>
- * command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
- * structure.
+ * The command GET /changes/{change-id}/detail
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail
  *
  * @since 1.0
  */
-public class GetChangeCommand extends QueryCommand<ChangeInfo> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
-
+public class GetChangeCommand extends BaseCommandChange<ChangeInfo> {
 	/**
-	 * The constructor
+	 * Construct a command to get a details about a change
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
+	 * @param changeId
+	 *            The changeId to get the details for
 	 */
-	public GetChangeCommand(GerritRepository gerritRepository, String id) {
-		super(gerritRepository, ChangeInfo.class);
-		this.setId(id);
-		//Setting requires to false, because even though this command can access user specific information
-		//It will still succeed when user-specific information is requested by anonymous.
-		//It will just not return the requested information
-		requiresAuthentication(false);
-
+	public GetChangeCommand(GerritRepository gerritRepository, String changeId) {
+		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, ChangeInfo.class, changeId);
+		setPathFormat("/changes/{change-id}/detail"); //$NON-NLS-1$
 	}
 
-	// ------------------------------------------------------------------------
-	// Query fields
-	// ------------------------------------------------------------------------
-
-	/**
-	 * @param owner
-	 * @return
-	 */
-	public GetChangeCommand setOwner(String owner) {
-		addParameter(OWNER, "owner:" + owner); //$NON-NLS-1$
-		return this;
-	}
-
-	/**
-	 * @param topic
-	 * @return
-	 */
-	public GetChangeCommand setTopic(String topic) {
-		addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
-		return this;
-	}
-
-	/**
-	 * @param status
-	 * @return
-	 */
-	public GetChangeCommand setStatus(ChangeStatus status) {
-		addParameter(STATUS, status.getValue());
-		return this;
-	}
-
-	/**
-	 * @param state
-	 * @return
-	 */
-	public GetChangeCommand setState(ChangeState state) {
-		addParameter(STATE, state.getValue());
-		return this;
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					//;
-					.append("/detail") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-
-			// Set the query
-			String params = buildParametersList();
-			if (params.length() > 0) {
-				uriBuilder.setParameter("q", params); //$NON-NLS-1$
-			}
-
-			// Add the options
-			for (String option : fQueryOptions) {
-				uriBuilder.addParameter("o", option).build(); //$NON-NLS-1$
-			}
-
-			// Add count
-			if (fCount > 0) {
-				uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
-			}
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		return new HttpGet(uri);
-	}
-
-	// ------------------------------------------------------------------------
-	// Getters/setters
-	// ------------------------------------------------------------------------
-
-	/**
-	 * @return
-	 */
-	public String getId() {
-		return fChange_id;
-	}
-
-	/**
-	 * @param change_id
-	 */
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
+	public void addOption(ChangeOption option) {
+		addQueryParameter("o", option.getValue()); //$NON-NLS-1$
 	}
 
 	@Override

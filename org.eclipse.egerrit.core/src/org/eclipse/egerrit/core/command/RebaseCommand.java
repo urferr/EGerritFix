@@ -12,131 +12,46 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.RebaseInput;
-
-import com.google.gson.Gson;
 
 /**
  * The command: POST /changes/{change-id}/rebase
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rebase-change
  *
  * @since 1.0
  */
-public class RebaseCommand extends PostCommand<ChangeInfo> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	private RebaseInput fRebaseInput = new RebaseInput();
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
+public class RebaseCommand extends BaseCommandChangeWithInput<ChangeInfo, RebaseInput> {
 
 	/**
 	 * The constructor
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
-	 * @param id
+	 * @param changeId
 	 *            the change-id
 	 */
-	public RebaseCommand(GerritRepository gerritRepository, String id) {
-		super(gerritRepository, ChangeInfo.class);
-		this.setId(id);
-		requiresAuthentication(true);
-
+	public RebaseCommand(GerritRepository gerritRepository, String changeId) {
+		super(gerritRepository, AuthentificationRequired.YES, HttpPost.class, ChangeInfo.class, changeId);
+		setPathFormat("/changes/{change-id}/rebase"); //$NON-NLS-1$
 	}
 
-	/**
-	 * gets fChange_id
-	 *
-	 * @return fChange_id of type String
-	 */
-	public String getId() {
-		return fChange_id;
-	}
-
-	/**
-	 * sets fChange_id
-	 *
-	 * @param change_id
-	 */
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
-	}
-
-	/**
-	 * sets RebaseInput
-	 *
-	 * @param rebaseInput
-	 */
-	public void setRebaseInput(RebaseInput rebaseInput) {
-		fRebaseInput = rebaseInput;
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/*	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
 	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					.append("/rebase") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
+	protected boolean handleHttpException(ClientProtocolException exception) throws EGerritException {
+		if (exception instanceof HttpResponseException) {
+			HttpResponseException httpException = (HttpResponseException) exception;
+			if (httpException.getStatusCode() == 409) {
+				EGerritException gerritException = new EGerritException(exception.getLocalizedMessage());
+				gerritException.setCode(EGerritException.SHOWABLE_MESSAGE);
+				throw gerritException;
+			}
 		}
-
-		HttpPost httpPost = new HttpPost(uri);
-
-		Gson gson = new Gson();
-
-		// Serialize.
-		String json = gson.toJson(fRebaseInput);
-
-		StringEntity input = null;
-		try {
-			input = new StringEntity(json);
-		} catch (UnsupportedEncodingException e) {
-			EGerritCorePlugin.logError("URI error encoding RestoreInput", e); //$NON-NLS-1$
-
-		}
-		input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
-
-		httpPost.setEntity(input);
-
-		return httpPost;
+		return false;
 	}
 }

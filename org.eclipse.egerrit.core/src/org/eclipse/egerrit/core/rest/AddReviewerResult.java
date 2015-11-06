@@ -28,12 +28,12 @@ public class AddReviewerResult {
 	// ------------------------------------------------------------------------
 	// Optional
 	//The newly added reviewers as a list of ReviewerInfo entities.
-	private List<ReviewInfo> reviewers;
+	private List<ReviewerInfo> reviewers;
 
 	/**
 	 * @return the reviewers
 	 */
-	public List<ReviewInfo> getReviewers() {
+	public List<ReviewerInfo> getReviewers() {
 		return reviewers;
 	}
 
@@ -41,7 +41,7 @@ public class AddReviewerResult {
 	 * @param reviewers
 	 *            the reviewers to set
 	 */
-	public void setReviewers(List<ReviewInfo> reviewers) {
+	public void setReviewers(List<ReviewerInfo> reviewers) {
 		this.reviewers = reviewers;
 	}
 
@@ -72,7 +72,7 @@ public class AddReviewerResult {
 	/**
 	 * @return the confirm
 	 */
-	public Boolean getConfirm() {
+	public boolean getConfirm() {
 		return confirm;
 	}
 

@@ -1110,10 +1110,8 @@ public class GerritTableView extends ViewPart {
 
 			ChangeInfo[] res = null;
 			QueryChangesCommand command = gerritClient.queryChanges();
-			command.addOption(ChangeOption.DETAILED_LABELS);
-			command.addOption(ChangeOption.CURRENT_REVISION);
-			command.addOption(ChangeOption.CURRENT_FILES);
-			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+			command.addOption(ChangeOption.DETAILED_LABELS, ChangeOption.CURRENT_REVISION, ChangeOption.CURRENT_FILES,
+					ChangeOption.DETAILED_ACCOUNTS);
 
 			try {
 				setQuery(query, command);
@@ -1146,7 +1144,7 @@ public class GerritTableView extends ViewPart {
 					|| query.contains(":owner") || query.contains("is:reviewer") || query.contains("is:starred"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				throw new EGerritException("The query \"" + query + "\" can not be executed by anonymous users.");
 			}
-			command.addFreeText(query);
+			command.addQuery(query);
 		}
 	}
 

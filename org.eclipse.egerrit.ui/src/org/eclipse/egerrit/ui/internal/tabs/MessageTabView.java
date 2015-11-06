@@ -209,7 +209,7 @@ public class MessageTabView extends Observable {
 					ChangeCommitMsgCommand editMessageCmd = fGerritClient.editMessage(changeInfo.getId());
 					ChangeEditMessageInput changeEditMessageInput = new ChangeEditMessageInput();
 					changeEditMessageInput.setMessage(msgTextData.getText());
-					editMessageCmd.setChangeEditMessageInput(changeEditMessageInput);
+					editMessageCmd.setCommandInput(changeEditMessageInput);
 					PublishChangeEditCommand publishChangeEditCmd = fGerritClient.publishChangeEdit(changeInfo.getId());
 
 					try {

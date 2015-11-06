@@ -13,158 +13,99 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.core.rest.RevisionInfo;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes" >Query
- * Changes</a> command. It returns a list of
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info" >ChangeInfo</a>
- * structures.
+ * The command GET /changes
  * <p>
- * By default, it will return the list of opened changes.
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes
  *
  * @since 1.0
  */
-public class QueryChangesCommand extends QueryCommand<ChangeInfo[]> {
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
+public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
+	String queryString;
 
 	/**
-	 * The constructor
+	 * Construct a command to query for changes
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
 	 */
 	public QueryChangesCommand(GerritRepository gerritRepository) {
-		super(gerritRepository, ChangeInfo[].class);
+		super(gerritRepository, AuthentificationRequired.DEPENDS, HttpGet.class, ChangeInfo[].class);
+		setPathFormat("/changes/"); //$NON-NLS-1$
 	}
 
-	// ------------------------------------------------------------------------
-	// Query fields
-	// ------------------------------------------------------------------------
-
-	/**
-	 * @param owner
-	 * @return
-	 */
-	public QueryChangesCommand addOwner(String owner) {
-		addParameter(OWNER, "owner:" + owner); //$NON-NLS-1$
-		fAuthIsRequired = ("self".equals(owner)); //$NON-NLS-1$
-		return this;
-	}
-
-	/**
-	 * @param topic
-	 * @return
-	 */
-	public QueryChangesCommand addTopic(String topic) {
-		topic = "\"" + topic + "\""; //required when topic contains spaces and ellipsis
-
-		addParameter(TOPIC, "topic:" + topic); //$NON-NLS-1$
-		return this;
-	}
-
-	/**
-	 * @param conflicts
-	 * @return
-	 */
-	public QueryChangesCommand addConflicts(String conflicts) {
-		addParameter(CONFLICTS, "conflicts:" + conflicts); //$NON-NLS-1$
-		return this;
-	}
-
-	/**
-	 * @param status
-	 * @return
-	 */
-	public QueryChangesCommand addStatus(ChangeStatus status) {
-		addParameter(STATUS, status.getValue());
-		return this;
-	}
-
-	/**
-	 * @param state
-	 * @return
-	 */
-	public QueryChangesCommand addState(ChangeState state) {
-		addParameter(STATE, state.getValue());
-		fAuthIsRequired |= state == ChangeState.IS_WATCHED;
-		return this;
-	}
-
-	/**
-	 * @param value
-	 * @return
-	 */
-	public QueryChangesCommand addFreeText(String value) {
-		addParameter(FREE, value);
-		return this;
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/").toString(); //$NON-NLS-1$;
-			uriBuilder.setPath(path);
-
-			// Set the query
-			String params = buildParametersList();
-			if (params.length() > 0) {
-				uriBuilder.setParameter("q", params); //$NON-NLS-1$
-			}
-
-			// Add the options
-			for (String option : fQueryOptions) {
-				uriBuilder.addParameter("o", option); //$NON-NLS-1$
-			}
-
-			// Add count
-			if (fCount > 0) {
-				uriBuilder.setParameter("n", Integer.valueOf(fCount).toString()); //$NON-NLS-1$
-			}
-
-			try {
-				uri = uriBuilder.build();
-				if (uri.toString().equals(java.net.URLDecoder.decode(uri.toString(), "UTF-8"))) { //$NON-NLS-1$
-				} else {
-					// Create the URI but revert the escaped characters
-					uri = URIUtil.fromString(URIUtil.toUnencodedString(uriBuilder.build()));
-				}
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
+	public void addQuery(String query) {
+		if (queryString == null) {
+			queryString = query;
+		} else {
+			queryString += "+" + query; //$NON-NLS-1$
 		}
-
-		return new HttpGet(uri);
 	}
 
+	public void setMaxNumberOfResults(int limit) {
+		addQueryParameter("n", Integer.toString(limit)); //$NON-NLS-1$
+	}
+
+	public void setSkipNumberOfResults(int skip) {
+		addQueryParameter("start", Integer.toString(skip)); //$NON-NLS-1$
+	}
+
+	public void addOption(ChangeOption... options) {
+		for (ChangeOption opt : options) {
+			addQueryParameter("o", opt.getValue()); //$NON-NLS-1$
+		}
+	}
+
+	public void addTopic(String topic) {
+		addQuery("topic:" + topic); //$NON-NLS-1$
+	}
+
+	public void addConflicts(String changeId) {
+		addQuery("conflicts:" + changeId); //$NON-NLS-1$
+	}
+
+	@Override
+	//We only need to override this method because we want to force only one query string
+	public ChangeInfo[] call() throws EGerritException {
+		if (queryString != null) {
+			addQueryParameter("q", queryString); //$NON-NLS-1$
+		}
+		return super.call();
+	}
+
+	@Override
+	protected ChangeInfo[] postProcessResult(ChangeInfo[] results) {
+		for (ChangeInfo changeInfo : results) {
+			Map<String, RevisionInfo> map = changeInfo.getRevisions();
+			if (map != null) {
+				Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
+				while (revisions.hasNext()) {
+					Entry<String, RevisionInfo> revisionEntry = revisions.next();
+					RevisionInfo theRevision = revisionEntry.getValue();
+					theRevision.setId(revisionEntry.getKey());
+					Map<String, FileInfo> filesMap = theRevision.getFiles();
+					if (filesMap != null) {
+						Iterator<Map.Entry<String, FileInfo>> files = filesMap.entrySet().iterator();
+						while (files.hasNext()) {
+							Entry<String, FileInfo> aFile = files.next();
+							aFile.getValue().setOld_path(aFile.getKey());
+							aFile.getValue().setContainingRevision(theRevision);
+						}
+					}
+				}
+			}
+		}
+		return results;
+	}
 }

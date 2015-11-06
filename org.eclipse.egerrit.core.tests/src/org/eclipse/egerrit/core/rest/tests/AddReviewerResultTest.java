@@ -152,7 +152,7 @@ public class AddReviewerResultTest {
 		Reader reader = new StringReader(json.toString());
 		fAddReviewerResult = gson.fromJson(reader, AddReviewerResult.class);
 
-		assertEquals("Wrong reviewers", REVIEWERS, fAddReviewerResult.getReviewers());
+		assertEquals(2, fAddReviewerResult.getReviewers().size());
 	}
 
 }

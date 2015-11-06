@@ -319,7 +319,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					SubmitInput submitInput = new SubmitInput();
 					submitInput.setWait_for_merge(false);
 
-					submitCmd.setSubmitInput(submitInput);
+					submitCmd.setCommandInput(submitInput);
 
 					try {
 						submitCmd.call();
@@ -353,7 +353,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					AbandonInput abandonInput = new AbandonInput();
 					abandonInput.setMessage(inputDialog.getValue());
 
-					abandonCmd.setAbandonInput(abandonInput);
+					abandonCmd.setCommandInput(abandonInput);
 
 					try {
 						abandonCmd.call();
@@ -387,7 +387,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					RestoreInput restoreInput = new RestoreInput();
 					restoreInput.setMessage(inputDialog.getValue());
 
-					restoreCmd.setRestoreInput(restoreInput);
+					restoreCmd.setCommandInput(restoreInput);
 
 					try {
 						restoreCmd.call();
@@ -422,7 +422,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					RebaseInput rebaseInput = new RebaseInput();
 					rebaseInput.setBase(inputDialog.getValue());
 
-					rebaseCmd.setRebaseInput(rebaseInput);
+					rebaseCmd.setCommandInput(rebaseInput);
 
 					try {
 						rebaseCmd.call();
@@ -567,7 +567,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		cherryPickInput.setDestination(branch);
 		cherryPickInput.setMessage(message);
 
-		cherryPickCmd.setCherryPickInput(cherryPickInput);
+		cherryPickCmd.setCommandInput(cherryPickInput);
 		ChangeInfo listBranchesCmdResult = null;
 		try {
 			listBranchesCmdResult = cherryPickCmd.call();
@@ -596,7 +596,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 */
 	private void postReply(ReviewInput reviewInput) {
 		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(), fChangeInfo.getCurrentRevision());
-		reviewToEmit.setReviewInput(reviewInput);
+		reviewToEmit.setCommandInput(reviewInput);
 
 		try {
 			reviewToEmit.call();

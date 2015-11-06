@@ -547,11 +547,23 @@ public class ChangeInfo extends PropertyChangeModel {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		ChangeInfo other = (ChangeInfo) obj;
-		if (_more_changes != other._more_changes) {
+		if (_number != other._number) {
 			return false;
 		}
-		if (_number != other._number) {
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (change_id == null) {
+			if (other.change_id != null) {
+				return false;
+			}
+		} else if (!change_id.equals(other.change_id)) {
 			return false;
 		}
 		if (_sortkey == null) {
@@ -565,13 +577,6 @@ public class ChangeInfo extends PropertyChangeModel {
 			if (other.actions != null) {
 				return false;
 			}
-		} else if (!actions.equals(other.actions)) {
-			return false;
-		}
-		if (base_change == null) {
-			if (other.base_change != null) {
-				return false;
-			}
 		} else if (!base_change.equals(other.base_change)) {
 			return false;
 		}
@@ -580,13 +585,6 @@ public class ChangeInfo extends PropertyChangeModel {
 				return false;
 			}
 		} else if (!branch.equals(other.branch)) {
-			return false;
-		}
-		if (change_id == null) {
-			if (other.change_id != null) {
-				return false;
-			}
-		} else if (!change_id.equals(other.change_id)) {
 			return false;
 		}
 		if (created == null) {
@@ -604,13 +602,6 @@ public class ChangeInfo extends PropertyChangeModel {
 			return false;
 		}
 		if (deletions != other.deletions) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		if (insertions != other.insertions) {
@@ -847,7 +838,7 @@ public class ChangeInfo extends PropertyChangeModel {
 
 	/**
 	 * set the owner
-	 * 
+	 *
 	 * @param owner
 	 */
 	public void setOwner(AccountInfo owner) {

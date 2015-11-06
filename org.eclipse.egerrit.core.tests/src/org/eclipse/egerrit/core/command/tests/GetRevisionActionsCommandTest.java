@@ -12,145 +12,27 @@
 
 package org.eclipse.egerrit.core.command.tests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.net.URI;
 import java.util.Map;
 
-import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
-import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ActionInfo;
-import org.eclipse.egerrit.core.tests.Common;
-import org.eclipse.egerrit.core.tests.support.GitAccess;
-import org.eclipse.jgit.api.Git;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.command.GetRevisionsActionsCommand}
  *
  * @since 1.0
  */
-@SuppressWarnings("nls")
-public class GetRevisionActionsCommandTest {
-
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
-	private final String SCHEME = Common.SCHEME;
-
-	private final String HOST = Common.HOST;
-
-	private final int PORT = Common.PORT;
-
-	private final String PATH = Common.PATH;
-
-	private final String PROXY_HOST = Common.PROXY_HOST;
-
-	private final int PROXY_PORT = Common.PROXY_PORT;
-
-	private final String USER = Common.USER;
-
-	private final String PASSWORD = Common.PASSWORD;
-
-	// ------------------------------------------------------------------------
-	// Helper methods
-	// ------------------------------------------------------------------------
-
-	private GerritRepository fRepository;
-
-	private GerritClient fGerrit;
-
-	@Before
-	public void setUp() throws Exception {
-		fRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
-		if (PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
-		}
-		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
-		fGerrit = GerritFactory.create(fRepository);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	// ------------------------------------------------------------------------
-	// Test cases
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetRevisionsActionsCommand#GetRevisionsActionsCommand()}
-	 */
-	@Test
-	public void testGetRevisionsActionsCommand() {
-		// Run test
-		GetRevisionActionsCommand command = fGerrit.getRevisionActions("", "");
-
-		// Verify result
-		assertEquals("Wrong repository", fRepository, command.getRepository());
-		assertEquals("Wrong return type", new TypeToken<Map<String, ActionInfo>>() {
-		}.getType(), command.getReturnType());
-	}
-
-	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.GetRevisionActionsCommand#formatRequest()}
-	 */
-	@Test
-	public void testFormatRequest() {
-		String EXPECTED_RESULT = null;
-
-		// Run test
-		GetRevisionActionsCommand command = fGerrit.getRevisionActions("", "");
-		URI uri = command.formatRequest().getURI();
-
-		// Verify result
-		assertEquals("Wrong scheme", Common.SCHEME, uri.getScheme());
-		assertEquals("Wrong host", Common.HOST, uri.getHost());
-		assertEquals("Wrong port", Common.PORT, uri.getPort());
-
-		assertEquals("Wrong path", fGerrit.getRepository().getPath() + "/changes//revisions//actions", uri.getPath());
-		assertEquals("Wrong query", EXPECTED_RESULT, uri.getQuery());
-	}
-
-	// ------------------------------------------------------------------------
-	// Test an actual request
-	// ------------------------------------------------------------------------
-
+public class GetRevisionActionsCommandTest extends CommandTestWithSimpleReview {
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
-
-		String revision_id = null, change_id = null;
-		try {
-			GitAccess gAccess = new GitAccess();
-			Git git = gAccess.getGitProject();
-
-			gAccess.addFile("EGerritTestReviewFile.java", "Hello reviewers community !");
-			gAccess.pushFile();
-
-			change_id = gAccess.getChangeId();
-
-			revision_id = gAccess.getCommitId();
-
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// Run test
-		GetRevisionActionsCommand command = fGerrit.getRevisionActions(change_id, revision_id);
+		GetRevisionActionsCommand command = fGerrit.getRevisionActions(change_id, commit_id);
 		Map<String, ActionInfo> result = null;
 		try {
 			result = command.call();

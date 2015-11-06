@@ -125,7 +125,7 @@ public class PatchSetCompareItem extends Document
 		for (CommentInfo newComment : extractor.getAddedComments()) {
 			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id,
 					fileInfo.getContainingRevisionInfo().getId());
-			publishDraft.setCommentInfo(newComment);
+			publishDraft.setCommandInput(newComment);
 			newComment.setPath(fileName);
 			try {
 				logger.debug("Adding comment: " + newComment);
@@ -153,7 +153,7 @@ public class PatchSetCompareItem extends Document
 		for (CommentInfo modifiedComment : extractor.getModifiedComments()) {
 			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(change_id,
 					fileInfo.getContainingRevisionInfo().getId(), modifiedComment.getId());
-			modifyDraft.setCommentInfo(modifiedComment);
+			modifyDraft.setCommandInput(modifiedComment);
 			try {
 				logger.debug("Modifying comment: " + modifiedComment);
 				modifyDraft.call();
