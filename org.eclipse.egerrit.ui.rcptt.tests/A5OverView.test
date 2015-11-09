@@ -15,7 +15,7 @@ Entry-Name: .content
 
 with [get-view "Gerrit Dashboard (EGerrit)"] {
     with [get-combo -after [get-label "Total reviews:.*"]] {
-        set-text "project:org.eclipse.egerrit.RCPTTtest"
+        set-text "project:org.eclipse.egerrit.test"
     }
     get-button Search | click
     with [get-table] {
