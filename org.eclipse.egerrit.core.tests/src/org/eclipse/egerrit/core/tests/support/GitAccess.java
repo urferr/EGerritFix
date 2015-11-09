@@ -73,7 +73,7 @@ public class GitAccess {
 
 	private GerritClient gerrit;
 
-	private final String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
+	private String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
 			+ Common.TEST_PROJECT;
 
 	static {
@@ -340,5 +340,11 @@ public class GitAccess {
 				return new PasswordAuthentication(Common.USER, Common.PASSWORD.toCharArray());
 			}
 		});
+	}
+
+	// Allow to change the project
+	public void setTestProject(String project) {
+		fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/" + project;
+
 	}
 }
