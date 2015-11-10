@@ -452,7 +452,9 @@ public class ReplyDialog extends Dialog {
 				List<ApprovalInfo> listApproval = labelInfo.getAll();
 				if (listApproval != null) {
 					ApprovalInfo lastInfo = listApproval.get(listApproval.size() - 1); //Get the value of the lastsetting
-					radioMap.put(entrylabel.getKey(), StringConverter.asString(lastInfo.getValue()));
+					if (lastInfo.getValue() != null) {
+						radioMap.put(entrylabel.getKey(), StringConverter.asString(lastInfo.getValue()));
+					}
 				}
 			}
 		}
