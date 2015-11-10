@@ -298,10 +298,4 @@ public class GerritServerUtility {
 		return lastCommands;
 	}
 
-	/**
-	 * Builds a preference key from a server information @ return String the constructed key
-	 */
-	public static String getPreferenceKey(GerritServerInformation serverInfo) {
-		return GerritPlugin.PLUGIN_ID + '/' + serverInfo.getServerURI() + serverInfo.getName();
-	}
 }

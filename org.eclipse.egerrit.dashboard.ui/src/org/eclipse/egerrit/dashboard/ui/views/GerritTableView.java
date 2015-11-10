@@ -136,8 +136,6 @@ public class GerritTableView extends ViewPart {
 
 	private static final String ADJUST_MY_STARRED_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.adjustMyStarred"; //$NON-NLS-1$
 
-	public static final String CONNECTOR_KIND = "org.eclipse.egerrit"; //$NON-NLS-1$
-
 	private final String TITLE = "Gerrit Server ";
 
 	public static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$

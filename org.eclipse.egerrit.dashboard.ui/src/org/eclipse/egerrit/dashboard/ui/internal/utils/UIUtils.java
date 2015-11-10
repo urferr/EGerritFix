@@ -17,8 +17,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,24 +77,6 @@ public class UIUtils {
 				dialog.open();
 			}
 		});
-	}
-
-	/**
-	 * Creates view preference frame and return the child composite.
-	 *
-	 * @param aParent
-	 *            the parent composite.
-	 * @return the child composite.
-	 */
-	public static Composite createsGeneralComposite(Composite aParent, int style) {
-		Composite child = new Composite(aParent, style);
-		FormLayout layout = new FormLayout();
-		layout.marginWidth = 10;
-		layout.marginHeight = 0;
-		// child.setSize(WIDTH, HEIGHT);
-		child.setLayout(layout);
-		// child.minHeight = 100;
-		return child;
 	}
 
 }

@@ -13,7 +13,6 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -36,40 +35,10 @@ public class ReviewTableData {
 
 	private String fQuery = null;
 
-	/**
-	 * Create a new review entry to insert to the list of reviews
-	 *
-	 * @param Object
-	 */
-	public void createReviewItem(ChangeInfo[] aList, String aQuery, GerritServerInformation aServerInfo) {
-
-		// Create the new object
-		// if (fQuery != aQuery) {
-		fReviewList = new ConcurrentHashMap<String, ChangeInfo>();
-		for (ChangeInfo review : aList) {
-			fReviewList.put(review.getId(), review);
-		}
-		fServerInfo = aServerInfo;
-		fQuery = aQuery;
-
-		// } else {
-		// //Need to reset the list, we just created a null entry
-		// reset();
-		// }
-	}
-
 	public void createReviewItem(String query, GerritServerInformation repository) {
 		fReviewList = new HashMap<String, ChangeInfo>();
 		fServerInfo = repository;
 		fQuery = query;
-	}
-
-	public void updateReviewItem(ChangeInfo task) {
-		fReviewList.put(task.getId(), task);
-	}
-
-	public void deleteReviewItem(String taskId) {
-		fReviewList.remove(taskId);
 	}
 
 	/**
