@@ -22,7 +22,6 @@ Export-Package: org.eclipse.egerrit.dashboard;x-friends:="org.eclipse.egerrit.da
    org.osgi.framework",
  org.eclipse.egerrit.dashboard.core;x-friends:="org.eclipse.egerrit.dashboard.ui";
   uses:="org.eclipse.core.runtime",
- org.eclipse.egerrit.dashboard.preferences,
  org.eclipse.egerrit.dashboard.utils
 Import-Package: org.eclipse.equinox.security.storage;version="1.0.0",
  org.eclipse.jface.preference

@@ -423,12 +423,6 @@
 	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyDraftCommentsReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments">
 	      </handler>
-          <!-- The following are the handlers under the "Projects" sub-menu
-         -->
-	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.projects.ProjectListHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.projectList">
-	      </handler>
           <!-- The following are the handlers under the "Groups" sub-menu
          -->
 	      <handler
