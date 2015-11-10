@@ -106,7 +106,7 @@ public class GerritRepository {
 		fScheme = scheme;
 		fHostname = host;
 		fPort = port;
-		if (!fHostname.isEmpty()) {
+		if (fHostname != null && !fHostname.isEmpty()) {
 			//Host name may not be blank
 			fHost = new HttpHost(fHostname, fPort, fScheme);
 		} else {

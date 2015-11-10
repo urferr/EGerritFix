@@ -681,21 +681,28 @@ public class GerritTableView extends ViewPart {
 		gerritRepository.setCredentials(creds);
 		gerritRepository.setServerInfo(defaultServerInfo);
 		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
-		gerritRepository.connect();
-		Version version = gerritRepository.getVersion();
+		boolean connect = gerritRepository.connect();
+		if (connect) {
+			Version version = gerritRepository.getVersion();
 
-		if (version == null) {
-			UIUtils.showErrorDialog("Invalid Gerrit server and/or User/Password",
-					"Server " + defaultServerInfo.getServerURI());
-		} else if (version.equals(GerritRepository.NO_VERSION)) {
-			UIUtils.showErrorDialog("Unsupported Gerrit server version",
-					"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
-							+ GerritFactory.MINIMAL_VERSION + ".");
-		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-			UIUtils.showErrorDialog("Unsupported Gerrit server version",
-					"Server " + gerritRepository.getPath() + " runs version " + version.toString()
-							+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION
-							+ " supported by EGerrit.");
+			if (version == null) {
+				UIUtils.showErrorDialog("Invalid Gerrit server and/or User/Password",
+						"Server " + defaultServerInfo.getServerURI());
+			} else if (version.equals(GerritRepository.NO_VERSION)) {
+				UIUtils.showErrorDialog("Unsupported Gerrit server version",
+						"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
+								+ GerritFactory.MINIMAL_VERSION + ".");
+			} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+				UIUtils.showErrorDialog("Unsupported Gerrit server version",
+						"Server " + gerritRepository.getPath() + " runs version " + version.toString()
+								+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION
+								+ " supported by EGerrit.");
+			}
+
+		} else {
+			UIUtils.showErrorDialog("Cannot connect to selected Gerrit server ",
+					"Server " + gerritRepository.getPath());
+
 		}
 
 	}
@@ -1034,7 +1041,9 @@ public class GerritTableView extends ViewPart {
 
 		URI uri = null;
 		try {
-			uri = new URI(repository.getServerURI());
+			if (!repository.getServerURI().isEmpty()) {
+				uri = new URI(repository.getServerURI());
+			}
 		} catch (URISyntaxException e) {
 			EGerritCorePlugin.logError(gerritClient != null
 					? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
