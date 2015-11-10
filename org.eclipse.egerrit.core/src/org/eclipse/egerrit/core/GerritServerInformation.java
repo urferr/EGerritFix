@@ -187,15 +187,19 @@ public class GerritServerInformation {
 		return fSelfSigned;
 	}
 
-	public URI getURI() {
+	private URI getURI() {
 		try {
 			URI uri = new URIBuilder().setScheme(getScheme())
 					.setHost(getHostId())
 					.setPort(getPort())
 					.setPath(getPath())
 					.build();
-			setServerURI(uri.toString());
-			return uri;
+			if (uri.getHost() != null) {
+				setServerURI(uri.toString());
+				return uri;
+			} else {
+				return null;
+			}
 		} catch (URISyntaxException e) {
 			// Do not report the error yet
 		}
