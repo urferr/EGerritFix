@@ -133,7 +133,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private final static String TITLE = "Gerrit Server ";
 
-	private SummaryTabView summaryTab = null;
+	public SummaryTabView summaryTab = null;
 
 	private HistoryTabView historytab = null;
 

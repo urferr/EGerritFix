@@ -39,6 +39,20 @@ public class PropertyChangeModel {
 	}
 
 	/**
+	 * Allow to remove a property change listener
+	 *
+	 * @param String
+	 *            propertyName
+	 * @param PropertyChangeListener
+	 *            listener
+	 */
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		if (propertyChangeSupport != null) {
+			propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+		}
+	}
+
+	/**
 	 * Initiate a property change listener
 	 *
 	 * @param String
