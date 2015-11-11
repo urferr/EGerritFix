@@ -948,6 +948,17 @@ public class SummaryTabView {
 	}
 
 	/**
+	 * This method is an entry for the save a topic command
+	 *
+	 * @param
+	 * @return none
+	 */
+	public void saveTopic() {
+		setTopic(null);
+
+	}
+
+	/**
 	 * This method is the listener to save a topic
 	 *
 	 * @param genTopicData2
@@ -960,20 +971,28 @@ public class SummaryTabView {
 				super.widgetSelected(e);
 
 				String topic = topicData.getText().trim();
-				SetTopicCommand command = getGerritClient().setTopic(fChangeInfo.getChange_id());
-				TopicInput topicInput = new TopicInput();
-				topicInput.setTopic(topic);
-
-				command.setTopicInput(topicInput);
-
-				try {
-					command.call();
-				} catch (EGerritException ex) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + ex.getMessage());
-				}
+				setTopic(topic);
 			}
 
 		};
+	}
+
+	private void setTopic(String topic) {
+		SetTopicCommand command = getGerritClient().setTopic(fChangeInfo.getChange_id());
+		TopicInput topicInput = new TopicInput();
+		if (topic != null) {
+			topicInput.setTopic(topic);
+		} else {
+			topicInput.setTopic("");
+		}
+
+		command.setTopicInput(topicInput);
+
+		try {
+			command.call();
+		} catch (EGerritException ex) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + ex.getMessage());
+		}
 	}
 
 	/************************************************************* */
