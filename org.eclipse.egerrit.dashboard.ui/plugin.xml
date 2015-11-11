@@ -84,30 +84,7 @@
                 style="pulldown"
                 tooltip="%command.tooltipMyWatchedChanges">
           </command>
- <!--
-          <command
-                commandId="org.eclipse.egerrit.dashboard.ui.projectList"
-                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList"
-                label="Projects"
-                style="pulldown"
-                tooltip="Find projects list reviews for the selected repository">
-          </command>
-         <separator
-                name="addition3"
-                visible="true">
-            </separator>
-          <command
-                commandId="org.eclipse.egerrit.dashboard.ui.groupList"
-                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList"
-                label="Groups"
-                style="pulldown"
-                tooltip="Find groups list reviews for the selected repository">
-          </command>
-         <separator
-                name="addition4"
-                visible="true">
-            </separator>
- -->
+ 
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching"
                 id="org.eclipse.egerrit.dashboard.dropdown.toolbar.Documentation"
@@ -196,39 +173,6 @@
          </separator>
       </menuContribution>
 
-    <!-- Add sub-menu for the Projects menu
-	-->
-       <menuContribution
-             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.ProjectList">
-          <command
-                commandId="org.eclipse.egerrit.dashboard.ui.projectList"
-                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.projectList"
-                label="%command.projectList"
-                style="push"
-                tooltip="%command.tooltipProjectList">
-          </command>
-          <separator
-                name="additions"
-                visible="true">
-          </separator>
-       </menuContribution>
-
-    <!-- Add sub-menu for the Groups menu
-	-->
-       <menuContribution
-             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.GroupList">
-          <command
-                commandId="org.eclipse.egerrit.dashboard.ui.groupList"
-                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.groupList"
-                label="%command.groupList"
-                style="push"
-                tooltip="%command.tooltipGroupList">
-          </command>
-          <separator
-                name="additions"
-                visible="true">
-          </separator>
-       </menuContribution>
 
     <!-- Add sub-menu for the Documentation menu
 	-->
@@ -341,19 +285,6 @@
             	name="%command.name.myDraftsCommentsChanges">
       </command>
 
-         <!-- The following are the commands under the "Projects" sub-menu
-         -->
-       <command
-            	id="org.eclipse.egerrit.dashboard.ui.projectList"
-            	name="%command.name.projectList">
-      </command>
-
-         <!-- The following are the commands under the "Groups" sub-menu
-         -->
-       <command
-            	id="org.eclipse.egerrit.dashboard.ui.groupList"
-            	name="%command.name.groupList">
-      </command>
 
          <!-- The following are the commands under the "Documentation" sub-menu
          -->
@@ -422,12 +353,6 @@
 	      <handler
 	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyDraftCommentsReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments">
-	      </handler>
-          <!-- The following are the handlers under the "Groups" sub-menu
-         -->
-	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.groups.GroupListHandler"
-	            commandId="org.eclipse.egerrit.dashboard.ui.groupList">
 	      </handler>
           <!-- The following are the handlers under the "Documentation" sub-menu
          -->
