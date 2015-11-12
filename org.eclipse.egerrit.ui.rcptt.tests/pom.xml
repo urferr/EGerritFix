@@ -99,6 +99,7 @@
 								<site>file:${project.build.directory}/dependency/org.eclipse.egerrit.updatesite.tests-zip/</site>
 								<features>
 									<feature>org.eclipse.egerrit.ui.tests</feature>
+									<feature>org.eclipse.egerrit.core.tests</feature>
 								</features>
 							</injection>
 							<injection>

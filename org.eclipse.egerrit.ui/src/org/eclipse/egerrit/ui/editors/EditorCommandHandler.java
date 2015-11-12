@@ -45,7 +45,8 @@ public class EditorCommandHandler extends AbstractHandler implements IElementUpd
 		}
 
 		if (page != null) {
-			((ChangeDetailEditor) page.getActiveEditor()).summaryTab.saveTopic();
+//			((ChangeDetailEditor) page.getActiveEditor()).summaryTab.saveTopic();
+			((ChangeDetailEditor) page.getActiveEditor()).filesTab.selectRow();
 		}
 
 		return Status.OK_STATUS;

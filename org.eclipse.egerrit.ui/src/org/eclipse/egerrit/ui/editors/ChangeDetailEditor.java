@@ -139,7 +139,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private MessageTabView messageTab = null;
 
-	private FilesTabView filesTab = null;
+	public FilesTabView filesTab = null;
 
 	private final ChangeInfo fChangeInfo = new ChangeInfo();
 

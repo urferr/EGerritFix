@@ -120,6 +120,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private ComboViewer comboPatchsetViewer;
 
+	private IDoubleClickListener fdoubleClickListener;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -199,7 +201,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		tableFilesViewer = tableUIFiles.getViewer();
 		tableFilesViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		tableFilesViewer.addDoubleClickListener(new IDoubleClickListener() {
+		fdoubleClickListener = new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				Object element = sel.getFirstElement();
@@ -231,14 +233,29 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				}
 			}
 
-		});
+		};
 
+		tableFilesViewer.addDoubleClickListener(fdoubleClickListener);
 		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
 			tableFilesViewer.getTable().addMouseListener(toggleReviewedStateListener());
 		}
 
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	/**
+	 * This method is for the command double click on a row
+	 *
+	 * @return none
+	 */
+	public void selectRow() {
+		if (tableFilesViewer.getElementAt(0) != null) {
+			tableFilesViewer.setSelection(new StructuredSelection(tableFilesViewer.getElementAt(0)), true);
+			IStructuredSelection selection = (IStructuredSelection) tableFilesViewer.getSelection();
+			final DoubleClickEvent event = new DoubleClickEvent(tableFilesViewer, selection);
+			fdoubleClickListener.doubleClick(event);
+		}
 	}
 
 	private void showEditorTip() {
