@@ -1130,9 +1130,6 @@ public class GerritTableView extends ViewPart {
 				}
 			});
 			return res;
-		} catch (UnsupportedClassVersionError e) {
-//			return new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, "error", e);
-			return null;
 		} finally {
 			monitor.done();
 		}

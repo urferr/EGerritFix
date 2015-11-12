@@ -884,7 +884,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private ChangeInfo queryMessageTab(GerritClient gerrit, String id, IProgressMonitor monitor) {
 		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 			// Create query
 
 			GetChangeCommand command = gerrit.getChange(id);
@@ -904,8 +904,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			return res;
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}

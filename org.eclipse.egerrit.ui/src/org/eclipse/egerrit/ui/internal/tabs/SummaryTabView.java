@@ -694,8 +694,6 @@ public class SummaryTabView {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -724,8 +722,6 @@ public class SummaryTabView {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			return res;
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -738,7 +734,7 @@ public class SummaryTabView {
 				return null;
 			}
 
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 
 			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(), revision_id);
 
@@ -749,8 +745,6 @@ public class SummaryTabView {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -761,7 +755,7 @@ public class SummaryTabView {
 
 	private ReviewerInfo[] queryReviewers(GerritClient gerritClient, String change_id, IProgressMonitor monitor) {
 		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 
 			ListReviewersCommand command = gerritClient.getReviewers(fChangeInfo.getId());
 
@@ -772,8 +766,6 @@ public class SummaryTabView {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -790,10 +782,6 @@ public class SummaryTabView {
 			ChangeInfo[] res = null;
 			// Create query
 			QueryChangesCommand command = gerritClient.queryChanges();
-//				command.addOption(ChangeOption.LABELS);
-//				command.addOption(ChangeOption.CURRENT_REVISION);
-//				command.addOption(ChangeOption.CURRENT_FILES);
-//				command.addLimit(101);
 			command.addTopic(topic);
 
 			try {
@@ -803,9 +791,6 @@ public class SummaryTabView {
 						e);
 			}
 			return res;
-		} catch (UnsupportedClassVersionError e) {
-//			return new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, "error", e);
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -828,9 +813,6 @@ public class SummaryTabView {
 						e);
 			}
 			return res;
-		} catch (UnsupportedClassVersionError e) {
-//			return new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID, "error", e);
-			return null;
 		} finally {
 			monitor.done();
 		}

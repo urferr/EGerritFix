@@ -706,8 +706,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -735,8 +733,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
@@ -762,8 +758,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}
-		} catch (UnsupportedClassVersionError e) {
-			return null;
 		} finally {
 			monitor.done();
 		}
