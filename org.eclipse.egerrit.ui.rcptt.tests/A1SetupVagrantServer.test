@@ -5,108 +5,105 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _rbJD4DblEeW0ecX8G0VMdA
-Runtime-Version: 2.0.2.201511100828
-Save-Time: 11/12/15 11:56 AM
+Runtime-Version: 2.0.1.201508250612
+Save-Time: 11/12/15 3:17 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
 Entry-Name: .content
 
-//get-preferences-menu | click
-//get-window Preferences | get-tree | select "Team/Gerrit Servers"
-//
-//
-//
-//
-//with [get-window Preferences] {
-//    get-button "New..." | click
-//    with [get-window "Gerrit Server Selection"] {
-//        with [get-editbox -after [get-label "URL:"]] {
-//            click-text
-////            key-type "M1+v"
-//            set-text "http://192.168.50.4:28112/gerrit-2.11.2"
-//            click-text 2 
-//        }
-//        get-editbox -after [get-label "Label:"] | click-text
-//        get-editbox -after [get-label "URL:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
-//        get-editbox -after [get-label "Label:"] | set-text "vagrant2.11.2"
-//        with [get-editbox -after [get-label "User:"]] {
-//            set-text "admin"
-////          key-type "TRAVERSE_TAB_NEXT"
-//        }
-////        with [get-editbox -after [get-label "Password:"]] {
-////             set-text "egerritTest"
-////        }
-//       
-//        get-button OK | click
-//    }
-//    get-button OK | click
-//}
-//
-//with [get-window "Secure Storage"] {
-//    with [get-editbox -after [get-label "Password:"]] {
-//        set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
-//        key-type "TRAVERSE_TAB_NEXT"
-//    }
-//    with [get-editbox -after [get-label "Confirm password:"]] {
-//        set-text [decrypt "F+4zuauXMD4h+9ptuolF1w=="]
-//        set-text [decrypt "bWmT6EESUeXh9CzV3kNWFA=="]
-//        set-text [decrypt "drMptdnwgHYrLPrTmzyfqw=="]
-//        set-text [decrypt "6jAz3m7u2AGD4J10r7vt3A=="]
-//        set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
-//    }
-//    get-button OK | click
-//}
-//get-window "Secure Storage" | get-button No | click
-//
-//
-//get-preferences-menu | click
-//with [get-window Preferences] {
-//    with [get-editbox] {
-//        set-text ger
-//        set-text gerr
-//        set-text gerri
-//        set-text gerrit
-//    }
-//    get-tree | select "Team/Gerrit Servers" | double-click
-//    get-table | select "vagrant2.11.2"
-//    get-button "Modify..." | click
-//    with [get-window "Gerrit Server Selection"] {
-//        get-editbox -after [get-label "URL:"] | set-focus
-//        with [get-editbox -after [get-label "Label:"]] {
-//
-//            set-text "vagrant2.11.2_Server"
-//        }
-//        get-button OK | click
-//    }
-//    get-table | select "vagrant2.11.2_Server"
-//    get-button Remove | click
-//    get-button "New..." | click
-//    with [get-window "Gerrit Server Selection"] {
-//        with [get-editbox -after [get-label "URL:"]] {
-//            click-text
+get-preferences-menu | click
+get-window Preferences | get-tree | select "Team/Gerrit Servers"
+
+
+
+
+with [get-window Preferences] {
+    get-button "New..." | click
+    with [get-window "Gerrit Server Selection"] {
+        with [get-editbox -after [get-label "URL:"]] {
+            click-text
 //            key-type "M1+v"
-//            set-text "http://192.168.50.4:28112/gerrit-2.11.2"
-//            click-text 2 
-//        }
-//        get-editbox -after [get-label "Label:"] | click-text
-//        get-editbox -after [get-label "URL:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
-//        get-editbox -after [get-label "Label:"] | set-text "vagrant2.11.2"
-//        with [get-editbox -after [get-label "User:"]] {
-//            set-text "admin"
-//            key-type "TRAVERSE_TAB_NEXT"
-//        }
-//        with [get-editbox -after [get-label "Password:"]] {
-//             set-text "egerritTest"
-//        }
-//       
-//        get-button OK | click
-//        }
-//    
-//    get-button "Restore Defaults" | click
-//    get-button OK | click
-//}
-//
+            set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+            click-text 2 
+        }
+        get-editbox -after [get-label "Label:"] | click-text
+        get-editbox -after [get-label "URL:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+        get-editbox -after [get-label "Label:"] | set-text "vagrant2.11.2"
+        with [get-editbox -after [get-label "User:"]] {
+            set-text "admin"
+          key-type "TRAVERSE_TAB_NEXT"
+        }
+        with [get-editbox -after [get-label "Password:"]] {
+             set-text "egerritTest"
+        }
+       
+        get-button OK | click
+    }
+    get-button OK | click
+}
+
+with [get-window "Secure Storage"] {
+    with [get-editbox -after [get-label "Password:"]] {
+        set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
+        key-type "TRAVERSE_TAB_NEXT"
+    }
+    with [get-editbox -after [get-label "Confirm password:"]] {
+        set-text [decrypt "F+4zuauXMD4h+9ptuolF1w=="]
+        set-text [decrypt "bWmT6EESUeXh9CzV3kNWFA=="]
+        set-text [decrypt "drMptdnwgHYrLPrTmzyfqw=="]
+        set-text [decrypt "6jAz3m7u2AGD4J10r7vt3A=="]
+        set-text [decrypt "Eizkftz4hgmroxhvbBAt/g=="]
+    }
+    get-button OK | click
+}
+get-window "Secure Storage" | get-button No | click
+
+
+get-preferences-menu | click
+with [get-window Preferences] {
+    with [get-editbox] {
+        set-text gerrit
+    }
+    get-tree | select "Team/Gerrit Servers" | double-click
+    get-table | select "vagrant2.11.2"
+    get-button "Modify..." | click
+    with [get-window "Gerrit Server Selection"] {
+        get-editbox -after [get-label "URL:"] | set-focus
+        with [get-editbox -after [get-label "Label:"]] {
+
+            set-text "vagrant2.11.2_Server"
+        }
+        get-button OK | click
+    }
+    get-table | select "vagrant2.11.2_Server"
+    get-button Remove | click
+    get-button "New..." | click
+    with [get-window "Gerrit Server Selection"] {
+        with [get-editbox -after [get-label "URL:"]] {
+            click-text
+            key-type "M1+v"
+            set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+            click-text 2 
+        }
+        get-editbox -after [get-label "Label:"] | click-text
+        get-editbox -after [get-label "URL:"] | set-text "http://192.168.50.4:28112/gerrit-2.11.2"
+        get-editbox -after [get-label "Label:"] | set-text "vagrant2.11.2"
+        with [get-editbox -after [get-label "User:"]] {
+            set-text "admin"
+            key-type "TRAVERSE_TAB_NEXT"
+        }
+        with [get-editbox -after [get-label "Password:"]] {
+             set-text "egerritTest"
+        }
+       
+        get-button OK | click
+        }
+    
+    get-button "Restore Defaults" | click
+    get-button OK | click
+}
+
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
