@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _9GHRgIPsEeWD_fYsit66JA
 Runtime-Version: 2.0.1.201508250612
-Save-Time: 11/12/15 5:05 PM
+Save-Time: 11/12/15 5:47 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -56,8 +56,8 @@ with [get-editor ".*"] {
         get-tab-item Files | click
         get-tab-item History | click
     }
+    close
 }
-get-editor ".*" | close
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find all Open Reviews for the selected repository" | click -arrow
 get-menu Merged | click
@@ -85,28 +85,28 @@ with [get-view "Gerrit Dashboard (EGerrit)"] {
     get-combo -after [get-label ".*"] | set-text "status:open"
     get-button Search | click
 }
-//get-editor ".*" | close
-//
-//with [get-view "Gerrit Dashboard (EGerrit)" | get-table] {
-//    get-cell 0 2 | click
-//    get-cell 0 2 | mouse down -count 2
-//    double-click
-//    get-cell 0 2 | mouse up -count 2
-//}
-//with [get-editor ".*"] {
-//    with [get-group General] {
-//        get-editbox -after [get-label "Topic:"] | set-text "this is a test topic MODIFIED"
-//        get-button Save | click
-//    }
-//    with [get-group Reviewers] {
-//        get-editbox -after [get-label "Reviewer:"] | set-text test2
-//        get-button Add | click
-//    }
-//    get-tab-folder | get-tab-item Messages | click
-//    with [get-editbox -index 3] {
-//        set-text "Let's change this\n\n"
-//            + "Change-Id: Ic6ddee00397e234caa619baea32d956847308f39\n"
-//    }
-//    get-button Save | click
-//}
+get-editor "Gerrit Code Review - Searching Changes" | close
+
+with [get-view "Gerrit Dashboard (EGerrit)" | get-table] {
+    get-cell 0 2 | click
+    get-cell 0 2 | mouse down -count 2
+    double-click
+    get-cell 0 2 | mouse up -count 2
+}
+with [get-editor ".*"] {
+    with [get-group General] {
+        get-editbox -after [get-label "Topic:"] | set-text "this is a test topic MODIFIED"
+        get-button Save | click
+    }
+    with [get-group Reviewers] {
+        get-editbox -after [get-label "Reviewer:"] | set-text test2
+        get-button Add | click
+    }
+    get-tab-folder | get-tab-item Messages | click
+    with [get-editbox -index 3] {
+        set-text "Let's change this\n\n"
+            + "Change-Id: Ic6ddee00397e234caa619baea32d956847308f39\n"
+    }
+    get-button Save | click
+}
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
