@@ -464,8 +464,7 @@ public class GerritTableView extends ViewPart {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if ((gerritClient == null)
-						|| (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous())) {
+				if ((gerritClient == null) || (gerritClient.getRepository().getServerInfo().isAnonymous())) {
 					addOrChangeServerThenLoad();
 				}
 			}
@@ -1152,7 +1151,7 @@ public class GerritTableView extends ViewPart {
 			if (gerritClient == null) {
 				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(INVALID_IMAGE));
 				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipInvalid);
-			} else if (gerritClient != null && gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			} else if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
 				fRepositoryVersionResulLabel.setImage(fImageRegistry.get(ANONYMOUS_IMAGE));
 				fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous + '\n'
 						+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
