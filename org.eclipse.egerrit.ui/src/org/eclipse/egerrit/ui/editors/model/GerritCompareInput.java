@@ -34,7 +34,6 @@ import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
-import org.eclipse.jface.text.ITextViewerExtension4;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.AnnotationPainter.HighlightingStrategy;
 import org.eclipse.jface.text.source.IAnnotationModel;
@@ -277,9 +276,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 			sourceViewer.addTextInputListener(new ITextInputListener() {
 				@Override
 				public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-					if (sourceViewer instanceof ITextViewerExtension4) {
-						((ITextViewerExtension4) sourceViewer).addTextPresentationListener(commentPainter);
-					}
+					sourceViewer.addTextPresentationListener(commentPainter);
 					sourceViewer.addPainter(commentPainter);
 				}
 
@@ -287,9 +284,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 				public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
 					if (oldInput != null) {
 						sourceViewer.removePainter(commentPainter);
-						if (sourceViewer instanceof ITextViewerExtension4) {
-							((ITextViewerExtension4) sourceViewer).addTextPresentationListener(commentPainter);
-						}
+						sourceViewer.addTextPresentationListener(commentPainter);
 					}
 				}
 			});

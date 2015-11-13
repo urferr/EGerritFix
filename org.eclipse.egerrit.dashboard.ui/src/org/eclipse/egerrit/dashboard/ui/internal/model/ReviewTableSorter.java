@@ -160,14 +160,8 @@ public class ReviewTableSorter extends ViewerSorter {
 			Object[] listObj = tv.getTree().getItems();
 
 			for (int i = 0; i < listObj.length; i++) {
-				Object obj = null;
-				if (listObj[i] instanceof TreeItem) {
-
-					obj = ((TreeItem) listObj[i]).getData();
-					((TreeItem) listObj[i]).setExpanded(true);
-
-				} else {
-				}
+				Object obj = ((TreeItem) listObj[i]).getData();
+				((TreeItem) listObj[i]).setExpanded(true);
 
 				if (obj != null) {
 					if (obj.equals(aE1)) {
