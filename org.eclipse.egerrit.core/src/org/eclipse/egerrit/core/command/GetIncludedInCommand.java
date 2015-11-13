@@ -12,88 +12,29 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.IncludedInInfo;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedIn-info" >Get
- * IncludedIn</a> command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#IncludedInInfo" ></a>
+ * The command GET /changes/{change-id}/in
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-included-in
  *
  * @since 1.0
  */
-public class GetIncludedInCommand extends QueryCommand<IncludedInInfo> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
-
+public class GetIncludedInCommand extends BaseCommandChange<IncludedInInfo> {
 	/**
 	 * The constructor
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
-	 * @param id
+	 * @param changeId
 	 *            the change-id
 	 */
-	public GetIncludedInCommand(GerritRepository gerritRepository, String change_id) {
-		super(gerritRepository, IncludedInInfo.class);
-		this.setId(change_id);
-
-	}
-
-	public String getId() {
-		return fChange_id;
-	}
-
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					.append("/in") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		return new HttpGet(uri);
+	public GetIncludedInCommand(GerritRepository gerritRepository, String changeId) {
+		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, IncludedInInfo.class, changeId);
+		setPathFormat("/changes/{change-id}/in"); //$NON-NLS-1$
 	}
 
 }

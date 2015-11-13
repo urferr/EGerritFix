@@ -12,131 +12,30 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.TopicInput;
 
-import com.google.gson.Gson;
-
 /**
- * The command: PUT /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
- * result a map is returned that maps the file path to a list of CommentInfo entries.
+ * The command: PUT /changes/{change-id}/topic
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-topic
  *
  * @since 1.0
  */
 
-public class SetTopicCommand extends PutCommand<String> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	private TopicInput fTopicInput;
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
-
+public class SetTopicCommand extends BaseCommandChangeWithInput<String, TopicInput> {
 	/**
 	 * The constructor
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
-	 * @param id
+	 * @param changeId
 	 *            the change-id
 	 */
-	public SetTopicCommand(GerritRepository gerritRepository, String id) {
-		super(gerritRepository, String.class);
-		this.setId(id);
-		requiresAuthentication(true);
+	public SetTopicCommand(GerritRepository gerritRepository, String changeId) {
+		super(gerritRepository, AuthentificationRequired.YES, HttpPut.class, String.class, changeId);
+		setPathFormat("/changes/{change-id}/topic"); //$NON-NLS-1$
 	}
 
-	/**
-	 * change_id getter function
-	 *
-	 * @return change_id the current change_id
-	 */
-	public String getId() {
-		return fChange_id;
-	}
-
-	/**
-	 * change_id setter function
-	 *
-	 * @param change_id
-	 *            the change_id of the comment that is to be created
-	 */
-
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
-	}
-
-	/**
-	 * fToopicInput setter function
-	 *
-	 * @param topicInput
-	 *            the topicInfo that is to be set
-	 */
-	public void setTopicInput(TopicInput topicInput) {
-
-		fTopicInput = topicInput;
-
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/*	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					.append("/topic") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		HttpPut httpPut = new HttpPut(uri);
-
-		StringEntity input = null;
-		try {
-			input = new StringEntity(new Gson().toJson(fTopicInput));
-		} catch (UnsupportedEncodingException e) {
-			EGerritCorePlugin.logError("URI error encoding TopicInput", e); //$NON-NLS-1$
-		}
-
-		if (input != null) {
-			input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
-		}
-		httpPut.setEntity(input);
-
-		return httpPut;
-	}
 }

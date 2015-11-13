@@ -51,7 +51,7 @@ public class QueryHelpers {
 			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 			try {
-				command.addFreeText(setFreeText(subject));
+				command.addQuery(setFreeText(subject));
 				return command.call();
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());

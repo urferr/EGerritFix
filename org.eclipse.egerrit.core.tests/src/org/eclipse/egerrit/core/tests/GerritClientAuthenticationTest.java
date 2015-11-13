@@ -15,11 +15,15 @@ package org.eclipse.egerrit.core.tests;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.http.HttpHost;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.command.ChangeState;
 import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
@@ -49,16 +53,26 @@ public class GerritClientAuthenticationTest {
 	// 0. Helpers
 	// ------------------------------------------------------------------------
 
-	private GerritRepository buildRepo(String prot, String host, int port, String path, String phost, int pport,
+	private GerritRepository buildRepo(String scheme, String host, int port, String path, String phost, int pport,
 			String user, String pwd, boolean acceptSSC) {
 		HttpHost proxy = (phost != null) ? new HttpHost(phost, pport) : null;
 		GerritCredentials creds = new GerritCredentials(user, pwd);
-		GerritRepository repo = new GerritRepository(prot, host, port, path).setProxy(proxy)
+		GerritRepository repo = new GerritRepository(scheme, host, port, path).setProxy(proxy)
 				.setCredentials(creds)
 				.acceptSelfSignedCerts(acceptSSC);
-		assertNotNull(repo);
-		if (!repo.connect()) {
-			fail();
+		GerritServerInformation serverInfo;
+		try {
+			serverInfo = new GerritServerInformation(
+					new URI(scheme, null, host, port, path, null, null).toASCIIString(), "Test server");
+			serverInfo.setUserName(user);
+			serverInfo.setPassword(pwd);
+			repo.setServerInfo(serverInfo);
+			assertNotNull(repo);
+			if (!repo.connect()) {
+				fail();
+			}
+		} catch (URISyntaxException e) {
+			fail(e.getMessage());
 		}
 		return repo;
 	}
@@ -68,10 +82,13 @@ public class GerritClientAuthenticationTest {
 		try {
 			GerritClient gerrit = GerritFactory.create(repo);
 			QueryChangesCommand command = gerrit.queryChanges();
-			command.setCount(10);
+			command.setMaxNumberOfResults(10);
 			String username = repo.getCredentials().getUsername();
 			if (username != null) {
-				command.addOwner(username).addStatus(OPEN).addState(IS_WATCHED).addState(IS_STARRED);
+				command.addQuery("owner:" + username);
+				command.addQuery(OPEN.getValue());
+				command.addQuery(IS_WATCHED.getValue());
+				command.addQuery(IS_STARRED.getValue());
 			}
 			ChangeInfo[] changes = command.call();
 			if (changes != null) {

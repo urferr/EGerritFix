@@ -6,16 +6,15 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Jacques Bouthillier - initial API and implementation
+ *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.core.rest;
+package org.eclipse.egerrit.core.command;
 
 /**
- * Enum used in rest-api call
- * 
- * @since 1.0
+ * This enumeration is used to indicate whether the command requires authentification. We need a "depends" because some
+ * commands like QueryChangesCommand can run fine in both mode
  */
-public enum Side {
-	PARENT, REVISION
+public enum AuthentificationRequired {
+	YES(), NO(), DEPENDS();
 }

@@ -12,168 +12,33 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
- * The command: PUT /changes/link:#change-id[\{change-id\}]/revisions/link:#revision-id[\{revision-id\}]/comments/ As
- * result a map is returned that maps the file path to a list of CommentInfo entries.
+ * The command: PUT /changes/{change-id}/revisions/{revision-id}/drafts
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#create-draft
  *
  * @since 1.0
  */
 
-public class CreateDraftCommand extends PutCommand<CommentInfo> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	private String fRevision;
-
-	private CommentInfo fCommentInfo;
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
+public class CreateDraftCommand extends BaseCommandChangeAndRevisionWithInput<CommentInfo, CommentInfo> {
 
 	/**
-	 * The constructor
+	 * Construct a create draft command
 	 *
 	 * @param gerritRepository
-	 *            the gerrit repository
+	 *            - the gerrit repository
 	 * @param id
-	 *            the change-id
+	 *            - the change-id
 	 * @param revision
-	 *            revisions-id
+	 *            - the revisions-id
 	 */
-	public CreateDraftCommand(GerritRepository gerritRepository, String id, String revision) {
-		super(gerritRepository, CommentInfo.class);
-		this.setId(id);
-		this.setRevision(revision);
-		requiresAuthentication(true);
-	}
-
-	private void setRevision(String revision) {
-		fRevision = revision;
-
-	}
-
-	private String getRevision() {
-		return fRevision;
-
-	}
-
-	/**
-	 * change_id getter function
-	 *
-	 * @return change_id the current change_id
-	 */
-	public String getId() {
-		return fChange_id;
-	}
-
-	/**
-	 * change_id setter function
-	 *
-	 * @param change_id
-	 *            the change_id of the comment that is to be created
-	 */
-
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
-	}
-
-	/**
-	 * fCommentInfo setter function
-	 *
-	 * @param commentInfo
-	 *            the commentInfo that is to be created
-	 */
-	public void setCommentInfo(CommentInfo commentInfo) {
-
-		fCommentInfo = commentInfo;
-
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/*	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					.append("/revisions/") //$NON-NLS-1$
-					.append(getRevision())
-					.append("/drafts") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		HttpPut httpPut = new HttpPut(uri);
-
-		StringEntity input = null;
-		try {
-			//We use this special exclusion strategy to make sure the "line" attribute is not included when the comment is on line 0 (aka file comment)
-			//If the attribute is included then the server returns an error (at least on 2.11.2)
-			Gson gson = new GsonBuilder().addSerializationExclusionStrategy(new ExclusionStrategy() {
-				@Override
-				public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-					if (fieldAttributes.getName().equals("line") && fCommentInfo.getLine() == 0) { //$NON-NLS-1$
-						return true;
-					}
-					return false;
-				}
-
-				@Override
-				public boolean shouldSkipClass(Class<?> aClass) {
-					return false;
-				}
-			}).create();
-			input = new StringEntity(gson.toJson(fCommentInfo));
-		} catch (UnsupportedEncodingException e) {
-			EGerritCorePlugin.logError("URI error encoding CommentInfo", e); //$NON-NLS-1$
-		}
-
-		if (input != null) {
-			input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
-		}
-		httpPut.setEntity(input);
-
-		return httpPut;
+	public CreateDraftCommand(GerritRepository gerritRepository, String changeId, String revisionId) {
+		super(gerritRepository, AuthentificationRequired.YES, HttpPut.class, CommentInfo.class, changeId, revisionId);
+		setPathFormat("/changes/{change-id}/revisions/{revision-id}/drafts"); //$NON-NLS-1$
 	}
 
 }

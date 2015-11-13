@@ -12,136 +12,38 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 
 /**
- * The <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Get Content</a>
- * command. It returns a
- * <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#String" ></a> base64 encoded.
+ * The command GET /projects/{project-name}/commits/{commit-id}/files/{file-id}/content
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content
  *
  * @since 1.0
  */
-public class GetContentFromCommitCommand extends QueryCommand<String> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-	private String fProject_Name;
-
-	private String fCommit_id;
-
-	private String fTargetFile;
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
-
+public class GetContentFromCommitCommand extends BaseCommand<String> {
 	/**
-	 * The constructor
+	 * Construct a command to retrieve the content of a file from the git repository
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
-	 * @param id
-	 *            the change-id
-	 * @param revision
+	 * @param projectId
+	 *            the project-id
+	 * @param commitId
 	 *            revisions-id
-	 * @param targetFile
+	 * @param fileId
 	 *            the file to fetch
 	 */
-	public GetContentFromCommitCommand(GerritRepository gerritRepository, String project, String commit,
-			String targetFile) {
-		super(gerritRepository, String.class);
-		this.setProject_Name(project);
-		this.setCommit_id(commit);
-		this.settargetFile(targetFile);
-
-	}
-
-	/**
-	 * @return the fProject_Name
-	 */
-	public String getProject_Name() {
-		return fProject_Name;
-	}
-
-	/**
-	 * @param fProject_Name
-	 *            the fProject_Name to set
-	 */
-	public void setProject_Name(String fProject_Name) {
-		this.fProject_Name = fProject_Name;
-	}
-
-	/**
-	 * @return the fCommit_id
-	 */
-	public String getCommit_id() {
-		return fCommit_id;
-	}
-
-	/**
-	 * @param fCommit_id
-	 *            the fCommit_id to set
-	 */
-	public void setCommit_id(String commit_id) {
-		this.fCommit_id = commit_id;
-	}
-
-	private void settargetFile(String file_id) {
-		this.fTargetFile = file_id;
-
-	}
-
-	private String gettargetFile() {
-		return fTargetFile;
-
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			String file = URLEncoder.encode(gettargetFile(), "UTF-8");
-			String project = URLEncoder.encode(getProject_Name(), "UTF-8");
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/projects/") //$NON-NLS-1$
-					.append(project)
-					.append("/commits/") //$NON-NLS-1$
-					.append(getCommit_id())
-					.append("/files/") //$NON-NLS-1$
-					.append(file)
-					.append("/content") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException | UnsupportedEncodingException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		return new HttpGet(uri);
+	public GetContentFromCommitCommand(GerritRepository gerritRepository, String projectId, String commitId,
+			String fileId) {
+		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, String.class);
+		setPathFormat("/projects/{project-name}/commits/{commit-id}/files/{file-id}/content"); //$NON-NLS-1$
+		setSegment("{project-name}", projectId); //$NON-NLS-1$
+		setSegment("{commit-id}", commitId); //$NON-NLS-1$
+		setSegment("{file-id}", fileId); //$NON-NLS-1$
 	}
 
 	@Override
@@ -150,7 +52,7 @@ public class GetContentFromCommitCommand extends QueryCommand<String> {
 	}
 
 	@Override
-	protected Map<String, String> headers() {
+	protected Map<String, String> getHeaders() {
 		return null;
 	}
 

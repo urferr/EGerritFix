@@ -12,132 +12,32 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 
-import com.google.gson.Gson;
-
 /**
  * The command: POST /changes/{change-id}/revisions/{revision-id}/review
  * <p>
+ * http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-review
  *
  * @since 1.0
  */
-public class SetReviewCommand extends PostCommand<ReviewInfo> {
-
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
-	private String fChange_id;
-
-	private String fRevision;
-
-	private ReviewInput fReviewInput = new ReviewInput();
-
-	// ------------------------------------------------------------------------
-	// Constructor
-	// ------------------------------------------------------------------------
-
+public class SetReviewCommand extends BaseCommandChangeAndRevisionWithInput<ReviewInfo, ReviewInput> {
 	/**
-	 * The constructor
+	 * Construct a command to set a review on a revision
 	 *
 	 * @param gerritRepository
 	 *            the gerrit repository
-	 * @param id
+	 * @param changeId
 	 *            the change-id
-	 * @param revision
+	 * @param revisionId
 	 *            revisions-id
 	 */
-	public SetReviewCommand(GerritRepository gerritRepository, String id, String revision) {
-		super(gerritRepository, ReviewInfo.class);
-		this.setId(id);
-		this.setRevision(revision);
-		requiresAuthentication(true);
+	public SetReviewCommand(GerritRepository gerritRepository, String changeId, String revisionId) {
+		super(gerritRepository, AuthentificationRequired.YES, HttpPost.class, ReviewInfo.class, changeId, revisionId);
+		setPathFormat("/changes/{change-id}/revisions/{revision-id}/review"); //$NON-NLS-1$
 	}
 
-	private void setRevision(String revision) {
-		fRevision = revision;
-
-	}
-
-	private String getRevision() {
-		return fRevision;
-
-	}
-
-	public String getId() {
-		return fChange_id;
-	}
-
-	public void setId(String change_id) {
-		this.fChange_id = change_id;
-	}
-
-	public void setReviewInput(ReviewInput reviewInput) {
-		fReviewInput = reviewInput;
-	}
-
-	// ------------------------------------------------------------------------
-	// Format the query
-	// ------------------------------------------------------------------------
-
-	/*	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.egerrit.core.command.GerritCommand#formatRequest()
-	 */
-	@Override
-	public HttpRequestBase formatRequest() {
-
-		// Get the generic URI
-		URIBuilder uriBuilder = getRepository().getURIBuilder(fAuthIsRequired);
-
-		URI uri = null;
-		try {
-			// Set the path
-			String path = new StringBuilder(uriBuilder.getPath()).append("/changes/") //$NON-NLS-1$
-					.append(getId())
-					.append("/revisions/") //$NON-NLS-1$
-					.append(getRevision())
-					.append("/review") //$NON-NLS-1$
-					.toString();
-			uriBuilder.setPath(path);
-			uri = new URI(URIUtil.toUnencodedString(uriBuilder.build()));
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError("URI syntax exception", e); //$NON-NLS-1$
-		}
-
-		HttpPost httpPost = new HttpPost(uri);
-
-		Gson gson = new Gson();
-
-		// Serialize.
-		String json = gson.toJson(fReviewInput);
-
-		StringEntity input = null;
-		try {
-			input = new StringEntity(json);
-		} catch (UnsupportedEncodingException e) {
-			EGerritCorePlugin.logError("URI error encoding ReviewInput", e); //$NON-NLS-1$
-
-		}
-		input.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, GerritCommand.JSON_HEADER));
-
-		httpPost.setEntity(input);
-
-		return httpPost;
-	}
 }

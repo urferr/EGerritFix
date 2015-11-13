@@ -187,7 +187,7 @@ public abstract class GerritClient {
 	 * @return a default {@link GetChangeCommand} used to retrieve a change's MergeableInfo from the Gerrit repository
 	 */
 	public GetMergeableCommand getMergeable(ChangeInfo change) {
-		return new GetMergeableCommand(fGerritRepository, change);
+		return new GetMergeableCommand(fGerritRepository, change, null);
 	}
 
 	/**
@@ -342,8 +342,8 @@ public abstract class GerritClient {
 	 * @param draftId
 	 * @return UpdateDraftCommand.
 	 */
-	public UpdateDraftCommand updateDraftComments(String change_id, String accountId, String draftId) {
-		return new UpdateDraftCommand(fGerritRepository, change_id, accountId, draftId);
+	public UpdateDraftCommand updateDraftComments(String change_id, String revisionId, String draftId) {
+		return new UpdateDraftCommand(fGerritRepository, change_id, revisionId, draftId);
 	}
 
 	/**

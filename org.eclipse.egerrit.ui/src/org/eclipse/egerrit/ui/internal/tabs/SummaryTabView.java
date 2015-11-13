@@ -855,10 +855,10 @@ public class SummaryTabView {
 					AddReviewerInput addReviewerInput = new AddReviewerInput();
 					addReviewerInput.setReviewer(reviewer);
 
-					addReviewerCmd.setReviewerInput(addReviewerInput);
+					addReviewerCmd.setCommandInput(addReviewerInput);
 
 					AddReviewerResult reviewerCmdResult = null;
-					reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
+					reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					if (reviewerCmdResult != null && reviewerCmdResult.getConfirm()) {
 						//There is an error, just need to know if we should re-send or not
 						if (!MessageDialog.openConfirm(buttonPlus.getParent().getShell(),
@@ -867,7 +867,7 @@ public class SummaryTabView {
 						}
 						//Call again but with the flag confirm
 						addReviewerInput.setConfirmed(true);
-						reviewerCmdResult = addReviewerRequest(addReviewerCmd, reviewerCmdResult);
+						reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					}
 					setReviewers(fGerritClient);
 					textWidget.setText("");
@@ -879,14 +879,13 @@ public class SummaryTabView {
 			 * @param reviewerCmdResult
 			 * @return
 			 */
-			private AddReviewerResult addReviewerRequest(AddReviewerCommand addReviewerCmd,
+			private AddReviewerResult addReviewerRequest(AddReviewerCommand addReviewerCmd, AddReviewerInput input,
 					AddReviewerResult reviewerCmdResult) {
 				try {
 					reviewerCmdResult = addReviewerCmd.call();
 				} catch (EGerritException e3) {
 					if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-						String message = addReviewerCmd.getReviewerInput().getReviewer()
-								+ " does not identify a registered user or group";
+						String message = input.getReviewer() + " does not identify a registered user or group";
 						UIUtils.displayInformation(null, TITLE, message);
 					} else {
 						EGerritCorePlugin
@@ -948,17 +947,6 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * This method is an entry for the save a topic command
-	 *
-	 * @param
-	 * @return none
-	 */
-	public void saveTopic() {
-		setTopic(null);
-
-	}
-
-	/**
 	 * This method is the listener to save a topic
 	 *
 	 * @param genTopicData2
@@ -986,7 +974,7 @@ public class SummaryTabView {
 			topicInput.setTopic("");
 		}
 
-		command.setTopicInput(topicInput);
+		command.setCommandInput(topicInput);
 
 		try {
 			command.call();
