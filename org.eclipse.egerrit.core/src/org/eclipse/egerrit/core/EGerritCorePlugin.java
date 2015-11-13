@@ -128,7 +128,7 @@ public class EGerritCorePlugin extends Plugin {
 	private static void log(int status, String message, Throwable exception) {
 		String version = getBundleVersion();
 		StringBuilder sb = new StringBuilder();
-		sb.append("Plug-in Version: " + version + "\n");
+		sb.append("Plug-in Version: " + version + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		sb.append(message);
 		log(new Status(status, PLUGIN_ID, sb.toString(), exception));
 	}
@@ -220,7 +220,7 @@ public class EGerritCorePlugin extends Plugin {
 
 	/**
 	 * Getting the bundle version is public to allow the JUNIT
-	 * 
+	 *
 	 * @return String
 	 */
 	public static String getBundleVersion() {
