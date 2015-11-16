@@ -317,7 +317,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
 					SubmitInput submitInput = new SubmitInput();
-					submitInput.setWait_for_merge(false);
+					submitInput.setWait_for_merge(true);
 
 					submitCmd.setCommandInput(submitInput);
 
