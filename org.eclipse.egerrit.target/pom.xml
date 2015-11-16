@@ -41,6 +41,11 @@
 									<type>target</type>
 									<classifier>eGerrit-Eclipse_4.4-luna</classifier>
 								</artifact>
+								<artifact>
+									<file>eGerrit-Eclipse_4.6-neon.target</file>
+									<type>target</type>
+									<classifier>eGerrit-Eclipse_4.6-neon</classifier>
+								</artifact>
 								<!-- More targets could be added here -->
 							</artifacts>
 						</configuration>
