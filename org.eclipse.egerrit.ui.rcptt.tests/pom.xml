@@ -64,6 +64,7 @@
 							<useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
 							<stripVersion>true</stripVersion>
 							<stripClassifier>true</stripClassifier>
+							<excludeTransitive>true</excludeTransitive>
 						</configuration>
 					</execution>
 				</executions>
