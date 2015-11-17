@@ -82,6 +82,7 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.lib.Repository;
@@ -426,9 +427,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					try {
 						rebaseCmd.call();
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+					} catch (EGerritException e1) {
+						if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
+							MessageDialog.open(MessageDialog.INFORMATION, null, "Rebase failed",
+									"Gerrit could not perform the rebase automatically. You need to perform the rebase locally.",
+									SWT.NONE);
+						} else {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+						}
 					}
 					refreshStatus();
 				}
@@ -1080,7 +1087,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		// or a site from within a editor or view:
 		// IServiceLocator serviceLocator = getSite();
 
-		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+		ICommandService commandService = serviceLocator.getService(ICommandService.class);
 
 		try {
 			// Lookup command with its ID
