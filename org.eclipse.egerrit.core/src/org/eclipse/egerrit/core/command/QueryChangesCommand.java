@@ -49,7 +49,7 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		if (queryString == null) {
 			queryString = query;
 		} else {
-			queryString += "+" + query; //$NON-NLS-1$
+			queryString += " " + query; //$NON-NLS-1$
 		}
 	}
 
