@@ -34,7 +34,8 @@ public class GetReviewedFilesCommand extends BaseCommandChangeAndRevision<String
 	 */
 	public GetReviewedFilesCommand(GerritRepository gerritRepository, String changeId, String revisionId) {
 		super(gerritRepository, AuthentificationRequired.YES, HttpGet.class, String[].class, changeId, revisionId);
-		setPathFormat("/changes/{change-id}/revisions/{revision-id}/files/?reviewed"); //$NON-NLS-1$
+		setPathFormat("/changes/{change-id}/revisions/{revision-id}/files/"); //$NON-NLS-1$
+		addQueryParameter("reviewed", null); //$NON-NLS-1$
 	}
 
 }

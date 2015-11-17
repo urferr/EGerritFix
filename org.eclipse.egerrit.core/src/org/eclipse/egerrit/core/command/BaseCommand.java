@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -201,7 +199,7 @@ public abstract class BaseCommand<T> {
 			if (!queryParameters.isEmpty()) {
 				uriBuilder.addParameters(queryParameters);
 			}
-			request.setURI(new URI(URIUtil.toUnencodedString(uriBuilder.build())));
+			request.setURI(uriBuilder.build());
 		} catch (URISyntaxException | UnsupportedEncodingException e) {
 			throw new EGerritException(e);
 		}
