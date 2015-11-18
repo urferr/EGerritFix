@@ -142,11 +142,12 @@ public class QueryChangesCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testByMessage() {
 		QueryChangesCommand command = fGerrit.queryChanges();
-		command.addQuery("message:\"Test commit message\"");
+		command.addQuery("message:\"Test commit message\""); //$NON-NLS-1$
 		ChangeInfo[] result = null;
 		try {
 			result = command.call();
 			assertTrue(result.length > 0);
+			assertEquals("Test commit message", result[0].getSubject()); //$NON-NLS-1$
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}

@@ -40,7 +40,7 @@ public class GetChangeCommand extends BaseCommandChange<ChangeInfo> {
 	 *            The changeId to get the details for
 	 */
 	public GetChangeCommand(GerritRepository gerritRepository, String changeId) {
-		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, ChangeInfo.class, changeId);
+		super(gerritRepository, AuthentificationRequired.DEPENDS, HttpGet.class, ChangeInfo.class, changeId);
 		setPathFormat("/changes/{change-id}/detail"); //$NON-NLS-1$
 	}
 

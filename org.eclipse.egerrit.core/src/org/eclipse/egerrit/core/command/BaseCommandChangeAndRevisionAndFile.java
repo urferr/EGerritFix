@@ -29,7 +29,7 @@ abstract class BaseCommandChangeAndRevisionAndFile<T> extends BaseCommand<T> {
 		super(gerritRepository, authRequired, operationType, returnType);
 		setSegment(CHANGE_ID, changeId);
 		setSegment(REVISION_ID, revisionId);
-		setSegment(FILE_ID, fileId);
+		setSegmentToEncode(FILE_ID, fileId);
 	}
 
 	@Override

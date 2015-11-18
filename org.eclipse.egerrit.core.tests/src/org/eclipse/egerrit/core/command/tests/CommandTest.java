@@ -70,15 +70,15 @@ public abstract class CommandTest {
 		fGerrit = GerritFactory.create(fRepository);
 	}
 
-	/** 
-	 * Helper method to create a review and push it.
-	 * It also initializes variables
+	/**
+	 * Helper method to create a review and push it. It also initializes variables
 	 */
 	public void createReviewWithSimpleFile() {
 		try {
 			gitAccess = new GitAccess();
 			gitRepo = gitAccess.getGitProject();
-			filename = "EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() + ".java"; //$NON-NLS-1$ //$NON-NLS-2$
+			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
+					+ ".java"; //$NON-NLS-1$
 			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
 			gitAccess.addFile(filename, fileContent);
 			gitAccess.pushFile();
