@@ -38,6 +38,7 @@ import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class OpenCompareEditorTest {
 
@@ -103,7 +104,7 @@ public class OpenCompareEditorTest {
 		gitAccess.removeProject("aProject"); //$NON-NLS-1$
 	}
 
-//	@Test
+	@Test
 	public void compareModifiedFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
@@ -116,7 +117,7 @@ public class OpenCompareEditorTest {
 		assertNotNull(((PatchSetCompareItem) compareInput.getRight()).get());
 	}
 
-//	@Test
+	@Test
 	public void compareNewFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		String content = "this is file b"; //$NON-NLS-1$
@@ -130,7 +131,7 @@ public class OpenCompareEditorTest {
 		assertEquals("b.txt", compareInput.getLeft().getName()); //$NON-NLS-1$
 	}
 
-//	@Test
+	@Test
 	public void compareRemovedFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		gitAccess.removeFile(A_PROJECT_A_JAVA);
