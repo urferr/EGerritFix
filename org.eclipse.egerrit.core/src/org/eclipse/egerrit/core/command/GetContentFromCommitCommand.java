@@ -43,7 +43,7 @@ public class GetContentFromCommitCommand extends BaseCommand<String> {
 		setPathFormat("/projects/{project-name}/commits/{commit-id}/files/{file-id}/content"); //$NON-NLS-1$
 		setSegment("{project-name}", projectId); //$NON-NLS-1$
 		setSegment("{commit-id}", commitId); //$NON-NLS-1$
-		setSegment("{file-id}", fileId); //$NON-NLS-1$
+		setSegmentToEncode("{file-id}", fileId); //$NON-NLS-1$
 	}
 
 	@Override

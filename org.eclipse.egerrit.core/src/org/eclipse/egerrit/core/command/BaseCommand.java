@@ -77,8 +77,7 @@ public abstract class BaseCommand<T> {
 		Set<Entry<String, String>> params = parameters.entrySet();
 		String result = pathFormat;
 		for (Entry<String, String> entry : params) {
-			result = result.replace(entry.getKey(),
-					entry.getValue().contains("/") ? URLEncoder.encode(entry.getValue(), "UTF-8") : entry.getValue()); //$NON-NLS-1$ //$NON-NLS-2$
+			result = result.replace(entry.getKey(), entry.getValue());
 		}
 		return result;
 	}
@@ -177,7 +176,7 @@ public abstract class BaseCommand<T> {
 	private void setRequestURI() throws EGerritException {
 		if (fAuthIsRequired.equals(AuthentificationRequired.YES) && server.getServerInfo().isAnonymous()) {
 			throw new EGerritException(
-					"This command requires an authenticated user but the user needs is not logged in. Command name is " //$NON-NLS-1$
+					"This command requires an authenticated user but no user information is provided. Command name is " //$NON-NLS-1$
 							+ this.getClass().getName());
 		}
 		boolean authenticatedURL = true;
@@ -194,8 +193,7 @@ public abstract class BaseCommand<T> {
 		}
 
 		try {
-			URIBuilder uriBuilder = server.getURIBuilder(authenticatedURL);
-			uriBuilder.setPath(uriBuilder.getPath() + getPath());
+			URIBuilder uriBuilder = new URIBuilder(server.getURIBuilder(authenticatedURL).toString() + getPath());
 			if (!queryParameters.isEmpty()) {
 				uriBuilder.addParameters(queryParameters);
 			}
@@ -263,6 +261,15 @@ public abstract class BaseCommand<T> {
 
 	protected void setSegment(String key, String value) {
 		parameters.put(key, value);
+	}
+
+	protected void setSegmentToEncode(String key, String value) {
+		try {
+			parameters.put(key, URLEncoder.encode(value, "UTF-8")); //$NON-NLS-1$
+		} catch (UnsupportedEncodingException e) {
+			logger.debug("Can't URL encode value: " + value); //$NON-NLS-1$
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 	protected void addQueryParameter(String key, String value) {
