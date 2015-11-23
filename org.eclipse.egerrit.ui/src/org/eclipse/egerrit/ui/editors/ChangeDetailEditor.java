@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -118,6 +119,8 @@ import com.ibm.icu.text.NumberFormat;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
 	private static final String REBASE = "rebase";
+
+	private static final String SUBMIT = "submit";
 
 	private static final String RESTORE = "restore";
 
@@ -533,9 +536,29 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
 					String latestPatchSet = filesTab != null ? filesTab.getLatestPatchSet() : "";
-					itemCRPlus2
-							.setEnabled(fChangeInfo.getCodeReviewedTally() != 2 && fChangeInfo.getVerifiedTally() >= 1
-									&& latestPatchSet.compareTo(fChangeInfo.getCurrentRevision()) == 0 && canRebase());
+
+					//Test if we should allow the +2 button or not
+					//Condition:
+					//     - User is a committer (maxCRDefined == maxCRPermitted)
+					//     - If user permitted, the maxCRPermitted > 0 if not Abandoned
+					//     - Selected patch set is the latest
+					//     - User cannot submit yet
+					int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
+					int maxCRDefined = findMaxDefinedLabelValue(CODE_REVIEW);
+					boolean allowPlus2 = false;
+					if (maxCRDefined == maxCRPermitted && maxCRPermitted > 0) {
+						allowPlus2 = true;
+					}
+					//Verify the patchset if we are allowed only, no need to check if not allowed
+					if (allowPlus2) {
+						String psSelectedID = filesTab.getSelectedPatchSetID();
+						if (!(psSelectedID != null && latestPatchSet.compareTo(psSelectedID) == 0)) {
+							allowPlus2 = false;
+						}
+					}
+
+					itemCRPlus2.setEnabled(!canSubmit() && allowPlus2);
+
 					if (itemCRPlus2.isEnabled()) {
 						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 							@Override
@@ -711,6 +734,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	}
 
+	private void submitButtonEnablement() {
+		fSubmit.setEnabled(canSubmit());
+	}
+
 	private boolean canRebase() {
 		Map<String, ActionInfo> actions = getRevisionActions();
 		if (actions != null) {
@@ -723,7 +750,32 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return false;
 	}
 
+	private boolean canSubmit() {
+		Map<String, ActionInfo> actions = getRevisionActions();
+		if (actions != null) {
+			ActionInfo submit = actions.get(SUBMIT);
+
+			if (submit != null) {
+				return submit.isEnabled();
+			}
+		}
+		return false;
+	}
+
 	private Map<String, ActionInfo> getRevisionActions() {
+		//Test if we already have the info in the revision info structure, we should
+		Map<String, RevisionInfo> maprev = fChangeInfo.getRevisions();
+		if (maprev != null) {
+
+			Set<Entry<String, RevisionInfo>> params = maprev.entrySet();
+			Map<String, ActionInfo> result = null;
+			for (Entry<String, RevisionInfo> entry : params) {
+				result = entry.getValue().getActions();
+			}
+			return result;
+		}
+
+		//Query if the action for a revision are not available yet Should not happen here
 		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getId(),
 				fChangeInfo.getCurrentRevision());
 
@@ -734,52 +786,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
 		return getRevisionActionsCmdResult;
-	}
-
-	/**
-	 * This method set the state of the Submit button. By default, we set the submit button to true. The following code
-	 * can set the "Submit" button to false. when we meet the conditions that follows. So when the state is set to
-	 * false, no need to continue, we can just return at that point.
-	 */
-	private void submitButtonEnablement() {
-		fSubmit.setEnabled(true);
-
-		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-		if (findMaxDefinedLabelValue(CODE_REVIEW) != maxCRPermitted) {
-			fSubmit.setEnabled(false);
-			return;
-		}
-
-		LabelInfo lblInfoVerify = fChangeInfo.getLabels().get(VERIFIED);
-		if (lblInfoVerify != null) {
-			if (lblInfoVerify.isBlocking()) {
-				fSubmit.setEnabled(false);
-				return;
-			} else {
-				if (fChangeInfo.getVerifiedTally() <= 0) {
-					fSubmit.setEnabled(false);
-					return;
-				}
-			}
-		}
-
-		LabelInfo lblInfoCR = fChangeInfo.getLabels().get(CODE_REVIEW);
-		if (lblInfoCR != null) {
-			if (lblInfoCR.isBlocking()) {
-				fSubmit.setEnabled(false);
-				return;
-			} else {
-				if (fChangeInfo.getCodeReviewedTally() <= 0) {
-					fSubmit.setEnabled(false);
-					return;
-				}
-			}
-		} else {
-			fSubmit.setEnabled(false);
-			return;
-
-		}
-
 	}
 
 	private void abandonrestoreButtonEnablement() {
@@ -832,6 +838,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setActions(res.getActions());
 			fChangeInfo.setTopic(res.getTopic());
 			fChangeInfo.setMergeable(res.isMergeable());
+			fChangeInfo.setRevisions(res.getRevisions());
 
 			//Set the file tab view
 			if (filesTab != null) {

@@ -859,6 +859,19 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
+	 * @return the patchset selection ID as a string
+	 */
+	public String getSelectedPatchSetID() {
+		RevisionInfo psSelectedRev = null;
+		ISelection selected = comboPatchsetViewer.getSelection();
+		if (!selected.isEmpty()) {
+			psSelectedRev = findSelectedPatchsetRevision(selected);
+			return psSelectedRev.getId();
+		}
+		return null;
+	}
+
+	/**
 	 * @return the latest patchset as a string
 	 */
 	public String getLatestPatchSet() {
@@ -873,28 +886,38 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 * @return String The patch set reference when a patch set is selected
 	 */
 	private String findSelectedPatchsetRef(ISelection selected, String psSelected) {
-		if (selected instanceof StructuredSelection) {
-			Object element = ((IStructuredSelection) selected).getFirstElement();
-			if (element instanceof RevisionInfo) {
-				RevisionInfo selectInfo = (RevisionInfo) element;
-				Map<String, FetchInfo> fetchInfoMap = selectInfo.getFetch();
-				FetchInfo fetchInfo = fetchInfoMap.get("git"); //$NON-NLS-1$
+		RevisionInfo selectInfo = findSelectedPatchsetRevision(selected);
+		Map<String, FetchInfo> fetchInfoMap = selectInfo.getFetch();
+		FetchInfo fetchInfo = fetchInfoMap.get("git"); //$NON-NLS-1$
+		if (fetchInfo != null) {
+			psSelected = fetchInfo.getRef().toString();
+		} else {
+			fetchInfo = fetchInfoMap.get("ssh"); //$NON-NLS-1$
+			if (fetchInfo != null) {
+				psSelected = fetchInfo.getRef().toString();
+			} else {
+				fetchInfo = fetchInfoMap.get("http"); //$NON-NLS-1$
 				if (fetchInfo != null) {
 					psSelected = fetchInfo.getRef().toString();
-				} else {
-					fetchInfo = fetchInfoMap.get("ssh"); //$NON-NLS-1$
-					if (fetchInfo != null) {
-						psSelected = fetchInfo.getRef().toString();
-					} else {
-						fetchInfo = fetchInfoMap.get("http"); //$NON-NLS-1$
-						if (fetchInfo != null) {
-							psSelected = fetchInfo.getRef().toString();
-						}
-					}
 				}
 			}
 		}
 		return psSelected;
+	}
+
+	/**
+	 * @param selected
+	 * @return RevisionInfo The patch set reference when a patch set is selected
+	 */
+	private RevisionInfo findSelectedPatchsetRevision(ISelection selected) {
+		RevisionInfo selectInfo = null;
+		if (selected instanceof StructuredSelection) {
+			Object element = ((IStructuredSelection) selected).getFirstElement();
+			if (element instanceof RevisionInfo) {
+				selectInfo = (RevisionInfo) element;
+			}
+		}
+		return selectInfo;
 	}
 
 	private RevisionInfo getRevisionInfoByNumber(String number) {

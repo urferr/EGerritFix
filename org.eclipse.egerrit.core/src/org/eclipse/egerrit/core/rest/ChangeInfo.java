@@ -460,6 +460,14 @@ public class ChangeInfo extends PropertyChangeModel {
 	}
 
 	/**
+	 * @param revisions
+	 *            as List
+	 */
+	public void setRevisions(Map<String, RevisionInfo> revisions) {
+		this.revisions = revisions;
+	}
+
+	/**
 	 * @return The commit ID:s of all the patch sets of this change. May be null.
 	 */
 	public Map<String, RevisionInfo> getRevisions() {
