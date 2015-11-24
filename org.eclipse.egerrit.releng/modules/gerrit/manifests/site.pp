@@ -119,17 +119,17 @@ define gerrit::site (
   $ssh = "ssh -p $sshport -i $envbase/admin.id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no admin@localhost"
 
   exec { "create project for $envid":
-    command => "$ssh gerrit create-project --name org.eclipse.egerrit.test --empty-commit",
+    command => "$ssh gerrit create-project --name egerrit/test --empty-commit",
     #    user => "$gerrit::userOwner",
     require => [Exec["start $envid"], File["$envbase/admin.id_rsa"]],
-    creates => "$envbase/git/org.eclipse.egerrit.test.git"
+    creates => "$envbase/git/egerrit/test.git"
   }
   
  exec { "create RCPTT project for $envid":
-    command => "$ssh gerrit create-project --name org.eclipse.egerrit.RCPTTtest --empty-commit",
+    command => "$ssh gerrit create-project --name egerrit/RCPTTtest --empty-commit",
     #    user => "$gerrit::userOwner",
     require => [Exec["start $envid"], File["$envbase/admin.id_rsa"]],
-    creates => "$envbase/git/org.eclipse.egerrit.RCPTTtest.git"
+    creates => "$envbase/git/egerrit/RCPTTtest.git"
   }
  
 }

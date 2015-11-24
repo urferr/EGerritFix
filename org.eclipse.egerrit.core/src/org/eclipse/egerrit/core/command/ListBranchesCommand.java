@@ -36,7 +36,7 @@ public class ListBranchesCommand extends BaseCommand<BranchInfo[]> {
 	public ListBranchesCommand(GerritRepository gerritRepository, String project) {
 		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, BranchInfo[].class);
 		setPathFormat("/projects/{project-name}/branches/"); //$NON-NLS-1$
-		setSegment("{project-name}", project); //$NON-NLS-1$
+		setSegmentToEncode("{project-name}", project); //$NON-NLS-1$
 	}
 
 }

@@ -41,7 +41,7 @@ public class GetContentFromCommitCommand extends BaseCommand<String> {
 			String fileId) {
 		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, String.class);
 		setPathFormat("/projects/{project-name}/commits/{commit-id}/files/{file-id}/content"); //$NON-NLS-1$
-		setSegment("{project-name}", projectId); //$NON-NLS-1$
+		setSegmentToEncode("{project-name}", projectId); //$NON-NLS-1$
 		setSegment("{commit-id}", commitId); //$NON-NLS-1$
 		setSegmentToEncode("{file-id}", fileId); //$NON-NLS-1$
 	}

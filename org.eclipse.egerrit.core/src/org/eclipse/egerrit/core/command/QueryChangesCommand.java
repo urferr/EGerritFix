@@ -13,6 +13,8 @@
 
 package org.eclipse.egerrit.core.command;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,7 +51,7 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		if (queryString == null) {
 			queryString = query;
 		} else {
-			queryString += " " + query; //$NON-NLS-1$
+			queryString += "+" + query; //$NON-NLS-1$
 		}
 	}
 
@@ -79,7 +81,13 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 	//We only need to override this method because we want to force only one query string
 	public ChangeInfo[] call() throws EGerritException {
 		if (queryString != null) {
-			addQueryParameter("q", queryString); //$NON-NLS-1$
+			try {
+				//We forcefully decode the query string because when we construct the final URL in BaseCommand, the parameters are encoded.
+				//And if the changeId was not decoded then some characters would be encoded a second time which would break the query.
+				addQueryParameter("q", URLDecoder.decode(queryString, "UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalStateException("Problem decoding query string " + queryString); //$NON-NLS-1$
+			}
 		}
 		return super.call();
 	}
