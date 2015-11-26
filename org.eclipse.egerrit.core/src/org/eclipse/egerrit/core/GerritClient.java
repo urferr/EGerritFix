@@ -38,6 +38,7 @@ import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
+import org.eclipse.egerrit.core.command.RevertCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.command.SetTopicCommand;
@@ -466,4 +467,15 @@ public abstract class GerritClient {
 	public SetTopicCommand setTopic(String change_id) {
 		return new SetTopicCommand(fGerritRepository, change_id);
 	}
+
+	/**
+	 * Return a command to revert a change
+	 *
+	 * @param change_id
+	 * @return RevertCommand
+	 */
+	public RevertCommand revert(String change_id) {
+		return new RevertCommand(fGerritRepository, change_id);
+	}
+
 }

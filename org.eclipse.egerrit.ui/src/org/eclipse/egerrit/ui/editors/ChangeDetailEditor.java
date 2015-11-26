@@ -56,6 +56,7 @@ import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
+import org.eclipse.egerrit.core.command.RevertCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -69,6 +70,7 @@ import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.RebaseInput;
 import org.eclipse.egerrit.core.rest.RestoreInput;
+import org.eclipse.egerrit.core.rest.RevertInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.rest.SubmitInput;
@@ -130,6 +132,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private static final String CODE_REVIEW = "Code-Review";
 
+	private static final String REVERT = "revert";
+
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -145,7 +149,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	public FilesTabView filesTab = null;
 
-	private final ChangeInfo fChangeInfo = new ChangeInfo();
+	private ChangeInfo fChangeInfo = new ChangeInfo();
 
 	private final CommitInfo fCommitInfo = new CommitInfo();
 
@@ -172,6 +176,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Button fReply;
 
 	private String anonymousUserToolTip;
+
+	private Button fRevert;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -283,7 +289,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Composite buttonSection(final Composite parent) {
-		final int NUMBER_OF_BUTTONS = 8;
+		final int NUMBER_OF_BUTTONS = 9;
 		final Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout(NUMBER_OF_BUTTONS, true));
 
@@ -587,6 +593,41 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				}
 			});
 		}
+		fRevert = new Button(c, SWT.PUSH);
+		fRevert.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fRevert.setText("Revert");
+		fRevert.setEnabled(false);
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fRevert.setToolTipText(anonymousUserToolTip);
+		} else {
+			fRevert.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
+
+					String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
+							+ fChangeInfo.getCurrentRevision() + ".";
+					RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
+					RevertInput revertInput = new RevertInput();
+					revertInput.setMessage(revertMsg);
+
+					revertCmd.setCommandInput(revertInput);
+
+					ChangeInfo revertResult = null;
+					try {
+						revertResult = revertCmd.call();
+					} catch (EGerritException e3) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+					}
+					fChangeInfo.setId(revertResult.getId());
+
+					refreshStatus();
+					setEditorTitle();
+				}
+			});
+		}
+
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
 	}
@@ -727,6 +768,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
+		revertButtonEnablement();
+	}
+
+	private void revertButtonEnablement() {
+		fRevert.setEnabled(canRevert());
 	}
 
 	private void rebaseButtonEnablement() {
@@ -736,6 +782,20 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private void submitButtonEnablement() {
 		fSubmit.setEnabled(canSubmit());
+	}
+
+	private boolean canRevert() {
+		Map<String, ActionInfo> actions = fChangeInfo.getActions();
+		if (actions != null) {
+			ActionInfo revert = actions.get(REVERT);
+			if (revert != null) {
+				if (revert.isEnabled()) {
+					return true;
+				}
+			}
+
+		}
+		return false;
 	}
 
 	private boolean canRebase() {
