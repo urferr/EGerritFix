@@ -21,7 +21,12 @@ public class GerritQuery {
 	/**
 	 * Query type: my changes
 	 */
-	public static final String MY_CHANGES = "owner:self OR reviewer:self"; //$NON-NLS-1$
+	public static final String MY_CHANGES = "(is:open AND reviewer:self) OR  (is:open AND reviewer:self AND -owner:self)"; //$NON-NLS-1$
+
+	/**
+	 * Query type: my recently closed changes
+	 */
+	public static final String MY_RECENTLY_CLOSED_CHANGES = "is:closed AND owner:self AND limit:10"; //$NON-NLS-1$
 
 	/**
 	 * Query type: my watched changes

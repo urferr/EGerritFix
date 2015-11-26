@@ -83,7 +83,7 @@ get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Watched Changes revi
 get-menu "Draft Comments" | click
 with [get-view "Gerrit Dashboard (EGerrit)"] {
     get-button "Open Gerrit documentation" | click
-    get-combo -after [get-label ".*"] | select "owner:self OR reviewer:self"
+    get-combo -after [get-label ".*"] | select "(is:open AND reviewer:self) OR  (is:open AND reviewer:self AND -owner:self)"
     get-button Search | click
     get-combo -after [get-label ".*"] | set-text "status:open"
     get-button Search | click

@@ -166,6 +166,13 @@
             	style="push"
             	tooltip="%command.tooltipStarred">
          </command>
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.myRecentlyClosedReviewsChanges"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.myRecentlyClosedReviewsChanges"
+                label="%command.recentlyclosedreviewschanges"
+                style="push"
+                tooltip="%command.tooltipRecentlyClosedReviewsChanges">
+          </command>         
 
          <separator
                 name="additions"
@@ -281,6 +288,10 @@
             	name="%command.name.myStarredChanges">
       </command>
        <command
+            	id="org.eclipse.egerrit.dashboard.ui.myRecentlyClosedReviewsChanges"
+            	name="%command.name.myrecentlyclosedreviewschanges">
+      </command>
+       <command
             	id="org.eclipse.egerrit.dashboard.ui.myDraftComments"
             	name="%command.name.myDraftsCommentsChanges">
       </command>
@@ -354,6 +365,10 @@
 	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyDraftCommentsReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments">
 	      </handler>
+	      <handler
+	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyRecentlyClosedChangesReviewsHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.myRecentlyClosedReviewsChanges">
+	      </handler>	      
           <!-- The following are the handlers under the "Documentation" sub-menu
          -->
 	      <handler
