@@ -326,6 +326,7 @@ public class GerritRepository {
 					// feed.
 					int prefixLength = JSON_NON_EXECUTABLE_PREFIX.length();
 					String rawResult = EntityUtils.toString(entity);
+					logger.debug("Server version information is: '" + rawResult + "'"); //$NON-NLS-1$ //$NON-NLS-2$
 					result = rawResult.substring(prefixLength + 1, rawResult.length() - 2);
 					return result;
 				}
