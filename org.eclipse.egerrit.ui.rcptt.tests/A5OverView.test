@@ -80,10 +80,13 @@ get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Watched Changes revi
 get-menu "Starred Changes" | click
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Watched Changes reviews for the selected repository" 
     | click -arrow
+get-menu "Recently Closed Changes" | click
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Watched Changes reviews for the selected repository" 
+    | click -arrow
 get-menu "Draft Comments" | click
 with [get-view "Gerrit Dashboard (EGerrit)"] {
     get-button "Open Gerrit documentation" | click
-    get-combo -after [get-label ".*"] | select "(is:open AND reviewer:self) OR  (is:open AND reviewer:self AND -owner:self)"
+    get-combo -after [get-label ".*"] | select "is:closed AND owner:self AND limit:10"
     get-button Search | click
     get-combo -after [get-label ".*"] | set-text "status:open"
     get-button Search | click
