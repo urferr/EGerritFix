@@ -770,7 +770,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			Set<Entry<String, RevisionInfo>> params = maprev.entrySet();
 			Map<String, ActionInfo> result = null;
 			for (Entry<String, RevisionInfo> entry : params) {
-				result = entry.getValue().getActions();
+				//Need to be on the latest revision to get the proper actions
+				if (entry.getValue().getId().equals(fChangeInfo.getCurrentRevision())) {
+					result = entry.getValue().getActions();
+				}
 			}
 			return result;
 		}
