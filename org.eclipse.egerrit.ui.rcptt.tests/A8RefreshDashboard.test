@@ -1,0 +1,54 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: A8RefreshDashboard
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _ayrJkJUbEeWAGc9NKU3Ilw
+Runtime-Version: 2.0.2.201511100828
+Save-Time: 11/27/15 11:24 AM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Pre-requisite: Have setupRCPTT ran before exxecuting this test, so we have some review from the egerrit/RCPTTtest valid in the Gerrit database
+Also, Gerrit Dashboard is already opened
+
+Record data after the user selects the following short key link from :
+Summary tab -> Project
+SummaryTab -> Branch
+MessageTab -> Author
+MessageTab -> Committer
+MessageTab -> Commit
+MessageTab -> Change-Id
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Select current Gerrit repository" | click -arrow
+get-menu "vagrant2.11.2" | click
+with [get-view "Gerrit Dashboard (EGerrit)"] {
+    get-button "Find all Open Reviews for the selected repository" | click
+    with [get-table] {
+        get-cell 0 2 | click
+        get-cell 0 2 | mouse down -count 2
+        double-click
+        get-cell 0 2 | mouse up -count 2
+    }
+}
+with [get-editor ".* number 10"] {
+    with [get-group General] {
+        get-link "<a>egerrit/RCPTTtest</a>" | click-link
+        get-link "<a>master</a>" | click-link
+    }
+    get-tab-folder | get-tab-item Messages | click
+    get-link -after [get-label "Author:"] | click-link
+    get-link -after [get-label "Committer:"] | click-link
+    get-link -after [get-label "Commit:"] | click-link
+    get-link -after [get-label "Change-Id:"] | click-link
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
