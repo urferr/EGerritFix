@@ -26,7 +26,7 @@ public class GerritQuery {
 	/**
 	 * Query type: my recently closed changes
 	 */
-	public static final String MY_RECENTLY_CLOSED_CHANGES = "is:closed AND owner:self AND limit:10"; //$NON-NLS-1$
+	public static final String MY_RECENTLY_CLOSED_CHANGES = "is:closed AND (owner:self OR reviewer:self) AND limit:10"; //$NON-NLS-1$
 
 	/**
 	 * Query type: my watched changes
