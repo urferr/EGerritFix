@@ -164,11 +164,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 //	private StyledText msgAuthorData;
 
-	private Button fSubmit;
+	private Button fSubmitRevert;
 
-	private Button fAbandon;
-
-	private Button fRestore;
+	private Button fAbandonRestore;
 
 	private Button fRebase;
 
@@ -178,7 +176,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private String anonymousUserToolTip;
 
-	private Button fRevert;
+	private boolean fAbandonMode = false;
+
+	private boolean fSubmitMode = false;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -290,7 +290,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Composite buttonSection(final Composite parent) {
-		final int NUMBER_OF_BUTTONS = 9;
+		final int NUMBER_OF_BUTTONS = 7;
 		final Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout(NUMBER_OF_BUTTONS, true));
 
@@ -306,13 +306,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 		});
 
-		fSubmit = new Button(c, SWT.PUSH);
-		fSubmit.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fSubmit.setText("Submit");
-		fSubmit.setEnabled(false);
+		fSubmitRevert = new Button(c, SWT.PUSH);
+		fSubmitRevert.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fSubmitRevert.setText("Submit");
+		fSubmitRevert.setEnabled(false);
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fSubmit.setToolTipText(anonymousUserToolTip);
-			fSubmit.addListener(SWT.MouseHover, new Listener() {
+			fSubmitRevert.setToolTipText(anonymousUserToolTip);
+			fSubmitRevert.addListener(SWT.MouseHover, new Listener() {
 
 				@Override
 				public void handleEvent(Event event) {
@@ -321,95 +321,112 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				}
 			});
 		} else {
-			fSubmit.addSelectionListener(new SelectionAdapter() {
+			fSubmitRevert.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
 
-					SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
-					SubmitInput submitInput = new SubmitInput();
-					submitInput.setWait_for_merge(true);
+					if (fSubmitMode == true) {
+						SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
+						SubmitInput submitInput = new SubmitInput();
+						submitInput.setWait_for_merge(true);
 
-					submitCmd.setCommandInput(submitInput);
+						submitCmd.setCommandInput(submitInput);
 
-					try {
-						submitCmd.call();
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						try {
+							submitCmd.call();
+						} catch (EGerritException e3) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						}
+						fSubmitMode = false;
+						refreshStatus();
+					} else {
+						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
+								+ fChangeInfo.getCurrentRevision() + ".";
+						RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
+						RevertInput revertInput = new RevertInput();
+						revertInput.setMessage(revertMsg);
+
+						revertCmd.setCommandInput(revertInput);
+
+						ChangeInfo revertResult = null;
+						try {
+							revertResult = revertCmd.call();
+						} catch (EGerritException e3) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						}
+						fChangeInfo.setId(revertResult.getId());
+
+						fSubmitMode = true;
+						refreshStatus();
+						setEditorTitle();
+
 					}
-					refreshStatus();
 				}
 			});
 		}
-		fAbandon = new Button(c, SWT.PUSH);
-		fAbandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fAbandon.setText("Abandon");
-		fAbandon.setEnabled(false);
+
+		fAbandonRestore = new Button(c, SWT.PUSH);
+		fAbandonRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fAbandonRestore.setEnabled(false);
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fAbandon.setToolTipText(anonymousUserToolTip);
+			fAbandonRestore.setToolTipText(anonymousUserToolTip);
 		} else {
-			fAbandon.addSelectionListener(new SelectionAdapter() {
+			fAbandonRestore.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
 
-					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message",
-							"Enter the abandon message", "", null);
-					if (inputDialog.open() != Window.OK) {
-						return;
+					if (fAbandonMode == true) {
+						InputDialog inputDialog = new InputDialog(fAbandonRestore.getParent().getShell(),
+								"Abandon message", "Enter the abandon message", "", null);
+						if (inputDialog.open() != Window.OK) {
+							return;
+						}
+
+						AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
+						AbandonInput abandonInput = new AbandonInput();
+						abandonInput.setMessage(inputDialog.getValue());
+
+						abandonCmd.setCommandInput(abandonInput);
+
+						try {
+							abandonCmd.call();
+						} catch (EGerritException e3) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						}
+						fAbandonMode = false;
+						refreshStatus();
+					} else {
+						InputDialog inputDialog = new InputDialog(fAbandonRestore.getParent().getShell(),
+								"Restore message", "Enter the restore message", "", null);
+						if (inputDialog.open() != Window.OK) {
+							return;
+						}
+
+						RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
+						RestoreInput restoreInput = new RestoreInput();
+						restoreInput.setMessage(inputDialog.getValue());
+
+						restoreCmd.setCommandInput(restoreInput);
+
+						try {
+							restoreCmd.call();
+						} catch (EGerritException e3) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						}
+						fAbandonMode = true;
+						refreshStatus();
+
 					}
-
-					AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
-					AbandonInput abandonInput = new AbandonInput();
-					abandonInput.setMessage(inputDialog.getValue());
-
-					abandonCmd.setCommandInput(abandonInput);
-
-					try {
-						abandonCmd.call();
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-					}
-					refreshStatus();
 				}
 			});
 		}
-		fRestore = new Button(c, SWT.PUSH);
-		fRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fRestore.setText("Restore");
-		fRestore.setEnabled(false);
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fRestore.setToolTipText(anonymousUserToolTip);
-		} else {
-			fRestore.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
 
-					InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message",
-							"Enter the restore message", "", null);
-					if (inputDialog.open() != Window.OK) {
-						return;
-					}
-
-					RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
-					RestoreInput restoreInput = new RestoreInput();
-					restoreInput.setMessage(inputDialog.getValue());
-
-					restoreCmd.setCommandInput(restoreInput);
-
-					try {
-						restoreCmd.call();
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-					}
-					refreshStatus();
-				}
-			});
-		}
 		fRebase = new Button(c, SWT.PUSH);
 		fRebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fRebase.setText("Rebase");
@@ -418,6 +435,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fRebase.setEnabled(false);
 		} else {
 			fRebase.addSelectionListener(new SelectionAdapter() {
+
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
@@ -501,6 +519,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fReply.setEnabled(false);
 		} else {
 			fReply.addSelectionListener(new SelectionAdapter() {
+
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
@@ -591,40 +610,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
 
 					menu.setVisible(true);
-				}
-			});
-		}
-		fRevert = new Button(c, SWT.PUSH);
-		fRevert.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fRevert.setText("Revert");
-		fRevert.setEnabled(false);
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fRevert.setToolTipText(anonymousUserToolTip);
-		} else {
-			fRevert.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-
-					String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
-							+ fChangeInfo.getCurrentRevision() + ".";
-					RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
-					RevertInput revertInput = new RevertInput();
-					revertInput.setMessage(revertMsg);
-
-					revertCmd.setCommandInput(revertInput);
-
-					ChangeInfo revertResult = null;
-					try {
-						revertResult = revertCmd.call();
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-					}
-					fChangeInfo.setId(revertResult.getId());
-
-					refreshStatus();
-					setEditorTitle();
 				}
 			});
 		}
@@ -767,14 +752,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * The logic that controls when bottom buttons are enabled or not
 	 */
 	private void buttonsEnablement() {
-		submitButtonEnablement();
+		submitrevertButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
-		revertButtonEnablement();
-	}
-
-	private void revertButtonEnablement() {
-		fRevert.setEnabled(canRevert());
 	}
 
 	private void rebaseButtonEnablement() {
@@ -782,8 +762,32 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	}
 
-	private void submitButtonEnablement() {
-		fSubmit.setEnabled(canSubmit());
+	private void submitrevertButtonEnablement() {
+
+		if (canSubmit()) {
+			fSubmitRevert.setEnabled(true);
+			fSubmitRevert.setText("Submit");
+			fSubmitMode = true;
+		} else if (canRevert()) {
+			fSubmitRevert.setEnabled(true);
+			fSubmitRevert.setText("Revert");
+			fSubmitMode = false;
+		} else {
+			fSubmitRevert.setEnabled(false);
+		}
+
+	}
+
+	private boolean canSubmit() {
+		Map<String, ActionInfo> actions = getRevisionActions();
+		if (actions != null) {
+			ActionInfo submit = actions.get(SUBMIT);
+
+			if (submit != null) {
+				return submit.isEnabled();
+			}
+		}
+		return false;
 	}
 
 	private boolean canRevert() {
@@ -807,18 +811,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 			if (rebase != null) {
 				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean canSubmit() {
-		Map<String, ActionInfo> actions = getRevisionActions();
-		if (actions != null) {
-			ActionInfo submit = actions.get(SUBMIT);
-
-			if (submit != null) {
-				return submit.isEnabled();
 			}
 		}
 		return false;
@@ -859,16 +851,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		if (actions != null) {
 			ActionInfo abandon = actions.get(ABANDON);
 			ActionInfo restore = actions.get(RESTORE);
+			fAbandonRestore.setText("Abandon");
+			fAbandonRestore.setEnabled(true);
 
 			if (abandon != null && abandon.isEnabled()) {
-				fAbandon.setEnabled(true);
-				fRestore.setEnabled(false);
+				fAbandonMode = true;
 			} else if (restore != null && restore.isEnabled()) {
-				fAbandon.setEnabled(false);
-				fRestore.setEnabled(true);
+				fAbandonRestore.setText("Restore");
 			} else {
-				fAbandon.setEnabled(false);
-				fRestore.setEnabled(false);
+				fAbandonRestore.setEnabled(false);
 			}
 
 		}
