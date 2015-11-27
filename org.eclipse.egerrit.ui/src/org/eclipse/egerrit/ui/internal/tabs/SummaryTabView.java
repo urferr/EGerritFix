@@ -61,6 +61,8 @@ import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelPr
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
+import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
+import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -92,6 +94,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -115,9 +118,9 @@ public class SummaryTabView {
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
 
-	private Label genProjectData;
+	private Link genProjectData;
 
-	private Label genBranchData;
+	private Link genBranchData;
 
 	private Text genTopicData;
 
@@ -262,17 +265,30 @@ public class SummaryTabView {
 		lblProject.setText("Project:");
 		lblProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genProjectData = new Label(composite, SWT.NONE);
+		genProjectData = new Link(composite, SWT.NONE);
 		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		genProjectData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				linkDash.invokeRefreshDashboardCommand(EGerritConstants.PROJECT, e.text);
+			}
+		});
 
 		//Branch line
 		Label lblBranch = new Label(composite, SWT.NONE);
 		lblBranch.setText("Branch:");
 		lblBranch.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		genBranchData = new Label(composite, SWT.NONE);
+		genBranchData = new Link(composite, SWT.NONE);
 		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
+		genBranchData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				linkDash.invokeRefreshDashboardCommand(EGerritConstants.BRANCH, e.text);
+			}
+		});
 		//Topic line
 		Label lblTopic = new Label(composite, SWT.NONE);
 		lblTopic.setText("Topic:");
@@ -976,11 +992,12 @@ public class SummaryTabView {
 		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
 		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
 		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-				null);
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//
 		IObservableValue observeTextLblBranch_1ObserveWidget = WidgetProperties.text().observe(genBranchData);
 		IObservableValue branchFChangeInfoObserveValue = BeanProperties.value("branch").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblBranch_1ObserveWidget, branchFChangeInfoObserveValue, null, null);
+		bindingContext.bindValue(observeTextLblBranch_1ObserveWidget, branchFChangeInfoObserveValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//
 		IObservableValue observeTextText_2ObserveWidget = WidgetProperties.text().observe(genTopicData);
 		IObservableValue topicFChangeInfoObserveValue = BeanProperties.value("topic").observe(fChangeInfo); //$NON-NLS-1$

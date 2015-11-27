@@ -80,6 +80,7 @@ import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -757,7 +758,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		buttonsEnablement();
 
-		invokeRefreshCommand();
+		LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+		linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
 	}
 

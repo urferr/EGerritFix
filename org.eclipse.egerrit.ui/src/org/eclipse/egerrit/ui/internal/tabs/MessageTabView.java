@@ -14,11 +14,6 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -32,6 +27,8 @@ import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommitInfo;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
+import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
+import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -43,12 +40,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ICommandService;
-import org.eclipse.ui.services.IServiceLocator;
 
 /**
  * This class is used in the editor to handle the Gerrit message view
@@ -59,19 +54,19 @@ public class MessageTabView extends Observable {
 
 	private Text msgTextData;
 
-	private Label msgAuthorData;
+	private Link msgAuthorData;
 
 	private Label msgDatePushData;
 
-	private Label msgCommitterData;
+	private Link msgCommitterData;
 
 	private Label msgDatecommitterData;
 
-	private Label msgCommitidData;
+	private Link msgCommitidData;
 
 	private Label msgParentIdData;
 
-	private Label msgChangeIdData;
+	private Link msgChangeIdData;
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
 
@@ -156,8 +151,16 @@ public class MessageTabView extends Observable {
 		lblAuthor.setText("Author:");
 		lblAuthor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgAuthorData = new Label(messagesComposite, SWT.NONE);
+		msgAuthorData = new Link(messagesComposite, SWT.NONE);
 		msgAuthorData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		msgAuthorData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				//Need to put the text in quotes since there might be some empty spaces or special char in the user name
+				linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER, "\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			}
+		});
 
 		msgDatePushData = new Label(messagesComposite, SWT.NONE);
 		msgDatePushData.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
@@ -167,8 +170,16 @@ public class MessageTabView extends Observable {
 		lblCommitter.setText("Committer:");
 		lblCommitter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgCommitterData = new Label(messagesComposite, SWT.NONE);
+		msgCommitterData = new Link(messagesComposite, SWT.NONE);
 		msgCommitterData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		msgCommitterData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				//Need to put the text in quotes since there might be some empty spaces or special char in the user name
+				linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER, "\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			}
+		});
 
 		msgDatecommitterData = new Label(messagesComposite, SWT.NONE);
 		GridData gd_DateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
@@ -179,7 +190,15 @@ public class MessageTabView extends Observable {
 		lblCommit.setText("Commit:");
 		lblCommit.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgCommitidData = new Label(messagesComposite, SWT.NONE);
+		msgCommitidData = new Link(messagesComposite, SWT.NONE);
+		msgCommitidData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				linkDash.invokeRefreshDashboardCommand("", e.text);
+			}
+		});
+
 		msgCommitidData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
 		//LINE 4 - Parents: <parentId>
@@ -195,8 +214,15 @@ public class MessageTabView extends Observable {
 		lblChangeid.setText("Change-Id:");
 		lblChangeid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgChangeIdData = new Label(messagesComposite, SWT.NONE);
+		msgChangeIdData = new Link(messagesComposite, SWT.NONE);
 		msgChangeIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+		msgChangeIdData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				linkDash.invokeRefreshDashboardCommand("", e.text);
+			}
+		});
 
 		if (isEditingAllowed()) {
 			fBtnSave.addSelectionListener(new SelectionAdapter() {
@@ -223,8 +249,8 @@ public class MessageTabView extends Observable {
 					btnCancel.setEnabled(false);
 					setfMessageBuffer(msgTextData.getText());
 					notifyObservers();
-					invokeRefreshCommand();
-
+					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			});
 		}
@@ -271,7 +297,8 @@ public class MessageTabView extends Observable {
 		//
 		IObservableValue observeTextMsgCommitidDataWidget = WidgetProperties.text().observe(msgCommitidData);
 		IObservableValue msgCommitidDataValue = BeanProperties.value("commit").observe(commitInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextMsgCommitidDataWidget, msgCommitidDataValue, null, null);
+		bindingContext.bindValue(observeTextMsgCommitidDataWidget, msgCommitidDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//
 		IObservableValue observeTextMsgParentIdDataWidget = WidgetProperties.text().observe(msgParentIdData);
 		IObservableValue msgParentIdDataValue = BeanProperties.value("parents").observe(commitInfo); //$NON-NLS-1$
@@ -280,7 +307,8 @@ public class MessageTabView extends Observable {
 		//
 		IObservableValue observeTextMsgChangeIdDataWidget = WidgetProperties.text().observe(msgChangeIdData);
 		IObservableValue msgChangeIdDataValue = BeanProperties.value("change_id").observe(changeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextMsgChangeIdDataWidget, msgChangeIdDataValue, null, null);
+		bindingContext.bindValue(observeTextMsgChangeIdDataWidget, msgChangeIdDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 
 		return bindingContext;
 	}
@@ -298,32 +326,6 @@ public class MessageTabView extends Observable {
 	 */
 	public void setfMessageBuffer(String fMessageBuffer) {
 		this.fMessageBuffer = fMessageBuffer;
-	}
-
-	/**
-	 * Invoke a handler to update the Dashboard
-	 */
-	public void invokeRefreshCommand() {
-		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
-		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-		// or a site from within a editor or view:
-		// IServiceLocator serviceLocator = getSite();
-
-		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
-
-		try {
-			// Lookup command with its ID
-			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
-
-			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
-			command.executeWithChecks(new ExecutionEvent());
-
-		} catch (NotDefinedException | NotEnabledException | NotHandledException
-				| org.eclipse.core.commands.ExecutionException e) {
-
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
-
-		}
 	}
 
 	/**
