@@ -1202,4 +1202,14 @@ public class GerritTableView extends ViewPart {
 	public void update() {
 		rtv.processCommands(fSearchRequestText.getText());
 	}
+
+	/**
+	 * Perform an update according to the parameter received
+	 *
+	 * @param query
+	 */
+	public void update(String query) {
+		rtv.processCommands(query);
+	}
+
 }

@@ -81,7 +81,8 @@ public class DataConverter {
 				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
 					GitPersonInfo person = (GitPersonInfo) fromObject;
 					if (person.getName() != null && person.getEmail() != null) {
-						return person.getName() + "  < " + person.getEmail() + " >"; //$NON-NLS-1$//$NON-NLS-2$
+						// "<a>  </a> is to allow the link selection of the text
+						return "<a>" + person.getName() + "<" + person.getEmail() + ">" + "</a>"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					} else {
 						return null;
 					}
@@ -238,7 +239,8 @@ public class DataConverter {
 			public Object convert(Object fromObject) {
 				int lineInserted = 0;
 				int lineDeleted = 0;
-				List<DisplayFileInfo> modifiedFiles = (List<DisplayFileInfo>) ((Map<String, DisplayFileInfo>) fromObject).values();
+				List<DisplayFileInfo> modifiedFiles = (List<DisplayFileInfo>) ((Map<String, DisplayFileInfo>) fromObject)
+						.values();
 				for (DisplayFileInfo fileInfo : modifiedFiles) {
 					lineInserted += fileInfo.getLinesInserted();
 					lineDeleted += fileInfo.getLinesDeleted();
@@ -252,4 +254,20 @@ public class DataConverter {
 			}
 		};
 	}
+
+	/**
+	 * Insert the tag for the link text
+	 *
+	 * @return
+	 */
+	public static IConverter linkText() {
+		return new Converter(String.class, String.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+				return new StringBuilder().append("<a>").append(fromObject).append("</a>").toString();
+			}
+		};
+	}
+
 }

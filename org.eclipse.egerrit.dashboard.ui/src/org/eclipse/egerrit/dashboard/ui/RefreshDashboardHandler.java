@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -34,7 +36,26 @@ public class RefreshDashboardHandler extends AbstractHandler implements IElement
 		if (reviewTableView == null) {
 			return Status.OK_STATUS;
 		}
-		reviewTableView.update();
+
+		if (!aEvent.getParameters().isEmpty()) {
+			Map<String, String> map = aEvent.getParameters();
+			Iterator<Entry<String, String>> key = map.entrySet().iterator();
+			StringBuilder queryBuilder = new StringBuilder();
+			while (key.hasNext()) {
+				Entry<String, String> keyString = key.next();
+				if (!keyString.getKey().isEmpty()) {
+					queryBuilder.append(keyString.getKey());
+					queryBuilder.append(":"); //$NON-NLS-1$
+
+				}
+				queryBuilder.append(keyString.getValue());
+				queryBuilder.append(" "); //$NON-NLS-1$
+			}
+			reviewTableView.update(queryBuilder.toString().trim());
+		} else {
+			reviewTableView.update();
+		}
+
 		return Status.OK_STATUS; //For now , do not process the dialogue
 	}
 
