@@ -238,7 +238,7 @@ public class ReplyDialog extends Dialog {
 	private void createRadioButtonSelection() {
 		int maxRadio = getMaxCountLabels();
 		if (maxRadio <= 0) {
-			UIUtils.displayInformation(null, "Gerrit Reply", "No user login to set the status with the reply");
+			// No labels for the review.  This can happen for a merged review.
 			return;
 		}
 		Composite headerLabels = getRadioButtonHeaderLabels(maxRadio);
