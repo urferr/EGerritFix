@@ -108,7 +108,7 @@ public class OpenCompareEditorTest {
 	public void compareModifiedFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
-		gitAccess.pushFile();
+		gitAccess.pushFile(false, false);
 		gitAccess.resetTo(beforeMods);
 
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
@@ -122,7 +122,7 @@ public class OpenCompareEditorTest {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		String content = "this is file b"; //$NON-NLS-1$
 		gitAccess.addFile("aProject/b.txt", content); //$NON-NLS-1$
-		gitAccess.pushFile();
+		gitAccess.pushFile(false, false);
 		gitAccess.resetTo(beforeMods);
 
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());
@@ -135,7 +135,7 @@ public class OpenCompareEditorTest {
 	public void compareRemovedFile() throws Exception {
 		String beforeMods = gitAccess.getLastLocalCommitId();
 		gitAccess.removeFile(A_PROJECT_A_JAVA);
-		gitAccess.pushFile();
+		gitAccess.pushFile(false, false);
 		gitAccess.resetTo(beforeMods);
 
 		GerritCompareInput input = getCompareInputFor(gitAccess.getChangeId());

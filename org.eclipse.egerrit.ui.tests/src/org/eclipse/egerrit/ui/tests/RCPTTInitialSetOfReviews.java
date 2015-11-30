@@ -78,7 +78,7 @@ public class RCPTTInitialSetOfReviews {
 
 			String beforeMods = gitAccess.getLastLocalCommitId();
 			gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
-			gitAccess.pushFile("Test commit message number " + new Integer(i + 1));
+			gitAccess.pushFile("Test commit message number " + new Integer(i + 1), false, false);
 			gitAccess.resetTo(beforeMods);
 		}
 	}

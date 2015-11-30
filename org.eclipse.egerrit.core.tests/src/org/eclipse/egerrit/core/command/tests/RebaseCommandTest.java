@@ -68,7 +68,7 @@ public class RebaseCommandTest extends CommandTestWithSimpleReview {
 		}
 
 		gitAccess.modifyFile(filename, "Hello reviewers community!\n\n");
-		gitAccess.pushFile();
+		gitAccess.pushFile(false, false);
 
 		push();
 
@@ -99,7 +99,7 @@ public class RebaseCommandTest extends CommandTestWithSimpleReview {
 			Git git = gAccess.getGitProject();
 
 			gAccess.modifyFile(filename, "Hello reviewers community!\n\nMODIFIED");
-			gAccess.pushFile();
+			gAccess.pushFile(false, false);
 
 			change_id = gAccess.getChangeId();
 			commit_id = gAccess.getCommitId();

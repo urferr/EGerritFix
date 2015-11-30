@@ -16,6 +16,6 @@ import org.junit.Before;
 public class CommandTestWithSimpleReview extends CommandTest {
 	@Before
 	public void createReview() {
-		createReviewWithSimpleFile();
+		createReviewWithSimpleFile(false);
 	}
 }

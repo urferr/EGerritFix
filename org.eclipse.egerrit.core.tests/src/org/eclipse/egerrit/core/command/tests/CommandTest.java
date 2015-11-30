@@ -72,8 +72,11 @@ public abstract class CommandTest {
 
 	/**
 	 * Helper method to create a review and push it. It also initializes variables
+	 *
+	 * @param draft
+	 *            indicates whether the review should be created as a draft
 	 */
-	public void createReviewWithSimpleFile() {
+	public void createReviewWithSimpleFile(boolean draft) {
 		try {
 			gitAccess = new GitAccess();
 			gitRepo = gitAccess.getGitProject();
@@ -81,13 +84,33 @@ public abstract class CommandTest {
 					+ ".java"; //$NON-NLS-1$
 			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
 			gitAccess.addFile(filename, fileContent);
-			gitAccess.pushFile();
+			gitAccess.pushFile(draft, false);
 
 			change_sha = gitAccess.getChangeId();
 			commit_id = gitAccess.getCommitId();
 
 			changeInfo = fGerrit.getChange(change_sha).call();
 			change_id = changeInfo.getId();
+		} catch (Exception e1) {
+			fail(e1.getMessage());
+		}
+	}
+
+	/**
+	 * Helper method to add a file to an existing review and push it.
+	 *
+	 * @param draft
+	 *            indicates whether to commit to the draft branch
+	 */
+	public void amendLastCommit(boolean draft) {
+		try {
+			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
+					+ ".java"; //$NON-NLS-1$
+			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n"; //$NON-NLS-1$
+
+			gitAccess.addFile(filename, fileContent);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + change_sha, draft, true);
+
 		} catch (Exception e1) {
 			fail(e1.getMessage());
 		}
