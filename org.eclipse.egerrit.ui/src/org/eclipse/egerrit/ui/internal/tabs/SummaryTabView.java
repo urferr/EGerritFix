@@ -15,10 +15,8 @@ import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -288,11 +286,7 @@ public class SummaryTabView {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				Map<String, String> parameters = new LinkedHashMap<String, String>();
-				parameters.put(EGerritConstants.BRANCH, e.text);
-				parameters.put(EGerritConstants.PROJECT, UIUtils.getLinkText(genProjectData.getText()));
-
-				linkDash.invokeRefreshDashboardCommand(parameters);
+				linkDash.invokeRefreshDashboardCommand(EGerritConstants.BRANCH, e.text);
 			}
 		});
 		//Topic line

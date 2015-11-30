@@ -100,15 +100,4 @@ public class UIUtils {
 		return new Point(charWidth, fm.getHeight());
 	}
 
-	/**
-	 * Remove the link argument and return the text
-	 *
-	 * @return String
-	 */
-	public static String getLinkText(String text) {
-		text = text.replaceFirst("<a>", "");
-		text = text.replaceFirst("</a>", "");
-		return text.trim();
-	}
-
 }
