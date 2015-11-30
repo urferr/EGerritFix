@@ -48,6 +48,20 @@ public class LinkDashboard {
 	 * @param value
 	 */
 	public void invokeRefreshDashboardCommand(String key, String value) {
+		// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
+		Map<String, String> parameters = new HashMap<String, String>();
+		if ((key != null && !key.isEmpty()) || (value != null && !value.isEmpty())) {
+			parameters.put(key, value);
+		}
+		invokeRefreshDashboardCommand(parameters);
+	}
+
+	/**
+	 * Invoke a handler to update the Dashboard
+	 *
+	 * @param Map
+	 */
+	public void invokeRefreshDashboardCommand(Map<String, String> parameters) {
 		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 		ICommandService commandService = serviceLocator.getService(ICommandService.class);
 
@@ -55,11 +69,6 @@ public class LinkDashboard {
 			// Lookup command with its ID
 			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh"); //$NON-NLS-1$
 
-			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
-			Map<String, String> parameters = new HashMap<String, String>();
-			if ((key != null && !key.isEmpty()) || (value != null && !value.isEmpty())) {
-				parameters.put(key, value);
-			}
 			ExecutionEvent executionEvent = new ExecutionEvent(command, parameters, null, null);
 			command.executeWithChecks(executionEvent);
 		} catch (NotDefinedException | NotEnabledException | NotHandledException
