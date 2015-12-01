@@ -370,11 +370,11 @@ public class GerritTableView extends ViewPart {
 		fSearchRequestText.addListener(SWT.DefaultSelection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				//The shorten request is: "is:open" with 7 characters, so need to process the command if text is smaller
-				if (fSearchRequestText.getText().trim().length() > 6) {
-					processCommands(fSearchRequestText.getText());
-
-				}
+				// We can't be sure how short a valid request can be so accept any query
+				// triggered by the user.  For example, a valid Gerrit query can be
+				//     8
+				// which requests to open Gerrit review with id 8
+				processCommands(fSearchRequestText.getText());
 			}
 		});
 
