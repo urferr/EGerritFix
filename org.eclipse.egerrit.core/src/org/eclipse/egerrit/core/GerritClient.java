@@ -17,7 +17,9 @@ import org.eclipse.egerrit.core.command.AddReviewerCommand;
 import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftChangeCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
@@ -34,6 +36,7 @@ import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.PublishChangeEditCommand;
+import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
@@ -476,6 +479,36 @@ public abstract class GerritClient {
 	 */
 	public RevertCommand revert(String change_id) {
 		return new RevertCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to delete a draft change
+	 *
+	 * @param change_id
+	 * @return DeleteDraftChangeCommand
+	 */
+	public DeleteDraftChangeCommand deleteDraftChange(String change_id) {
+		return new DeleteDraftChangeCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to publish a draft change
+	 *
+	 * @param change_id
+	 * @return PublishDraftChangeCommand
+	 */
+	public PublishDraftChangeCommand publishDraftChange(String change_id) {
+		return new PublishDraftChangeCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command to delete a draft revision change
+	 *
+	 * @param change_id
+	 * @return DeleteDraftRevisionCommand
+	 */
+	public DeleteDraftRevisionCommand deleteDraftRevision(String change_id, String commit_id) {
+		return new DeleteDraftRevisionCommand(fGerritRepository, change_id, commit_id);
 	}
 
 }

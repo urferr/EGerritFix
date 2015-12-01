@@ -1,0 +1,66 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Ericsson
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v1.0 which
+ * accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Ericsson - Initial API and implementation
+ *******************************************************************************/
+
+package org.eclipse.egerrit.core.command.tests;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
+
+import org.eclipse.egerrit.core.command.ChangeOption;
+import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
+import org.eclipse.egerrit.core.command.GetChangeCommand;
+import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Test suite for {@link org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand}
+ *
+ * @since 1.0
+ */
+@SuppressWarnings("nls")
+public class DeleteDraftRevisionCommandTest extends CommandTestWithSimpleReview {
+
+	@Before
+	public void createDraftReview() {
+		createReviewWithSimpleFile(true);
+		amendLastCommit(true);
+	}
+
+	@Test
+	public void testCall() throws EGerritException {
+		//Make sure we have two revisions
+		GetChangeCommand getDetails = fGerrit.getChange(change_id);
+		getDetails.addOption(ChangeOption.ALL_REVISIONS);
+		Map<String, RevisionInfo> revisions = getDetails.call().getRevisions();
+		assertEquals(2, revisions.size());
+
+		DeleteDraftRevisionCommand command2 = fGerrit.deleteDraftRevision(change_id,
+				revisions.keySet().iterator().next());
+		try {
+			command2.call();
+
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		}
+
+		//assert that we have one revision left
+		getDetails = fGerrit.getChange(change_id);
+		getDetails.addOption(ChangeOption.ALL_REVISIONS);
+		revisions = getDetails.call().getRevisions();
+		assertEquals(1, revisions.size());
+
+	}
+}

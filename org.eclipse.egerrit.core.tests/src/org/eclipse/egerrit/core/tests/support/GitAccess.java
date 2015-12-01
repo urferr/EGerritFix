@@ -155,23 +155,39 @@ public class GitAccess {
 
 	/**
 	 * Commits and pushes to gerrit server
+	 *
+	 * @param draft
+	 *            indicate whether the review should be created as a draft
+	 * @param amend
+	 *            indicate whether the previous comment should be amended
 	 */
-	public void pushFile() throws Exception {
-		pushFile("Test commit message");
+	public void pushFile(boolean draft, boolean amend) throws Exception {
+		pushFile("Test commit message", draft, amend);
 	}
 
 	/**
 	 * Commits and pushes to gerrit server
+	 *
+	 * @param commitMsg
+	 *            the commit message
+	 * @param draft
+	 *            indicate whether the review should be created as a draft
+	 * @param amend
+	 *            indicate whether the previous comment should be amended
 	 */
-	public void pushFile(String commitMsg) throws Exception {
+	public void pushFile(String commitMsg, boolean draft, boolean amend) throws Exception {
 		Authenticator.setDefault(null);
 		CommitCommand command = fGit.commit();
 		String refSpec = "HEAD:refs/for/master";
+		if (draft) {
+			refSpec = "HEAD:refs/drafts/master";
+		}
 		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD);
 		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
 				.setCommitter(Common.USER, Common.EMAIL)
 				.setInsertChangeId(true)
 				.setMessage(commitMsg)
+				.setAmend(amend)
 				.call();
 		int cid = call.getFullMessage().indexOf("Change-Id: ");
 		fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
