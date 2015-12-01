@@ -1183,7 +1183,7 @@ public class SummaryTabView {
 	 * @return the project string
 	 */
 	public String getProject() {
-		return genProjectData.getText();
+		return UIUtils.getLinkText(genProjectData.getText());
 	}
 
 	/**
