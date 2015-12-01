@@ -48,6 +48,7 @@ import org.eclipse.egerrit.core.rest.FetchInfo;
 import org.eclipse.egerrit.core.rest.FileInfo;
 import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.DisplayFileInfo;
+import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
@@ -56,6 +57,7 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -69,12 +71,17 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.osgi.service.prefs.BackingStoreException;
@@ -121,6 +128,23 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private ComboViewer comboPatchsetViewer;
 
 	private IDoubleClickListener fdoubleClickListener;
+
+	// For the images
+	private static ImageRegistry fImageRegistry = new ImageRegistry();
+
+	private static final String ARROW_DOWN = "arrowDown.png"; //$NON-NLS-1$
+
+	/**
+	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them the
+	 * SWT Display is disposed.
+	 */
+	static {
+
+		String iconPath = "icons/"; //$NON-NLS-1$
+
+		fImageRegistry.put(ARROW_DOWN, EGerritUIPlugin.getImageDescriptor(iconPath + ARROW_DOWN));
+
+	}
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -192,9 +216,56 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		comboDiffAgainst.setLayoutData(gd_combo);
 
 		lblTotal = new Label(composite, SWT.NONE);
-		GridData gd_lblTotal = new GridData(SWT.FILL, SWT.CENTER, true, false, 10, 1);
+		GridData gd_lblTotal = new GridData(SWT.FILL, SWT.CENTER, true, false, 9, 1);
 		lblTotal.setLayoutData(gd_lblTotal);
 		lblTotal.setText("Total");
+
+		final Button fileViewPulldown = new Button(composite, SWT.BORDER);
+		fileViewPulldown.setImage(fImageRegistry.get(ARROW_DOWN));
+		GridData gd_FileView = new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1);
+		fileViewPulldown.setLayoutData(gd_FileView);
+		fileViewPulldown.setToolTipText("File path layout");
+		fileViewPulldown.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(fileViewPulldown.getShell(),
+						SWT.POP_UP);
+
+				final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
+				nameFirst.setText("Show File Names first");
+				final FileTableLabelProvider labelProvider = (FileTableLabelProvider) tableFilesViewer
+						.getLabelProvider();
+				nameFirst.setSelection(labelProvider.getFileOrder());
+
+				nameFirst.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						MenuItem menuItem = (MenuItem) e.getSource();
+						labelProvider.setFileNameFirst(menuItem.getSelection());
+						tableFilesViewer.refresh();
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// ignore
+					}
+				});
+				Point loc = fileViewPulldown.getLocation();
+				Rectangle rect = fileViewPulldown.getBounds();
+
+				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+				menu.setLocation(fileViewPulldown.getDisplay().map(fileViewPulldown.getParent(), null, mLoc));
+
+				menu.setVisible(true);
+			};
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// ignore
+			}
+		});
 
 		UIFilesTable tableUIFiles = new UIFilesTable();
 		tableUIFiles.createTableViewerSection(composite);

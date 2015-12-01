@@ -45,6 +45,9 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	// For the images
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
 
+	//Layout selection for the file path. Also as a default value
+	private boolean nameFirst = true;
+
 	/**
 	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them the
 	 * SWT Display is disposed.
@@ -90,11 +93,20 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 			case 1:
 				return fileInfo.getStatus();
 			case 2:
-				return fileInfo.getold_path();
+				if (nameFirst) {
+					String path = fileInfo.getold_path();
+					int index = path.lastIndexOf("/"); //$NON-NLS-1$
+					String fileName = path.substring(index + 1);
+					String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
+					return firstName;
+
+				} else {
+					return fileInfo.getold_path();
+				}
 			case 3:
 				String ret = EMPTY_STRING;
 				if (fileInfo.getDraftComments() != null) {
-					ret = DRAFTS + fileInfo.getDraftComments().size() + " ";
+					ret = DRAFTS + fileInfo.getDraftComments().size() + " "; //$NON-NLS-1$
 				}
 				if (fileInfo.getNewComments() != null) {
 					int newCommentCount = 0;
@@ -205,4 +217,21 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 		return image;
 	}
 
+	/**
+	 * Adjust the format of the FilePath
+	 *
+	 * @param b
+	 */
+	public void setFileNameFirst(boolean b) {
+		nameFirst = b;
+	}
+
+	/**
+	 * Get the file name order
+	 *
+	 * @return
+	 */
+	public boolean getFileOrder() {
+		return nameFirst;
+	}
 }
