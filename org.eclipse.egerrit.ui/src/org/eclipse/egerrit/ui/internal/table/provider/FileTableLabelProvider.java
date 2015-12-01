@@ -96,9 +96,14 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 				if (nameFirst) {
 					String path = fileInfo.getold_path();
 					int index = path.lastIndexOf("/"); //$NON-NLS-1$
-					String fileName = path.substring(index + 1);
-					String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
-					return firstName;
+					if (index != -1) {
+						String fileName = path.substring(index + 1);
+						String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
+						return firstName;
+					} else {
+						//The file has no path, just a filename
+						return path;
+					}
 
 				} else {
 					return fileInfo.getold_path();
