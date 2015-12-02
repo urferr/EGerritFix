@@ -51,9 +51,11 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
+import org.eclipse.egerrit.core.command.DeleteDraftChangeCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
+import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.RevertCommand;
@@ -111,7 +113,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -180,6 +185,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private boolean fSubmitMode = false;
 
+	private Button fDraftPublishDelete;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -232,6 +239,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		if (summaryTab != null) {
 			summaryTab.setTabs(fGerritClient, fChangeInfo);
 		}
+		filesTab.setChangeInfo(fChangeInfo);
 
 		buttonsEnablement();
 		if (messageTab != null) {
@@ -290,7 +298,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private Composite buttonSection(final Composite parent) {
-		final int NUMBER_OF_BUTTONS = 7;
+		final int NUMBER_OF_BUTTONS = 8;
 		final Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout(NUMBER_OF_BUTTONS, true));
 
@@ -614,6 +622,88 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			});
 		}
 
+		fDraftPublishDelete = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
+		fDraftPublishDelete.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fDraftPublishDelete.setText("Draft...");
+		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			fDraftPublishDelete.setToolTipText(anonymousUserToolTip);
+			fDraftPublishDelete.setEnabled(false);
+		} else {
+			fDraftPublishDelete.addSelectionListener(new SelectionAdapter() {
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					super.widgetSelected(e);
+					org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(fDraftPublishDelete.getShell(),
+							SWT.POP_UP);
+
+					final MenuItem itemPublish = new MenuItem(menu, SWT.PUSH);
+					itemPublish.setText("Publish");
+					itemPublish.addSelectionListener(new SelectionListener() {
+
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							PublishDraftChangeCommand publishCommand = fGerritClient
+									.publishDraftChange(fChangeInfo.getId());
+							try {
+								publishCommand.call();
+								refreshStatus();
+							} catch (EGerritException e1) {
+								EGerritCorePlugin.logError(
+										fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+							}
+
+						}
+
+						@Override
+						public void widgetDefaultSelected(SelectionEvent e) {
+							// ignore
+						}
+					});
+
+					MenuItem itemDeleteDraftChange = new MenuItem(menu, SWT.PUSH);
+					itemDeleteDraftChange.setText("Delete");
+
+					final IEditorSite site = getEditorSite();
+					itemDeleteDraftChange.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							super.widgetSelected(e);
+							if (!MessageDialog.openConfirm(fDraftPublishDelete.getParent().getShell(),
+									"Delete draft review", "Continue ?")) {
+								return;
+							}
+							DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
+									.deleteDraftChange(fChangeInfo.getId());
+							try {
+								deleteDraftChangeCmd.call();
+								IWorkbench workbench = PlatformUI.getWorkbench();
+								final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
+
+								IEditorPart editor = activePage.getActiveEditor();
+								activePage.closeEditor(editor, false);
+								LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+								linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+							} catch (EGerritException e1) {
+								EGerritCorePlugin.logError(
+										fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+							}
+						}
+					});
+
+					Point loc = fDraftPublishDelete.getLocation();
+					Rectangle rect = fDraftPublishDelete.getBounds();
+
+					Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+
+					menu.setLocation(fDraftPublishDelete.getDisplay().map(fDraftPublishDelete.getParent(), null, mLoc));
+
+					menu.setVisible(true);
+				}
+			});
+
+		}
+
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
 	}
@@ -755,6 +845,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		submitrevertButtonEnablement();
 		abandonrestoreButtonEnablement();
 		rebaseButtonEnablement();
+		draftButtonEnablement();
+	}
+
+	private void draftButtonEnablement() {
+
+		fDraftPublishDelete.setEnabled(fChangeInfo.getStatus().compareTo("DRAFT") == 0 && canDeleteDraft());
+
 	}
 
 	private void rebaseButtonEnablement() {
@@ -776,6 +873,19 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fSubmitRevert.setEnabled(false);
 		}
 
+	}
+
+	private boolean canDeleteDraft() {
+		Map<String, ActionInfo> actions = getRevisionActions();
+
+		if (actions != null) {
+			ActionInfo delete = actions.get("publish");
+
+			if (delete != null) {
+				return delete.isEnabled();
+			}
+		}
+		return false;
 	}
 
 	private boolean canSubmit() {

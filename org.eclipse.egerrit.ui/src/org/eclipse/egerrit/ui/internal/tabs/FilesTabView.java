@@ -36,12 +36,14 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ActionInfo;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.rest.FetchInfo;
@@ -53,6 +55,7 @@ import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -84,6 +87,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -128,6 +135,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private ComboViewer comboPatchsetViewer;
 
 	private IDoubleClickListener fdoubleClickListener;
+
+	private Button fDeleteDraftRevision;
 
 	// For the images
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
@@ -216,9 +225,47 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		comboDiffAgainst.setLayoutData(gd_combo);
 
 		lblTotal = new Label(composite, SWT.NONE);
-		GridData gd_lblTotal = new GridData(SWT.FILL, SWT.CENTER, true, false, 9, 1);
+		GridData gd_lblTotal = new GridData(SWT.FILL, SWT.CENTER, true, false, 6, 1);
 		lblTotal.setLayoutData(gd_lblTotal);
 		lblTotal.setText("Total");
+
+		fDeleteDraftRevision = new Button(composite, SWT.BORDER);
+		fDeleteDraftRevision.setText("Delete Revision");
+		GridData gd_deleteDraft = new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1);
+		fDeleteDraftRevision.setLayoutData(gd_deleteDraft);
+		fDeleteDraftRevision.setToolTipText("Delete Draft Revision");
+		fDeleteDraftRevision.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (!MessageDialog.openConfirm(fDeleteDraftRevision.getParent().getShell(), "Delete draft revision",
+						"Continue ?")) {
+					return;
+				}
+				DeleteDraftRevisionCommand deleteDraftChangeCmd = gerritClient.deleteDraftRevision(fChangeInfo.getId(),
+						fCurrentRevision.getId());
+				try {
+					deleteDraftChangeCmd.call();
+					if (fRevisions.size() == 1) {
+						IWorkbench workbench = PlatformUI.getWorkbench();
+						final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
+
+						IEditorPart editor = activePage.getActiveEditor();
+						activePage.closeEditor(editor, false);
+					}
+					LinkDashboard linkDash = new LinkDashboard(gerritClient);
+					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+				} catch (EGerritException e1) {
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+				}
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// ignore
+
+			}
+		});
 
 		final Button fileViewPulldown = new Button(composite, SWT.BORDER);
 		fileViewPulldown.setImage(fImageRegistry.get(ARROW_DOWN));
@@ -313,6 +360,19 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		//Set the binding for this section
 		filesTabDataBindings(tableFilesViewer);
+	}
+
+	private boolean canDeleteDraft() {
+		Map<String, ActionInfo> actions = fCurrentRevision.getActions();
+
+		if (actions != null) {
+			ActionInfo delete = actions.get("publish");
+
+			if (delete != null) {
+				return delete.isEnabled();
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1012,6 +1072,18 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), revInfo.getCommit().getCommit());
 		displayFilesTable();
+
+	}
+
+	/**
+	 * allows to receive an updated version of changeinfo which in turn is used to determine enablement of buttons
+	 *
+	 * @param changeInfo
+	 * @return none
+	 */
+	public void setChangeInfo(ChangeInfo changeInfo) {
+		fChangeInfo = changeInfo;
+		fDeleteDraftRevision.setEnabled(fChangeInfo.getStatus().compareTo("DRAFT") == 0 && canDeleteDraft());
 
 	}
 }
