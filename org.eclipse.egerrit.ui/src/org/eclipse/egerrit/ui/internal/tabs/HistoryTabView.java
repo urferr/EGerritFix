@@ -11,6 +11,8 @@
 
 package org.eclipse.egerrit.ui.internal.tabs;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +32,15 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 /**
  * This class is used in the editor to handle the Gerrit history view
@@ -43,7 +51,7 @@ public class HistoryTabView {
 
 	private TableViewer tableHistoryViewer;
 
-	private Text msgTextData;
+	private Link msgTextData;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -84,20 +92,86 @@ public class HistoryTabView {
 				Object element = sel.getFirstElement();
 				if (element instanceof ChangeMessageInfo) {
 					ChangeMessageInfo changeMessage = (ChangeMessageInfo) element;
-					msgTextData.setText(changeMessage.getMessage());
+					msgTextData.setText(setHypertext(changeMessage.getMessage()));
 				}
 			}
 		});
 
-		msgTextData = new Text(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-		msgTextData.setEditable(false);
+		msgTextData = new Link(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		msgTextData.setBackground(tabFolder.getBackground());
+		msgTextData.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				openWebrowser(e.text);
+			}
+		});
 
 		//Set the % of display data.70% table and 30% for the comment message
 		sashForm.setWeights(new int[] { 70, 30 });
 
 		//Set the binding for this section
 		hisTabDataBindings(listMessages);
+	}
+
+	private void openWebrowser(String text) {
+		IWorkbenchBrowserSupport workBenchSupport = PlatformUI.getWorkbench().getBrowserSupport();
+
+		try {
+			URL url = null;
+			try {
+				url = new URL(text);
+				String id = getEditorId(url);
+				//Using NULL as a browser id will create a new editor each time,
+				//so we need to see if there is already an editor for this
+				workBenchSupport.createBrowser(id).openURL(url);
+			} catch (MalformedURLException e) {
+			}
+		} catch (PartInitException e) {
+		}
+	}
+
+	/**
+	 * Search for a similar page in the eclipse editor
+	 *
+	 * @param aUrl
+	 * @return String
+	 */
+	private String getEditorId(URL aUrl) {
+		//Try to get the editor id
+		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(aUrl.getFile());
+		String id = null;
+		if (desc != null) {
+			id = desc.getId();
+		}
+
+		return id;
+	}
+
+	private String setHypertext(String fullString) {
+
+		if (!fullString.isEmpty()) {
+			int index = fullString.lastIndexOf("https:"); //$NON-NLS-1$
+
+			//If we did not find the https
+			if (index == -1) {
+				//Test for http instead
+				index = fullString.lastIndexOf("http:"); //$NON-NLS-1$
+			}
+
+			//Found http or https
+			if (index != -1) {
+				String linkString = fullString.substring(index);
+				int endIndex = linkString.indexOf(' ');
+				if (endIndex != -1) {
+					//the value end the comment
+					linkString = linkString.substring(0, endIndex);//original
+				}
+				String replacement = "<a>" + linkString + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$
+				fullString = fullString.replaceFirst(linkString, replacement);
+				return fullString;
+			}
+		}
+		return fullString;
 	}
 
 	protected void hisTabDataBindings(List<ChangeMessageInfo> listMessages) {
