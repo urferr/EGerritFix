@@ -78,11 +78,11 @@
                 tooltip="%command.tooltipAllOpen">
           </command>
           <command
-                commandId="org.eclipse.egerrit.dashboard.ui.myWatchedChanges"
-                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.MyWatchedChanges"
+                commandId="org.eclipse.egerrit.dashboard.ui.myChanges"
+                id="org.eclipse.egerrit.dashboard.dropdown.toolbar.MyChanges"
                 label="%command.my"
                 style="pulldown"
-                tooltip="%command.tooltipMyWatchedChanges">
+                tooltip="%command.tooltipMyChanges">
           </command>
  
           <command
@@ -130,7 +130,7 @@
    	<!-- Add sub-menu for the My menu
 	-->
        <menuContribution
-            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.MyWatchedChanges">
+            locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.MyChanges">
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.myChanges"
                 id="org.eclipse.egerrit.dashboard.dropdown.toolbar.myChanges"
