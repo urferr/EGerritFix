@@ -366,35 +366,24 @@ public class GerritTableView extends ViewPart {
 		fRequestList = fServerUtil.getListLastCommands();
 		setSearchText(""); //$NON-NLS-1$
 
-		//Handle the CR in the search text
-		fSearchRequestText.addListener(SWT.DefaultSelection, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				// We can't be sure how short a valid request can be so accept any query
-				// triggered by the user.  For example, a valid Gerrit query can be
-				//     8
-				// which requests to open Gerrit review with id 8
-				processCommands(fSearchRequestText.getText());
-			}
-		});
-
 		fSearchRequestText.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String old = fSearchRequestText.getItem(0);
 				Object obj = e.getSource();
 				if (obj instanceof Combo) {
 					Combo combo = (Combo) obj;
-					//Trigger a request only if this is not the last one requested
-					if (combo.getText().compareTo(old) != 0) {
-						processCommands(combo.getText());
-					}
+					//Always let this request go through, even if the user
+					//is requesting the same search as before; this gives
+					//another way to refresh the dashboard.
+					processCommands(combo.getText());
 				}
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
+				//Handle the CR in the search text
+				processCommands(fSearchRequestText.getText());
 			}
 		});
 
