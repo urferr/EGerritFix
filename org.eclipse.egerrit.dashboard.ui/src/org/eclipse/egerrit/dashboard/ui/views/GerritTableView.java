@@ -383,7 +383,9 @@ public class GerritTableView extends ViewPart {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				//Handle the CR in the search text
-				processCommands(fSearchRequestText.getText());
+				if (fSearchRequestText.getText().trim().length() > 0) {
+					processCommands(fSearchRequestText.getText());
+				}
 			}
 		});
 
