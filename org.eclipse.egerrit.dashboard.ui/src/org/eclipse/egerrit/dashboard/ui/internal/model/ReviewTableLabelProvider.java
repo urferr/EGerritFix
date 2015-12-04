@@ -73,12 +73,12 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	// Constant for the column with colors: CR, IC and V
 	private static Display fDisplay = Display.getCurrent();
 
-	private static Color RED = fDisplay.getSystemColor(SWT.COLOR_RED);
-
-	private static Color GREEN = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
-
 	//Color used depending on the review state
 	private static Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+
+	private static Color DEFAULT_FOREGROUND_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GRAY);
+
+	private static Color BOLD_COLOR = fDisplay.getSystemColor(SWT.COLOR_BLACK);
 
 //	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
 	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
@@ -301,41 +301,24 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {
 		if (aElement instanceof ChangeInfo) {
-			int value = 0;
-			if (aColumnIndex == ReviewTableDefinition.CR.ordinal()
-//					|| aColumnIndex == ReviewTableDefinition.IC.ordinal()
-					|| aColumnIndex == ReviewTableDefinition.VERIFY.ordinal()) {
-				switch (aColumnIndex) {
-				case 7: // ReviewTableDefinition.CR.ordinal():
-//					st = item.getAttribute(GerritTask.REVIEW_STATE);
-//					if (st != null) {
-//						value = st.equals(EMPTY_STRING) ? 0 : Integer
-//								.parseInt(st);
-//					}
-					break;
-				case 8: // ReviewTableDefinition.IC.ordinal():
-//					st = item.getAttribute(GerritTask.IS_IPCLEAN);
-//					if (st != null) {
-//						value = st.equals(EMPTY_STRING) ? 0 : Integer
-//								.parseInt(st);
-//					}
-//					break;
-//				case 9: // ReviewTableDefinition.VERIFY.ordinal():
-//					st = item.getAttribute(GerritTask.VERIFY_STATE);
-//					if (st != null) {
-//						value = st.equals(EMPTY_STRING) ? 0 : Integer
-//								.parseInt(st);
-//					}
-					break;
-				}
-				if (value < 0) {
-					return RED;
-				} else if (value > 0) {
-					return GREEN;
+			switch (aColumnIndex) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				ChangeInfo changeInfo = (ChangeInfo) aElement;
+				if (changeInfo.isReviewed()) {
+					return DEFAULT_FOREGROUND_COLOR;
+				} else {
+					return BOLD_COLOR;
 				}
 			}
 		}
 		return null;
+
 	}
 
 	@Override

@@ -1099,7 +1099,7 @@ public class GerritTableView extends ViewPart {
 			ChangeInfo[] res = null;
 			QueryChangesCommand command = gerritClient.queryChanges();
 			command.addOption(ChangeOption.DETAILED_LABELS, ChangeOption.CURRENT_REVISION, ChangeOption.CURRENT_FILES,
-					ChangeOption.DETAILED_ACCOUNTS);
+					ChangeOption.DETAILED_ACCOUNTS, ChangeOption.REVIEWED);
 
 			try {
 				setQuery(query, command);
