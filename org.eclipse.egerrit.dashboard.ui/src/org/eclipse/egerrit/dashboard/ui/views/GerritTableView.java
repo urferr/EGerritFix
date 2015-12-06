@@ -90,6 +90,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -511,8 +513,12 @@ public class GerritTableView extends ViewPart {
 
 						if (page != null) {
 							try {
-								page.openEditor(new ChangeDetailEditorInput(gerritClient, (ChangeInfo) element),
-										ChangeDetailEditor.EDITOR_ID);
+								IEditorInput input = new ChangeDetailEditorInput(gerritClient, (ChangeInfo) element);
+								IEditorPart reusedEditor = page.findEditor(input);
+								page.openEditor(input, ChangeDetailEditor.EDITOR_ID);
+								if (reusedEditor instanceof ChangeDetailEditor) {
+									((ChangeDetailEditor) reusedEditor).refreshStatus();
+								}
 							} catch (PartInitException e) {
 								EGerritCorePlugin.logError(gerritClient != null
 										? gerritClient.getRepository().formatGerritVersion() + e.getMessage()

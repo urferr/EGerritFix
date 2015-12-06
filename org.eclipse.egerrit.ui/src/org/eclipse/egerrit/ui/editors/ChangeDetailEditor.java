@@ -821,7 +821,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return maxPermitted;
 	}
 
-	private void refreshStatus() {
+	/**
+	 * Refreshes the ChangeEditor
+	 */
+	public void refreshStatus() {
 		ChangeInfo changeInfo = QueryHelpers.lookupPartialChangeInfoFromChangeId(fGerritClient, fChangeInfo.getId(),
 				new NullProgressMonitor());
 
