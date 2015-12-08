@@ -40,6 +40,7 @@ import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.SetTopicCommand;
+import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
@@ -49,6 +50,7 @@ import org.eclipse.egerrit.core.rest.MergeableInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
 import org.eclipse.egerrit.core.rest.ReviewerInfo;
+import org.eclipse.egerrit.core.rest.SuggestReviewerInfo;
 import org.eclipse.egerrit.core.rest.TopicInput;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
@@ -71,6 +73,10 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -80,6 +86,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -164,6 +172,39 @@ public class SummaryTabView {
 
 	private Label lblStrategy;
 
+	/**
+	 * Class that provides suggestion for completion for adding a reviwer.
+	 */
+	private class AddReviewerContentProposal {
+
+		private class ReviewerContentProposalAdapter extends ContentProposalAdapter {
+			public ReviewerContentProposalAdapter(Text control, IContentProposalProvider proposalProvider) {
+				super(control, new TextContentAdapter(), proposalProvider, null, null);
+				setPropagateKeys(true);
+				setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+			}
+
+			public void refreshProposalPopup() {
+				closeProposalPopup();
+				openProposalPopup();
+			}
+		}
+
+		private SimpleContentProposalProvider proposalProvider;
+
+		private ReviewerContentProposalAdapter contentAdapter;
+
+		public AddReviewerContentProposal(Text control) {
+			proposalProvider = new SimpleContentProposalProvider(new String[0]);
+			proposalProvider.setFiltering(false);
+			contentAdapter = new ReviewerContentProposalAdapter(control, proposalProvider);
+		}
+
+		public void setProposals(String[] proposals) {
+			proposalProvider.setProposals(proposals);
+			contentAdapter.refreshProposalPopup();
+		}
+	}
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -377,8 +418,60 @@ public class SummaryTabView {
 		lblUserName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		final Text userName = new Text(grpReviewers, SWT.BORDER);
+		final AddReviewerContentProposal reviewerProposal = new AddReviewerContentProposal(userName);
+
 		userName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		userName.setToolTipText("Enter the email of the reviewer to add.");
+		userName.addKeyListener(new KeyListener() {
+			@Override
+			public void keyReleased(KeyEvent event) {
+				if (shouldIgnoreKeyForCompletion(event.keyCode)) {
+					return;
+				}
+				// Don't trigger the query unless we have at least 3 characters.
+				// The query will always return empty if there is not at least 3 characters
+				if (userName.getText().length() < 3) {
+					if (userName.getText().isEmpty()) {
+						reviewerProposal.setProposals(new String[0]);
+					}
+					return;
+				}
+
+				// Query the Gerrit server for matching reviewers
+				SuggestReviewersCommand command = getGerritClient().suggestReviewers(fChangeInfo.getId());
+				command.setMaxNumberOfResults(10);
+				command.setQuery(userName.getText());
+
+				SuggestReviewerInfo[] res = null;
+				try {
+					res = command.call();
+					if (res != null) {
+						List<String> proposals = new ArrayList<>(res.length);
+						for (SuggestReviewerInfo info : res) {
+							String idString;
+							if (info.getAccount() != null) {
+								idString = info.getAccount().getName() + " <" + info.getAccount().getEmail() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
+							} else if (info.getGroup() != null) {
+								idString = info.getGroup().getId();
+							} else {
+								// No valid reviewer info
+								continue;
+							}
+							proposals.add(idString);
+						}
+						reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
+					}
+				} catch (EGerritException e) {
+					EGerritCorePlugin
+							.logError(getGerritClient().getRepository().formatGerritVersion() + e.getMessage());
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// ignore
+			}
+		});
 
 		final Button buttonPlus = new Button(grpReviewers, SWT.NONE);
 		buttonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
@@ -388,6 +481,54 @@ public class SummaryTabView {
 		//Set the binding for this section
 		sumReviewerDataBindings();
 		return grpReviewers;
+	}
+
+	/**
+	 * Returns true if the specified key can be ignored
+	 */
+	private boolean shouldIgnoreKeyForCompletion(int keyCode) {
+		switch (keyCode) {
+		case SWT.ARROW_UP:
+		case SWT.ARROW_DOWN:
+		case SWT.ARROW_LEFT:
+		case SWT.ARROW_RIGHT:
+		case SWT.PAGE_UP:
+		case SWT.PAGE_DOWN:
+		case SWT.HOME:
+		case SWT.END:
+		case SWT.INSERT:
+		case SWT.F1:
+		case SWT.F2:
+		case SWT.F3:
+		case SWT.F4:
+		case SWT.F5:
+		case SWT.F6:
+		case SWT.F7:
+		case SWT.F8:
+		case SWT.F9:
+		case SWT.F10:
+		case SWT.F11:
+		case SWT.F12:
+		case SWT.F13:
+		case SWT.F14:
+		case SWT.F15:
+		case SWT.F16:
+		case SWT.F17:
+		case SWT.F18:
+		case SWT.F19:
+		case SWT.F20:
+		case SWT.KEYPAD:
+		case SWT.HELP:
+		case SWT.CAPS_LOCK:
+		case SWT.NUM_LOCK:
+		case SWT.SCROLL_LOCK:
+		case SWT.PAUSE:
+		case SWT.BREAK:
+		case SWT.PRINT_SCREEN:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	private Composite summaryIncluded(Composite group) {

@@ -46,6 +46,7 @@ import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.command.SetTopicCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
+import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ChangeInfo;
@@ -202,6 +203,17 @@ public abstract class GerritClient {
 	 */
 	public ListReviewersCommand getReviewers(String change_id) {
 		return new ListReviewersCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Returns a command object to execute a {@code getCommitMSg} command
+	 *
+	 * @param id
+	 * @return a default {@link SuggestReviewersCommand} used to retrieve a list of possible reviewers from the Gerrit
+	 *         repository
+	 */
+	public SuggestReviewersCommand suggestReviewers(String change_id) {
+		return new SuggestReviewersCommand(fGerritRepository, change_id);
 	}
 
 	/**
