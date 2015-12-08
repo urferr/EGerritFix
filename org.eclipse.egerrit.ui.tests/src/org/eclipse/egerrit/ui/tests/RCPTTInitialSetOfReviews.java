@@ -11,6 +11,8 @@
 
 package org.eclipse.egerrit.ui.tests;
 
+import static org.junit.Assert.fail;
+
 import java.net.URI;
 
 import org.apache.http.HttpHost;
@@ -53,6 +55,10 @@ public class RCPTTInitialSetOfReviews {
 
 	private GerritRepository fRepository;
 
+	private String filename;
+
+	private String fileContent;
+
 	private static GitAccess gitAccess;
 
 	public void setUp() throws Exception {
@@ -66,7 +72,7 @@ public class RCPTTInitialSetOfReviews {
 				new URI(SCHEME, null, HOST, PORT, PATH, null, null).toASCIIString(), "Test server"));
 	}
 
-	public static void setupRepo() throws Exception {
+	public void setupRepo() throws Exception {
 
 		gitAccess = new GitAccess();
 		gitAccess.setTestProject("egerrit/RCPTTtest");
@@ -80,6 +86,39 @@ public class RCPTTInitialSetOfReviews {
 			gitAccess.modifyFile(A_PROJECT_A_JAVA, NEW_CONTENT_FILE_A);
 			gitAccess.pushFile("Test commit message number " + new Integer(i + 1), false, false);
 			gitAccess.resetTo(beforeMods);
+		}
+	}
+
+	public void createReviewWithSimpleFile(boolean draft) {
+		try {
+			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
+					+ ".java"; //$NON-NLS-1$
+			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
+			gitAccess.addFile(filename, fileContent);
+			gitAccess.pushFile(draft, false);
+
+		} catch (Exception e1) {
+			fail(e1.getMessage());
+		}
+	}
+
+	/**
+	 * Helper method to add a file to an existing review and push it.
+	 *
+	 * @param draft
+	 *            indicates whether to commit to the draft branch
+	 */
+	public void amendLastCommit(boolean draft) {
+		try {
+			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
+					+ ".java"; //$NON-NLS-1$
+			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n"; //$NON-NLS-1$
+
+			gitAccess.addFile(filename, fileContent);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + gitAccess.getChangeId(), draft, true);
+
+		} catch (Exception e1) {
+			fail(e1.getMessage());
 		}
 	}
 

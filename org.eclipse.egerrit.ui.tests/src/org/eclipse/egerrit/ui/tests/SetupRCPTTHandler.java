@@ -35,8 +35,13 @@ public class SetupRCPTTHandler extends AbstractHandler implements IElementUpdate
 
 		try {
 			RCPTTInitialSetOfReviews setup = new RCPTTInitialSetOfReviews();
-			RCPTTInitialSetOfReviews.setupRepo();
+			setup.setupRepo();
 			setup.setUp();
+
+			RCPTTInitialSetOfReviews setup2 = new RCPTTInitialSetOfReviews();
+			setup2.setupRepo();
+			setup2.createReviewWithSimpleFile(true);
+			setup2.amendLastCommit(true);
 
 		} catch (Exception e1) {
 			fail(e1.getMessage());
