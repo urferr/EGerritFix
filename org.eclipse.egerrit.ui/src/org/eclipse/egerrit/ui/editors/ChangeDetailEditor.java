@@ -187,6 +187,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Button fDraftPublishDelete;
 
+	private Composite headerSection;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -206,8 +208,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		parent.setLayout(new GridLayout(1, false));
 		parent.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
-		Composite hd = headerSection(parent);
-		hd.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		headerSection = headerSection(parent);
+		headerSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -755,6 +757,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void setFocus() {
+		headerSection.setFocus();
 	}
 
 	/**
