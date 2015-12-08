@@ -11,8 +11,6 @@
 
 package org.eclipse.egerrit.ui.internal.tabs;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,24 +24,26 @@ import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.hyperlink.DefaultHyperlinkPresenter;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 /**
- * This class is used in the editor to handle the Gerrit history view
+ * This class is used in the editor to handle the Gerrit history view <a>http://git.eclipse.org/r</a>
  *
  * @since 1.0
  */
@@ -51,7 +51,7 @@ public class HistoryTabView {
 
 	private TableViewer tableHistoryViewer;
 
-	private Link msgTextData;
+	private TextViewerWithLinks msgTextData;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -91,87 +91,46 @@ public class HistoryTabView {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				Object element = sel.getFirstElement();
 				if (element instanceof ChangeMessageInfo) {
-					ChangeMessageInfo changeMessage = (ChangeMessageInfo) element;
-					msgTextData.setText(setHypertext(changeMessage.getMessage()));
+					final ChangeMessageInfo changeMessage = (ChangeMessageInfo) element;
+					msgTextData.setDocument(new Document(changeMessage.getMessage()));
 				}
 			}
 		});
 
-		msgTextData = new Link(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-		msgTextData.setBackground(tabFolder.getBackground());
-		msgTextData.addSelectionListener(new SelectionAdapter() {
+		msgTextData = new TextViewerWithLinks(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
+		msgTextData.configure(new SourceViewerConfiguration() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				openWebrowser(e.text);
+			public int getHyperlinkStateMask(ISourceViewer sourceViewer) {
+				return SWT.NONE;
 			}
+
+			@Override
+			public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+				return new IHyperlinkDetector[] { new HyperLinkDetector() };
+			}
+
+			@Override
+			public IHyperlinkPresenter getHyperlinkPresenter(final ISourceViewer sourceViewer) {
+				return new DefaultHyperlinkPresenter(new RGB(0, 0, 255)) {
+					@Override
+					public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+						super.inputDocumentChanged(oldInput, newInput);
+						IHyperlink[] links = new HyperLinkDetector().detectHyperlinks(sourceViewer, null, true);
+						if (links != null) {
+							showHyperlinks(links);
+						}
+					}
+				};
+			}
+
 		});
+		msgTextData.resetLinkManager();
 
 		//Set the % of display data.70% table and 30% for the comment message
 		sashForm.setWeights(new int[] { 70, 30 });
 
 		//Set the binding for this section
 		hisTabDataBindings(listMessages);
-	}
-
-	private void openWebrowser(String text) {
-		IWorkbenchBrowserSupport workBenchSupport = PlatformUI.getWorkbench().getBrowserSupport();
-
-		try {
-			URL url = null;
-			try {
-				url = new URL(text);
-				String id = getEditorId(url);
-				//Using NULL as a browser id will create a new editor each time,
-				//so we need to see if there is already an editor for this
-				workBenchSupport.createBrowser(id).openURL(url);
-			} catch (MalformedURLException e) {
-			}
-		} catch (PartInitException e) {
-		}
-	}
-
-	/**
-	 * Search for a similar page in the eclipse editor
-	 *
-	 * @param aUrl
-	 * @return String
-	 */
-	private String getEditorId(URL aUrl) {
-		//Try to get the editor id
-		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(aUrl.getFile());
-		String id = null;
-		if (desc != null) {
-			id = desc.getId();
-		}
-
-		return id;
-	}
-
-	private String setHypertext(String fullString) {
-
-		if (!fullString.isEmpty()) {
-			int index = fullString.lastIndexOf("https:"); //$NON-NLS-1$
-
-			//If we did not find the https
-			if (index == -1) {
-				//Test for http instead
-				index = fullString.lastIndexOf("http:"); //$NON-NLS-1$
-			}
-
-			//Found http or https
-			if (index != -1) {
-				String linkString = fullString.substring(index);
-				int endIndex = linkString.indexOf(' ');
-				if (endIndex != -1) {
-					//the value end the comment
-					linkString = linkString.substring(0, endIndex);//original
-				}
-				String replacement = "<a>" + linkString + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$
-				fullString = fullString.replaceFirst(linkString, replacement);
-				return fullString;
-			}
-		}
-		return fullString;
 	}
 
 	protected void hisTabDataBindings(List<ChangeMessageInfo> listMessages) {
