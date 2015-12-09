@@ -70,8 +70,9 @@ public class ComboPatchSetLabelProvider extends BaseTableLabelProvider {
 			StringBuilder sb = new StringBuilder();
 			sb.append("   "); //Boolean.toString(revisionInfo.hasDraftComments()); //$NON-NLS-1$
 			sb.append(SEPARATOR);
+			sb.append(revisionInfo.isDraft() ? "Draft " : "             "); //$NON-NLS-1$//$NON-NLS-2$
 			if (revisionInfo.getNumber() < 10) {
-				sb.append("   "); //$NON-NLS-1$
+				sb.append("  "); //$NON-NLS-1$
 			}
 			sb.append(Integer.toString(revisionInfo.getNumber())); //
 			sb.append(SEPARATOR);
