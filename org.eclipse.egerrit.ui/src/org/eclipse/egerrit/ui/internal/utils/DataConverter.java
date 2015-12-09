@@ -194,16 +194,20 @@ public class DataConverter {
 					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
 						if (entry.getKey().compareTo("Verified") == 0) { //$NON-NLS-1$
 							LabelInfo labelInfo = entry.getValue();
-							for (ApprovalInfo it : labelInfo.getAll()) {
-								if (it.getValue() != null) {
-									verifyState = Utils.getStateValue(it.getValue(), verifyState);
+							if (labelInfo != null && labelInfo.getAll() != null) {
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										verifyState = Utils.getStateValue(it.getValue(), verifyState);
+									}
 								}
 							}
 						} else if (entry.getKey().compareTo("Code-Review") == 0) { //$NON-NLS-1$
 							LabelInfo labelInfo = entry.getValue();
-							for (ApprovalInfo it : labelInfo.getAll()) {
-								if (it.getValue() != null) {
-									codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
+							if (labelInfo != null && labelInfo.getAll() != null) {
+								for (ApprovalInfo it : labelInfo.getAll()) {
+									if (it.getValue() != null) {
+										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
+									}
 								}
 							}
 						}
