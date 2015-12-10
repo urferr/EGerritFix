@@ -120,7 +120,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					String currentUser = fileInfo.getCurrentUser();
 					while (iterator.hasNext()) {
 						CommentInfo aComment = iterator.next();
-						if (aComment.getAuthor().getUsername().compareTo(currentUser) == 0) {
+						String authorName = aComment.getAuthor().getUsername();
+						if (currentUser != null && authorName != null && currentUser.compareTo(authorName) == 0) {
 							if (currentUpdate.isEmpty()) {
 								currentUpdate = aComment.getUpdated();
 								continue;

@@ -773,17 +773,19 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		fChangeInfo.reset();
 
 		//Fill the data structure
-		fChangeInfo.setNumber(element.get_number());
-		fChangeInfo.setId(element.getId());
-		fChangeInfo.setChange_id(element.getChange_id()); //Keep changeid since we are doing a copy
-		fChangeInfo.setStatus(element.getStatus());
-		fChangeInfo.setSubject(element.getSubject());
-		fChangeInfo.setProject(element.getProject());
-		fChangeInfo.setBranch(element.getBranch());
-		fChangeInfo.setUpdated(element.getUpdated());
-		fChangeInfo.setTopic(element.getTopic());
-		fChangeInfo.setLabels(element.getLabels());
-		fChangeInfo.setOwner(element.getOwner());
+		if (element != null) {
+			fChangeInfo.setNumber(element.get_number());
+			fChangeInfo.setId(element.getId());
+			fChangeInfo.setChange_id(element.getChange_id()); //Keep changeid since we are doing a copy
+			fChangeInfo.setStatus(element.getStatus());
+			fChangeInfo.setSubject(element.getSubject());
+			fChangeInfo.setProject(element.getProject());
+			fChangeInfo.setBranch(element.getBranch());
+			fChangeInfo.setUpdated(element.getUpdated());
+			fChangeInfo.setTopic(element.getTopic());
+			fChangeInfo.setLabels(element.getLabels());
+			fChangeInfo.setOwner(element.getOwner());
+		}
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
