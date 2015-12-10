@@ -90,6 +90,8 @@ public class GerritRepository {
 	// Constructors
 	// ------------------------------------------------------------------------
 
+	private int fStatus;
+
 	/**
 	 * The constructor
 	 *
@@ -244,6 +246,7 @@ public class GerritRepository {
 			if (client.authenticate()) {
 				fHttpClient = client;
 			}
+			fStatus = client.getStatus();
 		}
 		return fHttpClient;
 	}
@@ -421,5 +424,14 @@ public class GerritRepository {
 		sb.append(gerritVersion);
 		sb.append("\n"); //$NON-NLS-1$
 		return sb.toString();
+	}
+
+	/*
+	 * return the error code of the http connection
+	
+	 * @return
+	 */
+	public int getStatus() {
+		return fStatus;
 	}
 }

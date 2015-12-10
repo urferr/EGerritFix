@@ -693,9 +693,9 @@ public class GerritTableView extends ViewPart {
 								+ " supported by EGerrit.");
 			}
 
-		} else {
-			UIUtils.showErrorDialog("Cannot connect to selected Gerrit server ",
-					"Server " + gerritRepository.getPath());
+		} else if (gerritRepository.getStatus() == 401) {
+			UIUtils.showErrorDialog("Cannot connect to selected Gerrit server ", //$NON-NLS-1$
+					"Server " + gerritRepository.getPath() + " Authentication failure "); //$NON-NLS-1$ //$NON-NLS-2$
 
 		}
 

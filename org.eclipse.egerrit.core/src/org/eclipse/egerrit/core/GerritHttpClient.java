@@ -88,6 +88,8 @@ public class GerritHttpClient {
 	// To handle self-signed cerificates
 	private X509HostnameVerifier fHostNameVerifier = new AllowAllHostnameVerifier();
 
+	private int fStatus;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -272,7 +274,7 @@ public class GerritHttpClient {
 	private static final String LOGIN_REQUEST = "/login/mine"; //$NON-NLS-1$
 
 	private boolean userPasswordAuthentication(Credentials creds, boolean userBecomesAnyAccount) {
-		int status = 0;
+		fStatus = 0;
 		try {
 			URIBuilder builder = fRepository.getURIBuilder(false);
 			String path = new StringBuilder(builder.getPath()).append(LOGIN_REQUEST).toString();
@@ -284,13 +286,13 @@ public class GerritHttpClient {
 			HttpResponse response = execute(request);
 			StatusLine statusLine = response.getStatusLine();
 			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
-			status = statusLine.getStatusCode();
+			fStatus = statusLine.getStatusCode();
 			EntityUtils.consume(response.getEntity());
-			if (status == HttpStatus.SC_MOVED_TEMPORARILY) {
+			if (fStatus == HttpStatus.SC_MOVED_TEMPORARILY) {
 				extractGerritCookie();
-				status = getGerritAuthKey();
+				fStatus = getGerritAuthKey();
 			}
-			if (status == HttpStatus.SC_OK) {
+			if (fStatus == HttpStatus.SC_OK) {
 				return testAuthentication();
 			}
 		} catch (ClientProtocolException e) {
@@ -300,7 +302,7 @@ public class GerritHttpClient {
 		} catch (URISyntaxException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage());
 		}
-		return status == HttpStatus.SC_OK;
+		return fStatus == HttpStatus.SC_OK;
 	}
 
 	/*
@@ -419,6 +421,15 @@ public class GerritHttpClient {
 		// - host page data and download information
 		// - user account information and preferences
 		// - diff preferences
+	}
+
+	/*
+	 * return the error code of the http connection
+	
+	 * @return
+	 */
+	public int getStatus() {
+		return fStatus;
 	}
 
 }
