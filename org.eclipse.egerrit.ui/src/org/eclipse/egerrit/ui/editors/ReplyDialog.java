@@ -110,6 +110,11 @@ public class ReplyDialog extends Dialog {
 		newShell.setText("Reply dialog");
 	}
 
+	@Override
+	protected int getShellStyle() {
+		return SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.RESIZE;
+	}
+
 	/**
 	 * Create the reply dialog
 	 *
@@ -131,7 +136,7 @@ public class ReplyDialog extends Dialog {
 		grid.minimumWidth = fontSize.x * 60;
 		sc_msgtxt.setLayoutData(grid);
 
-		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI);
+		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		sc_msgtxt.setContent(msgTextData);
 
 		//Create the section handling the radio buttons
@@ -139,7 +144,7 @@ public class ReplyDialog extends Dialog {
 
 		//Create the bottom section for the buttons
 		createBottomButtons(parent);
-
+		parent.getShell().setMinimumSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return parent;
 	}
 
