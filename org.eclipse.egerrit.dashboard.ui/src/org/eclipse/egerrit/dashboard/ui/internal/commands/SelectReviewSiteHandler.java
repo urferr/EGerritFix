@@ -22,6 +22,7 @@ import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.egerrit.core.command.ChangeState;
 import org.eclipse.egerrit.core.command.ChangeStatus;
+import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIConstants;
 import org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage;
 import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
@@ -54,8 +55,7 @@ public class SelectReviewSiteHandler extends AbstractHandler implements IElement
 		fServerUtil.saveLastGerritServer(server);
 
 		if (!server.getUserName().isEmpty()) {
-			reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " //$NON-NLS-1$
-					+ ChangeStatus.OPEN.getValue());
+			reviewTableView.processCommands(GerritQuery.MY_CHANGES);
 		} else {
 			reviewTableView.processCommands(ChangeState.IS_OPEN.getValue() + " " //$NON-NLS-1$
 					+ ChangeStatus.OPEN.getValue());
