@@ -14,19 +14,20 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.core.databinding.property.value.IValueProperty;
+import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -44,14 +45,16 @@ import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.IncludedInInfo;
-import org.eclipse.egerrit.core.rest.MergeableInfo;
-import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
-import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
-import org.eclipse.egerrit.core.rest.ReviewerInfo;
-import org.eclipse.egerrit.core.rest.SuggestReviewerInfo;
 import org.eclipse.egerrit.core.rest.TopicInput;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.IncludedInInfo;
+import org.eclipse.egerrit.internal.model.MergeableInfo;
+import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo;
+import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
+import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
+import org.eclipse.egerrit.internal.model.provider.ModelItemProviderAdapterFactory;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
@@ -60,15 +63,20 @@ import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
 import org.eclipse.egerrit.ui.internal.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.ui.internal.table.UIReviewersTable;
 import org.eclipse.egerrit.ui.internal.table.UISameTopicTable;
-import org.eclipse.egerrit.ui.internal.table.provider.ConflictWithTableLabelProvider;
-import org.eclipse.egerrit.ui.internal.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvider;
-import org.eclipse.egerrit.ui.internal.table.provider.SameTopicTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.emf.databinding.EMFObservables;
+import org.eclipse.emf.databinding.EMFProperties;
+import org.eclipse.emf.databinding.FeaturePath;
+import org.eclipse.emf.databinding.IEMFListProperty;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
@@ -153,18 +161,6 @@ public class SummaryTabView {
 	private TableViewer tableRelatedChangesViewer;
 
 	private TableViewer tableConflictsWithViewer;
-
-	private final List<ReviewerInfo> fReviewers = new ArrayList<ReviewerInfo>();
-
-	private final IncludedInInfo fIncludedIn = new IncludedInInfo();
-
-	private final List<ChangeInfo> fSameTopicChangeInfo = new ArrayList<ChangeInfo>();
-
-	private final MergeableInfo fMergeableInfo = new MergeableInfo();
-
-	private final List<ChangeInfo> fConflictsWithChangeInfo = new ArrayList<ChangeInfo>();
-
-	private final RelatedChangesInfo fRelatedChangesInfo = new RelatedChangesInfo();
 
 	private ChangeInfo fChangeInfo;
 
@@ -585,7 +581,7 @@ public class SummaryTabView {
 		tableRelatedChangesViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
 
 		//Set the binding for this section
-		sumRelatedChandesDataBindings();
+		sumRelatedChangesDataBindings();
 		return grpRelatedChanges;
 	}
 
@@ -693,13 +689,8 @@ public class SummaryTabView {
 		}
 		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getId(), "", //$NON-NLS-1$
 				new NullProgressMonitor());
-		if (mergeableInfo != null) {
-			fMergeableInfo.setSubmit_type(mergeableInfo.getSubmit_type());
-			fMergeableInfo.setMergeable(mergeableInfo.isMergeable());
-		} else {
-			fMergeableInfo.setSubmit_type(""); //Reset the field or should we put already merged ?? //$NON-NLS-1$
-			fMergeableInfo.setMergeable(true);// Reset the filed to be empty
-		}
+		fChangeInfo.setMergeableInfo(mergeableInfo);
+		fChangeInfo.setMergeable(mergeableInfo.isMergeable());
 	}
 
 	/**
@@ -709,12 +700,7 @@ public class SummaryTabView {
 		try {
 			IncludedInInfo includedIn = queryIncludedIn(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
 			if (includedIn != null) {
-				fIncludedIn.setBranches(includedIn.getBranches());
-				fIncludedIn.setTags(includedIn.getTags());
-			} else {
-				//Reset the fields if they don't exist
-				fIncludedIn.setBranches(new ArrayList<String>());
-				fIncludedIn.setTags(new ArrayList<String>());
+				fChangeInfo.setIncludedIn(includedIn);
 			}
 		} catch (MalformedURLException e) {
 			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
@@ -725,43 +711,20 @@ public class SummaryTabView {
 	 * @param gerritClient
 	 */
 	private void setRelatedChanges(GerritClient gerritClient) {
-		WritableList writeInfoList;
 		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getId(),
-				fChangeInfo.getCurrentRevision(), new NullProgressMonitor());
-		fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-
-		if (relatedchangesinfo != null) {
-			if (relatedchangesinfo.getChanges() != null) {
-				fRelatedChangesInfo.setChanges(relatedchangesinfo.getChanges());
-			} else {
-				fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-			}
-		}
-		writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
-		tableRelatedChangesViewer.setInput(writeInfoList);
+				fChangeInfo.getCurrent_revision(), new NullProgressMonitor());
+		fChangeInfo.setRelatedChanges(relatedchangesinfo);
 	}
 
 	/**
 	 * @param gerritClient
 	 */
 	private void setReviewers(GerritClient gerritClient) {
-		WritableList writeInfoList;
 		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
-		fReviewers.clear();
 		if (reviewers != null) {
-			//fReviewers = Arrays.asList(reviewers);
-			ListIterator<ReviewerInfo> litrRevInfo = Arrays.asList(reviewers).listIterator();
-			while (litrRevInfo.hasNext()) {
-				ReviewerInfo cur = litrRevInfo.next();
-				ReviewerInfo item = new ReviewerInfo();
-				item.setName(cur.getName());
-				item.set_account_id(cur.get_account_id());
-				item.setApprovals(cur.getApprovals());
-				item.setEmail(cur.getEmail());
-				fReviewers.add(item);
+			for (ReviewerInfo reviewerInfo : reviewers) {
+				fChangeInfo.getReviewers().add(reviewerInfo);
 			}
-			writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
-			tableReviewersViewer.setInput(writeInfoList);
 		}
 	}
 
@@ -770,10 +733,7 @@ public class SummaryTabView {
 	 * @param element
 	 */
 	private void setSameTopic(GerritClient gerritClient, ChangeInfo element) {
-		ListIterator<ChangeInfo> litr;
-		WritableList writeInfoList;
 		ChangeInfo[] sameTopicChangeInfo = null;
-		fSameTopicChangeInfo.clear();
 		if (element.getTopic() != null) {
 			try {
 				sameTopicChangeInfo = querySameTopic(gerritClient, element.getTopic(), new NullProgressMonitor());
@@ -781,19 +741,9 @@ public class SummaryTabView {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			if (sameTopicChangeInfo != null) {
-				litr = Arrays.asList(sameTopicChangeInfo).listIterator();
-				while (litr.hasNext()) {
-					ChangeInfo cur = litr.next();
-					if (fChangeInfo.getId().compareTo(cur.getId()) != 0) { // dont' want the current one
-						ChangeInfo item = new ChangeInfo();
-						item.setChange_id(cur.getChange_id());
-						item.setNumber(cur.get_number());
-						item.setSubject(cur.getSubject());
-						fSameTopicChangeInfo.add(item);
-					}
+				for (ChangeInfo changeInfo : sameTopicChangeInfo) {
+					fChangeInfo.getSameTopic().add(changeInfo);
 				}
-				writeInfoList = new WritableList(fSameTopicChangeInfo, ReviewerInfo.class);
-				tableSameTopicViewer.setInput(writeInfoList);
 			}
 		}
 	}
@@ -803,10 +753,7 @@ public class SummaryTabView {
 	 * @param element
 	 */
 	private void setConflictsWith(GerritClient gerritClient, ChangeInfo element) {
-		ListIterator<ChangeInfo> litr;
-		WritableList writeInfoList;
 		ChangeInfo[] conflictsWithChangeInfo = null;
-		fConflictsWithChangeInfo.clear();
 
 		if (!("MERGED".equals(element.getStatus())) && !("ABANDONED".equals(element.getStatus()))) {
 			try {
@@ -816,23 +763,9 @@ public class SummaryTabView {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 
-			if (conflictsWithChangeInfo != null && conflictsWithChangeInfo.length > 0) {
-				litr = Arrays.asList(conflictsWithChangeInfo).listIterator();
-				while (litr.hasNext()) {
-					ChangeInfo cur = litr.next();
-					if (fChangeInfo.getChange_id().compareTo(cur.getChange_id()) != 0
-							&& cur.getStatus().compareTo("NEW") == 0 && cur.isMergeable()) { // dont' want the current one
-						ChangeInfo item = new ChangeInfo();
-						item.setChange_id(cur.getChange_id()); //Here we keep the change_id because it is shown to the user
-						item.setNumber(cur.get_number());
-						item.setSubject(cur.getSubject());
-						fConflictsWithChangeInfo.add(item);
-					}
-				}
+			for (ChangeInfo changeInfo : conflictsWithChangeInfo) {
+				fChangeInfo.getConflictsWith().add(changeInfo);
 			}
-
-			writeInfoList = new WritableList(fConflictsWithChangeInfo, ReviewerInfo.class);
-			tableConflictsWithViewer.setInput(writeInfoList);
 		}
 	}
 
@@ -1136,52 +1069,54 @@ public class SummaryTabView {
 	protected DataBindingContext sumGenDataBindings() {
 		final DataBindingContext bindingContext = new DataBindingContext();
 
-		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genProjectData);
-		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("project").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
+		//Show project info
+		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(genProjectData), projectbytesFChangeInfoObserveValue,
+				null, new UpdateValueStrategy().setConverter(DataConverter.linkText()));
+		//Show branch
+		IObservableValue<String> branchFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(genBranchData), branchFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
-		//
-		IObservableValue observeTextLblBranch_1ObserveWidget = WidgetProperties.text().observe(genBranchData);
-		IObservableValue branchFChangeInfoObserveValue = BeanProperties.value("branch").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblBranch_1ObserveWidget, branchFChangeInfoObserveValue, null,
-				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
-		//
-		IObservableValue observeTextText_2ObserveWidget = WidgetProperties.text().observe(genTopicData);
-		IObservableValue topicFChangeInfoObserveValue = BeanProperties.value("topic").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextText_2ObserveWidget, topicFChangeInfoObserveValue, null, null);
-		//
-		IObservableValue observeTextLblUpdated_1ObserveWidget = WidgetProperties.text().observe(genUpdatedData);
-		IObservableValue updatedFChangeInfoObserveValue = BeanProperties.value("updated").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblUpdated_1ObserveWidget, updatedFChangeInfoObserveValue, null,
+		//Show topic
+		IObservableValue<String> topicFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(genTopicData), topicFChangeInfoObserveValue, null,
+				null);
+
+		//Show updated status
+		IObservableValue updatedFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
-		//
-		IObservableValue observeTextGenStrategyDataObserveWidget = WidgetProperties.text().observe(genStrategyData);
-		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = BeanProperties.value("submit_type").observe( //$NON-NLS-1$
-				fMergeableInfo);
-		bindingContext.bindValue(
-				//
-				observeTextGenStrategyDataObserveWidget, //
-				bytesMergeableinfogetSubmit_typeObserveValue, //
-				new UpdateValueStrategy()
-						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
-				new UpdateValueStrategy()
-						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+		//show submit type
+		//EMF do something here
+//		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = EMFProperties
+//				.value(ModelPackage.Literals.CHANGE_INFO__).observe(fChangeInfo);
+//		bindingContext.bindValue(
+//				//
+//				WidgetProperties.text().observe(genStrategyData), //
+//				bytesMergeableinfogetSubmit_typeObserveValue, //
+//				new UpdateValueStrategy()
+//						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
+//				new UpdateValueStrategy()
+//						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
 
-		//
-		IObservableValue observeTextGenMessageDataObserveWidget = WidgetProperties.text().observe(genMessageData);
-		IObservableValue mergeableFMergeableInfoObserveValue = BeanProperties.value("mergeable") //$NON-NLS-1$
-				.observe(fMergeableInfo);
-		bindingContext.bindValue(observeTextGenMessageDataObserveWidget, mergeableFMergeableInfoObserveValue, null,
-				new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
+		//Show mergeable status
+		IObservableValue mergeableFMergeableInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableFMergeableInfoObserveValue,
+				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
 		//Hide the "Strategy: ...." line if the review has been merged.
 		UpdateValueStrategy hideWidgetsStrategy = new UpdateValueStrategy() {
 			@Override
 			protected IStatus doSet(IObservableValue observableValue, Object value) {
 				Boolean visible = null;
-				if ("MERGED".equals(((ChangeInfo) value).getStatus()) //$NON-NLS-1$
-						|| "ABANDONED".equals(((ChangeInfo) value).getStatus())) { //$NON-NLS-1$
+				if ("MERGED".equals(value) //$NON-NLS-1$
+						|| "ABANDONED".equals(value)) { //$NON-NLS-1$
 					visible = Boolean.FALSE;
 				}
 				IStatus status = super.doSet(observableValue, visible);
@@ -1193,7 +1128,7 @@ public class SummaryTabView {
 				return status;
 			}
 		};
-		IObservableValue observeChangeInfoStatus = BeanProperties.value("status") //$NON-NLS-1$
+		IObservableValue observeChangeInfoStatus = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
 				.observe(fChangeInfo);
 		IObservableValue observeGenDataVisibility = WidgetProperties.visible().observe(genMessageData);
 		bindingContext.bindValue(observeGenDataVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
@@ -1208,84 +1143,106 @@ public class SummaryTabView {
 	protected void sumReviewerDataBindings() {
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableReviewersViewer.setContentProvider(contentProvider);
-		WritableList writeInfoList = new WritableList(fReviewers, ReviewerInfo.class);
+		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
+				new IValueProperty[] { new SelfValueProperty<String>("x"),
+						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__NAME),
+						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL) });
+		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties));
+		tableReviewersViewer
+				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVIEWERS).observe(fChangeInfo));
 
-		DataBindingContext bindingContext = new DataBindingContext();
-
-		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(genVoteData);
-		IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("labels").observe(fChangeInfo); //$NON-NLS-1$
-		bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-				new UpdateValueStrategy().setConverter(DataConverter.reviewersVoteConverter()));
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "name" })); //$NON-NLS-1$
-
-		ViewerSupport.bind(tableReviewersViewer, writeInfoList, BeanProperties.values(new String[] { "name" })); //$NON-NLS-1$
-		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(observeMaps));
 	}
 
-	protected DataBindingContext sumIncludedDataBindings() {
+	protected void sumIncludedDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 
-		IObservableValue observeTextLblLblprojectObserveWidget = WidgetProperties.text().observe(incBranchesData);
-		if (fIncludedIn != null) {
-			IObservableValue projectbytesFChangeInfoObserveValue = BeanProperties.value("branches") //$NON-NLS-1$
-					.observe(fIncludedIn);
-			bindingContext.bindValue(observeTextLblLblprojectObserveWidget, projectbytesFChangeInfoObserveValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.stringListConverter()));
+		hookBranches();
+		hookTags();
+	}
 
-			//
-			IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text()
-					.observe(includedInTagsData);
-			IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("tags").observe(fIncludedIn); //$NON-NLS-1$
-			bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.stringListConverter()));
-		}
-		return bindingContext;
+	private void hookTags() {
+		//Hook the branches
+		FeaturePath fp = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN,
+				ModelPackage.Literals.INCLUDED_IN_INFO__TAGS);
+		IEMFListProperty includedTags = EMFProperties.list(fp);
+		final IObservableList observedTags = includedTags.observe(fChangeInfo);
+
+		ComputedValue cv = new ComputedValue<String>() {
+			@Override
+			protected String calculate() {
+				Iterator it = observedTags.iterator();
+				String result = ""; //$NON-NLS-1$
+				while (it.hasNext()) {
+					Object object = it.next();
+					result += object.toString() + " "; //$NON-NLS-1$
+				}
+				return result;
+			}
+
+		};
+		ISWTObservableValue o = WidgetProperties.text().observe(incBranchesData);
+		new DataBindingContext().bindValue(o, cv, null, null);
+
+	}
+
+	private void hookBranches() {
+		//Hook the branches
+		FeaturePath fp = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN,
+				ModelPackage.Literals.INCLUDED_IN_INFO__BRANCHES);
+		IEMFListProperty includedInBranches = EMFProperties.list(fp);
+		final IObservableList observedBranches = includedInBranches.observe(fChangeInfo);
+
+		ComputedValue cv = new ComputedValue<String>() {
+			@Override
+			protected String calculate() {
+				Iterator it = observedBranches.iterator();
+				String result = ""; //$NON-NLS-1$
+				while (it.hasNext()) {
+					Object object = it.next();
+					result += object.toString() + " "; //$NON-NLS-1$
+				}
+				return result;
+			}
+
+		};
+		ISWTObservableValue o = WidgetProperties.text().observe(incBranchesData);
+		new DataBindingContext().bindValue(o, cv, null, null);
 	}
 
 	protected void sumSameTopicDataBindings() {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableSameTopicViewer.setContentProvider(contentProvider);
+		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
+				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+		composedAdapterFactory.addAdapterFactory(new ModelItemProviderAdapterFactory());
 
-		WritableList writeInfoList = new WritableList(fSameTopicChangeInfo, ChangeInfo.class);
+		tableSameTopicViewer.setContentProvider(new AdapterFactoryContentProvider(composedAdapterFactory));
+		tableSameTopicViewer.setLabelProvider(new AdapterFactoryLabelProvider(composedAdapterFactory));
 
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
-
-		ViewerSupport.bind(tableSameTopicViewer, writeInfoList, BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
-		tableSameTopicViewer.setLabelProvider(new SameTopicTableLabelProvider(observeMaps));
+		IObservableList observedList = EMFObservables.observeList(fChangeInfo,
+				ModelPackage.Literals.CHANGE_INFO__SAME_TOPIC);
+		ViewerSupport.bind(tableSameTopicViewer, observedList,
+				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__CHANGE_ID),
+						EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT) });
 	}
 
-	protected void sumRelatedChandesDataBindings() {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableRelatedChangesViewer.setContentProvider(contentProvider);
-
-		if (fRelatedChangesInfo.getChanges() == null) {
-			fRelatedChangesInfo.setChanges(new ArrayList<RelatedChangeAndCommitInfo>());
-		}
-
-		WritableList writeInfoList = new WritableList(fRelatedChangesInfo.getChanges(), RelatedChangesInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "changes" })); //$NON-NLS-1$
-
-		ViewerSupport.bind(tableRelatedChangesViewer, writeInfoList, BeanProperties.values(new String[] { "changes" })); //$NON-NLS-1$
-		tableRelatedChangesViewer.setLabelProvider(new RelatedChangesTableLabelProvider(observeMaps));
+	protected void sumRelatedChangesDataBindings() {
+		final FeaturePath properties = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
+				ModelPackage.Literals.RELATED_CHANGES_INFO__CHANGES);
+		IObservableList relatedChanges = EMFProperties.list(properties).observe(fChangeInfo);
+		final FeaturePath commitSubject = FeaturePath.fromList(
+				ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT,
+				ModelPackage.Literals.COMMIT_INFO__SUBJECT);
+		final IValueProperty[] valuesPresented = new IValueProperty[] {
+				EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_NUMBER),
+				EMFProperties.value(commitSubject) };
+		ViewerSupport.bind(tableRelatedChangesViewer, relatedChanges, valuesPresented);
 	}
 
 	protected void sumConflictWithDataBindings() {
-		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		tableConflictsWithViewer.setContentProvider(contentProvider);
-
-		WritableList writeInfoList = new WritableList(fConflictsWithChangeInfo, ChangeInfo.class);
-
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
-
-		ViewerSupport.bind(tableConflictsWithViewer, writeInfoList,
-				BeanProperties.values(new String[] { "change_id" })); //$NON-NLS-1$
-		tableConflictsWithViewer.setLabelProvider(new ConflictWithTableLabelProvider(observeMaps));
+		IObservableList observedList = EMFObservables.observeList(fChangeInfo,
+				ModelPackage.Literals.CHANGE_INFO__CONFLICTS_WITH);
+		ViewerSupport.bind(tableConflictsWithViewer, observedList,
+				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER),
+						EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT) });
 	}
 
 	/**
@@ -1309,14 +1266,7 @@ public class SummaryTabView {
 		//Need the current Revision set before setting the RelatedChanges
 		setRelatedChanges(gerritClient);
 
-//		if (changeInfo.getStatus().compareTo("MERGED") != 0 && fMergeableInfo.isMergeable()
-//				&& fChangeInfo.getCodeReviewedTally() >= 0 && fChangeInfo.isMergeable()) {
-//			setConflictsWith(gerritClient, changeInfo);
-//		}
-
-//		if (fMergeableInfo.isMergeable() && fChangeInfo.isMergeable()) {
 		setConflictsWith(gerritClient, changeInfo);
-//		}
 
 	}
 

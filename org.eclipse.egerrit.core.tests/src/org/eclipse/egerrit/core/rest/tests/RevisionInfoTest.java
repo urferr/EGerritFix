@@ -23,11 +23,13 @@ import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.ActionInfo;
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.FetchInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ActionInfo;
+import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.FetchInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +39,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.RevisionInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.RevisionInfo}
  */
 @SuppressWarnings("nls")
 public class RevisionInfoTest {
@@ -56,7 +58,7 @@ public class RevisionInfoTest {
 
 	private static final Map<String, FetchInfo> FETCH = new LinkedHashMap<String, FetchInfo>();
 
-	private static final CommitInfo COMMIT = new CommitInfo();
+	private static final CommitInfo COMMIT = ModelFactory.eINSTANCE.createCommitInfo();
 
 	private static final Map<String, FileInfo> FILES = new LinkedHashMap<String, FileInfo>();
 
@@ -97,7 +99,7 @@ public class RevisionInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -127,7 +129,7 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#isDraft()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#isDraft()}.
 	 */
 	@Test
 	public void testIsDraft() {
@@ -136,58 +138,58 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertTrue("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#hasDraftComments()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#isHas_draft_comments()}.
 	 */
 	@Test
-	public void testHasDraftComments() {
+	public void testisHas_draft_comments() {
 		json.addProperty("has_draft_comments", HAS_DRAFT_COMMENTS);
 		Reader reader = new StringReader(json.toString());
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertTrue("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertTrue("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getNumber()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#get_number()}.
 	 */
 	@Test
-	public void testGetNumber() {
+	public void testget_number() {
 		json.addProperty("_number", NUMBER);
 		Reader reader = new StringReader(json.toString());
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", NUMBER, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", NUMBER, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getRef()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#getRef()}.
 	 */
 	@Test
 	public void testGetRef() {
@@ -196,18 +198,18 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertEquals("Wrong ref", REF, fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFetch()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#getFetch()}.
 	 */
 	@Test
 	public void testGetFetch() {
@@ -217,18 +219,18 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertEquals("Wrong fetch", FETCH, fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getCommit()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#getCommit()}.
 	 */
 	@Test
 	public void testGetCommit() {
@@ -238,18 +240,18 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertEquals("Wrong commit", COMMIT, fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getFiles()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#getFiles()}.
 	 */
 	@Test
 	public void testGetFiles() {
@@ -259,18 +261,18 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertEquals("Wrong files", FILES, fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getActions()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#getActions()}.
 	 */
 	@Test
 	public void testGetActions() {
@@ -280,34 +282,34 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertEquals("Wrong actions", ACTIONS, fRevisionInfo.getActions());
-		assertNull("Wrong reviewed", fRevisionInfo.getReviewed());
+		assertNull("Wrong reviewed", fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#getReviewed()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#isReviewed()}.
 	 */
 	@Test
-	public void testGetReviewed() {
+	public void testisReviewed() {
 		json.addProperty("reviewed", REVIEWED);
 		Reader reader = new StringReader(json.toString());
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertFalse("Wrong draft", fRevisionInfo.isDraft());
-		assertFalse("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 0, fRevisionInfo.getNumber());
+		assertFalse("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 0, fRevisionInfo.get_number());
 		assertNull("Wrong ref", fRevisionInfo.getRef());
 		assertNull("Wrong fetch", fRevisionInfo.getFetch());
 		assertNull("Wrong commit", fRevisionInfo.getCommit());
 		assertNull("Wrong files", fRevisionInfo.getFiles());
 		assertNull("Wrong actions", fRevisionInfo.getActions());
-		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.getReviewed());
+		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.isReviewed());
 	}
 
 	// ------------------------------------------------------------------------
@@ -315,7 +317,7 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -324,18 +326,18 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertTrue("Wrong draft", fRevisionInfo.isDraft());
-		assertTrue("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 5, fRevisionInfo.getNumber());
+		assertTrue("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 5, fRevisionInfo.get_number());
 		assertEquals("Wrong ref", REF, fRevisionInfo.getRef());
 		assertEquals("Wrong fetch", FETCH, fRevisionInfo.getFetch());
 		assertEquals("Wrong commit", COMMIT, fRevisionInfo.getCommit());
 		assertEquals("Wrong files", FILES, fRevisionInfo.getFiles());
 		assertEquals("Wrong actions", ACTIONS, fRevisionInfo.getActions());
-		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.getReviewed());
+		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.isReviewed());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -345,14 +347,14 @@ public class RevisionInfoTest {
 		fRevisionInfo = gson.fromJson(reader, RevisionInfo.class);
 
 		assertTrue("Wrong draft", fRevisionInfo.isDraft());
-		assertTrue("Wrong has_draft_comments", fRevisionInfo.hasDraftComments());
-		assertEquals("Wrong _number", 5, fRevisionInfo.getNumber());
+		assertTrue("Wrong has_draft_comments", fRevisionInfo.isHas_draft_comments());
+		assertEquals("Wrong _number", 5, fRevisionInfo.get_number());
 		assertEquals("Wrong ref", REF, fRevisionInfo.getRef());
 		assertEquals("Wrong fetch", FETCH, fRevisionInfo.getFetch());
 		assertEquals("Wrong commit", COMMIT, fRevisionInfo.getCommit());
 		assertEquals("Wrong files", FILES, fRevisionInfo.getFiles());
 		assertEquals("Wrong actions", ACTIONS, fRevisionInfo.getActions());
-		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.getReviewed());
+		assertEquals("Wrong reviewed", REVIEWED, fRevisionInfo.isReviewed());
 	}
 
 	// ------------------------------------------------------------------------
@@ -360,7 +362,7 @@ public class RevisionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -371,7 +373,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#equals(java.lang.Object)} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -379,7 +381,7 @@ public class RevisionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RevisionInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RevisionInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

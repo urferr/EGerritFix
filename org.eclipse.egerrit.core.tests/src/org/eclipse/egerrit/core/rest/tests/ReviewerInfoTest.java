@@ -19,7 +19,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.ReviewerInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ReviewerInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ReviewerInfo}
  *
  * @since 1.0
  */
@@ -78,7 +79,7 @@ public class ReviewerInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -98,22 +99,22 @@ public class ReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getAccountId()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#get_account_id()}.
 	 */
 	@Test
-	public void testGetAccountId() {
+	public void testget_account_id() {
 		json.addProperty("_account_id", ACCOUNT_ID);
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.get_account_id());
 		assertNull("Wrong name", fReviewerInfo.getName());
 		assertNull("Wrong email", fReviewerInfo.getEmail());
 		assertNull("Wrong user_name", fReviewerInfo.getUsername());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getName()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#getName()}.
 	 */
 	@Test
 	public void testGetName() {
@@ -121,14 +122,14 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", -1, fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", -1, fReviewerInfo.get_account_id());
 		assertEquals("Wrong name", NAME, fReviewerInfo.getName());
 		assertNull("Wrong email", fReviewerInfo.getEmail());
 		assertNull("Wrong user_name", fReviewerInfo.getUsername());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getEmail()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#getEmail()}.
 	 */
 	@Test
 	public void testGetEmail() {
@@ -136,14 +137,14 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", -1, fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", -1, fReviewerInfo.get_account_id());
 		assertNull("Wrong name", fReviewerInfo.getName());
 		assertEquals("Wrong email", EMAIL, fReviewerInfo.getEmail());
 		assertNull("Wrong user_name", fReviewerInfo.getUsername());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#getUsername()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#getUsername()}.
 	 */
 	@Test
 	public void testGetUsername() {
@@ -151,7 +152,7 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", -1, fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", -1, fReviewerInfo.get_account_id());
 		assertNull("Wrong name", fReviewerInfo.getName());
 		assertNull("Wrong email", fReviewerInfo.getEmail());
 		assertEquals("Wrong user_name", USER_NAME, fReviewerInfo.getUsername());
@@ -162,7 +163,7 @@ public class ReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -170,14 +171,14 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.get_account_id());
 		assertEquals("Wrong name", NAME, fReviewerInfo.getName());
 		assertEquals("Wrong email", EMAIL, fReviewerInfo.getEmail());
 		assertEquals("Wrong user_name", USER_NAME, fReviewerInfo.getUsername());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -186,7 +187,7 @@ public class ReviewerInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fReviewerInfo = gson.fromJson(reader, ReviewerInfo.class);
 
-		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.getAccountId());
+		assertEquals("Wrong _account_id", (int) Integer.valueOf(ACCOUNT_ID), fReviewerInfo.get_account_id());
 		assertEquals("Wrong name", NAME, fReviewerInfo.getName());
 		assertEquals("Wrong email", EMAIL, fReviewerInfo.getEmail());
 		assertEquals("Wrong user_name", USER_NAME, fReviewerInfo.getUsername());
@@ -197,7 +198,7 @@ public class ReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -209,7 +210,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -217,7 +218,7 @@ public class ReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

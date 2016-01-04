@@ -11,20 +11,24 @@
 
 package org.eclipse.egerrit.ui.internal.tabs;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.DataConverter;
+import org.eclipse.emf.databinding.EMFProperties;
+import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.databinding.viewers.ViewerSupport;
-import org.eclipse.jface.text.Document;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.hyperlink.DefaultHyperlinkPresenter;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
@@ -32,9 +36,6 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -69,11 +70,11 @@ public class HistoryTabView {
 	 * @param listMessages
 	 *            List<ChangeMessageInfo>
 	 */
-	public void create(GerritClient gerritClient, TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
-		createControls(tabFolder, listMessages);
+	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
+		createControls(tabFolder, changeInfo);
 	}
 
-	private void createControls(TabFolder tabFolder, List<ChangeMessageInfo> listMessages) {
+	private void createControls(TabFolder tabFolder, ChangeInfo changeInfo) {
 		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
 		tbtmHistory.setText("History");
 
@@ -84,18 +85,6 @@ public class HistoryTabView {
 		tableUIHistory.createTableViewerSection(sashForm);
 
 		tableHistoryViewer = tableUIHistory.getViewer();
-		tableHistoryViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				Object element = sel.getFirstElement();
-				if (element instanceof ChangeMessageInfo) {
-					final ChangeMessageInfo changeMessage = (ChangeMessageInfo) element;
-					msgTextData.setDocument(new Document(changeMessage.getMessage()));
-				}
-			}
-		});
 
 		msgTextData = new TextViewerWithLinks(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		msgTextData.configure(new SourceViewerConfiguration() {
@@ -128,32 +117,33 @@ public class HistoryTabView {
 
 		//Set the % of display data.70% table and 30% for the comment message
 		sashForm.setWeights(new int[] { 70, 30 });
-
-		//Set the binding for this section
-		hisTabDataBindings(listMessages);
+		bind(changeInfo);
 	}
 
-	protected void hisTabDataBindings(List<ChangeMessageInfo> listMessages) {
+	private void bind(ChangeInfo changeInfo) {
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableHistoryViewer.setContentProvider(contentProvider);
 
-		if (listMessages == null) {
-			listMessages = new ArrayList<ChangeMessageInfo>();
-		}
+		final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_MESSAGE_INFO__AUTHOR,
+				ModelPackage.Literals.ACCOUNT_INFO__NAME);
+		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
+				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__DATE),
+						EMFProperties.value(authorName),
+						EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__MESSAGE) });
+		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(watchedProperties));
+		tableHistoryViewer
+				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__MESSAGES).observe(changeInfo));
 
-		WritableList writeInfoList = new WritableList(listMessages, ChangeMessageInfo.class);
-		IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-				BeanProperties.values(new String[] { "messages" }));
+		//Hook the selection listener to display the details in the bottom section
+		IObservableValue selection = ViewersObservables.observeSingleSelection(tableHistoryViewer);
+		IObservableValue detailObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__MESSAGE)
+				.observeDetail(selection);
+		IObservableValue textViewerDocument = BeanProperties.value(msgTextData.getClass(), "document") //$NON-NLS-1$
+				.observe(Realm.getDefault(), msgTextData);
+		UpdateValueStrategy textToDocumentStrategy = new UpdateValueStrategy();
+		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument());
 
-		ViewerSupport.bind(tableHistoryViewer, writeInfoList, BeanProperties.values(new String[] { "messages" }));
-		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(observeMaps));
+		new DataBindingContext().bindValue(textViewerDocument, detailObservable, null, textToDocumentStrategy);
+
 	}
-
-	/**
-	 * @return the tableHistoryViewer
-	 */
-	public TableViewer getTableHistoryViewer() {
-		return tableHistoryViewer;
-	}
-
 }

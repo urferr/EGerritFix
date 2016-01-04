@@ -11,7 +11,7 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 

@@ -16,19 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.GitPersonInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
-import org.eclipse.egerrit.core.utils.DisplayFileInfo;
-import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 
 /**
  * This class in used to transform the Gerrit data to a databinding display value
@@ -180,84 +177,83 @@ public class DataConverter {
 	/**
 	 * @return an IConverter from the ChangeInfo.labels structure to a format having the global count information
 	 */
-	public static IConverter reviewersVoteConverter() {
-		IConverter converter = new Converter(Map.class, String.class) {
+//	public static IConverter reviewersVoteConverter() {
+//		IConverter converter = new Converter(Map.class, String.class) {
+//
+//			@Override
+//			public Object convert(Object fromObject) {
+//
+//				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+//					String codeReviewed = null;
+//					int verifyState = 0;
+//					int codeReviewState = 0;
+//					Map<String, LabelInfo> labels = (Map<String, LabelInfo>) fromObject;
+//					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+//						if (entry.getKey().compareTo("Verified") == 0) { //$NON-NLS-1$
+//							LabelInfo labelInfo = entry.getValue();
+//							if (labelInfo != null && labelInfo.getAll() != null) {
+//								for (ApprovalInfo it : labelInfo.getAll()) {
+//									if (it.getValue() != null) {
+//										verifyState = Utils.getStateValue(it.getValue(), verifyState);
+//									}
+//								}
+//							}
+//						} else if (entry.getKey().compareTo("Code-Review") == 0) { //$NON-NLS-1$
+//							LabelInfo labelInfo = entry.getValue();
+//							if (labelInfo != null && labelInfo.getAll() != null) {
+//								for (ApprovalInfo it : labelInfo.getAll()) {
+//									if (it.getValue() != null) {
+//										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
+//									}
+//								}
+//							}
+//						}
+//						String codeRev;
+//						if (codeReviewState > 0) {
+//							codeRev = "+" + Integer.toString(codeReviewState); //$NON-NLS-1$
+//						} else {
+//							codeRev = Integer.toString(codeReviewState);
+//						}
+//						String verify;
+//						if (verifyState > 0) {
+//							verify = "+" + Integer.toString(verifyState); //$NON-NLS-1$
+//						} else {
+//							verify = Integer.toString(verifyState);
+//						}
+//
+//						codeReviewed = codeRev + "       " + verify; //$NON-NLS-1$
+//					}
+//					return codeReviewed;
+//				} else {
+//					return null;
+//				}
+//			}
+//		};
+//		return converter;
+//	}
 
-			@Override
-			public Object convert(Object fromObject) {
-
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
-					String codeReviewed = null;
-					int verifyState = 0;
-					int codeReviewState = 0;
-					Map<String, LabelInfo> labels = (Map<String, LabelInfo>) fromObject;
-					for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-						if (entry.getKey().compareTo("Verified") == 0) { //$NON-NLS-1$
-							LabelInfo labelInfo = entry.getValue();
-							if (labelInfo != null && labelInfo.getAll() != null) {
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										verifyState = Utils.getStateValue(it.getValue(), verifyState);
-									}
-								}
-							}
-						} else if (entry.getKey().compareTo("Code-Review") == 0) { //$NON-NLS-1$
-							LabelInfo labelInfo = entry.getValue();
-							if (labelInfo != null && labelInfo.getAll() != null) {
-								for (ApprovalInfo it : labelInfo.getAll()) {
-									if (it.getValue() != null) {
-										codeReviewState = Utils.getStateValue(it.getValue(), codeReviewState);
-									}
-								}
-							}
-						}
-						String codeRev;
-						if (codeReviewState > 0) {
-							codeRev = "+" + Integer.toString(codeReviewState); //$NON-NLS-1$
-						} else {
-							codeRev = Integer.toString(codeReviewState);
-						}
-						String verify;
-						if (verifyState > 0) {
-							verify = "+" + Integer.toString(verifyState); //$NON-NLS-1$
-						} else {
-							verify = Integer.toString(verifyState);
-						}
-
-						codeReviewed = codeRev + "       " + verify; //$NON-NLS-1$
-					}
-					return codeReviewed;
-				} else {
-					return null;
-				}
-			}
-		};
-		return converter;
-	}
-
-	public static IConverter commentLineCounter() {
-		return new Converter(Map.class, String.class) {
-//		return new Converter(List.class, String.class) {
-
-			@Override
-			public Object convert(Object fromObject) {
-				int lineInserted = 0;
-				int lineDeleted = 0;
-				List<DisplayFileInfo> modifiedFiles = (List<DisplayFileInfo>) ((Map<String, DisplayFileInfo>) fromObject)
-						.values();
-				for (DisplayFileInfo fileInfo : modifiedFiles) {
-					lineInserted += fileInfo.getLinesInserted();
-					lineDeleted += fileInfo.getLinesDeleted();
-				}
-				return new StringBuilder().append("+")
-						.append(Integer.toString(lineInserted))
-						.append("/")
-						.append("-")
-						.append(Integer.toString(lineDeleted))
-						.toString();
-			}
-		};
-	}
+//	public static IConverter commentLineCounter() {
+//		return new Converter(Map.class, String.class) {
+////		return new Converter(List.class, String.class) {
+//
+//			@Override
+//			public Object convert(Object fromObject) {
+//				int lineInserted = 0;
+//				int lineDeleted = 0;
+//				List<FileInfo> modifiedFiles = (List<FileInfo>) ((Map<String, FileInfo>) fromObject).values();
+//				for (FileInfo fileInfo : modifiedFiles) {
+//					lineInserted += fileInfo.getLines_inserted();
+//					lineDeleted += fileInfo.getLines_deleted();
+//				}
+//				return new StringBuilder().append("+")
+//						.append(Integer.toString(lineInserted))
+//						.append("/")
+//						.append("-")
+//						.append(Integer.toString(lineDeleted))
+//						.toString();
+//			}
+//		};
+//	}
 
 	/**
 	 * Insert the tag for the link text
@@ -269,9 +265,24 @@ public class DataConverter {
 
 			@Override
 			public Object convert(Object fromObject) {
+				if (fromObject == null) {
+					return "";
+				}
 				return new StringBuilder().append("<a>").append(fromObject).append("</a>").toString();
 			}
 		};
 	}
 
+	public static IConverter fromStringToDocument() {
+		return new Converter(String.class, IDocument.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+				if (fromObject == null) {
+					return new Document();
+				}
+				return new Document((String) fromObject);
+			}
+		};
+	}
 }

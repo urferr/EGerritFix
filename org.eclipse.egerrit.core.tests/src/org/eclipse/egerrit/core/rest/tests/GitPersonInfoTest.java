@@ -19,7 +19,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.GitPersonInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +30,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.GitPersonInfo}
- * 
+ * Test suite for {@link org.eclipse.egerrit.internal.model.GitPersonInfo}
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -78,7 +79,7 @@ public class GitPersonInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -98,7 +99,7 @@ public class GitPersonInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#getName()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#getName()}.
 	 */
 	@Test
 	public void testGetName() {
@@ -109,11 +110,11 @@ public class GitPersonInfoTest {
 		assertEquals("Wrong name", NAME, fGitPersonInfo.getName());
 		assertNull("Wrong email", fGitPersonInfo.getEmail());
 		assertNull("Wrong date", fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", 0, fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", 0, fGitPersonInfo.getTz());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#getEmail()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#getEmail()}.
 	 */
 	@Test
 	public void testGetEmail() {
@@ -124,11 +125,11 @@ public class GitPersonInfoTest {
 		assertNull("Wrong name", fGitPersonInfo.getName());
 		assertEquals("Wrong email", EMAIL, fGitPersonInfo.getEmail());
 		assertNull("Wrong date", fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", 0, fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", 0, fGitPersonInfo.getTz());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#getDate()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#getDate()}.
 	 */
 	@Test
 	public void testGetDate() {
@@ -139,11 +140,11 @@ public class GitPersonInfoTest {
 		assertNull("Wrong name", fGitPersonInfo.getName());
 		assertNull("Wrong email", fGitPersonInfo.getEmail());
 		assertEquals("Wrong date", DATE, fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", 0, fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", 0, fGitPersonInfo.getTz());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#getTZ()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#getTZ()}.
 	 */
 	@Test
 	public void testGetTZ() {
@@ -154,7 +155,7 @@ public class GitPersonInfoTest {
 		assertNull("Wrong name", fGitPersonInfo.getName());
 		assertNull("Wrong email", fGitPersonInfo.getEmail());
 		assertNull("Wrong date", fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTz());
 	}
 
 	// ------------------------------------------------------------------------
@@ -162,7 +163,7 @@ public class GitPersonInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -173,11 +174,11 @@ public class GitPersonInfoTest {
 		assertEquals("Wrong name", NAME, fGitPersonInfo.getName());
 		assertEquals("Wrong email", EMAIL, fGitPersonInfo.getEmail());
 		assertEquals("Wrong date", DATE, fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTz());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -189,7 +190,7 @@ public class GitPersonInfoTest {
 		assertEquals("Wrong name", NAME, fGitPersonInfo.getName());
 		assertEquals("Wrong email", EMAIL, fGitPersonInfo.getEmail());
 		assertEquals("Wrong date", DATE, fGitPersonInfo.getDate());
-		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTZ());
+		assertEquals("Wrong tz", (int) Integer.valueOf(TZ), fGitPersonInfo.getTz());
 	}
 
 	// ------------------------------------------------------------------------
@@ -197,7 +198,7 @@ public class GitPersonInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -209,7 +210,7 @@ public class GitPersonInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#equals(java.lang.Object)}.
 	 */
 //  @Test
 	public void testEqualsObject() {
@@ -217,7 +218,7 @@ public class GitPersonInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GitPersonInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GitPersonInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

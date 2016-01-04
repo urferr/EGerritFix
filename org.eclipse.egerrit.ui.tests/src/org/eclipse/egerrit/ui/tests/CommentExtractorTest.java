@@ -17,8 +17,9 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.ui.editors.model.CommentExtractor;
 import org.eclipse.egerrit.ui.editors.model.GerritCommentAnnotation;
 import org.eclipse.jface.text.BadLocationException;
@@ -497,12 +498,12 @@ public class CommentExtractorTest {
 	}
 
 	private GerritCommentAnnotation createGerritComment(String comment, int line) {
-		CommentInfo info = new CommentInfo();
+		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
 		info.setId("ID-" + comment);
 		info.setLine(line);
 		info.setMessage(comment);
 		if (comment.startsWith("author") || comment.startsWith("done")) {
-			AccountInfo author = new AccountInfo();
+			AccountInfo author = ModelFactory.eINSTANCE.createAccountInfo();
 			info.setAuthor(author);
 		}
 		info.setUpdated("2015-09-23 16:05:16.000000000");

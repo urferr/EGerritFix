@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.SuggestReviewerInfo;
+import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.junit.Test;
 
 /**

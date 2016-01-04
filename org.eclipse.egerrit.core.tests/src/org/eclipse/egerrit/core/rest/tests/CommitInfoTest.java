@@ -21,8 +21,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.GitPersonInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.GitPersonInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +35,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.CommitInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.CommitInfo}
  *
  * @since 1.0
  */
@@ -48,9 +50,9 @@ public class CommitInfoTest {
 
 	private static final List<CommitInfo> PARENTS = new ArrayList<CommitInfo>();
 
-	private static final GitPersonInfo AUTHOR = new GitPersonInfo();
+	private static final GitPersonInfo AUTHOR = ModelFactory.eINSTANCE.createGitPersonInfo();
 
-	private static final GitPersonInfo COMMITTER = new GitPersonInfo();
+	private static final GitPersonInfo COMMITTER = ModelFactory.eINSTANCE.createGitPersonInfo();
 
 	private static final String SUBJECT = "gerrit";
 
@@ -86,7 +88,7 @@ public class CommitInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -111,7 +113,7 @@ public class CommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getCommit()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getCommit()}.
 	 */
 	@Test
 	public void testGetCommit() {
@@ -128,7 +130,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getParents()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getParents()}.
 	 */
 	@Test
 	public void testGetParents() {
@@ -146,7 +148,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getAuthor()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getAuthor()}.
 	 */
 	@Test
 	public void testGetAuthor() {
@@ -164,7 +166,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getCommitter()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getCommitter()}.
 	 */
 	@Test
 	public void testGetCommitter() {
@@ -182,7 +184,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getSubject()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getSubject()}.
 	 */
 	@Test
 	public void testGetSubject() {
@@ -199,7 +201,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#getMessage()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#getMessage()}.
 	 */
 	@Test
 	public void testGetMessage() {
@@ -220,7 +222,7 @@ public class CommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -237,7 +239,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -259,7 +261,7 @@ public class CommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -271,7 +273,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -279,7 +281,7 @@ public class CommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommitInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommitInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

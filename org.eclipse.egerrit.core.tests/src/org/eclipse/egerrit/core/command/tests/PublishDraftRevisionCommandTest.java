@@ -19,7 +19,8 @@ import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.core.command.PublishDraftRevisionCommand}
@@ -32,7 +33,7 @@ public class PublishDraftRevisionCommandTest extends CommandTestWithSimpleReview
 	public void testCall() {
 		// create a comment
 		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
-		CommentInfo commentInfo = new CommentInfo();
+		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		commentInfo.setLine(1);
 		commentInfo.setMessage("This is a test comment");
 		commentInfo.setPath(filename);

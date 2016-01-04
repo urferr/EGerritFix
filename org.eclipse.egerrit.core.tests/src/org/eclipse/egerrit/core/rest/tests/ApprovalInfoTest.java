@@ -19,7 +19,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +30,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ApprovalInfo}
- * 
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ApprovalInfo}
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -73,7 +74,7 @@ public class ApprovalInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -91,7 +92,7 @@ public class ApprovalInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo#getValue()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo#getValue()}.
 	 */
 	@Test
 	public void testGetValue() {
@@ -99,12 +100,12 @@ public class ApprovalInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fApprovalInfo = gson.fromJson(reader, ApprovalInfo.class);
 
-		assertEquals("Wrong value", Integer.valueOf(VALUE), fApprovalInfo.getValue());
+		assertEquals("Wrong value", VALUE, fApprovalInfo.getValue());
 		assertNull("Wrong date", fApprovalInfo.getDate());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo#getDate()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo#getDate()}.
 	 */
 	@Test
 	public void testGetDate() {
@@ -121,7 +122,7 @@ public class ApprovalInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -129,12 +130,12 @@ public class ApprovalInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fApprovalInfo = gson.fromJson(reader, ApprovalInfo.class);
 
-		assertEquals("Wrong value", Integer.valueOf(VALUE), fApprovalInfo.getValue());
+		assertEquals("Wrong value", VALUE, fApprovalInfo.getValue());
 		assertEquals("Wrong date", DATE, fApprovalInfo.getDate());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -143,7 +144,7 @@ public class ApprovalInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fApprovalInfo = gson.fromJson(reader, ApprovalInfo.class);
 
-		assertEquals("Wrong value", Integer.valueOf(VALUE), fApprovalInfo.getValue());
+		assertEquals("Wrong value", VALUE, fApprovalInfo.getValue());
 		assertEquals("Wrong date", DATE, fApprovalInfo.getDate());
 	}
 
@@ -152,7 +153,7 @@ public class ApprovalInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -164,7 +165,7 @@ public class ApprovalInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -172,7 +173,7 @@ public class ApprovalInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ApprovalInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ApprovalInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

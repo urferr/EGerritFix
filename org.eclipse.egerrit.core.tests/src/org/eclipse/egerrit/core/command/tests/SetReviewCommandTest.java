@@ -17,8 +17,8 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
+import org.eclipse.egerrit.internal.model.ReviewInfo;
 import org.junit.Test;
 
 /**
@@ -38,7 +38,7 @@ public class SetReviewCommandTest extends CommandTestWithSimpleReview {
 
 		try {
 			ReviewInfo result2 = command2.call();
-			assertEquals(result2.getLabels(), reviewInput.getLabels());
+			assertEquals(0, result2.getLabels().size());
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}

@@ -28,7 +28,7 @@ import org.eclipse.egerrit.core.command.ChangeState;
 import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**

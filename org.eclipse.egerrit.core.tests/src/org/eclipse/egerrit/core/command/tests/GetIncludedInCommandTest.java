@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.IncludedInInfo;
+import org.eclipse.egerrit.internal.model.IncludedInInfo;
 import org.junit.Test;
 
 /**

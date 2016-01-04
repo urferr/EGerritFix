@@ -15,7 +15,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
+import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 
 /**
  * The command GET /changes/{change-id}/revisions/{revision-id}/related

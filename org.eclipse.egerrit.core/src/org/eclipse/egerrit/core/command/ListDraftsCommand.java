@@ -17,7 +17,7 @@ import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 
 import com.google.gson.reflect.TypeToken;
 

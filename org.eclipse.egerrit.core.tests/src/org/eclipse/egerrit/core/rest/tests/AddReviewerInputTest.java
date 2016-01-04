@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.junit.After;
 import org.junit.Before;
@@ -72,7 +73,7 @@ public class AddReviewerInputTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 

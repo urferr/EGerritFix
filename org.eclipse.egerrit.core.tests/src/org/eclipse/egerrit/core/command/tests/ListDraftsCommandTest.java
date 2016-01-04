@@ -21,7 +21,8 @@ import java.util.Map;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
@@ -34,9 +35,9 @@ public class ListDraftsCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
 		// create a comment
-		final String commentMessage = "This is a test comment"; 
+		final String commentMessage = "This is a test comment";
 		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
-		CommentInfo commentInfo = new CommentInfo();
+		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		commentInfo.setLine(2);
 		commentInfo.setMessage(commentMessage);
 		commentInfo.setPath(filename);

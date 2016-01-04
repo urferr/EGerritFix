@@ -14,7 +14,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.CommitInfo;
+import org.eclipse.egerrit.internal.model.CommitInfo;
 
 /**
  * The command GET /changes/{change-id}/revisions/{revision-id}/commit

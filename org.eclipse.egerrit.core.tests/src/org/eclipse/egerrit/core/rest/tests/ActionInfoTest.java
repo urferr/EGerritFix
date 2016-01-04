@@ -21,7 +21,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.ActionInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ActionInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ActionInfo}
  * 
  * @since 1.0
  */
@@ -80,7 +81,7 @@ public class ActionInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -100,7 +101,7 @@ public class ActionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#getMethod()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#getMethod()}.
 	 */
 	@Test
 	public void testGetMethod() {
@@ -115,7 +116,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#getLabel()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#getLabel()}.
 	 */
 	@Test
 	public void testGetLabel() {
@@ -130,7 +131,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#getTitle()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#getTitle()}.
 	 */
 	@Test
 	public void testGetTitle() {
@@ -145,7 +146,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#isEnabled()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#isEnabled()}.
 	 */
 	@Test
 	public void testIsEnabled() {
@@ -164,7 +165,7 @@ public class ActionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -179,7 +180,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -199,7 +200,7 @@ public class ActionInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -211,7 +212,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#equals(java.lang.Object)}.
 	 */
 //    @Test
 	public void testEqualsObject() {
@@ -219,7 +220,7 @@ public class ActionInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ActionInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ActionInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

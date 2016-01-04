@@ -14,7 +14,8 @@ package org.eclipse.egerrit.ui.editors.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.IDocument;
@@ -263,7 +264,7 @@ public class CommentExtractor {
 
 	//Create a comment as a reply of a given one
 	private CommentInfo newComment(String comment, GerritCommentAnnotation replyTo) {
-		CommentInfo info = new CommentInfo();
+		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
 		info.setLine(replyTo.getComment().getLine());
 		info.setMessage(comment);
 		info.setPath(replyTo.getComment().getPath());
@@ -273,7 +274,7 @@ public class CommentExtractor {
 
 	//Create a new comment
 	private CommentInfo newComment(String comment, int line) {
-		CommentInfo info = new CommentInfo();
+		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
 		info.setLine(line);
 		info.setMessage(comment);
 		return info;

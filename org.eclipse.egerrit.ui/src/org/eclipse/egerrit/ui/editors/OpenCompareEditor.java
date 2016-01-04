@@ -19,8 +19,8 @@ import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.jgit.lib.Repository;
@@ -118,7 +118,7 @@ public class OpenCompareEditor {
 		if (workTree == null) {
 			return null;
 		}
-		File potentialFile = new File(workTree, fileInfo.getold_path());
+		File potentialFile = new File(workTree, fileInfo.getOld_path());
 		if (!potentialFile.exists()) {
 			return null;
 		}

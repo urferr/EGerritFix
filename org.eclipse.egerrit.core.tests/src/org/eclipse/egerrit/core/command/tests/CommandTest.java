@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 
 import org.apache.http.HttpHost;
 import org.eclipse.egerrit.core.GerritClient;
@@ -24,9 +25,13 @@ import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritFactory;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
@@ -55,6 +60,11 @@ public abstract class CommandTest {
 
 	@Before
 	public void setUp() throws Exception {
+		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
+		EStructuralFeature l = ci.eClass().getEStructuralFeature("labels");
+		HashMap<String, LabelInfo> labels = new HashMap<String, LabelInfo>();
+		labels.put("a", ModelFactory.eINSTANCE.createLabelInfo());
+		ci.eSet(ModelPackage.eINSTANCE.getChangeInfo_Labels(), labels);
 		GerritServerInformation serverInfo = new GerritServerInformation(
 				new URI(Common.SCHEME, null, Common.HOST, Common.PORT, Common.PATH, null, null).toASCIIString(),
 				"Test server"); //$NON-NLS-1$

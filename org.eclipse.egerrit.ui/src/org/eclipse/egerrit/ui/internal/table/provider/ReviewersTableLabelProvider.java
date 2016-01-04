@@ -13,7 +13,7 @@
 package org.eclipse.egerrit.ui.internal.table.provider;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.ReviewerInfo;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
 
 /**
  * This class implements the File table UI label provider.
@@ -51,9 +51,9 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 			case 0:
 				return "x"; //$NON-NLS-1$
 			case 1:
-				return reviewerInfo.getName();
+				return super.getColumnText(aObj, aIndex);
 			case 2:
-				return reviewerInfo.getEmail();
+				return super.getColumnText(aObj, aIndex);
 			case 3:
 				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Code-Review")) {
 					return reviewerInfo.getApprovals().get("Code-Review");

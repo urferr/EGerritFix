@@ -14,7 +14,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.SuggestReviewerInfo;
+import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 
 /**
  * The command: GET /changes/{change-id}/suggest_reviewers?q=Joh&n=5

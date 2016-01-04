@@ -25,8 +25,8 @@ import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.AnnotationModel;
@@ -101,7 +101,7 @@ public class PatchSetCompareItem extends Document
 
 	@Override
 	public String getName() {
-		return "Patch Set " + fileInfo.getContainingRevisionInfo().getNumber() + ": " //$NON-NLS-1$ //$NON-NLS-2$
+		return "Patch Set " + fileInfo.getContainedIn().get_number() + ": " //$NON-NLS-1$ //$NON-NLS-2$
 				+ GerritCompareHelper.extractFilename(fileName);
 	}
 
@@ -123,8 +123,7 @@ public class PatchSetCompareItem extends Document
 				+ extractor.getRemovedComments().size() + " modifications: " + extractor.getModifiedComments().size()); //$NON-NLS-1$
 		extractor.extractComments(originalDocument, originalComments, this, editableComments);
 		for (CommentInfo newComment : extractor.getAddedComments()) {
-			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id,
-					fileInfo.getContainingRevisionInfo().getId());
+			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id, fileInfo.getContainedIn().getId());
 			publishDraft.setCommandInput(newComment);
 			newComment.setPath(fileName);
 			try {
@@ -138,7 +137,7 @@ public class PatchSetCompareItem extends Document
 			}
 		}
 		for (CommentInfo deletedComment : extractor.getRemovedComments()) {
-			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(change_id, fileInfo.getContainingRevisionInfo().getId(),
+			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(change_id, fileInfo.getContainedIn().getId(),
 					deletedComment.getId());
 			try {
 				logger.debug("Deleting comment: " + deletedComment);
@@ -151,8 +150,8 @@ public class PatchSetCompareItem extends Document
 			}
 		}
 		for (CommentInfo modifiedComment : extractor.getModifiedComments()) {
-			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(change_id,
-					fileInfo.getContainingRevisionInfo().getId(), modifiedComment.getId());
+			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(change_id, fileInfo.getContainedIn().getId(),
+					modifiedComment.getId());
 			modifyDraft.setCommandInput(modifiedComment);
 			try {
 				logger.debug("Modifying comment: " + modifiedComment);

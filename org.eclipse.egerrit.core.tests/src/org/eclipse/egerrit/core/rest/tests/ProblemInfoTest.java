@@ -19,7 +19,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.ProblemInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ProblemInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ProblemInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ProblemInfo}
  * 
  * @since 1.0
  */
@@ -76,7 +77,7 @@ public class ProblemInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -95,7 +96,7 @@ public class ProblemInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#getMessage()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#getMessage()}.
 	 */
 	@Test
 	public void testGetMessage() {
@@ -109,7 +110,7 @@ public class ProblemInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#getStatus()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#getStatus()}.
 	 */
 	@Test
 	public void testGetStatus() {
@@ -123,7 +124,7 @@ public class ProblemInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#getOutcome()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#getOutcome()}.
 	 */
 	@Test
 	public void testGetOutcome() {
@@ -141,7 +142,7 @@ public class ProblemInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -155,7 +156,7 @@ public class ProblemInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -174,7 +175,7 @@ public class ProblemInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -186,7 +187,7 @@ public class ProblemInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#equals(java.lang.Object)}.
 	 */
 //  @Test
 	public void testEqualsObject() {
@@ -194,7 +195,7 @@ public class ProblemInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

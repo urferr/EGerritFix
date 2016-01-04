@@ -17,8 +17,8 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.BranchInfo;
 import org.eclipse.egerrit.core.tests.Common;
+import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.junit.Test;
 
 /**

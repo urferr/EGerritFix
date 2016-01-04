@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.CommentInfo;
-import org.eclipse.egerrit.core.utils.DisplayFileInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -85,8 +85,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	public String getColumnText(Object aObj, int aIndex) {
 		// GerritPlugin.Ftracer.traceWarning("getColumnText object: " + aObj
 		// + "\tcolumn: " + aIndex);
-		if (aObj instanceof DisplayFileInfo) {
-			DisplayFileInfo fileInfo = (DisplayFileInfo) aObj;
+		if (aObj instanceof FileInfo) {
+			FileInfo fileInfo = (FileInfo) aObj;
 			switch (aIndex) {
 			case 0:
 				return EMPTY_STRING;
@@ -94,7 +94,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 				return fileInfo.getStatus();
 			case 2:
 				if (nameFirst) {
-					String path = fileInfo.getold_path();
+					String path = fileInfo.getOld_path();
 					int index = path.lastIndexOf("/"); //$NON-NLS-1$
 					if (index != -1) {
 						String fileName = path.substring(index + 1);
@@ -106,7 +106,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					}
 
 				} else {
-					return fileInfo.getold_path();
+					return fileInfo.getOld_path();
 				}
 			case 3:
 				String ret = EMPTY_STRING;
@@ -117,7 +117,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					int newCommentCount = 0;
 					Iterator<CommentInfo> iterator = fileInfo.getNewComments().iterator();
 					String currentUpdate = EMPTY_STRING;
-					String currentUser = fileInfo.getCurrentUser();
+					//EMF to fix
+					String currentUser = "";//fileInfo.getCurrentUser();
 					while (iterator.hasNext()) {
 						CommentInfo aComment = iterator.next();
 						String authorName = aComment.getAuthor().getUsername();
@@ -157,10 +158,10 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 			case 4:
 				StringBuilder sb = new StringBuilder();
 				sb.append('+');
-				sb.append(Integer.toString(fileInfo.getLinesInserted()));
+				sb.append(Integer.toString(fileInfo.getLines_inserted()));
 				sb.append('/');
 				sb.append('-');
-				sb.append(Integer.toString(fileInfo.getLinesDeleted()));
+				sb.append(Integer.toString(fileInfo.getLines_deleted()));
 				return sb.toString();
 			default:
 				return EMPTY_STRING;
@@ -197,10 +198,10 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	public Image getColumnImage(Object aObj, int aIndex) {
 		Image image = null;
 		String value = null;
-		if (aObj instanceof DisplayFileInfo) {
+		if (aObj instanceof FileInfo) {
 			switch (aIndex) {
 			case 0:
-				Boolean isReviewed = ((DisplayFileInfo) aObj).getReviewed();
+				Boolean isReviewed = ((FileInfo) aObj).isReviewed();
 				value = isReviewed.toString(); // Needed for the sorter
 				if (null != value && !value.equals(EMPTY_STRING)) {
 					return getReviewedStateImage(Boolean.valueOf(value.toLowerCase()));

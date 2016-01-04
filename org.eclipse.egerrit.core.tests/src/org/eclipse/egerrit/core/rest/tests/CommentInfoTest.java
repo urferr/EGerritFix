@@ -18,9 +18,11 @@ import static org.junit.Assert.assertNull;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.CommentInfo;
-import org.eclipse.egerrit.core.rest.CommentRange;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentRange;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.CommentInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.CommentInfo}
  *
  * @since 1.0
  */
@@ -49,7 +51,7 @@ public class CommentInfoTest {
 
 	private static final String LINE = "12";
 
-	private static final CommentRange RANGE = new CommentRange();
+	private static final CommentRange RANGE = ModelFactory.eINSTANCE.createCommentRange();
 
 	private static final String INREPLYTO = "abc";
 
@@ -57,7 +59,7 @@ public class CommentInfoTest {
 
 	private static final String UPDATED = "2015-06-12 01:07:26.225000000";
 
-	private static final AccountInfo AUTHOR = new AccountInfo();;
+	private static final AccountInfo AUTHOR = ModelFactory.eINSTANCE.createAccountInfo();
 
 	private static final int HASH_CODE = 359458368;
 
@@ -90,7 +92,7 @@ public class CommentInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -118,7 +120,7 @@ public class CommentInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getId()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getId()}.
 	 */
 	@Test
 	public void testGetId() {
@@ -139,7 +141,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getPath()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getPath()}.
 	 */
 	@Test
 	public void testGetPath() {
@@ -160,7 +162,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getSide()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getSide()}.
 	 */
 	@Test
 	public void testGetSide() {
@@ -180,7 +182,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getLine()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getLine()}.
 	 */
 	@Test
 	public void testGetLine() {
@@ -201,7 +203,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getRange()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getRange()}.
 	 */
 	@Test
 	public void testGetRange() {
@@ -223,7 +225,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getInReplyTo()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getInReplyTo()}.
 	 */
 	@Test
 	public void testGetInreplyTo() {
@@ -243,7 +245,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getMessage()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getMessage()}.
 	 */
 	@Test
 	public void testGetMessage() {
@@ -263,7 +265,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getUpdated()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getUpdated()}.
 	 */
 	@Test
 	public void testGetUpdated() {
@@ -283,7 +285,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#getAuthor()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#getAuthor()}.
 	 */
 	@Test
 	public void testGetAuthor() {
@@ -308,7 +310,7 @@ public class CommentInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -329,7 +331,7 @@ public class CommentInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -355,7 +357,7 @@ public class CommentInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -375,7 +377,7 @@ public class CommentInfoTest {
 //	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ActionInfo;
+import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.junit.Test;
 
 /**

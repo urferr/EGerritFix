@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.HttpHost;
@@ -27,13 +26,14 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.GerritCredentials;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.GerritServerInformation;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.model.GerritCompareInput;
 import org.eclipse.egerrit.ui.editors.model.PatchSetCompareItem;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -165,7 +165,7 @@ public class OpenCompareEditorTest {
 	private GerritCompareInput getCompareInputFor(String changeId) throws Exception {
 		ChangeInfo changeInfo = gitAccess.getChange(changeId);
 		OpenCompareEditorForTest compareHelper = new OpenCompareEditorForTest(gitAccess.getGerrit(), changeInfo);
-		Map<String, RevisionInfo> revisions = changeInfo.getRevisions();
+		EMap<String, RevisionInfo> revisions = changeInfo.getRevisions();
 		Entry<String, RevisionInfo> theRevision = revisions.entrySet().iterator().next();
 		compareHelper.compareAgainstWorkspace(theRevision.getValue().getFiles().values().iterator().next(), null);
 		return compareHelper.getCompareInput();

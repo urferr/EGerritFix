@@ -20,7 +20,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.FileInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.FileInfo}
  *
  * @since 1.0
  */
@@ -81,7 +82,7 @@ public class FileInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -102,7 +103,7 @@ public class FileInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getStatus()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#getStatus()}.
 	 */
 	@Test
 	public void testGetStatus() {
@@ -112,13 +113,13 @@ public class FileInfoTest {
 
 		assertEquals("Wrong status", STATUS, fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
-		assertNull("Wrong old_path", fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
+		assertNull("Wrong old_path", fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLines_deleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#isBinary()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#isBinary()} .
 	 */
 	@Test
 	public void testIsBinary() {
@@ -128,13 +129,13 @@ public class FileInfoTest {
 
 		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
-		assertNull("Wrong old_path", fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
+		assertNull("Wrong old_path", fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLines_deleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getOld_Path()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#getOld_path()}.
 	 */
 	@Test
 	public void testGetOldPath() {
@@ -144,41 +145,41 @@ public class FileInfoTest {
 
 		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
-		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
+		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLines_deleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesInserted()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#getLines_inserted()}.
 	 */
 	@Test
-	public void testGetLinesInserted() {
+	public void testgetLines_inserted() {
 		json.addProperty("lines_inserted", LINES_INSERTED);
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
 		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
-		assertNull("Wrong old_path", fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLinesDeleted());
+		assertNull("Wrong old_path", fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", 0, fFileInfo.getLines_deleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#getLinesDeleted()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#getLines_deleted()}.
 	 */
 	@Test
-	public void testGetLinesDeleted() {
+	public void testgetLines_deleted() {
 		json.addProperty("lines_deleted", LINES_DELETED);
 		Reader reader = new StringReader(json.toString());
 		fFileInfo = gson.fromJson(reader, FileInfo.class);
 
 		assertEquals("Wrong status", "M", fFileInfo.getStatus());
 		assertFalse("Wrong binary", fFileInfo.isBinary());
-		assertNull("Wrong old_path", fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertNull("Wrong old_path", fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", 0, fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLines_deleted());
 	}
 
 	// ------------------------------------------------------------------------
@@ -186,7 +187,7 @@ public class FileInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -196,13 +197,13 @@ public class FileInfoTest {
 
 		assertEquals("Wrong status", STATUS, fFileInfo.getStatus());
 		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
-		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLines_deleted());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -213,9 +214,9 @@ public class FileInfoTest {
 
 		assertEquals("Wrong status", STATUS, fFileInfo.getStatus());
 		assertEquals("Wrong binary", (boolean) Boolean.valueOf(BINARY), fFileInfo.isBinary());
-		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getold_path());
-		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLinesInserted());
-		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLinesDeleted());
+		assertEquals("Wrong old_path", OLD_PATH, fFileInfo.getOld_path());
+		assertEquals("Wrong lines_inserted", (int) Integer.valueOf(LINES_INSERTED), fFileInfo.getLines_inserted());
+		assertEquals("Wrong lines_deleted", (int) Integer.valueOf(LINES_DELETED), fFileInfo.getLines_deleted());
 	}
 
 	// ------------------------------------------------------------------------
@@ -223,7 +224,7 @@ public class FileInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -235,7 +236,7 @@ public class FileInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -243,7 +244,7 @@ public class FileInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FileInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FileInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

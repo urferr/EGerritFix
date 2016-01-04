@@ -15,7 +15,7 @@ package org.eclipse.egerrit.core.command;
 import org.apache.http.client.methods.HttpPost;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.rest.AbandonInput;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * The command: POST /changes/{change-id}/abandon/

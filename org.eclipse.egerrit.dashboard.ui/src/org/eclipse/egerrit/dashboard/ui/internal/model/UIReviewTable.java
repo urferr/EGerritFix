@@ -13,8 +13,8 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
@@ -57,7 +57,7 @@ public class UIReviewTable {
 
 	}
 
-	// ------------------------------------------------------------------------
+	// --------------------ReviewTableContentProvider----------------------------------------------------
 	// Methods
 	// ------------------------------------------------------------------------
 

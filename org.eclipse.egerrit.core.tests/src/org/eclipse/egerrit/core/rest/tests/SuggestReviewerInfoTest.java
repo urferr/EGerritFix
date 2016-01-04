@@ -18,9 +18,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.GroupBaseInfo;
-import org.eclipse.egerrit.core.rest.SuggestReviewerInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.GroupBaseInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo}
  *
  * @since 1.0
  */
@@ -41,9 +43,9 @@ public class SuggestReviewerInfoTest {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private static AccountInfo ACCOUNT = new AccountInfo();
+	private static AccountInfo ACCOUNT = ModelFactory.eINSTANCE.createAccountInfo();
 
-	private static GroupBaseInfo GROUP = new GroupBaseInfo();
+	private static GroupBaseInfo GROUP = ModelFactory.eINSTANCE.createGroupBaseInfo();
 
 	private static final int HASH_CODE = 27707552;
 
@@ -74,7 +76,7 @@ public class SuggestReviewerInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -95,7 +97,7 @@ public class SuggestReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo#getAccount()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo#getAccount()}.
 	 */
 	@Test
 	public void testGetAccount() {
@@ -109,7 +111,7 @@ public class SuggestReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo#getGroup()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo#getGroup()} .
 	 */
 	@Test
 	public void testGetGroup() {
@@ -126,7 +128,7 @@ public class SuggestReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -140,7 +142,7 @@ public class SuggestReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -159,7 +161,7 @@ public class SuggestReviewerInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -171,7 +173,7 @@ public class SuggestReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -183,7 +185,7 @@ public class SuggestReviewerInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SuggestReviewerInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

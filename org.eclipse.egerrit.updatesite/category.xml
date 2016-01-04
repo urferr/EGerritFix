@@ -3,5 +3,8 @@
    <feature url="features/org.eclipse.egerrit.feature_0.3.0.qualifier.jar" id="org.eclipse.egerrit.feature" version="0.3.0.qualifier">
       <category name="org.eclipse.egerrit"/>
    </feature>
+   <feature url="features/org.eclipse.egerrit.feature.source_0.3.0.qualifier.jar" id="org.eclipse.egerrit.feature.source" version="0.3.0.qualifier">
+      <category name="org.eclipse.egerrit"/>
+   </feature>
    <category-def name="org.eclipse.egerrit" label="EGerrit"/>
 </site>

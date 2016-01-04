@@ -20,8 +20,9 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
-import org.eclipse.egerrit.core.rest.RelatedChangesInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo;
+import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.RelatedChangesInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.RelatedChangesInfo}
  *
  * @since 1.0
  */
@@ -79,7 +80,7 @@ public class RelatedChangesInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -99,7 +100,7 @@ public class RelatedChangesInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getChanges()}.
 	 */
 	@Test
 	public void testGetChanges() {
@@ -116,7 +117,7 @@ public class RelatedChangesInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangesInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangesInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -133,7 +134,7 @@ public class RelatedChangesInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -144,7 +145,7 @@ public class RelatedChangesInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -152,7 +153,7 @@ public class RelatedChangesInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

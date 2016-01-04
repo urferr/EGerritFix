@@ -19,8 +19,10 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +32,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo}
- * 
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo}
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -43,13 +45,13 @@ public class ChangeMessageInfoTest {
 
 	private static final String ID = "10";
 
-	private static final AccountInfo AUTHOR = new AccountInfo();
+	private static final AccountInfo AUTHOR = ModelFactory.eINSTANCE.createAccountInfo();
 
 	private static final String DATE = "gerrit@gerrit.org";
 
 	private static final String MESSAGE = "gerrit";
 
-	private static final Integer REVISION_NUMBER = 3;
+	private static final int REVISION_NUMBER = 3;
 
 	private static final int HASH_CODE = -122151328;
 
@@ -81,7 +83,7 @@ public class ChangeMessageInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -103,7 +105,7 @@ public class ChangeMessageInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#getID()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getID()}.
 	 */
 	@Test
 	public void testGetID() {
@@ -111,15 +113,15 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertEquals("Wrong id", ID, fChangeMessageInfo.getID());
+		assertEquals("Wrong id", ID, fChangeMessageInfo.getId());
 		assertNull("Wrong author", fChangeMessageInfo.getAuthor());
 		assertNull("Wrong date", fChangeMessageInfo.getDate());
 		assertNull("Wrong message", fChangeMessageInfo.getMessage());
-		assertNull("Wrong _revision_number", fChangeMessageInfo.getRevisionNumber());
+		assertNull("Wrong _revision_number", fChangeMessageInfo.get_revision_number());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#getAuthor()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getAuthor()}.
 	 */
 	@Test
 	public void testGetAuthor() {
@@ -128,15 +130,15 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertNull("Wrong id", fChangeMessageInfo.getID());
+		assertNull("Wrong id", fChangeMessageInfo.getId());
 		assertEquals("Wrong author", AUTHOR, fChangeMessageInfo.getAuthor());
 		assertNull("Wrong date", fChangeMessageInfo.getDate());
 		assertNull("Wrong message", fChangeMessageInfo.getMessage());
-		assertNull("Wrong _revision_number", fChangeMessageInfo.getRevisionNumber());
+		assertNull("Wrong _revision_number", fChangeMessageInfo.get_revision_number());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#getDate()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getDate()}.
 	 */
 	@Test
 	public void testGetDate() {
@@ -144,15 +146,15 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertNull("Wrong id", fChangeMessageInfo.getID());
+		assertNull("Wrong id", fChangeMessageInfo.getId());
 		assertNull("Wrong author", fChangeMessageInfo.getAuthor());
 		assertEquals("Wrong date", DATE, fChangeMessageInfo.getDate());
 		assertNull("Wrong message", fChangeMessageInfo.getMessage());
-		assertNull("Wrong _revision_number", fChangeMessageInfo.getRevisionNumber());
+		assertNull("Wrong _revision_number", fChangeMessageInfo.get_revision_number());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#getMessage()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getMessage()}.
 	 */
 	@Test
 	public void testGetMessage() {
@@ -160,15 +162,15 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertNull("Wrong id", fChangeMessageInfo.getID());
+		assertNull("Wrong id", fChangeMessageInfo.getId());
 		assertNull("Wrong author", fChangeMessageInfo.getAuthor());
 		assertNull("Wrong date", fChangeMessageInfo.getDate());
 		assertEquals("Wrong message", MESSAGE, fChangeMessageInfo.getMessage());
-		assertNull("Wrong _revision_number", fChangeMessageInfo.getRevisionNumber());
+		assertNull("Wrong _revision_number", fChangeMessageInfo.get_revision_number());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#getRevisionNumber()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getRevisionNumber()}.
 	 */
 	@Test
 	public void testGetRevisionNumber() {
@@ -176,11 +178,11 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertNull("Wrong id", fChangeMessageInfo.getID());
+		assertNull("Wrong id", fChangeMessageInfo.getId());
 		assertNull("Wrong author", fChangeMessageInfo.getAuthor());
 		assertNull("Wrong date", fChangeMessageInfo.getDate());
 		assertNull("Wrong message", fChangeMessageInfo.getMessage());
-		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.getRevisionNumber());
+		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.get_revision_number());
 	}
 
 	// ------------------------------------------------------------------------
@@ -188,7 +190,7 @@ public class ChangeMessageInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -196,15 +198,15 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertEquals("Wrong id", ID, fChangeMessageInfo.getID());
+		assertEquals("Wrong id", ID, fChangeMessageInfo.getId());
 		assertEquals("Wrong author", AUTHOR, fChangeMessageInfo.getAuthor());
 		assertEquals("Wrong date", DATE, fChangeMessageInfo.getDate());
 		assertEquals("Wrong message", MESSAGE, fChangeMessageInfo.getMessage());
-		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.getRevisionNumber());
+		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.get_revision_number());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -213,11 +215,11 @@ public class ChangeMessageInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fChangeMessageInfo = gson.fromJson(reader, ChangeMessageInfo.class);
 
-		assertEquals("Wrong id", ID, fChangeMessageInfo.getID());
+		assertEquals("Wrong id", ID, fChangeMessageInfo.getId());
 		assertEquals("Wrong author", AUTHOR, fChangeMessageInfo.getAuthor());
 		assertEquals("Wrong date", DATE, fChangeMessageInfo.getDate());
 		assertEquals("Wrong message", MESSAGE, fChangeMessageInfo.getMessage());
-		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.getRevisionNumber());
+		assertEquals("Wrong _revision_number", REVISION_NUMBER, fChangeMessageInfo.get_revision_number());
 	}
 
 	// ------------------------------------------------------------------------
@@ -225,7 +227,7 @@ public class ChangeMessageInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -237,7 +239,7 @@ public class ChangeMessageInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -245,7 +247,7 @@ public class ChangeMessageInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeMessageInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

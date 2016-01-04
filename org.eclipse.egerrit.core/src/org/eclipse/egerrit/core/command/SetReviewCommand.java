@@ -14,8 +14,8 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpPost;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
+import org.eclipse.egerrit.internal.model.ReviewInfo;
 
 /**
  * The command: POST /changes/{change-id}/revisions/{revision-id}/review

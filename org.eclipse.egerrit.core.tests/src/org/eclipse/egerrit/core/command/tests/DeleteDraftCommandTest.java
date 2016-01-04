@@ -19,7 +19,8 @@ import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
@@ -35,7 +36,7 @@ public class DeleteDraftCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
 		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
-		CommentInfo commentInfo = new CommentInfo();
+		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		commentInfo.setLine(2);
 		commentInfo.setMessage("This is a test comment");
 		commentInfo.setPath(filename);
