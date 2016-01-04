@@ -12,12 +12,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.codec;bundle-version="1.6.0",
  com.google.gson;bundle-version="2.2.4",
  org.eclipse.equinox.security;bundle-version="1.1.100",
- org.slf4j.api;bundle-version="1.6.2"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ org.slf4j.api;bundle-version="1.6.2",
+ org.eclipse.egerrit.model;bundle-version="0.3.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.egerrit.core,
  org.eclipse.egerrit.core.command,
  org.eclipse.egerrit.core.exception,
- org.eclipse.egerrit.core.model,
  org.eclipse.egerrit.core.rest,
  org.eclipse.egerrit.core.utils
+

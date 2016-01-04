@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.BranchInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.BranchInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.BranchInfo}
  *
  * @since 1.0
  */
@@ -75,7 +76,7 @@ public class BranchInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -95,7 +96,7 @@ public class BranchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#getRef()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#getRef()}.
 	 */
 	@Test
 	public void testGetRef() {
@@ -108,7 +109,7 @@ public class BranchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#getrevision()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#getrevision()} .
 	 */
 	@Test
 	public void testGetRevision() {
@@ -120,7 +121,7 @@ public class BranchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#canDelete()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#canDelete()}.
 	 */
 	@Test
 	public void testCanDelete() {
@@ -136,7 +137,7 @@ public class BranchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -155,7 +156,7 @@ public class BranchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -167,7 +168,7 @@ public class BranchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -179,7 +180,7 @@ public class BranchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.BranchInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.BranchInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

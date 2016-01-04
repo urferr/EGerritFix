@@ -49,7 +49,7 @@ import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on

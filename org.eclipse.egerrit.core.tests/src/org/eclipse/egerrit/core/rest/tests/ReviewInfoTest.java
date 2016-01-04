@@ -20,7 +20,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.ReviewInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.ReviewInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ReviewInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ReviewInfo}
  *
  * @since 1.0
  */
@@ -72,7 +73,7 @@ public class ReviewInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -90,7 +91,7 @@ public class ReviewInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo#getLabels()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo#getLabels()}.
 	 */
 	@Test
 	public void testGetLabels() {
@@ -108,7 +109,7 @@ public class ReviewInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -121,7 +122,7 @@ public class ReviewInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -138,7 +139,7 @@ public class ReviewInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -150,7 +151,7 @@ public class ReviewInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject() {
@@ -162,7 +163,7 @@ public class ReviewInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ReviewInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ReviewInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

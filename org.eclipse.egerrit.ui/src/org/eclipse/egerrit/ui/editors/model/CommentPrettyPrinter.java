@@ -13,8 +13,8 @@ package org.eclipse.egerrit.ui.editors.model;
 
 import java.text.SimpleDateFormat;
 
-import org.eclipse.egerrit.core.rest.CommentInfo;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 
 //Helper class to pretty print a comment
 public class CommentPrettyPrinter {

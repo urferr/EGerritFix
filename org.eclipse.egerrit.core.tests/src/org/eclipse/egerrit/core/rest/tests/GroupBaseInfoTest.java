@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.GroupBaseInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.GroupBaseInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo}
  *
  * @since 1.0
  */
@@ -74,7 +75,7 @@ public class GroupBaseInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -93,7 +94,7 @@ public class GroupBaseInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo#getId()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo#getId()}.
 	 */
 	@Test
 	public void testGetId() {
@@ -106,7 +107,7 @@ public class GroupBaseInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo#getName()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo#getName()}.
 	 */
 	@Test
 	public void testgetName() {
@@ -123,7 +124,7 @@ public class GroupBaseInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -137,7 +138,7 @@ public class GroupBaseInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -156,7 +157,7 @@ public class GroupBaseInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -168,7 +169,7 @@ public class GroupBaseInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -180,7 +181,7 @@ public class GroupBaseInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.GroupBaseInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.GroupBaseInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

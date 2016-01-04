@@ -14,7 +14,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.BranchInfo;
+import org.eclipse.egerrit.internal.model.BranchInfo;
 
 /**
  * The command GET /projects/{project-name}/branches/

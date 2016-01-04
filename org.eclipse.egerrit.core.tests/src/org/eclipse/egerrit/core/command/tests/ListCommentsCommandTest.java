@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.junit.Test;
 
 /**

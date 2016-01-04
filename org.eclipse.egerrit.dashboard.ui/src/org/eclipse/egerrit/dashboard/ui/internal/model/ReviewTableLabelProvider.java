@@ -16,9 +16,9 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import java.text.SimpleDateFormat;
 
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;

@@ -13,7 +13,7 @@
 package org.eclipse.egerrit.ui.editors.model;
 
 import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;

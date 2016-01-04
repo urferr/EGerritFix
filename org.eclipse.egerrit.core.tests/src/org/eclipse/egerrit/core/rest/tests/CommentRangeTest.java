@@ -17,7 +17,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.CommentRange;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.CommentRange;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.CommentRange}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.CommentRange}
  *
  * @since 1.0
  */
@@ -76,7 +77,7 @@ public class CommentRangeTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -98,7 +99,7 @@ public class CommentRangeTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#getStartLine()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#getStartLine()}.
 	 */
 	@Test
 	public void testGetStartLine() {
@@ -113,7 +114,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#getStartCharacter()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#getStartCharacter()}.
 	 */
 	@Test
 	public void testGetStartCharacter() {
@@ -128,7 +129,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#getEndLine()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#getEndLine()}.
 	 */
 	@Test
 	public void testGetEndLine() {
@@ -143,7 +144,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#getEndCharacter()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#getEndCharacter()}.
 	 */
 	@Test
 	public void testGetEndCharacter() {
@@ -162,7 +163,7 @@ public class CommentRangeTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -177,7 +178,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -197,7 +198,7 @@ public class CommentRangeTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -209,7 +210,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentInfo#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject() {
@@ -222,7 +223,7 @@ public class CommentRangeTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.CommentRange#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.CommentRange#toString()} .
 	 */
 	@Test
 	public void testToString() {

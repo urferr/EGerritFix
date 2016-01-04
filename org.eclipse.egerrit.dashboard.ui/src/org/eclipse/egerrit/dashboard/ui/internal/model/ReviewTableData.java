@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.egerrit.core.GerritServerInformation;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * This class implements the review table view information.
@@ -76,11 +76,12 @@ public class ReviewTableData {
 		return fQuery;
 	}
 
+	//EMF this should not be necessary
 	public void init(ChangeInfo[] reviews) {
 		if (reviews != null) {
 			for (ChangeInfo review : reviews) {
 				fReviewList.put(review.getId(), review);
-				review.setLabels(review.getLabels());
+				review.getLabels().addAll(review.getLabels());
 			}
 		}
 	}

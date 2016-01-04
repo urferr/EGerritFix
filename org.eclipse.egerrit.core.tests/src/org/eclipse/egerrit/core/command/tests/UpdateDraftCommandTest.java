@@ -18,7 +18,8 @@ import static org.junit.Assert.fail;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
@@ -32,7 +33,7 @@ public class UpdateDraftCommandTest extends CommandTestWithSimpleReview {
 	public void testCall() {
 		// Create a draft comment
 		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
-		CommentInfo commentInfo = new CommentInfo();
+		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		commentInfo.setLine(2);
 		commentInfo.setMessage("This is a test comment");
 		commentInfo.setPath(filename);
@@ -47,7 +48,7 @@ public class UpdateDraftCommandTest extends CommandTestWithSimpleReview {
 
 		// Run test
 		UpdateDraftCommand updCommand = fGerrit.updateDraftComments(change_id, commit_id, result.getId());
-		CommentInfo updCommentInfo = new CommentInfo();
+		CommentInfo updCommentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		updCommentInfo.setLine(2);
 		updCommentInfo.setMessage("This is an UPDATED test comment");
 		updCommentInfo.setPath(filename);

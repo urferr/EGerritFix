@@ -19,8 +19,10 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo}
  *
  * @since 1.0
  */
@@ -44,7 +46,7 @@ public class RelatedChangeAndCommitInfoTest {
 	// LABELS
 	private static final String CHANGE_ID = "change_id";
 
-	private static final CommitInfo COMMIT = new CommitInfo();
+	private static final CommitInfo COMMIT = ModelFactory.eINSTANCE.createCommitInfo();
 
 	private static final String _CHANGE_NUMBER = "_change_number";
 
@@ -85,7 +87,7 @@ public class RelatedChangeAndCommitInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -107,7 +109,7 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getChange_id()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getChange_id()} .
 	 */
 	@Test
 	public void testGetChangeId() {
@@ -123,7 +125,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#getCommit()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getCommit()} .
 	 */
 	@Test
 	public void testGetCommit() {
@@ -140,7 +142,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_change_number()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_change_number()} .
 	 */
 	@Test
 	public void testGet_Change_Number() {
@@ -156,7 +158,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_revision_number()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_revision_number()} .
 	 */
 	@Test
 	public void testGet_Revision_Number() {
@@ -172,7 +174,8 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#get_current_revision_number()} .
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_current_revision_number()} .
 	 */
 	@Test
 	public void testGet_Current_Revision_Number() {
@@ -193,7 +196,7 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -210,7 +213,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -232,7 +235,7 @@ public class RelatedChangeAndCommitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -243,7 +246,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#equals(java.lang.Object)} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -251,7 +254,7 @@ public class RelatedChangeAndCommitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.RelatedChangeAndCommitInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

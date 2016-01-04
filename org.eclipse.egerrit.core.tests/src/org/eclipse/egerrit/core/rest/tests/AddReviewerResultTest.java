@@ -19,8 +19,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
-import org.eclipse.egerrit.core.rest.ReviewInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.ReviewInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,9 +44,9 @@ public class AddReviewerResultTest {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private static final ReviewInfo REVIEWINFO1 = new ReviewInfo();
+	private static final ReviewInfo REVIEWINFO1 = ModelFactory.eINSTANCE.createReviewInfo();
 
-	private static final ReviewInfo REVIEWINFO2 = new ReviewInfo();
+	private static final ReviewInfo REVIEWINFO2 = ModelFactory.eINSTANCE.createReviewInfo();
 
 	private static final List<ReviewInfo> REVIEWERS = new ArrayList<ReviewInfo>();
 
@@ -77,7 +79,7 @@ public class AddReviewerResultTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 

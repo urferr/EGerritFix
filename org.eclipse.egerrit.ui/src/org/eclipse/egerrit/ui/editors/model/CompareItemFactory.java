@@ -29,8 +29,8 @@ import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
@@ -72,8 +72,7 @@ public class CompareItemFactory {
 			String fileContent = null;
 
 			// Create query
-			GetContentCommand command = gerrit.getContent(change_id, fileInfo.getContainingRevisionInfo().getId(),
-					filename);
+			GetContentCommand command = gerrit.getContent(change_id, fileInfo.getContainedIn().getId(), filename);
 
 			if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
 				try {
@@ -88,7 +87,7 @@ public class CompareItemFactory {
 				fileContent = ""; //$NON-NLS-1$
 			}
 			Map<String, ArrayList<CommentInfo>> comments = loadComments(gerrit, change_id,
-					fileInfo.getContainingRevisionInfo().getId());
+					fileInfo.getContainedIn().getId());
 			mergeCommentsInText(StringUtils.newStringUtf8(Base64.decodeBase64(fileContent)), comments.get(filename));
 
 		} finally

@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
 import org.eclipse.egerrit.core.rest.CherryPickInput;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.BranchInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.BranchInfo}
  *
  * @since 1.0
  */
@@ -73,7 +74,7 @@ public class CherryPickInputTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 

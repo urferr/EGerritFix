@@ -25,9 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +40,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.LabelInfo}
- * 
+ * Test suite for {@link org.eclipse.egerrit.internal.model.LabelInfo}
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -52,13 +54,13 @@ public class LabelInfoTest {
 	private static final boolean OPTIONAL = true;
 
 	// LABELS
-	private static final AccountInfo APPROVED = new AccountInfo();
+	private static final AccountInfo APPROVED = ModelFactory.eINSTANCE.createAccountInfo();
 
-	private static final AccountInfo REJECTED = new AccountInfo();
+	private static final AccountInfo REJECTED = ModelFactory.eINSTANCE.createAccountInfo();
 
-	private static final AccountInfo RECOMMENDED = new AccountInfo();
+	private static final AccountInfo RECOMMENDED = ModelFactory.eINSTANCE.createAccountInfo();
 
-	private static final AccountInfo DISLIKED = new AccountInfo();
+	private static final AccountInfo DISLIKED = ModelFactory.eINSTANCE.createAccountInfo();
 
 	private static final boolean BLOCKING = true;
 
@@ -103,7 +105,7 @@ public class LabelInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -135,7 +137,7 @@ public class LabelInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#isOptional()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#isOptional()}.
 	 */
 	@Test
 	public void testIsOptional() {
@@ -150,13 +152,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getApproved()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getApproved()}.
 	 */
 	@Test
 	public void testGetApproved() {
@@ -172,13 +174,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getRejected()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getRejected()}.
 	 */
 	@Test
 	public void testGetRejected() {
@@ -194,13 +196,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getRecommended()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getRecommended()}.
 	 */
 	@Test
 	public void testGetRecommended() {
@@ -216,13 +218,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getDisliked()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getDisliked()}.
 	 */
 	@Test
 	public void testGetDisliked() {
@@ -238,13 +240,13 @@ public class LabelInfoTest {
 		assertEquals("Wrong disliked", DISLIKED, fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#isBlocking()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#isBlocking()}.
 	 */
 	@Test
 	public void testIsBlocking() {
@@ -259,13 +261,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertTrue("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getValue()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getValue()}.
 	 */
 	@Test
 	public void testGetValue() {
@@ -280,16 +282,16 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertEquals("Wrong value", VALUE, fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getDefaultValue()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getDefault_value()}.
 	 */
 	@Test
-	public void testGetDefaultValue() {
+	public void testgetDefault_value() {
 		json.addProperty("default_value", DEFAULT_VALUE);
 		Reader reader = new StringReader(json.toString());
 		fLabelInfo = gson.fromJson(reader, LabelInfo.class);
@@ -301,13 +303,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefaultValue());
+		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getAll()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getAll()}.
 	 */
 	@Test
 	public void testGetAll() {
@@ -323,13 +325,13 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertEquals("Wrong all", ALL, fLabelInfo.getAll());
 		assertNull("Wrong values", fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#getValues()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#getValues()}.
 	 */
 	@Test
 	public void testGetValues() {
@@ -345,7 +347,7 @@ public class LabelInfoTest {
 		assertNull("Wrong disliked", fLabelInfo.getDisliked());
 		assertFalse("Wrong blocking", fLabelInfo.isBlocking());
 		assertNull("Wrong value", fLabelInfo.getValue());
-		assertNull("Wrong default_value", fLabelInfo.getDefaultValue());
+		assertNull("Wrong default_value", fLabelInfo.getDefault_value());
 		assertNull("Wrong all", fLabelInfo.getAll());
 		assertEquals("Wrong values", VALUES, fLabelInfo.getValues());
 	}
@@ -355,7 +357,7 @@ public class LabelInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -370,13 +372,13 @@ public class LabelInfoTest {
 		assertEquals("Wrong disliked", DISLIKED, fLabelInfo.getDisliked());
 		assertEquals("Wrong blocking", BLOCKING, fLabelInfo.isBlocking());
 		assertEquals("Wrong value", VALUE, fLabelInfo.getValue());
-		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefaultValue());
+		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefault_value());
 		assertEquals("Wrong all", ALL, fLabelInfo.getAll());
 		assertEquals("Wrong values", VALUES, fLabelInfo.getValues());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -392,7 +394,7 @@ public class LabelInfoTest {
 		assertEquals("Wrong disliked", DISLIKED, fLabelInfo.getDisliked());
 		assertEquals("Wrong blocking", BLOCKING, fLabelInfo.isBlocking());
 		assertEquals("Wrong value", VALUE, fLabelInfo.getValue());
-		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefaultValue());
+		assertEquals("Wrong default_value", DEFAULT_VALUE, fLabelInfo.getDefault_value());
 		assertEquals("Wrong all", ALL, fLabelInfo.getAll());
 		assertEquals("Wrong values", VALUES, fLabelInfo.getValues());
 	}
@@ -402,7 +404,7 @@ public class LabelInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -414,7 +416,7 @@ public class LabelInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -422,7 +424,7 @@ public class LabelInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.LabelInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.LabelInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

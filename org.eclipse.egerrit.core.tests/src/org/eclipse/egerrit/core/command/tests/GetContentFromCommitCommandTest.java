@@ -24,10 +24,10 @@ import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.core.tests.Common;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**

@@ -21,7 +21,8 @@ import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.FetchInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +32,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.FetchInfo}
- * 
+ * Test suite for {@link org.eclipse.egerrit.internal.model.FetchInfo}
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -88,7 +89,7 @@ public class FetchInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -111,7 +112,7 @@ public class FetchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#getURL()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#getURL()}.
 	 */
 	@Test
 	public void testGetURL() {
@@ -119,13 +120,13 @@ public class FetchInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFetchInfo = gson.fromJson(reader, FetchInfo.class);
 
-		assertEquals("Wrong url", URL, fFetchInfo.getURL());
+		assertEquals("Wrong url", URL, fFetchInfo.getUrl());
 		assertNull("Wrong ref", fFetchInfo.getRef());
 		assertNull("Wrong commands", fFetchInfo.getCommands());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#getRef()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#getRef()}.
 	 */
 	@Test
 	public void testGetRef() {
@@ -133,13 +134,13 @@ public class FetchInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFetchInfo = gson.fromJson(reader, FetchInfo.class);
 
-		assertNull("Wrong url", fFetchInfo.getURL());
+		assertNull("Wrong url", fFetchInfo.getUrl());
 		assertEquals("Wrong ref", REF, fFetchInfo.getRef());
 		assertNull("Wrong commands", fFetchInfo.getCommands());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#getCommands()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#getCommands()}.
 	 */
 	@Test
 	public void testGetCommands() {
@@ -151,7 +152,7 @@ public class FetchInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFetchInfo = gson.fromJson(reader, FetchInfo.class);
 
-		assertNull("Wrong url", fFetchInfo.getURL());
+		assertNull("Wrong url", fFetchInfo.getUrl());
 		assertNull("Wrong ref", fFetchInfo.getRef());
 		assertEquals("Wrong commands", COMMANDS, fFetchInfo.getCommands());
 	}
@@ -161,7 +162,7 @@ public class FetchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -169,13 +170,13 @@ public class FetchInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFetchInfo = gson.fromJson(reader, FetchInfo.class);
 
-		assertEquals("Wrong url", URL, fFetchInfo.getURL());
+		assertEquals("Wrong url", URL, fFetchInfo.getUrl());
 		assertEquals("Wrong ref", REF, fFetchInfo.getRef());
 		assertEquals("Wrong commands", COMMANDS, fFetchInfo.getCommands());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -184,7 +185,7 @@ public class FetchInfoTest {
 		Reader reader = new StringReader(json.toString());
 		fFetchInfo = gson.fromJson(reader, FetchInfo.class);
 
-		assertEquals("Wrong url", URL, fFetchInfo.getURL());
+		assertEquals("Wrong url", URL, fFetchInfo.getUrl());
 		assertEquals("Wrong ref", REF, fFetchInfo.getRef());
 		assertEquals("Wrong commands", COMMANDS, fFetchInfo.getCommands());
 	}
@@ -194,7 +195,7 @@ public class FetchInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -206,7 +207,7 @@ public class FetchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -214,7 +215,7 @@ public class FetchInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.FetchInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.FetchInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

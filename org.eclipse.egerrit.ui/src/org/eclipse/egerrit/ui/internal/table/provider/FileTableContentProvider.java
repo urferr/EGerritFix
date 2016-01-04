@@ -11,7 +11,7 @@
  ******************************************************************************/
 package org.eclipse.egerrit.ui.internal.table.provider;
 
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 

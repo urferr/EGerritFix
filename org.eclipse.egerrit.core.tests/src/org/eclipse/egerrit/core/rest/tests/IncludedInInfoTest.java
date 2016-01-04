@@ -20,7 +20,8 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.egerrit.core.rest.IncludedInInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.IncludedInInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.IncludedInInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.IncludedInInfo}
  *
  * @since 1.0
  */
@@ -75,7 +76,7 @@ public class IncludedInInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -95,7 +96,7 @@ public class IncludedInInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getBranches()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo#getBranches()}.
 	 */
 	@Test
 	public void testGetBranches() {
@@ -109,7 +110,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#getTags()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo#getTags()}.
 	 */
 	@Test
 	public void testGetTags() {
@@ -127,7 +128,7 @@ public class IncludedInInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -140,7 +141,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -158,7 +159,7 @@ public class IncludedInInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -170,7 +171,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.IncludedInInfo#equals(java.lang.Object)} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.IncludedInInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -178,7 +179,7 @@ public class IncludedInInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ProblemInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ProblemInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

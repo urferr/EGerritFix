@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -38,9 +35,7 @@ import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -63,19 +58,18 @@ import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AbandonInput;
-import org.eclipse.egerrit.core.rest.ActionInfo;
-import org.eclipse.egerrit.core.rest.BranchInfo;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.rest.CherryPickInput;
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
 import org.eclipse.egerrit.core.rest.RebaseInput;
 import org.eclipse.egerrit.core.rest.RestoreInput;
 import org.eclipse.egerrit.core.rest.RevertInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.rest.SubmitInput;
+import org.eclipse.egerrit.internal.model.ActionInfo;
+import org.eclipse.egerrit.internal.model.BranchInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
@@ -84,6 +78,9 @@ import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -155,9 +152,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	public FilesTabView filesTab = null;
 
-	private ChangeInfo fChangeInfo = new ChangeInfo();
-
-	private final CommitInfo fCommitInfo = new CommitInfo();
+	private ChangeInfo fChangeInfo;
 
 	private GerritClient fGerritClient = null;
 
@@ -219,7 +214,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		messageTab = new MessageTabView();
-		messageTab.create(fGerritClient, tabFolder, fCommitInfo, fChangeInfo);
+		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
 		messageTab.addObserver(this);
 
 		filesTab = new FilesTabView();
@@ -227,7 +222,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		filesTab.addObserver(this);
 
 		historytab = new HistoryTabView();
-		historytab.create(fGerritClient, tabFolder, fChangeInfo.getMessages());
+		historytab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		Composite compButton = buttonSection(parent);
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -241,13 +236,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		if (summaryTab != null) {
 			summaryTab.setTabs(fGerritClient, fChangeInfo);
 		}
-		filesTab.setChangeInfo(fChangeInfo);
 
 		buttonsEnablement();
-		if (messageTab != null) {
-			messageTab.setfMessageBuffer(fCommitInfo.getMessage());
-		}
-
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -353,7 +343,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						refreshStatus();
 					} else {
 						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
-								+ fChangeInfo.getCurrentRevision() + ".";
+								+ fChangeInfo.getCurrent_revision() + ".";
 						RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
 						RevertInput revertInput = new RevertInput();
 						revertInput.setMessage(revertMsg);
@@ -506,12 +496,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					}
 
 					final CherryPickDialog cherryPickDialog = new CherryPickDialog(fCherryPick.getParent().getShell(),
-							listBranchesRef, fCommitInfo.getMessage());
+							listBranchesRef, fChangeInfo.getRevision().getCommit().getMessage());
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							int ret = cherryPickDialog.open();
 							if (ret == IDialogConstants.OK_ID) {
-								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getCurrentRevision(),
+								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getCurrent_revision(),
 										cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
 							}
 						}
@@ -544,7 +534,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						public void widgetSelected(SelectionEvent e) {
 							// ignore
 							final ReplyDialog replyDialog = new ReplyDialog(itemReply.getParent().getShell(),
-									fChangeInfo.getPermittedLabels(), fChangeInfo.getLabels());
+									fChangeInfo.getPermitted_labels(), fChangeInfo.getLabels());
 							Display.getDefault().syncExec(new Runnable() {
 								public void run() {
 									int ret = replyDialog.open();
@@ -571,7 +561,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
-					String latestPatchSet = filesTab != null ? filesTab.getLatestPatchSet() : "";
+					//EMF not sure what the getLatestPatchSet represent
+					String latestPatchSet = "";//filesTab != null ? filesTab.getLatestPatchSet() : "";
 
 					//Test if we should allow the +2 button or not
 					//Condition:
@@ -744,7 +735,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param reviewInput
 	 */
 	private void postReply(ReviewInput reviewInput) {
-		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(), fChangeInfo.getCurrentRevision());
+		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(), fChangeInfo.getCurrent_revision());
 		reviewToEmit.setCommandInput(reviewInput);
 
 		try {
@@ -770,22 +761,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 */
 	private void setChangeInfo(GerritClient gerritClient, ChangeInfo element) {
 		fGerritClient = gerritClient;
-		fChangeInfo.reset();
-
-		//Fill the data structure
-		if (element != null) {
-			fChangeInfo.setNumber(element.get_number());
-			fChangeInfo.setId(element.getId());
-			fChangeInfo.setChange_id(element.getChange_id()); //Keep changeid since we are doing a copy
-			fChangeInfo.setStatus(element.getStatus());
-			fChangeInfo.setSubject(element.getSubject());
-			fChangeInfo.setProject(element.getProject());
-			fChangeInfo.setBranch(element.getBranch());
-			fChangeInfo.setUpdated(element.getUpdated());
-			fChangeInfo.setTopic(element.getTopic());
-			fChangeInfo.setLabels(element.getLabels());
-			fChangeInfo.setOwner(element.getOwner());
-		}
+		fChangeInfo = element;
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
@@ -805,13 +781,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private int findMaxPermitted(String label) {
 		int maxPermitted = 0;
-		String[] listPermitted = null;
-		Map<String, String[]> mapLabels = fChangeInfo.getPermittedLabels();
+		EList<String> listPermitted = null;
+		EMap<String, EList<String>> mapLabels = fChangeInfo.getPermitted_labels();
 		if (mapLabels != null) {
-			Iterator<Map.Entry<String, String[]>> iterator = mapLabels.entrySet().iterator();
+			Iterator<Entry<String, EList<String>>> iterator = mapLabels.entrySet().iterator();
 			//Get the structure having all the possible options
 			while (iterator.hasNext()) {
-				Entry<String, String[]> permittedlabel = iterator.next();
+				Entry<String, EList<String>> permittedlabel = iterator.next();
 				listPermitted = permittedlabel.getValue();
 				if (permittedlabel.getKey().compareTo(label) == 0) {
 					for (String element2 : listPermitted) {
@@ -884,7 +860,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private boolean canDeleteDraft() {
-		Map<String, ActionInfo> actions = getRevisionActions();
+		EMap<String, ActionInfo> actions = getRevisionActions();
 
 		if (actions != null) {
 			ActionInfo delete = actions.get("publish");
@@ -897,7 +873,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private boolean canSubmit() {
-		Map<String, ActionInfo> actions = getRevisionActions();
+		EMap<String, ActionInfo> actions = getRevisionActions();
 		if (actions != null) {
 			ActionInfo submit = actions.get(SUBMIT);
 
@@ -909,7 +885,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private boolean canRevert() {
-		Map<String, ActionInfo> actions = fChangeInfo.getActions();
+		EMap<String, ActionInfo> actions = fChangeInfo.getActions();
 		if (actions != null) {
 			ActionInfo revert = actions.get(REVERT);
 			if (revert != null) {
@@ -923,7 +899,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private boolean canRebase() {
-		Map<String, ActionInfo> actions = getRevisionActions();
+		EMap<String, ActionInfo> actions = getRevisionActions();
 		if (actions != null) {
 			ActionInfo rebase = actions.get(REBASE);
 
@@ -934,38 +910,32 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return false;
 	}
 
-	private Map<String, ActionInfo> getRevisionActions() {
+	//EMF this logic is weird...
+	private EMap<String, ActionInfo> getRevisionActions() {
 		//Test if we already have the info in the revision info structure, we should
-		Map<String, RevisionInfo> maprev = fChangeInfo.getRevisions();
+		EMap<String, RevisionInfo> maprev = fChangeInfo.getRevisions();
 		if (maprev != null) {
-
-			Set<Entry<String, RevisionInfo>> params = maprev.entrySet();
-			Map<String, ActionInfo> result = null;
-			for (Entry<String, RevisionInfo> entry : params) {
-				//Need to be on the latest revision to get the proper actions
-				if (entry.getValue().getId().equals(fChangeInfo.getCurrentRevision())) {
-					result = entry.getValue().getActions();
-				}
-			}
-			return result;
+			return maprev.get(fChangeInfo.getCurrent_revision()).getActions();
 		}
 
 		//Query if the action for a revision are not available yet Should not happen here
 		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getId(),
-				fChangeInfo.getCurrentRevision());
+				fChangeInfo.getCurrent_revision());
 
 		Map<String, ActionInfo> getRevisionActionsCmdResult = null;
 		try {
 			getRevisionActionsCmdResult = getRevisionActionsCmd.call();
+			fChangeInfo.getRevisions().get(fChangeInfo.getCurrent_revision()).eSet(
+					ModelPackage.Literals.REVISION_INFO__ACTIONS, getRevisionActionsCmdResult);
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
-		return getRevisionActionsCmdResult;
+		return fChangeInfo.getRevisions().get(fChangeInfo.getCurrent_revision()).getActions();
 	}
 
 	private void abandonrestoreButtonEnablement() {
 
-		Map<String, ActionInfo> actions = fChangeInfo.getActions();
+		EMap<String, ActionInfo> actions = fChangeInfo.getActions();
 		if (actions != null) {
 			ActionInfo abandon = actions.get(ABANDON);
 			ActionInfo restore = actions.get(RESTORE);
@@ -1002,66 +972,23 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		ChangeInfo res = queryMessageTab(gerritClient, id, new NullProgressMonitor());
 
 		if (res != null) {
-			fChangeInfo.setCurrent_revision(res.getCurrentRevision());
-
-			fChangeInfo.setLabels(res.getLabels());
-			fChangeInfo.setMessages(res.getMessages());
-			fChangeInfo.setPermittedLabels(res.getPermittedLabels());
+			fChangeInfo.setCurrent_revision(res.getCurrent_revision());
+			fChangeInfo.getLabels().clear();
+			fChangeInfo.getLabels().addAll(res.getLabels());
+			fChangeInfo.getMessages().clear();
+			fChangeInfo.getMessages().addAll(res.getMessages());
+			fChangeInfo.getPermitted_labels().clear();
+			fChangeInfo.getPermitted_labels().addAll(res.getPermitted_labels());
 			fChangeInfo.setStatus(res.getStatus());
 			fChangeInfo.setSubject(res.getSubject());
-			fChangeInfo.setActions(res.getActions());
+			fChangeInfo.getActions().clear();
+			fChangeInfo.getActions().addAll(res.getActions());
 			fChangeInfo.setTopic(res.getTopic());
 			fChangeInfo.setMergeable(res.isMergeable());
-			fChangeInfo.setRevisions(res.getRevisions());
-
-			//Set the file tab view
-			if (filesTab != null) {
-				filesTab.setTabs(res.getRevisions(), res.getCurrentRevision());
-			}
-			setCurrentCommitInfo(res.getCurrentRevision());
-
-			//Display the History tab
-			Collections.sort(fChangeInfo.getMessages(), new Comparator<ChangeMessageInfo>() {
-
-				@Override
-				public int compare(ChangeMessageInfo rev1, ChangeMessageInfo rev2) {
-					return rev2.getDate().compareTo(rev1.getDate());
-				}
-			});
-
-			WritableList writeInfoList = new WritableList(fChangeInfo.getMessages(), ChangeMessageInfo.class);
-			if (historytab != null) {
-				historytab.getTableHistoryViewer().setInput(writeInfoList);
-				historytab.getTableHistoryViewer().refresh();
-			}
+			fChangeInfo.getRevisions().clear();
+			fChangeInfo.getRevisions().addAll(res.getRevisions());
 		}
 
-	}
-
-	/**
-	 * Set the data structure according to the selected revision. It could be the current revision or any path set
-	 * revision. It will trigger the update for the message tab structure
-	 *
-	 * @param Object
-	 *            revision structure or a revision string
-	 */
-	private void setCurrentCommitInfo(Object revision) {
-		RevisionInfo match = null;
-		if (revision instanceof RevisionInfo) {
-			match = (RevisionInfo) revision;
-		} else if (revision instanceof String) {
-			match = filesTab != null ? filesTab.getRevisions().get(revision) : null;
-		}
-		//Need to initialize the variables first
-		fCommitInfo.reset();
-
-		if (match != null) {
-			fCommitInfo.setCommit(match.getId());
-			fCommitInfo.setMessage(match.getCommit().getMessage());
-			fCommitInfo.setParents(match.getCommit().getParents());
-			fCommitInfo.setAuthor(match.getCommit().getAuthor());
-			fCommitInfo.setCommitter(match.getCommit().getCommitter());
-		}
 	}
 
 	/***************************************************************/
@@ -1106,21 +1033,25 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	protected DataBindingContext headerSectionDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 
-		//
-		IObservableValue observeTextLblLblidObserveWidget = WidgetProperties.text().observe(shortIdData);
-		IObservableValue idFChangeInfoObserveValue = BeanProperties.value("_number").observe(fChangeInfo);
+		//Show id
+		IObservableValue idFChangeInfoObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER)
+				.observe(fChangeInfo);
 		NumberFormat numberFormat = NumberFormat.getInstance();
 		numberFormat.setGroupingUsed(false);
-		bindingContext.bindValue(observeTextLblLblidObserveWidget, idFChangeInfoObserveValue, null,
+		bindingContext.bindValue(WidgetProperties.text().observe(shortIdData), idFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(numberFormat, true)));
-		//
-		IObservableValue observeTextLblChangeid_1ObserveWidget = WidgetProperties.text().observe(subjectData);
-		IObservableValue changeIdFChangeInfoObserveValue = BeanProperties.value("subject").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblChangeid_1ObserveWidget, changeIdFChangeInfoObserveValue, null, null);
-		//
-		IObservableValue observeTextLblStatusObserveWidget = WidgetProperties.text().observe(statusData);
-		IObservableValue statusFChangeInfoObserveValue = BeanProperties.value("status").observe(fChangeInfo);
-		bindingContext.bindValue(observeTextLblStatusObserveWidget, statusFChangeInfoObserveValue, null, null);
+
+		//Show subject
+		IObservableValue changeIdFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(subjectData), changeIdFChangeInfoObserveValue, null,
+				null);
+
+		//Show status
+		IObservableValue statusFChangeInfoObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
+				.observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(statusData), statusFChangeInfoObserveValue, null,
+				null);
 
 		return bindingContext;
 	}
@@ -1231,13 +1162,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param Object
 	 */
 	@Override
+	//EMF this should go away
 	public void update(Observable arg0, Object arg1) {
-		if (arg0 instanceof FilesTabView) {
-			FilesTabView fileTabView = (FilesTabView) arg0;
-
-			//Adjust the commit info for the Message Tab
-			setCurrentCommitInfo(fileTabView.getCurrentRevision());
-		} else if (arg0 instanceof MessageTabView) {
+		if (arg0 instanceof MessageTabView) {
 			//in this case, we need to update the Subject. The following request do more
 			//but at least, less than the whole refresh
 			setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());

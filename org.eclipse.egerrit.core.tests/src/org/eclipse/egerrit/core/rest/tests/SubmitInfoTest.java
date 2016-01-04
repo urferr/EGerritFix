@@ -18,7 +18,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.SubmitInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.SubmitInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.SubmitInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.SubmitInfo}
  *
  * @since 1.0
  */
@@ -72,7 +73,7 @@ public class SubmitInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -91,7 +92,7 @@ public class SubmitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo#getStatus()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo#getStatus()}.
 	 */
 	@Test
 	public void testGetStatus() {
@@ -104,7 +105,7 @@ public class SubmitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo#geton_behalf_of()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo#geton_behalf_of()} .
 	 */
 	@Test
 	public void testOn_Behalf_Of() {
@@ -120,7 +121,7 @@ public class SubmitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -134,7 +135,7 @@ public class SubmitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -153,7 +154,7 @@ public class SubmitInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo#hashCode()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo#hashCode()} .
 	 */
 	@Test
 	public void testHashCode() {
@@ -165,7 +166,7 @@ public class SubmitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -177,7 +178,7 @@ public class SubmitInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.SubmitInfo#toString()} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.SubmitInfo#toString()} .
 	 */
 	@Test
 	public void testToString() {

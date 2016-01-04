@@ -13,7 +13,7 @@
 package org.eclipse.egerrit.ui.internal.table.provider;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * This class implements the File table UI label provider.

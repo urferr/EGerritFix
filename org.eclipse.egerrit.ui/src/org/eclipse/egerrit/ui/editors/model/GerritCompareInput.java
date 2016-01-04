@@ -29,8 +29,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.rest.CommitInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
+import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
@@ -89,7 +89,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		this.left = left;
 		this.changeId = changeId;
 		this.rightInfo = right;
-		this.file = rightInfo.getold_path();
+		this.file = rightInfo.getOld_path();
 		this.gerrit = gerrit;
 	}
 
@@ -104,7 +104,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		this.leftInfo = left;
 		this.changeId = changeId;
 		this.rightInfo = right;
-		this.file = rightInfo.getold_path();
+		this.file = rightInfo.getOld_path();
 		this.gerrit = gerrit;
 		this.postSaveListener = postSaveListener;
 	}
@@ -118,7 +118,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 		this.changeId = changeId;
 		this.projectId = projectId;
 		this.rightInfo = right;
-		this.file = rightInfo.getold_path();
+		this.file = rightInfo.getOld_path();
 		this.gerrit = gerrit;
 		this.postSaveListener = postSaveListener;
 	}
@@ -148,7 +148,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 			leftInput = new CompareItemFactory(gerrit).createCompareItem(file, changeId, leftInfo, pm);
 		} else if (projectId != null) {
 			leftInput = new CompareItemFactory(gerrit).createSimpleCompareItem(projectId, getBaseCommitId(),
-					rightInfo.getold_path(), pm);
+					rightInfo.getOld_path(), pm);
 		} else {
 			leftInput = createFileElement(getLeft());
 		}
@@ -158,7 +158,7 @@ public class GerritCompareInput extends SaveableCompareEditorInput {
 	}
 
 	private String getBaseCommitId() {
-		List<CommitInfo> parents = rightInfo.getContainingRevisionInfo().getCommit().getParents();
+		List<CommitInfo> parents = rightInfo.getContainedIn().getCommit().getParents();
 		if (parents == null) {
 			return null;
 		}

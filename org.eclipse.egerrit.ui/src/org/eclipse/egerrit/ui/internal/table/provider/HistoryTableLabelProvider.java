@@ -15,8 +15,8 @@ package org.eclipse.egerrit.ui.internal.table.provider;
 import java.text.SimpleDateFormat;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 

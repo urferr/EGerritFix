@@ -17,8 +17,9 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.MergeableInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.MergeableInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
@@ -38,7 +39,7 @@ public class GetMergeableCommandTest extends CommandTestWithSimpleReview {
 	 */
 	@Test
 	public void testCall() {
-		ChangeInfo changeInfo = new ChangeInfo();
+		ChangeInfo changeInfo = ModelFactory.eINSTANCE.createChangeInfo();
 		changeInfo.setId(change_id);
 		GetMergeableCommand command = fGerrit.getMergeable(changeInfo);
 		try {

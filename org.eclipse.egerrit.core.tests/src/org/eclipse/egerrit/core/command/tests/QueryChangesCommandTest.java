@@ -25,7 +25,7 @@ import java.util.ListIterator;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
@@ -95,12 +95,14 @@ public class QueryChangesCommandTest extends CommandTestWithSimpleReview {
 				QueryChangesCommand command = fGerrit.queryChanges();
 				command.setSkipNumberOfResults(0);
 				command.setMaxNumberOfResults(1);
-				results.remove(command.call()[0]);
+				ChangeInfo[] toRemove = command.call();
+				results.remove(toRemove[0]);
 
 				QueryChangesCommand command2 = fGerrit.queryChanges();
 				command2.setSkipNumberOfResults(1);
 				command2.setMaxNumberOfResults(1);
-				results.remove(command2.call()[0]);
+				ChangeInfo[] toRemove2 = command.call();
+				results.remove(toRemove2[0]);
 
 				assertEquals(0, results.size());
 			} catch (EGerritException e) {

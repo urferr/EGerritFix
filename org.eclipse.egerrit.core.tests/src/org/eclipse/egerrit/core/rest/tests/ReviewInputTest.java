@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
 import org.eclipse.egerrit.core.rest.CommentInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.junit.After;
@@ -89,7 +90,7 @@ public class ReviewInputTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 

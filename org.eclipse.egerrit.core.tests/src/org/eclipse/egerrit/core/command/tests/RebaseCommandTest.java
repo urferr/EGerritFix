@@ -22,11 +22,11 @@ import org.eclipse.egerrit.core.command.RebaseCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.ReviewInfo;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ReviewInfo;
 import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 

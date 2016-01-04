@@ -15,8 +15,8 @@ package org.eclipse.egerrit.ui.internal.table.provider;
 import java.text.SimpleDateFormat;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -67,9 +67,9 @@ public class FilePatchSetTableLabelProvider extends BaseTableLabelProvider {
 			RevisionInfo revisionInfo = (RevisionInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				return Boolean.toString(revisionInfo.hasDraftComments());
+				return Boolean.toString(revisionInfo.isHas_draft_comments());
 			case 1:
-				return Integer.toString(revisionInfo.getNumber());
+				return Integer.toString(revisionInfo.get_number());
 			case 2:
 				if (revisionInfo.getCommit() != null) {
 					return revisionInfo.getCommit().getCommit();
@@ -124,7 +124,7 @@ public class FilePatchSetTableLabelProvider extends BaseTableLabelProvider {
 			RevisionInfo revisionInfo = (RevisionInfo) aElement;
 			switch (aColumnIndex) {
 			case 0:
-				if (revisionInfo.hasDraftComments()) {
+				if (revisionInfo.isHas_draft_comments()) {
 					return GREEN;
 				} else {
 					return BLACK;

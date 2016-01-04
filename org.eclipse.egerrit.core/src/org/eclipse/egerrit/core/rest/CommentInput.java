@@ -14,6 +14,8 @@ package org.eclipse.egerrit.core.rest;
 
 import java.sql.Timestamp;
 
+import org.eclipse.egerrit.internal.model.CommentRange;
+
 /**
  * Data model object for <a
  * href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#comment-input">CommentInput</a> and

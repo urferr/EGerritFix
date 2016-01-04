@@ -24,13 +24,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.rest.AccountInfo;
-import org.eclipse.egerrit.core.rest.ActionInfo;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.ChangeMessageInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
-import org.eclipse.egerrit.core.rest.ProblemInfo;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.ActionInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.ProblemInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +43,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ChangeInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ChangeInfo}
  */
 @SuppressWarnings("nls")
 public class ChangeInfoTest {
@@ -84,7 +86,7 @@ public class ChangeInfoTest {
 
 	public static int NUMBER = 5;
 
-	public static AccountInfo OWNER = new AccountInfo();
+	public static AccountInfo OWNER = ModelFactory.eINSTANCE.createAccountInfo();
 
 	public static Map<String, ActionInfo> ACTIONS = new LinkedHashMap<String, ActionInfo>();
 
@@ -143,7 +145,7 @@ public class ChangeInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -195,7 +197,7 @@ public class ChangeInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getKind()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getKind()}.
 	 */
 	@Test
 	public void testGetKind() {
@@ -218,23 +220,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getId()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getId()}.
 	 */
 	@Test
 	public void testGetId() {
@@ -257,23 +259,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getProject()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getProject()}.
 	 */
 	@Test
 	public void testGetProject() {
@@ -296,23 +298,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getBranch()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getBranch()}.
 	 */
 	@Test
 	public void testGetBranch() {
@@ -335,23 +337,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getTopic()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getTopic()}.
 	 */
 	@Test
 	public void testGetTopic() {
@@ -374,23 +376,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getChange_id()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getChange_id()}.
 	 */
 	@Test
 	public void testGetChangeId() {
@@ -413,23 +415,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getSubject()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getSubject()}.
 	 */
 	@Test
 	public void testGetSubject() {
@@ -452,23 +454,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getStatus()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getStatus()}.
 	 */
 	@Test
 	public void testGetStatus() {
@@ -491,23 +493,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getCreated()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getCreated()}.
 	 */
 	@Test
 	public void testGetCreated() {
@@ -530,23 +532,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getUpdated()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getUpdated()}.
 	 */
 	@Test
 	public void testGetUpdated() {
@@ -569,23 +571,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#isStarred()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#isStarred()}.
 	 */
 	@Test
 	public void testIsStarred() {
@@ -608,23 +610,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#isReviewed()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#isReviewed()}.
 	 */
 	@Test
 	public void testIsReviewed() {
@@ -644,27 +646,27 @@ public class ChangeInfoTest {
 		assertNull("Wrong updated", fChangeInfo.getUpdated());
 		assertFalse("Wrong starred", fChangeInfo.isStarred());
 		assertEquals("Wrong reviewed", REVIEWED, fChangeInfo.isReviewed());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#isMergeable()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#isMergeable()}.
 	 */
 	@Test
 	public void testIsMergeable() {
@@ -687,23 +689,23 @@ public class ChangeInfoTest {
 		assertEquals("Wrong mergeable", MERGEABLE, fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getInsertions()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getInsertions()}.
 	 */
 	@Test
 	public void testGetInsertions() {
@@ -726,23 +728,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getDeletions()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getDeletions()}.
 	 */
 	@Test
 	public void testGetDeletions() {
@@ -765,26 +767,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getSortkey()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#get_sortkey()}.
 	 */
 	@Test
-	public void testGetSortkey() {
+	public void testget_sortkey() {
 		json.addProperty("_sortkey", SORTKEY);
 		Reader reader = new StringReader(json.toString());
 		fChangeInfo = gson.fromJson(reader, ChangeInfo.class);
@@ -804,23 +806,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
+		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#get_number()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#get_number()}.
 	 */
 	@Test
 	public void testGetNumber() {
@@ -843,23 +845,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getOwner()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getOwner()}.
 	 */
 	@Test
 	public void testGetOwner() {
@@ -883,23 +885,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getActions()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getActions()}.
 	 */
 	@Test
 	public void testGetActions() {
@@ -923,23 +925,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getLabels()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getLabels()}.
 	 */
 	@Test
 	public void testGetLabels() {
@@ -963,26 +965,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertEquals("Wrong labels", LABELS, fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getPermittedLabels()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getPermitted_labels()}.
 	 */
 	@Test
-	public void testGetPermittedLabels() {
+	public void testgetPermitted_labels() {
 		JsonObject permitted_labels = new JsonObject();
 		json.add("permitted_labels", permitted_labels);
 		Reader reader = new StringReader(json.toString());
@@ -1003,26 +1005,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getRemovableReviewers()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getRemovable_reviewers()}.
 	 */
 	@Test
-	public void testGetRemovableReviewers() {
+	public void testgetRemovable_reviewers() {
 		JsonArray removable_reviewers = new JsonArray();
 		json.add("removable_reviewers", removable_reviewers);
 		Reader reader = new StringReader(json.toString());
@@ -1043,23 +1045,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getMessages()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getMessages()}.
 	 */
 	@Test
 	public void testGetMessages() {
@@ -1083,26 +1085,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertEquals("Wrong messages", MESSAGES, fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getCurrentRevision()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getCurrent_revision()}.
 	 */
 	@Test
-	public void testGetCurrentRevision() {
+	public void testgetCurrent_revision() {
 		json.addProperty("current_revision", CURRENT_REVISION);
 		Reader reader = new StringReader(json.toString());
 		fChangeInfo = gson.fromJson(reader, ChangeInfo.class);
@@ -1122,23 +1124,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrentRevision());
+		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getRevisions()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevisions()}.
 	 */
 	@Test
 	public void testGetRevisions() {
@@ -1162,26 +1164,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertEquals("Wrong revisions", REVISIONS, fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#hasMoreChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#is_more_changes()}.
 	 */
 	@Test
-	public void testHasMoreChanges() {
+	public void testis_more_changes() {
 		json.addProperty("_more_changes", MORE_CHANGES);
 		Reader reader = new StringReader(json.toString());
 		fChangeInfo = gson.fromJson(reader, ChangeInfo.class);
@@ -1201,23 +1203,23 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.hasMoreChanges());
+		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getProblems()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getProblems()}.
 	 */
 	@Test
 	public void testGetProblems() {
@@ -1241,26 +1243,26 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertEquals("Wrong problems", PROBLEMS, fChangeInfo.getProblems());
-		assertNull("Wrong base_change", fChangeInfo.getBaseChange());
+		assertNull("Wrong base_change", fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#getBaseChange()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#getBase_change()}.
 	 */
 	@Test
-	public void testGetBaseChange() {
+	public void testgetBase_change() {
 		json.addProperty("base_change", BASE_CHANGE);
 		Reader reader = new StringReader(json.toString());
 		fChangeInfo = gson.fromJson(reader, ChangeInfo.class);
@@ -1280,19 +1282,19 @@ public class ChangeInfoTest {
 		assertFalse("Wrong mergeable", fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", -1, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", -1, fChangeInfo.getDeletions());
-		assertNull("Wrong sortkey", fChangeInfo.getSortkey());
+		assertNull("Wrong sortkey", fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", -1, fChangeInfo.get_number());
 		assertNull("Wrong owner", fChangeInfo.getOwner());
 		assertNull("Wrong actions", fChangeInfo.getActions());
 		assertNull("Wrong labels", fChangeInfo.getLabels());
-		assertNull("Wrong permitted_labels", fChangeInfo.getPermittedLabels());
-		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovableReviewers());
+		assertNull("Wrong permitted_labels", fChangeInfo.getPermitted_labels());
+		assertNull("Wrong removable_reviewers", fChangeInfo.getRemovable_reviewers());
 		assertNull("Wrong messages", fChangeInfo.getMessages());
-		assertNull("Wrong current_revision", fChangeInfo.getCurrentRevision());
+		assertNull("Wrong current_revision", fChangeInfo.getCurrent_revision());
 		assertNull("Wrong revisions", fChangeInfo.getRevisions());
-		assertFalse("Wrong more_changes", fChangeInfo.hasMoreChanges());
+		assertFalse("Wrong more_changes", fChangeInfo.is_more_changes());
 		assertNull("Wrong problems", fChangeInfo.getProblems());
-		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBaseChange());
+		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBase_change());
 	}
 
 	// ------------------------------------------------------------------------
@@ -1300,7 +1302,7 @@ public class ChangeInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -1323,25 +1325,25 @@ public class ChangeInfoTest {
 		assertEquals("Wrong mergeable", MERGEABLE, fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
-		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
+		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());
 		assertEquals("Wrong labels", LABELS, fChangeInfo.getLabels());
-		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermittedLabels());
-		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovableReviewers());
+		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermitted_labels());
+		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovable_reviewers());
 		assertEquals("Wrong messages", MESSAGES, fChangeInfo.getMessages());
 
-		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrentRevision());
+		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrent_revision());
 		assertEquals("Wrong revisions", REVISIONS, fChangeInfo.getRevisions());
-		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.hasMoreChanges());
+		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.is_more_changes());
 		assertEquals("Wrong problems", PROBLEMS, fChangeInfo.getProblems());
-		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBaseChange());
+		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBase_change());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -1365,21 +1367,21 @@ public class ChangeInfoTest {
 		assertEquals("Wrong mergeable", MERGEABLE, fChangeInfo.isMergeable());
 		assertEquals("Wrong insertions", INSERTIONS, fChangeInfo.getInsertions());
 		assertEquals("Wrong deletions", DELETIONS, fChangeInfo.getDeletions());
-		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.getSortkey());
+		assertEquals("Wrong sortkey", SORTKEY, fChangeInfo.get_sortkey());
 		assertEquals("Wrong number", NUMBER, fChangeInfo.get_number());
 
 		assertEquals("Wrong owner", OWNER, fChangeInfo.getOwner());
 		assertEquals("Wrong actions", ACTIONS, fChangeInfo.getActions());
 		assertEquals("Wrong labels", LABELS, fChangeInfo.getLabels());
-		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermittedLabels());
-		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovableReviewers());
+		assertEquals("Wrong permitted_labels", PERMITTED_LABELS, fChangeInfo.getPermitted_labels());
+		assertEquals("Wrong removable_reviewers", REMOVABLE_REVIEWERS, fChangeInfo.getRemovable_reviewers());
 		assertEquals("Wrong messages", MESSAGES, fChangeInfo.getMessages());
 
-		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrentRevision());
+		assertEquals("Wrong current_revision", CURRENT_REVISION, fChangeInfo.getCurrent_revision());
 		assertEquals("Wrong revisions", REVISIONS, fChangeInfo.getRevisions());
-		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.hasMoreChanges());
+		assertEquals("Wrong more_changes", MORE_CHANGES, fChangeInfo.is_more_changes());
 		assertEquals("Wrong problems", PROBLEMS, fChangeInfo.getProblems());
-		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBaseChange());
+		assertEquals("Wrong base_change", BASE_CHANGE, fChangeInfo.getBase_change());
 	}
 
 	// ------------------------------------------------------------------------
@@ -1387,7 +1389,7 @@ public class ChangeInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -1399,7 +1401,7 @@ public class ChangeInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#equals(java.lang.Object)}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#equals(java.lang.Object)}.
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -1407,7 +1409,7 @@ public class ChangeInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.ChangeInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.ChangeInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

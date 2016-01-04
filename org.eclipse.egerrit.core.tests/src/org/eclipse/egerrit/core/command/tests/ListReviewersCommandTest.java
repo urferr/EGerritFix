@@ -19,7 +19,7 @@ import org.eclipse.egerrit.core.command.AddReviewerCommand;
 import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
-import org.eclipse.egerrit.core.rest.ReviewerInfo;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.junit.Test;
 
 /**

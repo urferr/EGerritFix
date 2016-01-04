@@ -20,7 +20,8 @@ import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.egerrit.core.rest.MergeableInfo;
+import org.eclipse.egerrit.core.command.EMFTypeAdapterFactory;
+import org.eclipse.egerrit.internal.model.MergeableInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.rest.ReviewerInfo}
+ * Test suite for {@link org.eclipse.egerrit.internal.model.ReviewerInfo}
  *
  * @since 1.0
  */
@@ -82,7 +83,7 @@ public class MergeableInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gson = new GsonBuilder().create();
+		gson = new GsonBuilder().registerTypeAdapterFactory(new EMFTypeAdapterFactory()).create();
 		json = new JsonObject();
 	}
 
@@ -101,7 +102,7 @@ public class MergeableInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#getSubmitType()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo#getSubmitType()}.
 	 */
 	@Test
 	public void testGetSubmitType() {
@@ -115,7 +116,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#getMergeable_into()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo#getMergeable_into()}.
 	 */
 	@Test
 	public void testGetMergeableInto() {
@@ -130,7 +131,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#isMergeable()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo#isMergeable()}.
 	 */
 	@Test
 	public void testGetMergeable() {
@@ -148,7 +149,7 @@ public class MergeableInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo}.
 	 */
 	@Test
 	public void testAllFields() {
@@ -162,7 +163,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo}.
 	 */
 	@Test
 	public void testExtraField() {
@@ -182,7 +183,7 @@ public class MergeableInfoTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#hashCode()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo#hashCode()}.
 	 */
 	@Test
 	public void testHashCode() {
@@ -194,7 +195,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.AccountInfo#equals(java.lang.Object)} .
+	 * Test method for {@link org.eclipse.egerrit.internal.model.AccountInfo#equals(java.lang.Object)} .
 	 */
 	// @Test
 	public void testEqualsObject() {
@@ -202,7 +203,7 @@ public class MergeableInfoTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.rest.MergeableInfo#toString()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.model.MergeableInfo#toString()}.
 	 */
 	@Test
 	public void testToString() {

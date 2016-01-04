@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommitInfo;
+import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.junit.Test;
 
 /**

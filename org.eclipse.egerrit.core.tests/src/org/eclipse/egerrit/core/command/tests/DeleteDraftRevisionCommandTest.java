@@ -15,13 +15,12 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.Map;
-
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.emf.common.util.EMap;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class DeleteDraftRevisionCommandTest extends CommandTestWithSimpleReview 
 		//Make sure we have two revisions
 		GetChangeCommand getDetails = fGerrit.getChange(change_id);
 		getDetails.addOption(ChangeOption.ALL_REVISIONS);
-		Map<String, RevisionInfo> revisions = getDetails.call().getRevisions();
+		EMap<String, RevisionInfo> revisions = getDetails.call().getRevisions();
 		assertEquals(2, revisions.size());
 
 		DeleteDraftRevisionCommand command2 = fGerrit.deleteDraftRevision(change_id,

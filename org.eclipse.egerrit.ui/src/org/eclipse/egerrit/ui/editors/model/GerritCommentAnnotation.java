@@ -11,7 +11,7 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.jface.text.source.Annotation;
 
 /*

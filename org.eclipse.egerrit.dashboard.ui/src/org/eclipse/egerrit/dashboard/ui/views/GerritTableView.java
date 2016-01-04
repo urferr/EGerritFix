@@ -40,7 +40,6 @@ import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
@@ -50,6 +49,7 @@ import org.eclipse.egerrit.dashboard.ui.internal.utils.SelectionDialog;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
 import org.eclipse.egerrit.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
@@ -868,33 +868,7 @@ public class GerritTableView extends ViewPart {
 						Display.getDefault().syncExec(new Runnable() {
 							@Override
 							public void run() {
-// TODO
-								//								if (aQueryType != GerritQuery.CUSTOM) {
-//									if (fCurrentQuery != null) {
-//										String query = fCurrentQuery.getAttribute(GerritQuery.QUERY_STRING);
-//										setSearchText(query);
-//									}
-//								} else {
-								//Record the custom query
 								setSearchText(getSearchText());
-//								}
-//								if (gerritClient == null) {
-//									gerritClient = new GerritClient(null, new TaskRepositoryLocation(
-//											new TaskRepository(TaskRepository.CATEGORY_REVIEW,
-//													defaultServerInfo.getServerURL())));
-//								}
-
-								// TODO
-//								if (gerritClient != null) {
-//									try {
-//										setRepositoryVersionLabel(aTaskRepo.getServerName(),
-//												gerritClient.getVersion(new NullProgressMonitor()).toString());
-//									} catch (GerritException e) {
-//										logger.error(e.getMessage());
-//
-//									}
-//								}
-
 							}
 						});
 					}

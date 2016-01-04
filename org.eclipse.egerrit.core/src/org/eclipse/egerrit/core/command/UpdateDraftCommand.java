@@ -14,7 +14,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpPut;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.CommentInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 
 /**
  * The command: PUT /changes/{change-id}/revisions/{revision-id}/drafts/{draft-id}

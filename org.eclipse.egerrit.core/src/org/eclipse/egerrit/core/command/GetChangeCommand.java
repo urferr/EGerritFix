@@ -19,9 +19,10 @@ import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
-import org.eclipse.egerrit.core.rest.FileInfo;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.emf.common.util.EMap;
 
 /**
  * The command GET /changes/{change-id}/detail
@@ -49,21 +50,22 @@ public class GetChangeCommand extends BaseCommandChange<ChangeInfo> {
 	}
 
 	@Override
+	//EMF - is it necessary to keep all this
 	protected ChangeInfo postProcessResult(ChangeInfo changeInfo) {
-		Map<String, RevisionInfo> map = changeInfo.getRevisions();
+		EMap<String, RevisionInfo> map = changeInfo.getRevisions();
 		if (map != null) {
 			Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
 			while (revisions.hasNext()) {
 				Entry<String, RevisionInfo> revisionEntry = revisions.next();
 				RevisionInfo theRevision = revisionEntry.getValue();
 				theRevision.setId(revisionEntry.getKey());
-				Map<String, FileInfo> filesMap = theRevision.getFiles();
+				EMap<String, FileInfo> filesMap = theRevision.getFiles();
 				if (filesMap != null) {
 					Iterator<Map.Entry<String, FileInfo>> files = filesMap.entrySet().iterator();
 					while (files.hasNext()) {
 						Entry<String, FileInfo> aFile = files.next();
 						aFile.getValue().setOld_path(aFile.getKey());
-						aFile.getValue().setContainingRevision(theRevision);
+						aFile.getValue().setContainedIn(theRevision);
 					}
 				}
 			}

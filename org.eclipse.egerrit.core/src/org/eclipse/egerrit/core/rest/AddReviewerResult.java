@@ -14,6 +14,8 @@ package org.eclipse.egerrit.core.rest;
 
 import java.util.List;
 
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
+
 /**
  * The AddReviewerResult entity describes the result of adding a reviewer to a change.
  * <p>

@@ -134,7 +134,9 @@ public abstract class BaseCommand<T> {
 							return (T) os.toString();
 						}
 					}
-					Gson gson = new GsonBuilder().create();
+					GsonBuilder builder = new GsonBuilder();
+					builder.registerTypeAdapterFactory(new EMFTypeAdapterFactory());
+					Gson gson = builder.create();
 					InputStreamReader reader = new InputStreamReader(myEntity.getContent());
 
 					return gson.fromJson(reader, fResultType);

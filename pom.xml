@@ -342,6 +342,8 @@
 	<modules>
 		<module>org.eclipse.egerrit.target</module>
 		<module>org.eclipse.egerrit.core</module>
+		<module>org.eclipse.egerrit.model</module>
+		<module>org.eclipse.egerrit.model.edit</module>
 		<module>org.eclipse.egerrit.core.tests</module>
 		<module>org.eclipse.egerrit.ui</module>
 		<module>org.eclipse.egerrit.ui.tests</module>

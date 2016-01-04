@@ -19,8 +19,8 @@ import org.eclipse.egerrit.core.command.AbandonCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AbandonInput;
-import org.eclipse.egerrit.core.rest.ChangeInfo;
 import org.eclipse.egerrit.core.rest.RestoreInput;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**

@@ -11,17 +11,17 @@
 
 package org.eclipse.egerrit.ui.editors;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
-import org.eclipse.egerrit.core.rest.ApprovalInfo;
-import org.eclipse.egerrit.core.rest.LabelInfo;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.StringConverter;
@@ -53,12 +53,12 @@ public class ReplyDialog extends Dialog {
 
 	// The labels of the change as a map that maps the label names to LabelInfo
 	// entries. Only set if 'labels' or 'detailed labels' are requested.
-	private Map<String, LabelInfo> labelsInfo;
+	private EMap<String, LabelInfo> labelsInfo;
 
 	// A map of the permitted labels that maps a label name to the list of
 	// values that are allowed for that label. Only set if 'detailed labels' are
 	// requested.
-	private Map<String, String[]> permitted_labels;
+	private EMap<String, EList<String>> permitted_labels;
 
 	private Text msgTextData;
 
@@ -90,7 +90,8 @@ public class ReplyDialog extends Dialog {
 	/**
 	 * The constructor.
 	 */
-	public ReplyDialog(Composite parent, Map<String, String[]> permitted_labels, Map<String, LabelInfo> labelsInfo) {
+	public ReplyDialog(Composite parent, EMap<String, EList<String>> permitted_labels,
+			EMap<String, LabelInfo> labelsInfo) {
 		super(parent.getShell());
 
 		logger.debug("Open the Reply dialogue."); //$NON-NLS-1$
@@ -251,21 +252,22 @@ public class ReplyDialog extends Dialog {
 		Point fontSize = UIUtils.computeFontSize(detailTextComposite);
 		//Set into the variable the last setting of the radio
 		getLastLabelSet();
+		//EMF why do we need the sorting
+//
+//		//Sort the Labels in chronological order
+//		EMap<String, String[]> sortedMap = new BasicEMap<String, String[]>(new Comparator<String>() {
+//
+//			@Override
+//			public int compare(String key1, String key2) {
+//				return key1.compareTo(key2);
+//			}
+//		});
+//		sortedMap.putAll(permitted_labels);
 
-		//Sort the Labels in chronological order
-		Map<String, String[]> sortedMap = new TreeMap<String, String[]>(new Comparator<String>() {
-
-			@Override
-			public int compare(String key1, String key2) {
-				return key1.compareTo(key2);
-			}
-		});
-		sortedMap.putAll(permitted_labels);
-
-		Iterator<Map.Entry<String, String[]>> iterator = sortedMap.entrySet().iterator();
+		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<String, String[]> permittedlabel = iterator.next();
-			String[] listPermitted = permittedlabel.getValue();
+			Entry<String, EList<String>> permittedlabel = iterator.next();
+			EList<String> listPermitted = permittedlabel.getValue();
 			Label rowLabel = new Label(keyComposite, SWT.BOLD);
 			rowLabel.setText(permittedlabel.getKey());
 
@@ -286,21 +288,21 @@ public class ReplyDialog extends Dialog {
 
 			radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			//Fill the dummy space
-			int numEmpty = (maxRadio - listPermitted.length) / 2;//Only half the number at the beginning
+			int numEmpty = (maxRadio - listPermitted.size()) / 2;//Only half the number at the beginning
 			createFillerRadioButtons(numEmpty, radioComposite);
 
 			//Fill the radio buttons
-			Button[] radios = new Button[listPermitted.length];
-			for (int i = 0; i < listPermitted.length; i++) {
+			Button[] radios = new Button[listPermitted.size()];
+			for (int i = 0; i < listPermitted.size(); i++) {
 				//Create a radio and store extra data into the structure
 				radios[i] = new Button(radioComposite, SWT.RADIO);
-				radios[i].setData(listPermitted[i]);
-				radios[i].setData(listPermitted[i], permittedlabel.getKey());
+				radios[i].setData(listPermitted.get(i));
+				radios[i].setData(listPermitted.get(i), permittedlabel.getKey());
 				radios[i].setData(DISPLAYWIDGET, detailLabel);//set the display label widget
 
-				String description = labelSelectionDescription(permittedlabel.getKey(), listPermitted[i]);
+				String description = labelSelectionDescription(permittedlabel.getKey(), listPermitted.get(i));
 				radios[i].setToolTipText(description);
-				if (Integer.parseInt(listPermitted[i].trim()) == lastValue) {
+				if (Integer.parseInt(listPermitted.get(i).trim()) == lastValue) {
 					radios[i].setSelection(true);
 					detailLabel.setText(description);
 				}
@@ -335,13 +337,13 @@ public class ReplyDialog extends Dialog {
 	 * @return Composite
 	 */
 	private Composite getRadioButtonHeaderLabels(int maxRadioChoice) {
-		String[] listPermitted = null;
-		Iterator<Map.Entry<String, String[]>> iterator = permitted_labels.entrySet().iterator();
+		EList<String> listPermitted = null;
+		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
 		//Get the structure having all the possible options
 		while (iterator.hasNext()) {
-			Entry<String, String[]> permittedlabel = iterator.next();
+			Entry<String, EList<String>> permittedlabel = iterator.next();
 			listPermitted = permittedlabel.getValue();
-			if (listPermitted.length == maxRadioChoice) {
+			if (listPermitted.size() == maxRadioChoice) {
 				break;
 			}
 		}
@@ -355,10 +357,10 @@ public class ReplyDialog extends Dialog {
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, maxRadioChoice, 1));
 
 		if (listPermitted != null) {
-			Label[] radioLabels = new Label[listPermitted.length];
-			for (int i = 0; i < listPermitted.length; i++) {
+			Label[] radioLabels = new Label[listPermitted.size()];
+			for (int i = 0; i < listPermitted.size(); i++) {
 				radioLabels[i] = new Label(radioComposite, SWT.RADIO);
-				radioLabels[i].setText(listPermitted[i]);
+				radioLabels[i].setText(listPermitted.get(i));
 			}
 			radioComposite.pack();
 		}
@@ -387,10 +389,10 @@ public class ReplyDialog extends Dialog {
 	private int getMaxCountLabels() {
 		int maxButtons = 0;
 		int count = 0;
-		Iterator<Map.Entry<String, String[]>> iterator = permitted_labels.entrySet().iterator();
+		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<String, String[]> permittedlabel = iterator.next();
-			count = permittedlabel.getValue().length;
+			Map.Entry<String, EList<String>> permittedlabel = iterator.next();
+			count = permittedlabel.getValue().size();
 			maxButtons = Math.max(maxButtons, count);
 		}
 		return maxButtons;
@@ -434,7 +436,7 @@ public class ReplyDialog extends Dialog {
 				Entry<String, LabelInfo> entrylabel = labelIter.next();
 				if (entrylabel.getKey().equals(key)) {
 					LabelInfo labelInfo = entrylabel.getValue();
-					Map<String, String> mapValues = labelInfo.getValues();
+					EMap<String, String> mapValues = labelInfo.getValues();
 					return mapValues.get(value);
 				}
 			}

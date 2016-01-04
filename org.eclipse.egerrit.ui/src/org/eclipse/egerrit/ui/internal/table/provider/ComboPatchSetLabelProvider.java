@@ -15,8 +15,9 @@ package org.eclipse.egerrit.ui.internal.table.provider;
 import java.text.SimpleDateFormat;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
-import org.eclipse.egerrit.core.rest.RevisionInfo;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -65,16 +66,17 @@ public class ComboPatchSetLabelProvider extends BaseTableLabelProvider {
 	 */
 	@Override
 	public String getColumnText(Object aObj, int aIndex) {
-		if (aObj instanceof RevisionInfo) {
-			RevisionInfo revisionInfo = (RevisionInfo) aObj;
+		if (aObj instanceof StringToRevisionInfoImpl) {
+			StringToRevisionInfoImpl revisionEntry = (StringToRevisionInfoImpl) aObj;
+			RevisionInfo revisionInfo = revisionEntry.getValue();
 			StringBuilder sb = new StringBuilder();
 			sb.append("   "); //Boolean.toString(revisionInfo.hasDraftComments()); //$NON-NLS-1$
 			sb.append(SEPARATOR);
 			sb.append(revisionInfo.isDraft() ? "Draft " : "             "); //$NON-NLS-1$//$NON-NLS-2$
-			if (revisionInfo.getNumber() < 10) {
+			if (revisionInfo.get_number() < 10) {
 				sb.append("  "); //$NON-NLS-1$
 			}
-			sb.append(Integer.toString(revisionInfo.getNumber())); //
+			sb.append(Integer.toString(revisionInfo.get_number())); //
 			sb.append(SEPARATOR);
 			sb.append(getCommitTime(revisionInfo));
 			sb.append(SEPARATOR);
@@ -167,7 +169,7 @@ public class ComboPatchSetLabelProvider extends BaseTableLabelProvider {
 			RevisionInfo revisionInfo = (RevisionInfo) aElement;
 			switch (aColumnIndex) {
 			case 0:
-				if (revisionInfo.hasDraftComments()) {
+				if (revisionInfo.isHas_draft_comments()) {
 					return GREEN;
 				} else {
 					return BLACK;
