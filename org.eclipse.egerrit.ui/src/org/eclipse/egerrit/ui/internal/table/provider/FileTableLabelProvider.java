@@ -110,7 +110,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 				}
 			case 3:
 				String ret = EMPTY_STRING;
-				if (fileInfo.getDraftComments() != null) {
+				if (fileInfo.getDraftComments() != null && !fileInfo.getDraftComments().isEmpty()) {
 					ret = DRAFTS + fileInfo.getDraftComments().size() + " "; //$NON-NLS-1$
 				}
 				if (fileInfo.getNewComments() != null) {
