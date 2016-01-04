@@ -41,6 +41,7 @@ import org.eclipse.emf.ecore.EObject;
 public interface FileInfo extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Status</b></em>' attribute.
+	 * The default value is <code>"M"</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Status</em>' attribute isn't clear,
@@ -50,7 +51,7 @@ public interface FileInfo extends EObject {
 	 * @return the value of the '<em>Status</em>' attribute.
 	 * @see #setStatus(String)
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_Status()
-	 * @model
+	 * @model default="M"
 	 * @generated
 	 */
 	String getStatus();

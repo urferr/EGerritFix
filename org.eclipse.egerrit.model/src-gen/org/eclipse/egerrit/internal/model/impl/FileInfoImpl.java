@@ -56,7 +56,7 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String STATUS_EDEFAULT = null;
+	protected static final String STATUS_EDEFAULT = "M";
 
 	/**
 	 * The cached value of the '{@link #getStatus() <em>Status</em>}' attribute.
