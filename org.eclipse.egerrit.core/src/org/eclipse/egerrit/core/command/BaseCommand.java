@@ -146,12 +146,12 @@ public abstract class BaseCommand<T> {
 
 		} catch (ClientProtocolException e) {
 			if (!handleHttpException(e)) {
-				EGerritCorePlugin.logError(server.formatGerritVersion() + "Transport error occured " //$NON-NLS-1$
+				EGerritCorePlugin.logError(server.formatGerritVersion() + "Transport error occurred " //$NON-NLS-1$
 						+ request.getMethod() + ' ' + request.getURI().toASCIIString(), e);
 				throw new EGerritException("An error occurred while contacting the server. Please see log for details"); //$NON-NLS-1$
 			}
 		} catch (JsonSyntaxException | IOException e) {
-			EGerritCorePlugin.logError(server.formatGerritVersion() + "Transport error occured " //$NON-NLS-1$
+			EGerritCorePlugin.logError(server.formatGerritVersion() + "Transport error occurred " //$NON-NLS-1$
 					+ request.getMethod() + ' ' + request.getURI().toASCIIString(), e);
 			throw new EGerritException("An error occurred while contacting the server. Please see log for details"); //$NON-NLS-1$
 		}
