@@ -78,6 +78,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
@@ -224,6 +226,22 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				StringToRevisionInfoImpl rev2 = (StringToRevisionInfoImpl) e2;
 				return rev2.getValue().get_number() - rev1.getValue().get_number();
 			};
+		});
+
+		comboPatchsetViewer.getControl().addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				// ignore
+
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// To allow to display the whole list in the pull-down menu
+				comboPatchsetViewer.getCombo().setItems(comboPatchsetViewer.getCombo().getItems());
+
+			}
 		});
 
 		Label lblDiffAgainst = new Label(composite, SWT.NONE);
