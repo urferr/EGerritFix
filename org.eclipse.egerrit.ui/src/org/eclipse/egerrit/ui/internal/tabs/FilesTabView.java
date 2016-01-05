@@ -951,6 +951,20 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
+	 * Initialize the combo patch set viewer with the latest patch set
+	 */
+	public void setInitPatchSet() {
+		ISelection selection = comboPatchsetViewer.getSelection();
+		if (selection.isEmpty()) {
+			//Select the latest patch-set and trigger the selection change
+			//The latest patch set is the first one in the list since we sort the data
+			//in this order
+			comboPatchsetViewer.getCombo().select(0);
+			comboPatchsetViewer.setSelection(comboPatchsetViewer.getSelection(), true);
+		}
+	}
+
+	/**
 	 * @param selected
 	 * @param psSelected
 	 * @return String The patch set reference when a patch set is selected
