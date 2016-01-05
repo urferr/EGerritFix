@@ -987,6 +987,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setMergeable(res.isMergeable());
 			fChangeInfo.getRevisions().clear();
 			fChangeInfo.getRevisions().addAll(res.getRevisions());
+
+			//Initialize the files tab with the latest patch-set
+			filesTab.setInitPatchSet();
 		}
 
 	}
