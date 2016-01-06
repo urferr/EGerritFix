@@ -1268,7 +1268,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		// or a site from within a editor or view:
 		// IServiceLocator serviceLocator = getSite();
 
-		ICommandService commandService = serviceLocator.getService(ICommandService.class);
+		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
 
 		try {
 			// Lookup command with its ID

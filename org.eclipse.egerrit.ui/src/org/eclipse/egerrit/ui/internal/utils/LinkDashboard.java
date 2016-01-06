@@ -63,7 +63,7 @@ public class LinkDashboard {
 	 */
 	public void invokeRefreshDashboardCommand(Map<String, String> parameters) {
 		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-		ICommandService commandService = serviceLocator.getService(ICommandService.class);
+		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
 
 		try {
 			// Lookup command with its ID

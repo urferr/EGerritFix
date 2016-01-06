@@ -1,4 +1,4 @@
-<?pde version="3.8"?><target name="eGerrit-Eclipse_4.3-kepler" sequenceNumber="27">
+<?pde version="3.8"?><target name="eGerrit-Eclipse_4.3-kepler" sequenceNumber="28">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.jetty.client" version="7.6.0.v20120127"/>
@@ -31,6 +31,17 @@
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20150316021154/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.swtbot.eclipse.source.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.source.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.generator.feature.source.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.ide.source.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.ide.feature.group" version="2.2.1.201402241301"/>
+<unit id="org.eclipse.swtbot.generator.feature.feature.group" version="2.2.1.201402241301"/>
+<repository location="http://download.eclipse.org/technology/swtbot/releases/2.2.1/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.sdk.ide" version="4.3.2.M20140221-1700"/>
