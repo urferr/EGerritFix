@@ -1038,6 +1038,13 @@ public class SummaryTabView {
 
 				String topic = topicData.getText().trim();
 				setTopic(topic);
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				Map<String, String> parameters = new LinkedHashMap<String, String>();
+				parameters.put(EGerritConstants.BRANCH, fChangeInfo.getBranch());
+				parameters.put(EGerritConstants.PROJECT, UIUtils.getLinkText(genProjectData.getText()));
+
+				linkDash.invokeRefreshDashboardCommand(parameters);
+
 			}
 
 		};
