@@ -11,6 +11,7 @@
  */
 package org.eclipse.egerrit.internal.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ActionInfo;
@@ -85,6 +86,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getConflictsWith <em>Conflicts With</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getMergeableInfo <em>Mergeable Info</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getRevision <em>Revision</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getLatestPatchSet <em>Latest Patch Set</em>}</li>
  * </ul>
  *
  * @generated
@@ -1612,6 +1614,78 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public RevisionInfo getLatestPatchSet() {
+		RevisionInfo latestPatchSet = basicGetLatestPatchSet();
+		return latestPatchSet != null && latestPatchSet.eIsProxy()
+				? (RevisionInfo) eResolveProxy((InternalEObject) latestPatchSet) : latestPatchSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public RevisionInfo basicGetLatestPatchSet() {
+		// TODO: implement this method to return the 'Latest Patch Set' reference
+		// -> do not perform proxy resolution
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setLatestPatchSet(RevisionInfo newLatestPatchSet) {
+		// TODO: implement this method to set the 'Latest Patch Set' reference
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void unsetLatestPatchSet() {
+		// TODO: implement this method to unset the 'Latest Patch Set' reference
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isSetLatestPatchSet() {
+		// TODO: implement this method to return whether the 'Latest Patch Set' reference is set
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public RevisionInfo getRevisionByNumber(int revisionId) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.CHANGE_INFO__OWNER:
@@ -1740,6 +1814,10 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			if (resolve)
 				return getRevision();
 			return basicGetRevision();
+		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
+			if (resolve)
+				return getLatestPatchSet();
+			return basicGetLatestPatchSet();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -1871,6 +1949,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__MERGEABLE_INFO:
 			setMergeableInfo((MergeableInfo) newValue);
 			return;
+		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
+			setLatestPatchSet((RevisionInfo) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -1994,6 +2075,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__MERGEABLE_INFO:
 			setMergeableInfo((MergeableInfo) null);
 			return;
+		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
+			unsetLatestPatchSet();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -2083,8 +2167,24 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return mergeableInfo != null;
 		case ModelPackage.CHANGE_INFO__REVISION:
 			return basicGetRevision() != null;
+		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
+			return isSetLatestPatchSet();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+		case ModelPackage.CHANGE_INFO___GET_REVISION_BY_NUMBER__INT:
+			return getRevisionByNumber((Integer) arguments.get(0));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	/**

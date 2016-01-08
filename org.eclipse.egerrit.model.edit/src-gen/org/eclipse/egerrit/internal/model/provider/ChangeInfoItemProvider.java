@@ -95,6 +95,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 			addSameTopicPropertyDescriptor(object);
 			addConflictsWithPropertyDescriptor(object);
 			addRevisionPropertyDescriptor(object);
+			addLatestPatchSetPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -510,6 +511,21 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_revision_feature", //$NON-NLS-1$//$NON-NLS-2$
 								"_UI_ChangeInfo_type"), //$NON-NLS-1$
 						ModelPackage.Literals.CHANGE_INFO__REVISION, false, false, false, null, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Latest Patch Set feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addLatestPatchSetPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_latestPatchSet_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_latestPatchSet_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__LATEST_PATCH_SET, true, false, true, null, null, null));
 	}
 
 	/**
