@@ -12,9 +12,13 @@ package org.eclipse.egerrit.internal.model;
  */
 
 
+import java.util.Collection;
+import java.util.Map.Entry;
+
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -29,11 +33,21 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 				//Update the current revision field when revisions or the current revision id changes
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS) || msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)) {
 					InternalEObject modifiedChangeInfo = getModifiedChangeInfo(msg.getNotifier());
+					
 					if (eNotificationRequired()) {
 						eNotify(new ENotificationImpl(modifiedChangeInfo, Notification.SET, ModelPackage.Literals.CHANGE_INFO__REVISION, null,
 								modifiedChangeInfo.eGet(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)));
 					}
 				}
+				
+				//Notify that the value of latest patch set could have changed
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS)) {
+					InternalEObject modifiedChangeInfo = getModifiedChangeInfo(msg.getNotifier());
+					if (eNotificationRequired()) {
+						eNotify(new ENotificationImpl(modifiedChangeInfo, Notification.SET, ModelPackage.Literals.CHANGE_INFO__LATEST_PATCH_SET, null,
+								modifiedChangeInfo.eGet(ModelPackage.Literals.CHANGE_INFO__LATEST_PATCH_SET)));
+					}
+				}				
 			}
 
 			private InternalEObject getModifiedChangeInfo(Object object) {
@@ -76,5 +90,30 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 	@Override
 	public RevisionInfo basicGetRevision() {
 		return getRevisions().get(getCurrent_revision());
+	}
+	
+	@Override
+	public RevisionInfo basicGetLatestPatchSet() {
+		Collection<RevisionInfo> revisions = getRevisions().values();
+		RevisionInfo match = null;
+		int topNumber = 0;
+		for (RevisionInfo candidate : revisions) {
+			if (candidate.get_number() > topNumber) {
+				topNumber = candidate.get_number();
+				match = candidate;
+			}
+		}
+		return match;
+	}
+	
+	@Override
+	public RevisionInfo getRevisionByNumber(int revisionNumber) {
+		Collection<RevisionInfo> revisions = getRevisions().values();
+		for (RevisionInfo candidate : revisions) {
+			if (candidate.get_number() == revisionNumber) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 }

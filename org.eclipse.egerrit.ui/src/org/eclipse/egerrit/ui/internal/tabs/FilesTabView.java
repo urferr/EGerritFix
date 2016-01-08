@@ -16,7 +16,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -941,16 +940,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	/**
-	 * @return the latest patchset as a string
-	 */
-
-	//EMF see if we can't find a better way to get that
-	public String getLatestPatchSet() {
-		RevisionInfo topmost = (RevisionInfo) comboPatchsetViewer.getElementAt(0);
-		return topmost.getId();
-	}
-
-	/**
 	 * Initialize the combo patch set viewer with the latest patch set
 	 */
 	public void setInitPatchSet() {
@@ -1005,14 +994,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	private RevisionInfo getRevisionInfoByNumber(String number) {
-		int revisionNumber = Integer.valueOf(number);
-		Collection<RevisionInfo> revisions = fChangeInfo.getRevisions().values();
-		for (RevisionInfo candidate : revisions) {
-			if (candidate.get_number() == revisionNumber) {
-				return candidate;
-			}
-		}
-		return null;
+		return fChangeInfo.getRevisionByNumber(Integer.valueOf(number));
 	}
 
 	public void update() {

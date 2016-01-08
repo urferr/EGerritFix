@@ -62,6 +62,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getConflictsWith <em>Conflicts With</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getMergeableInfo <em>Mergeable Info</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevision <em>Revision</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo()
@@ -939,5 +940,66 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	RevisionInfo getRevision();
+
+	/**
+	 * Returns the value of the '<em><b>Latest Patch Set</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Latest Patch Set</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Latest Patch Set</em>' reference.
+	 * @see #isSetLatestPatchSet()
+	 * @see #unsetLatestPatchSet()
+	 * @see #setLatestPatchSet(RevisionInfo)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_LatestPatchSet()
+	 * @model unsettable="true" transient="true" volatile="true"
+	 * @generated
+	 */
+	RevisionInfo getLatestPatchSet();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Latest Patch Set</em>' reference.
+	 * @see #isSetLatestPatchSet()
+	 * @see #unsetLatestPatchSet()
+	 * @see #getLatestPatchSet()
+	 * @generated
+	 */
+	void setLatestPatchSet(RevisionInfo value);
+
+	/**
+	 * Unsets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSetLatestPatchSet()
+	 * @see #getLatestPatchSet()
+	 * @see #setLatestPatchSet(RevisionInfo)
+	 * @generated
+	 */
+	void unsetLatestPatchSet();
+
+	/**
+	 * Returns whether the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}' reference is set.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return whether the value of the '<em>Latest Patch Set</em>' reference is set.
+	 * @see #unsetLatestPatchSet()
+	 * @see #getLatestPatchSet()
+	 * @see #setLatestPatchSet(RevisionInfo)
+	 * @generated
+	 */
+	boolean isSetLatestPatchSet();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	RevisionInfo getRevisionByNumber(int revisionId);
 
 } // ChangeInfo

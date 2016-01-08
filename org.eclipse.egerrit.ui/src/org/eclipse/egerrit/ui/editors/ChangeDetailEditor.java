@@ -561,8 +561,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
-					//EMF not sure what the getLatestPatchSet represent
-					String latestPatchSet = "";//filesTab != null ? filesTab.getLatestPatchSet() : "";
+					String latestPatchSet = fChangeInfo.getLatestPatchSet().getId();
 
 					//Test if we should allow the +2 button or not
 					//Condition:
@@ -1198,7 +1197,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		// or a site from within a editor or view:
 		// IServiceLocator serviceLocator = getSite();
 
-		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+		ICommandService commandService = serviceLocator.getService(ICommandService.class);
 
 		try {
 			// Lookup command with its ID

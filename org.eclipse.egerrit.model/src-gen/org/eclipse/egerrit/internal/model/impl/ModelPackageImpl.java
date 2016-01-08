@@ -44,6 +44,7 @@ import org.eclipse.egerrit.internal.model.SubmitInfo;
 import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
@@ -1972,6 +1973,26 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EReference getChangeInfo_LatestPatchSet() {
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(38);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getChangeInfo__GetRevisionByNumber__int() {
+		return changeInfoEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getProblemInfo() {
 		return problemInfoEClass;
 	}
@@ -2561,6 +2582,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(changeInfoEClass, CHANGE_INFO__CONFLICTS_WITH);
 		createEReference(changeInfoEClass, CHANGE_INFO__MERGEABLE_INFO);
 		createEReference(changeInfoEClass, CHANGE_INFO__REVISION);
+		createEReference(changeInfoEClass, CHANGE_INFO__LATEST_PATCH_SET);
+		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 
 		problemInfoEClass = createEClass(PROBLEM_INFO);
 		createEAttribute(problemInfoEClass, PROBLEM_INFO__MESSAGE);
@@ -3057,6 +3080,13 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getChangeInfo_Revision(), this.getRevisionInfo(), null, "revision", null, 0, 1, ChangeInfo.class, //$NON-NLS-1$
 				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
 				IS_DERIVED, IS_ORDERED);
+		initEReference(getChangeInfo_LatestPatchSet(), this.getRevisionInfo(), null, "latestPatchSet", null, 0, 1, //$NON-NLS-1$
+				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		EOperation op = initEOperation(getChangeInfo__GetRevisionByNumber__int(), this.getRevisionInfo(),
+				"getRevisionByNumber", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+		addEParameter(op, ecorePackage.getEInt(), "revisionId", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(problemInfoEClass, ProblemInfo.class, "ProblemInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -1972,13 +1973,31 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__REVISION = 37;
 
 	/**
+	 * The feature id for the '<em><b>Latest Patch Set</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__LATEST_PATCH_SET = 38;
+
+	/**
 	 * The number of structural features of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_FEATURE_COUNT = 38;
+	int CHANGE_INFO_FEATURE_COUNT = 39;
+
+	/**
+	 * The operation id for the '<em>Get Revision By Number</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO___GET_REVISION_BY_NUMBER__INT = 0;
 
 	/**
 	 * The number of operations of the '<em>Change Info</em>' class.
@@ -1987,7 +2006,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_OPERATION_COUNT = 0;
+	int CHANGE_INFO_OPERATION_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
@@ -4257,6 +4276,27 @@ public interface ModelPackage extends EPackage {
 	EReference getChangeInfo_Revision();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Latest Patch Set</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EReference getChangeInfo_LatestPatchSet();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevisionByNumber(int) <em>Get Revision By Number</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Revision By Number</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getRevisionByNumber(int)
+	 * @generated
+	 */
+	EOperation getChangeInfo__GetRevisionByNumber__int();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.ProblemInfo <em>Problem Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6034,6 +6074,22 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CHANGE_INFO__REVISION = eINSTANCE.getChangeInfo_Revision();
+
+		/**
+		 * The meta object literal for the '<em><b>Latest Patch Set</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CHANGE_INFO__LATEST_PATCH_SET = eINSTANCE.getChangeInfo_LatestPatchSet();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Revision By Number</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CHANGE_INFO___GET_REVISION_BY_NUMBER__INT = eINSTANCE.getChangeInfo__GetRevisionByNumber__int();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
