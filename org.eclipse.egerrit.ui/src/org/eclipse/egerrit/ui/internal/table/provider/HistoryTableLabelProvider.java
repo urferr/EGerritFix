@@ -68,7 +68,9 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 				}
 				break;
 			case 2:
-				return changeMessageInfo.getMessage().replaceAll("[\\t\\n\\r]", " "); //$NON-NLS-1$//$NON-NLS-2$
+				String msg = changeMessageInfo.getMessage().replaceAll("[\\t\\n\\r]", " "); //$NON-NLS-1$//$NON-NLS-2$
+				msg = msg.replaceFirst("([Pp]atch [Ss]et )(\\d[.:])", "$1 $2");
+				return msg;
 			default:
 				return EMPTY_STRING;
 			}
