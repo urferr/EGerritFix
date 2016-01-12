@@ -26,10 +26,11 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.TreeMap;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -49,6 +50,7 @@ import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
@@ -58,9 +60,9 @@ import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
+import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.emf.databinding.IEMFListProperty;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -351,8 +353,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				Object element = sel.getFirstElement();
-				if (element instanceof FileInfo) {
-					FileInfo selectedFile = (FileInfo) element;
+				if (element instanceof StringToFileInfoImpl) {
+					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
 					OpenCompareEditor compareEditor;
 					if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
 						showEditorTip();
@@ -492,7 +494,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private void setReviewedFlag(Object element) {
 		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-			FileInfo fileInfo = (FileInfo) element;
+			FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
 			if (!fileInfo.isReviewed()) {
 				SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
 						fSelectedRevision.getCommit().getCommit(), fileInfo.getOld_path());
@@ -529,7 +531,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 						Object element = structuredSelection.getFirstElement();
 
-						FileInfo fileInfo = (FileInfo) element;
+						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
 						toggleReviewed(fileInfo);
 
 					}
@@ -578,21 +580,31 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		//Set the FilesViewer
 		if (tableFilesViewer != null) {
+			FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+					ModelPackage.Literals.REVISION_INFO__FILES);
+
+			IObservableList revisionsChanges = EMFProperties.list(changerev).observe(fChangeInfo);
+
+			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__REVIEWED);
+			final FeaturePath status = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__STATUS);
+			final FeaturePath filePath = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__OLD_PATH);
+			final FeaturePath comment = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__NEW_COMMENTS);
+			final FeaturePath size = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__LINES_INSERTED);
+
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableFilesViewer.setContentProvider(contentProvider);
-
-			WritableList writeInfoList = new WritableList(fFilesDisplay.values(), FileInfo.class);
-
-//			IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-//					BeanProperties.values(new String[] { "fileInfo", "comments" }));
-			IObservableMap[] observeMaps = Properties.observeEach(contentProvider.getKnownElements(),
-					BeanProperties.values(new String[] { "fileInfo", "comments", "newComments", "draftComments" }));
-
-//			ViewerSupport.bind(tableFilesViewer, writeInfoList, BeanProperties.values(new String[] { "fileInfo" }));
-			ViewerSupport.bind(tableFilesViewer, writeInfoList,
-					BeanProperties.values(new String[] { "fileInfo", "comments", "newComments", "draftComments" }));
-
-			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(observeMaps));
+			final IObservableMap[] watchedProperties = Properties
+					.observeEach(contentProvider.getKnownElements(),
+							new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(status),
+									EMFProperties.value(filePath), EMFProperties.value(comment),
+									EMFProperties.value(size) });
+			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
+			tableFilesViewer.setInput(revisionsChanges);
 		}
 	}
 
@@ -673,18 +685,23 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	 */
 	//EMF to review
 	private void fillFiles(EMap<String, FileInfo> map) {
-		fFilesDisplay.clear();
-		//Store the files
-		Map<String, FileInfo> displayFilesMap = new HashMap<String, FileInfo>();
-		if (map != null) {
-			//Fill the Files table
-			Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
-			while (fileIter.hasNext()) {
-				Entry<String, FileInfo> entryFile = fileIter.next();
-				displayFilesMap.put(entryFile.getKey(), entryFile.getValue());
-			}
-			setFilesDisplay(displayFilesMap);
-		}
+//		fFilesDisplay.clear();
+//		//Store the files
+//		Map<String, FileInfo> displayFilesMap = new HashMap<String, FileInfo>();
+//		if (map != null) {
+//			//Fill the Files table
+//			Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
+//			while (fileIter.hasNext()) {
+//				Entry<String, FileInfo> entryFile = fileIter.next();
+//				displayFilesMap.put(entryFile.getKey(), entryFile.getValue());
+//			}
+//			setFilesDisplay(displayFilesMap);
+//		}
+		System.out.println("fillFiles() line 701  size: " + map.size());
+		//	fChangeInfo.set(map.values());
+//		fChangeInfo.getRevision().getFiles()xxxxxxxxxxxxxxxxxxxxxx
+//		tableFilesViewer.refresh();
+		//setInput(map);
 	}
 
 	//EMF to review
@@ -723,7 +740,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		setFileTabFields();
 
 		writeInfoList = new WritableList(fFilesDisplay.values(), FileInfo.class);
-		tableFilesViewer.setInput(writeInfoList);
+//		tableFilesViewer.setInput(writeInfoList);
 		tableFilesViewer.refresh();
 	}
 
@@ -885,6 +902,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	}
 
 	private void setCurrentRevision(RevisionInfo revisionInfo) {
+		fChangeInfo.setCurrent_revision(revisionInfo.getId());
 		fSelectedRevision = revisionInfo;
 	}
 

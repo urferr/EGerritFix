@@ -18,6 +18,7 @@ import java.util.Iterator;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -83,10 +84,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	 */
 	@Override
 	public String getColumnText(Object aObj, int aIndex) {
-		// GerritPlugin.Ftracer.traceWarning("getColumnText object: " + aObj
-		// + "\tcolumn: " + aIndex);
-		if (aObj instanceof FileInfo) {
-			FileInfo fileInfo = (FileInfo) aObj;
+		if (aObj instanceof StringToFileInfoImpl) {
+			FileInfo fileInfo = ((StringToFileInfoImpl) aObj).getValue();
 			switch (aIndex) {
 			case 0:
 				return EMPTY_STRING;
@@ -198,10 +197,10 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	public Image getColumnImage(Object aObj, int aIndex) {
 		Image image = null;
 		String value = null;
-		if (aObj instanceof FileInfo) {
+		if (aObj instanceof StringToFileInfoImpl) {
 			switch (aIndex) {
 			case 0:
-				Boolean isReviewed = ((FileInfo) aObj).isReviewed();
+				Boolean isReviewed = ((StringToFileInfoImpl) aObj).getValue().isReviewed();
 				value = isReviewed.toString(); // Needed for the sorter
 				if (null != value && !value.equals(EMPTY_STRING)) {
 					return getReviewedStateImage(Boolean.valueOf(value.toLowerCase()));
