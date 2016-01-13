@@ -16,18 +16,16 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observable;
-import java.util.TreeMap;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
@@ -43,7 +41,6 @@ import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
@@ -124,8 +121,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private final String TITLE = "Gerrit Server ";
 
 	private RevisionInfo fSelectedRevision = null;
-
-	private Map<String, FileInfo> fFilesDisplay = new HashMap<String, FileInfo>();
 
 	private GerritClient gerritClient;
 
@@ -208,13 +203,11 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 						StringToRevisionInfoImpl revInfo = (StringToRevisionInfoImpl) structSel.getFirstElement();
 
 						setCurrentRevision(revInfo.getValue());
-						fillFiles(revInfo.getValue().getFiles());
+						//Adjust the reviewed files and the comments associated to the current patchset
+						setFileTabFields();
+
 						setChanged();
 						notifyObservers();
-
-						setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(),
-								revInfo.getValue().getCommit().getCommit());
-						displayFilesTable();
 
 					}
 				}
@@ -234,7 +227,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// ignore
-
 			}
 
 			@Override
@@ -293,7 +285,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// ignore
-
 			}
 		});
 
@@ -392,19 +383,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		filesTabDataBindings(tableFilesViewer);
 	}
 
-	private boolean canDeleteDraft() {
-		EMap<String, ActionInfo> actions = fSelectedRevision.getActions();
-
-		if (actions != null) {
-			ActionInfo delete = actions.get("publish");
-
-			if (delete != null) {
-				return delete.isEnabled();
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * This method is for the command double click on a row
 	 *
@@ -458,8 +436,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		int lineDeleted = 0;
 		int numDrafts = 0;
 		int numComment = 0;
-		if (!fFilesDisplay.isEmpty()) {
-			Iterator<FileInfo> itr1 = fFilesDisplay.values().iterator();
+
+		RevisionInfo revInfo = fSelectedRevision;
+		EMap<String, FileInfo> mapFiles = revInfo.getFiles();
+		Collection<FileInfo> filesInfo = mapFiles.values();
+
+		if (!filesInfo.isEmpty()) {
+			Iterator<FileInfo> itr1 = filesInfo.iterator();
 			while (itr1.hasNext()) {
 				FileInfo fileInfo = itr1.next();
 				lineInserted += fileInfo.getLines_inserted();
@@ -680,140 +663,84 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		}
 	}
 
-	/**
-	 * @param map
-	 */
-	//EMF to review
-	private void fillFiles(EMap<String, FileInfo> map) {
-//		fFilesDisplay.clear();
-//		//Store the files
-//		Map<String, FileInfo> displayFilesMap = new HashMap<String, FileInfo>();
-//		if (map != null) {
-//			//Fill the Files table
-//			Iterator<Map.Entry<String, FileInfo>> fileIter = map.entrySet().iterator();
-//			while (fileIter.hasNext()) {
-//				Entry<String, FileInfo> entryFile = fileIter.next();
-//				displayFilesMap.put(entryFile.getKey(), entryFile.getValue());
-//			}
-//			setFilesDisplay(displayFilesMap);
-//		}
-		System.out.println("fillFiles() line 701  size: " + map.size());
-		//	fChangeInfo.set(map.values());
-//		fChangeInfo.getRevision().getFiles()xxxxxxxxxxxxxxxxxxxxxx
-//		tableFilesViewer.refresh();
-		//setInput(map);
-	}
+	private void fillReviewedRevisionFileInfo() {
+		RevisionInfo revInfo = fSelectedRevision;
 
-	//EMF to review
-	private void setFilesDisplay(Map<String, FileInfo> displayFilesMap) {
-
-		//Sort the file according to the file path
-		Map<String, FileInfo> sortedMap = new TreeMap<String, FileInfo>(new Comparator<String>() {
-
-			@Override
-			public int compare(String key1, String key2) {
-				return key1.compareTo(key2);
-			}
-		});
-
-		sortedMap.putAll(displayFilesMap);
-		firePropertyChange("fFilesDisplay", this.fFilesDisplay, this.fFilesDisplay = sortedMap); //$NON-NLS-1$
-
-	}
-
-	/**
-	 * Fill the Files table
-	 */
-	private void displayFilesTable() {
-		WritableList writeInfoList;
-		Iterator<Entry<String, FileInfo>> itrFileDisplay = fFilesDisplay.entrySet().iterator();
-		while (itrFileDisplay.hasNext()) {
-			Entry<String, FileInfo> entry1 = itrFileDisplay.next();
-
-//			entry1.getValue().addPropertyChangeListener("fileInfo", this);
-//			entry1.getValue().setOld_path(entry1.getKey());
-//			entry1.getValue().addPropertyChangeListener("FileInfo.newComments", this);
-//			entry1.getValue().addPropertyChangeListener("FileInfo.draftComments", this);
-		}
-
-		//Set the data fields in the Files Tab
-		setFileTabFields();
-
-		writeInfoList = new WritableList(fFilesDisplay.values(), FileInfo.class);
-//		tableFilesViewer.setInput(writeInfoList);
-		tableFilesViewer.refresh();
-	}
-
-	/**
-	 * Fill the data fields included in the Files Tab
-	 */
-	private void setFileTabFields() {
-//		lblDrafts.redraw();
-//		lblComments.redraw();
-//		lblTotal.redraw();
-		computeTotals();
-	}
-
-	/**
-	 * @param GerritClient
-	 *            gerritClient
-	 * @param String
-	 *            changeId
-	 * @param String
-	 *            revisionId
-	 */
-
-	private void setListCommentsPerPatchSet(GerritClient gerritClient, String changeId, String revisionId) {
-
-		Iterator<FileInfo> displayFile = fFilesDisplay.values().iterator();
-		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritClient, changeId, revisionId,
-				new NullProgressMonitor());
-
-		//Fill the Files table
-		while (displayFile.hasNext() && mapCommentInfo != null) {
-			FileInfo displayFileInfo = displayFile.next();
-//			displayFileInfo.setCurrentUser(gerritClient.getRepository().getCredentials().getUsername());
-			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
-			while (commentIter.hasNext()) {
-				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
-				//Add comments associated to the file
-				if (displayFileInfo.getOld_path().equals(entryComment.getKey())) {
-					displayFileInfo.getNewComments().addAll(entryComment.getValue());
-					break;
-				}
-			}
-			// enable reviewed file status
-			if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-				String[] reviewedFiles = queryVerified(gerritClient, changeId, revisionId, new NullProgressMonitor());
-				if (reviewedFiles != null) {//List can be null if there was a conflict  from the query
-					List<String> reviewedFilesList = Arrays.asList(reviewedFiles);
+		// enable reviewed file status
+		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			String[] reviewedFiles = queryVerified(gerritClient, fChangeInfo.getId(), revInfo.getId(),
+					new NullProgressMonitor());
+			if (reviewedFiles != null) {//List can be null if there was a conflict  from the query
+				List<String> reviewedFilesList = Arrays.asList(reviewedFiles);
+				EMap<String, FileInfo> mapFiles = revInfo.getFiles();
+				Iterator<FileInfo> file = mapFiles.values().iterator();
+				while (file.hasNext()) {
+					FileInfo fi = file.next();
 					for (String e : reviewedFilesList) {
-						if (e.compareTo(displayFileInfo.getOld_path()) == 0) {
-							displayFileInfo.setReviewed(true);
+						if (e.compareTo(fi.getOld_path()) == 0) {
+							fi.setReviewed(true);
 						}
 					}
 				}
 			}
 		}
+	}
 
-		Iterator<FileInfo> displayFile2 = fFilesDisplay.values().iterator();
-		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritClient, changeId, revisionId,
-				new NullProgressMonitor());
+	private void fillCommentsRevisionFileInfo() {
+		RevisionInfo revInfo = fSelectedRevision;
+
+		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritClient, fChangeInfo.getId(),
+				revInfo.getId(), new NullProgressMonitor());
+
+		//Fill the Files table with comments
+		EMap<String, FileInfo> mapFiles = revInfo.getFiles();
+		Iterator<FileInfo> file = mapFiles.values().iterator();
+		while (file.hasNext()) {
+			FileInfo fi = file.next();
+			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
+			while (commentIter.hasNext()) {
+				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
+				//Add comments associated to the file
+				if (fi.getOld_path().equals(entryComment.getKey())) {
+					fi.getNewComments().clear();
+					fi.getNewComments().addAll(entryComment.getValue());
+					break;
+				}
+			}
+		}
+
+		//Query for the DRAFTS comments
+		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritClient, fChangeInfo.getId(),
+				revInfo.getId(), new NullProgressMonitor());
 
 		//Fill the Files table
-		while (displayFile2.hasNext() && mapDraftCommentInfo != null) {
-			FileInfo displayFileInfo = displayFile2.next();
+		Iterator<FileInfo> fileIt = mapFiles.values().iterator();
+		while (fileIt.hasNext() && mapDraftCommentInfo != null) {
+			FileInfo displayFileInfo = fileIt.next();
 			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapDraftCommentInfo.entrySet().iterator();
 			while (commentIter.hasNext()) {
 				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
 				//Add comments associated to the file
 				if (displayFileInfo.getOld_path().equals(entryComment.getKey())) {
+					displayFileInfo.getDraftComments().clear();
 					displayFileInfo.getDraftComments().addAll(entryComment.getValue());
 					break;
 				}
 			}
 		}
 
+	}
+
+	/**
+	 * Fill the data fields included in the Files Tab
+	 */
+	private void setFileTabFields() {
+		if (tableFilesViewer != null && !tableFilesViewer.getTable().isDisposed()) {
+			fillReviewedRevisionFileInfo();
+			fillCommentsRevisionFileInfo();
+			tableFilesViewer.refresh();
+			computeTotals();
+		}
 	}
 
 	/***************************************************************/
@@ -1019,12 +946,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		RevisionInfo revInfo = fSelectedRevision;
 
 		setCurrentRevision(revInfo);
-		fillFiles(revInfo.getFiles());
+		setFileTabFields();
 		setChanged();
 		notifyObservers();
-
-		setListCommentsPerPatchSet(gerritClient, fChangeInfo.getId(), revInfo.getCommit().getCommit());
-		displayFilesTable();
 	}
 
 	/**
