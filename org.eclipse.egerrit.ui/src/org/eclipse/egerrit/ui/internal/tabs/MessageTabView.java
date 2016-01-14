@@ -78,8 +78,6 @@ public class MessageTabView extends Observable {
 
 	private final String TITLE = "Gerrit Server ";
 
-	private String fMessageBuffer;
-
 	private GerritClient fGerritClient;
 
 	// ------------------------------------------------------------------------
@@ -145,8 +143,13 @@ public class MessageTabView extends Observable {
 		if (isEditingAllowed()) {
 			ModifyListener textModifiedListener = new ModifyListener() {
 				public void modifyText(ModifyEvent event) {
-					fBtnSave.setEnabled(true);
-					btnCancel.setEnabled(true);
+					if (changeInfo.getRevision().getCommit().getMessage().compareTo(msgTextData.getText()) != 0) {
+						fBtnSave.setEnabled(true);
+						btnCancel.setEnabled(true);
+					} else {
+						fBtnSave.setEnabled(false);
+						btnCancel.setEnabled(false);
+					}
 				}
 			};
 			msgTextData.addModifyListener(textModifiedListener);
