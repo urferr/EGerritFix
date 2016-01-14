@@ -15,10 +15,15 @@
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModifiedChangeInfoImpl;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -88,7 +93,11 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 //	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 //	private static Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 
+	private static final String VERIFIED = "Verified";
+
+	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 	// For the images
+
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
 
 	/**
@@ -197,8 +206,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 * @return String text associated to the column
 	 */
 	public String getColumnText(Object aObj, int aIndex) {
-		if (aObj instanceof ChangeInfo) {
-			ChangeInfo reviewSummary = (ChangeInfo) aObj;
+		if (aObj instanceof ModifiedChangeInfoImpl) {
+			ChangeInfo reviewSummary = (ModifiedChangeInfoImpl) aObj;
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
@@ -225,13 +234,11 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				return Utils.formatDate(reviewSummary.getUpdated(), formatTimeOut);
 			}
 			case 8: {
-				fCodeReviewState = reviewSummary.getCodeReviewedTally();
-
+				fCodeReviewState = verifyTally((CODE_REVIEW), reviewSummary.getLabels());
 				return EMPTY_STRING;
 			}
 			case 9: {
-
-				fVerifyState = reviewSummary.getVerifiedTally();
+				fVerifyState = verifyTally((VERIFIED), reviewSummary.getLabels());
 
 				return EMPTY_STRING;
 			}
@@ -240,6 +247,26 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 			}
 		}
 		return EMPTY_STRING;
+	}
+
+	private int verifyTally(String testLabels, EMap<String, LabelInfo> labels) {
+		int state = 0;
+
+		if (labels != null && labels.get(testLabels) != null) {
+			for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+				if (entry.getKey() != null && entry.getKey().compareTo(testLabels) == 0) {
+					LabelInfo labelInfo = entry.getValue();
+					if (labelInfo.getAll() != null) {
+						for (ApprovalInfo it : labelInfo.getAll()) {
+							if (it.getValue() != null) {
+								state = Utils.getStateValue(it.getValue(), state);
+							}
+						}
+					}
+				}
+			}
+		}
+		return state;
 	}
 
 	/**
@@ -254,8 +281,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	public Image getColumnImage(Object aObj, int aIndex) {
 		Image image = null;
 		String value = null;
-		if (aObj instanceof ChangeInfo) {
-			ChangeInfo reviewSummary = (ChangeInfo) aObj;
+		if (aObj instanceof ModifiedChangeInfoImpl) {
+			ChangeInfo reviewSummary = (ModifiedChangeInfoImpl) aObj;
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
@@ -300,7 +327,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 */
 	@Override
 	public Color getForeground(Object aElement, int aColumnIndex) {
-		if (aElement instanceof ChangeInfo) {
+		if (aElement instanceof ModifiedChangeInfoImpl) {
 			switch (aColumnIndex) {
 			case 1:
 			case 2:
@@ -309,7 +336,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 			case 5:
 			case 6:
 			case 7:
-				ChangeInfo changeInfo = (ChangeInfo) aElement;
+				ChangeInfo changeInfo = (ModifiedChangeInfoImpl) aElement;
 				if (changeInfo.isReviewed()) {
 					return DEFAULT_FOREGROUND_COLOR;
 				} else {
@@ -326,8 +353,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 		// logger.debug("getBackground column : " +
 		// aColumnIndex +
 		// " ]: "+ aElement );
-		if (aElement instanceof ChangeInfo) {
-			ChangeInfo item = (ChangeInfo) aElement;
+		if (aElement instanceof ModifiedChangeInfoImpl) {
+			ChangeInfo item = (ModifiedChangeInfoImpl) aElement;
 			//
 			// To modify when we can verify the review state
 			String state = new Boolean(item.isStarred()).toString();
