@@ -722,6 +722,7 @@ public class SummaryTabView {
 	private void setReviewers(GerritClient gerritClient) {
 		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
 		if (reviewers != null) {
+			fChangeInfo.getReviewers().clear();
 			for (ReviewerInfo reviewerInfo : reviewers) {
 				fChangeInfo.getReviewers().add(reviewerInfo);
 			}
@@ -741,6 +742,7 @@ public class SummaryTabView {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 			if (sameTopicChangeInfo != null) {
+				fChangeInfo.getSameTopic().clear();
 				for (ChangeInfo changeInfo : sameTopicChangeInfo) {
 					fChangeInfo.getSameTopic().add(changeInfo);
 				}
@@ -763,6 +765,7 @@ public class SummaryTabView {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 
+			fChangeInfo.getConflictsWith().clear();
 			for (ChangeInfo changeInfo : conflictsWithChangeInfo) {
 				fChangeInfo.getConflictsWith().add(changeInfo);
 			}
