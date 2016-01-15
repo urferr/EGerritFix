@@ -232,6 +232,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		//This query fill the current revision
 		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
 
+		//Initialize the files tab with the latest patch-set
+		filesTab.setInitPatchSet();
+
 		//Queries to fill the Summary Review tab data
 		if (summaryTab != null) {
 			summaryTab.setTabs(fGerritClient, fChangeInfo);
@@ -987,8 +990,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.getRevisions().clear();
 			fChangeInfo.getRevisions().addAll(res.getRevisions());
 
-			//Initialize the files tab with the latest patch-set
-			filesTab.setInitPatchSet();
 		}
 
 	}

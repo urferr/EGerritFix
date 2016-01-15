@@ -14,10 +14,14 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -46,6 +50,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.core.rest.AddReviewerResult;
 import org.eclipse.egerrit.core.rest.TopicInput;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.IncludedInInfo;
 import org.eclipse.egerrit.internal.model.MergeableInfo;
@@ -68,6 +73,7 @@ import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
@@ -1161,11 +1167,77 @@ public class SummaryTabView {
 		tableReviewersViewer
 				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVIEWERS).observe(fChangeInfo));
 
+		//Adjust the reviewers vote
+		final IObservableList<ReviewerInfo> observedList = EMFObservables.observeList(fChangeInfo,
+				ModelPackage.Literals.CHANGE_INFO__REVIEWERS);
+
+		ComputedValue<String> cv = new ComputedValue<String>() {
+			@Override
+			protected String calculate() {
+				HashMap<String, Integer> hashMap = extractReviewerApprovals(observedList);
+				//Now sort and Display the vote:
+				return formatReviewersVote(hashMap);
+			}
+
+			/**
+			 * @param vote
+			 * @param hashMap
+			 * @return String
+			 */
+			private String formatReviewersVote(HashMap<String, Integer> hashMap) {
+				SortedMap<String, Integer> sortedMap = new TreeMap<String, Integer>(hashMap);
+				StringBuilder sb = new StringBuilder();
+				if (!sortedMap.isEmpty()) {
+					Iterator<Entry<String, Integer>> iterSorted = sortedMap.entrySet().iterator();
+					while (iterSorted.hasNext()) {
+						String vote = ""; //$NON-NLS-1$
+						Entry<String, Integer> entry = iterSorted.next();
+						if (entry.getValue() > 0) {
+							vote = "+"; //$NON-NLS-1$
+						}
+						vote = vote.concat(Integer.toString(entry.getValue()));
+						sb.append(entry.getKey());
+						sb.append(": "); //$NON-NLS-1$
+						sb.append(vote);
+						sb.append("  "); //$NON-NLS-1$
+					}
+				}
+				return sb.toString().trim();
+			}
+
+			/**
+			 * @param observedList
+			 * @return HashMap
+			 */
+			private HashMap<String, Integer> extractReviewerApprovals(
+					final IObservableList<ReviewerInfo> observedList) {
+				Iterator<ReviewerInfo> iter = observedList.iterator();
+				HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+				while (iter.hasNext()) {
+					ReviewerInfo revInfo = iter.next();
+					EMap<String, String> approvals = revInfo.getApprovals();
+					Iterator<Entry<String, String>> approvalIter = approvals.iterator();
+					while (approvalIter.hasNext()) {
+						Entry<String, String> entry = approvalIter.next();
+						//Verify if we have that key
+						if (!hashMap.containsKey(entry.getKey())) {
+							hashMap.put(entry.getKey(), 0);
+						}
+						int oldValue = hashMap.get(entry.getKey());
+						int sumValue = Utils.getStateValue(Integer.parseInt(entry.getValue().trim()), oldValue);
+						hashMap.put(entry.getKey(), sumValue);
+					}
+				}
+				return hashMap;
+			}
+
+		};
+
+		ISWTObservableValue o = WidgetProperties.text().observe(genVoteData);
+		new DataBindingContext().bindValue(o, cv, null, null);
 	}
 
 	protected void sumIncludedDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
-
 		hookBranches();
 		hookTags();
 	}
