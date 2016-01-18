@@ -1243,7 +1243,7 @@ public class SummaryTabView {
 	}
 
 	private void hookTags() {
-		//Hook the branches
+		//Hook the tags
 		FeaturePath fp = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN,
 				ModelPackage.Literals.INCLUDED_IN_INFO__TAGS);
 		IEMFListProperty includedTags = EMFProperties.list(fp);
@@ -1256,13 +1256,17 @@ public class SummaryTabView {
 				String result = ""; //$NON-NLS-1$
 				while (it.hasNext()) {
 					Object object = it.next();
-					result += object.toString() + " "; //$NON-NLS-1$
+					result += object.toString() + ", "; //$NON-NLS-1$
+				}
+				if (!result.isEmpty()) {
+					int last = result.lastIndexOf(","); //$NON-NLS-1$
+					result = result.substring(0, last);
 				}
 				return result;
 			}
 
 		};
-		ISWTObservableValue o = WidgetProperties.text().observe(incBranchesData);
+		ISWTObservableValue o = WidgetProperties.text().observe(includedInTagsData);
 		new DataBindingContext().bindValue(o, cv, null, null);
 
 	}
@@ -1281,7 +1285,11 @@ public class SummaryTabView {
 				String result = ""; //$NON-NLS-1$
 				while (it.hasNext()) {
 					Object object = it.next();
-					result += object.toString() + " "; //$NON-NLS-1$
+					result += object.toString() + ", "; //$NON-NLS-1$
+				}
+				if (!result.isEmpty()) {
+					int last = result.lastIndexOf(","); //$NON-NLS-1$
+					result = result.substring(0, last);
 				}
 				return result;
 			}
