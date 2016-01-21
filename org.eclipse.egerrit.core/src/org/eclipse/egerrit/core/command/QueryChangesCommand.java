@@ -78,6 +78,14 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		addQuery("conflicts:" + changeId); //$NON-NLS-1$
 	}
 
+	public void addStatus(String status) {
+		addQuery("status:" + status); //$NON-NLS-1$
+	}
+
+	public void addMergeable() {
+		addQuery("is:mergeable"); //$NON-NLS-1$
+	}
+
 	@Override
 	//We only need to override this method because we want to force only one query string
 	public ChangeInfo[] call() throws EGerritException {

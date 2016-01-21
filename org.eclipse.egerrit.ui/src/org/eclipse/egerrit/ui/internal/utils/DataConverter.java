@@ -21,8 +21,10 @@ import java.util.TimeZone;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.GitPersonInfo;
+import org.eclipse.egerrit.internal.model.MergeableInfo;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
@@ -93,18 +95,19 @@ public class DataConverter {
 	}
 
 	/**
-	 * @param type
-	 *            String
+	 * @param fChangeInfo
+	 *            ChangeInfo
 	 * @return an IConverter from the Submit type structure to a format to display
 	 */
-	public static IConverter submitTypeConverter(final String type) {
-		IConverter converter = new Converter(type, null) {
+	public static IConverter submitTypeConverter(final ChangeInfo fChangeInfo) {
+		IConverter converter = new Converter(MergeableInfo.class, String.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
 
 				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
-					return SubmitType.valueOf((String) fromObject).getValue();
+					MergeableInfo mInfo = (MergeableInfo) fromObject;
+					return SubmitType.getEnumName(mInfo.getSubmit_type());
 				} else {
 					return null;
 				}

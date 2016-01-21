@@ -14,6 +14,7 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -368,16 +369,6 @@ public class SummaryTabView {
 		genMessageData.setLayoutData(gd_genMessageData);
 		genMessageData.setForeground(RED);
 
-		if ("MERGED".equals(fChangeInfo.getStatus()) //$NON-NLS-1$
-				|| "ABANDONED".equals(fChangeInfo.getStatus())) { //$NON-NLS-1$
-			lblStrategy.setVisible(false);
-			lblStrategyGridData.exclude = true;
-			genStrategyData.setVisible(false);
-			gd_genStrategyData.exclude = true;
-			genMessageData.setVisible(false);
-			gd_genMessageData.exclude = true;
-
-		}
 		//Updated line
 		Label lblUpdated = new Label(composite, SWT.NONE);
 		lblUpdated.setText("Updated:");
@@ -741,7 +732,7 @@ public class SummaryTabView {
 	 */
 	private void setSameTopic(GerritClient gerritClient, ChangeInfo element) {
 		ChangeInfo[] sameTopicChangeInfo = null;
-		if (element.getTopic() != null) {
+		if (element.getTopic() != null && fChangeInfo.getChange_id().compareTo(element.getChange_id()) != 0) {
 			try {
 				sameTopicChangeInfo = querySameTopic(gerritClient, element.getTopic(), new NullProgressMonitor());
 			} catch (MalformedURLException e) {
@@ -770,12 +761,23 @@ public class SummaryTabView {
 			} catch (MalformedURLException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
+			List<ChangeInfo> conflictsWithChangeInfolist = null;
+			List<ChangeInfo> conflictsWithChangeInfolistNew = new ArrayList<ChangeInfo>();
+			if (conflictsWithChangeInfo != null) {
+				conflictsWithChangeInfolist = Arrays.asList(conflictsWithChangeInfo);
+
+				for (int i = 0; i < conflictsWithChangeInfolist.size(); i++) {
+					if (conflictsWithChangeInfolist.get(i).getChange_id().compareTo(fChangeInfo.getChange_id()) != 0) {
+						conflictsWithChangeInfolistNew.add(conflictsWithChangeInfolist.remove(i));
+					}
+
+				}
+			}
 
 			fChangeInfo.getConflictsWith().clear();
-			for (ChangeInfo changeInfo : conflictsWithChangeInfo) {
-				fChangeInfo.getConflictsWith().add(changeInfo);
-			}
+			fChangeInfo.getConflictsWith().addAll(conflictsWithChangeInfolistNew);
 		}
+
 	}
 
 	/***************************************************************/
@@ -910,6 +912,8 @@ public class SummaryTabView {
 			// Create query
 			QueryChangesCommand command = gerritClient.queryChanges();
 			command.addConflicts(change_id);
+			command.addMergeable();
+			command.addStatus("NEW"); //$NON-NLS-1$
 
 			try {
 				res = command.call();
@@ -1107,30 +1111,24 @@ public class SummaryTabView {
 		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
-		//show submit type
-		//EMF do something here
-//		IObservableValue bytesMergeableinfogetSubmit_typeObserveValue = EMFProperties
-//				.value(ModelPackage.Literals.CHANGE_INFO__).observe(fChangeInfo);
-//		bindingContext.bindValue(
-//				//
-//				WidgetProperties.text().observe(genStrategyData), //
-//				bytesMergeableinfogetSubmit_typeObserveValue, //
-//				new UpdateValueStrategy()
-//						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())),
-//				new UpdateValueStrategy()
-//						.setConverter(DataConverter.submitTypeConverter(fMergeableInfo.getSubmit_type())));
+		//Show mergeableinfo
+		IObservableValue<String> mergeSubmitValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
+
+		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fChangeInfo)));
 
 		//Show mergeable status
-		IObservableValue mergeableFMergeableInfoObserveValue = EMFProperties
+		IObservableValue mergeableMergeableInfoObserveValue = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
-		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableFMergeableInfoObserveValue,
+		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableMergeableInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
 		//Hide the "Strategy: ...." line if the review has been merged.
 		UpdateValueStrategy hideWidgetsStrategy = new UpdateValueStrategy() {
 			@Override
 			protected IStatus doSet(IObservableValue observableValue, Object value) {
-				Boolean visible = null;
+				Boolean visible = Boolean.TRUE;
 				if ("MERGED".equals(value) //$NON-NLS-1$
 						|| "ABANDONED".equals(value)) { //$NON-NLS-1$
 					visible = Boolean.FALSE;

@@ -37,16 +37,16 @@ public enum SubmitType {
 	}
 
 	public static String getEnumName(String st) {
-		if (st.equals(Messages.FastForwardOnly)) {
-			return SubmitType.FAST_FORWARD_ONLY.name();
-		} else if (st.equals(Messages.MergeIfNecessary)) {
-			return SubmitType.MERGE_IF_NECESSARY.name();
-		} else if (st.equals(Messages.RebaseIfNecessary)) {
-			return SubmitType.REBASE_IF_NECESSARY.name();
-		} else if (st.equals(Messages.MergeAlways)) {
-			return SubmitType.MERGE_ALWAYS.name();
-		} else if (st.equals(Messages.CherryPick)) {
-			return SubmitType.CHERRY_PICK.name();
+		if (st.equals(SubmitType.FAST_FORWARD_ONLY.name())) {
+			return Messages.FastForwardOnly;
+		} else if (st.equals(SubmitType.MERGE_IF_NECESSARY.name())) {
+			return Messages.MergeIfNecessary;
+		} else if (st.equals(SubmitType.REBASE_IF_NECESSARY.name())) {
+			return Messages.RebaseIfNecessary;
+		} else if (st.equals(SubmitType.MERGE_ALWAYS.name())) {
+			return Messages.MergeAlways;
+		} else if (st.equals(SubmitType.CHERRY_PICK.name())) {
+			return Messages.CherryPick;
 		} else {
 			return ""; //$NON-NLS-1$
 		}
