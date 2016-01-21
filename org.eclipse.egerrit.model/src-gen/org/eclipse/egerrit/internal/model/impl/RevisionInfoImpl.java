@@ -11,6 +11,7 @@
  */
 package org.eclipse.egerrit.internal.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
@@ -19,6 +20,7 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -471,6 +473,18 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @generated
 	 */
 	@Override
+	public boolean isActionAllowed(String action) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.REVISION_INFO__FETCH:
@@ -640,6 +654,20 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+		case ModelPackage.REVISION_INFO___IS_ACTION_ALLOWED__STRING:
+			return isActionAllowed((String) arguments.get(0));
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	/**

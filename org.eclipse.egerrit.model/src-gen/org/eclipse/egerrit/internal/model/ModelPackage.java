@@ -2384,13 +2384,22 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO_FEATURE_COUNT = 10;
 
 	/**
+	 * The operation id for the '<em>Is Action Allowed</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO___IS_ACTION_ALLOWED__STRING = 0;
+
+	/**
 	 * The number of operations of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_OPERATION_COUNT = 0;
+	int REVISION_INFO_OPERATION_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.
@@ -4627,6 +4636,16 @@ public interface ModelPackage extends EPackage {
 	EAttribute getRevisionInfo_Id();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Is Action Allowed</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String)
+	 * @generated
+	 */
+	EOperation getRevisionInfo__IsActionAllowed__String();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo <em>Suggest Reviewer Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6342,6 +6361,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute REVISION_INFO__ID = eINSTANCE.getRevisionInfo_Id();
+
+		/**
+		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation REVISION_INFO___IS_ACTION_ALLOWED__STRING = eINSTANCE.getRevisionInfo__IsActionAllowed__String();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.

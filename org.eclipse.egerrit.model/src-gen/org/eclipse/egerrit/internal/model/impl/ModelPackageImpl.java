@@ -2293,6 +2293,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EOperation getRevisionInfo__IsActionAllowed__String() {
+		return revisionInfoEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getSuggestReviewerInfo() {
 		return suggestReviewerInfoEClass;
 	}
@@ -2620,6 +2630,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(revisionInfoEClass, REVISION_INFO__ACTIONS);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__REVIEWED);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__ID);
+		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
 
 		suggestReviewerInfoEClass = createEClass(SUGGEST_REVIEWER_INFO);
 		createEReference(suggestReviewerInfoEClass, SUGGEST_REVIEWER_INFO__ACCOUNT);
@@ -3166,6 +3177,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				!IS_DERIVED, IS_ORDERED);
 		initEAttribute(getRevisionInfo_Id(), ecorePackage.getEString(), "id", null, 0, 1, RevisionInfo.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		op = initEOperation(getRevisionInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", //$NON-NLS-1$
+				0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "action", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(suggestReviewerInfoEClass, SuggestReviewerInfo.class, "SuggestReviewerInfo", !IS_ABSTRACT, //$NON-NLS-1$
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

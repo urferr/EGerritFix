@@ -14,4 +14,11 @@ public class ModifiedEGerritFactory extends ModelFactoryImpl {
 		CommitInfo commitInfo = new ModifiedCommitInfoImpl();
 		return commitInfo;
 	}
+
+	@Override
+	public RevisionInfo createRevisionInfo() {
+		RevisionInfo revisionInfo = new ModifiedRevisionInfoImpl();
+		return revisionInfo;
+	}
+
 }
