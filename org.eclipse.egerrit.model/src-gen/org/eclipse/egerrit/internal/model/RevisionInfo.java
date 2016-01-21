@@ -273,4 +273,12 @@ public interface RevisionInfo extends EObject {
 	 */
 	void setId(String value);
 
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	boolean isActionAllowed(String action);
+
 } // RevisionInfo

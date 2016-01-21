@@ -831,6 +831,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private void setCurrentRevision(RevisionInfo revisionInfo) {
 		fChangeInfo.setCurrent_revision(revisionInfo.getId());
 		fSelectedRevision = revisionInfo;
+		fDeleteDraftRevisionButton.setEnabled(
+				fChangeInfo.getStatus().compareTo("DRAFT") == 0 && fSelectedRevision.isActionAllowed("publish")); //$NON-NLS-1$
 	}
 
 	/**
