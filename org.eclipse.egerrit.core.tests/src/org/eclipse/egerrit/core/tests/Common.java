@@ -26,11 +26,11 @@ public class Common {
 
 	public static final String SCHEME = "http";
 
-	public static final String HOST = "192.168.50.4";
+	public static final String HOST = "localhost";
 
 	public static final int PORT = 28112;
 
-	public static final String PATH = "/gerrit-2.11.2";
+	public static final String PATH = "";
 
 	public static final String PROXY_HOST = null;
 
@@ -44,7 +44,7 @@ public class Common {
 
 	public static final String EMAIL = "admin@egerrit.eclipse.org";
 
-	public static final String GERRIT_VERSION = "2.11.2";
+	public static final String GERRIT_VERSION = "2.11.5";
 
 	public static final String CHANGES_PATH = PATH + "/changes/";
 }
