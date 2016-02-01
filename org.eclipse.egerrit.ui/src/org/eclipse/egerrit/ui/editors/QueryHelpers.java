@@ -12,15 +12,24 @@
 package org.eclipse.egerrit.ui.editors;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
+import org.eclipse.egerrit.core.command.ListCommentsCommand;
+import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 
 /**
  * A helper class wrapping the common server queries.
@@ -103,6 +112,67 @@ public class QueryHelpers {
 			return null;
 		} finally {
 			monitor.done();
+		}
+	}
+
+	/**
+	 * Load comments for the given revision
+	 */
+	public static void loadComments(GerritClient gerrit, RevisionInfo revision) {
+		ListCommentsCommand command = gerrit.getListComments(revision.getChangeInfo().getId(), revision.getId());
+		if (revision.isCommentsLoaded()) {
+			return;
+		}
+		Map<String, ArrayList<CommentInfo>> comments = null;
+		try {
+			comments = command.call();
+			revision.setCommentsLoaded(true);
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
+			return;
+		}
+
+		//Load the comments and set them in the fileInfo object
+		for (Entry<String, ArrayList<CommentInfo>> fileComment : comments.entrySet()) {
+			FileInfo files = revision.getFiles().get(fileComment.getKey());
+			files.getComments().clear();
+			files.getComments().addAll(fileComment.getValue());
+		}
+	}
+
+	public static void loadDrafts(GerritClient gerrit, RevisionInfo revision) {
+		if (gerrit.getRepository().getServerInfo().isAnonymous()) {
+			return;
+		}
+		ListDraftsCommand command = gerrit.listDraftsComments(revision.getChangeInfo().getId(), revision.getId());
+		Map<String, ArrayList<CommentInfo>> drafts = null;
+		try {
+			drafts = command.call();
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
+			return;
+		}
+		for (Entry<String, ArrayList<CommentInfo>> draftComment : drafts.entrySet()) {
+			FileInfo files = revision.getFiles().get(draftComment.getKey());
+			files.getDraftComments().clear();
+			files.getDraftComments().addAll(draftComment.getValue());
+		}
+	}
+
+	public static void markAsReviewed(GerritClient gerrit, FileInfo fileInfo) {
+		if (gerrit.getRepository().getServerInfo().isAnonymous()) {
+			return;
+		}
+		if (fileInfo.isReviewed()) {
+			return;
+		}
+		SetReviewedCommand command = gerrit.setReviewed(fileInfo.getRevision().getChangeInfo().getId(),
+				fileInfo.getRevision().getId(), fileInfo.getPath());
+		try {
+			command.call();
+			fileInfo.setReviewed(true);
+		} catch (EGerritException ex) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + ex.getMessage());
 		}
 	}
 }

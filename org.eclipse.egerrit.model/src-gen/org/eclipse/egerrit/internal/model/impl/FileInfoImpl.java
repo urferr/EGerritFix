@@ -11,6 +11,7 @@
  */
 package org.eclipse.egerrit.internal.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -39,8 +40,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getOld_path <em>Old path</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getLines_inserted <em>Lines inserted</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getLines_deleted <em>Lines deleted</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getContainedIn <em>Contained In</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getNewComments <em>New Comments</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getComments <em>Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getDraftComments <em>Draft Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#isReviewed <em>Reviewed</em>}</li>
  * </ul>
@@ -149,24 +149,14 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	protected int lines_deleted = LINES_DELETED_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getContainedIn() <em>Contained In</em>}' reference.
+	 * The cached value of the '{@link #getComments() <em>Comments</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getContainedIn()
+	 * @see #getComments()
 	 * @generated
 	 * @ordered
 	 */
-	protected RevisionInfo containedIn;
-
-	/**
-	 * The cached value of the '{@link #getNewComments() <em>New Comments</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getNewComments()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<CommentInfo> newComments;
+	protected EList<CommentInfo> comments;
 
 	/**
 	 * The cached value of the '{@link #getDraftComments() <em>Draft Comments</em>}' containment reference list.
@@ -341,54 +331,12 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	 * @generated
 	 */
 	@Override
-	public RevisionInfo getContainedIn() {
-		if (containedIn != null && containedIn.eIsProxy()) {
-			InternalEObject oldContainedIn = (InternalEObject) containedIn;
-			containedIn = (RevisionInfo) eResolveProxy(oldContainedIn);
-			if (containedIn != oldContainedIn) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModelPackage.FILE_INFO__CONTAINED_IN,
-							oldContainedIn, containedIn));
-			}
+	public EList<CommentInfo> getComments() {
+		if (comments == null) {
+			comments = new EObjectContainmentEList<CommentInfo>(CommentInfo.class, this,
+					ModelPackage.FILE_INFO__COMMENTS);
 		}
-		return containedIn;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public RevisionInfo basicGetContainedIn() {
-		return containedIn;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setContainedIn(RevisionInfo newContainedIn) {
-		RevisionInfo oldContainedIn = containedIn;
-		containedIn = newContainedIn;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.FILE_INFO__CONTAINED_IN, oldContainedIn,
-					containedIn));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<CommentInfo> getNewComments() {
-		if (newComments == null) {
-			newComments = new EObjectContainmentEList<CommentInfo>(CommentInfo.class, this,
-					ModelPackage.FILE_INFO__NEW_COMMENTS);
-		}
-		return newComments;
+		return comments;
 	}
 
 	/**
@@ -435,10 +383,46 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	 * @generated
 	 */
 	@Override
+	public String getPath() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public RevisionInfo getRevision() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<CommentInfo> getAllComments() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
-			return ((InternalEList<?>) getNewComments()).basicRemove(otherEnd, msgs);
+		case ModelPackage.FILE_INFO__COMMENTS:
+			return ((InternalEList<?>) getComments()).basicRemove(otherEnd, msgs);
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			return ((InternalEList<?>) getDraftComments()).basicRemove(otherEnd, msgs);
 		}
@@ -463,12 +447,8 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 			return getLines_inserted();
 		case ModelPackage.FILE_INFO__LINES_DELETED:
 			return getLines_deleted();
-		case ModelPackage.FILE_INFO__CONTAINED_IN:
-			if (resolve)
-				return getContainedIn();
-			return basicGetContainedIn();
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
-			return getNewComments();
+		case ModelPackage.FILE_INFO__COMMENTS:
+			return getComments();
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			return getDraftComments();
 		case ModelPackage.FILE_INFO__REVIEWED:
@@ -501,12 +481,9 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 		case ModelPackage.FILE_INFO__LINES_DELETED:
 			setLines_deleted((Integer) newValue);
 			return;
-		case ModelPackage.FILE_INFO__CONTAINED_IN:
-			setContainedIn((RevisionInfo) newValue);
-			return;
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
-			getNewComments().clear();
-			getNewComments().addAll((Collection<? extends CommentInfo>) newValue);
+		case ModelPackage.FILE_INFO__COMMENTS:
+			getComments().clear();
+			getComments().addAll((Collection<? extends CommentInfo>) newValue);
 			return;
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			getDraftComments().clear();
@@ -542,11 +519,8 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 		case ModelPackage.FILE_INFO__LINES_DELETED:
 			setLines_deleted(LINES_DELETED_EDEFAULT);
 			return;
-		case ModelPackage.FILE_INFO__CONTAINED_IN:
-			setContainedIn((RevisionInfo) null);
-			return;
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
-			getNewComments().clear();
+		case ModelPackage.FILE_INFO__COMMENTS:
+			getComments().clear();
 			return;
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			getDraftComments().clear();
@@ -576,16 +550,32 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 			return lines_inserted != LINES_INSERTED_EDEFAULT;
 		case ModelPackage.FILE_INFO__LINES_DELETED:
 			return lines_deleted != LINES_DELETED_EDEFAULT;
-		case ModelPackage.FILE_INFO__CONTAINED_IN:
-			return containedIn != null;
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
-			return newComments != null && !newComments.isEmpty();
+		case ModelPackage.FILE_INFO__COMMENTS:
+			return comments != null && !comments.isEmpty();
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			return draftComments != null && !draftComments.isEmpty();
 		case ModelPackage.FILE_INFO__REVIEWED:
 			return reviewed != REVIEWED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+		case ModelPackage.FILE_INFO___GET_PATH:
+			return getPath();
+		case ModelPackage.FILE_INFO___GET_REVISION:
+			return getRevision();
+		case ModelPackage.FILE_INFO___GET_ALL_COMMENTS:
+			return getAllComments();
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	/**

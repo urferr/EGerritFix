@@ -15,17 +15,11 @@ package org.eclipse.egerrit.core.command;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.emf.common.util.EMap;
 
 /**
  * The command GET /changes
@@ -105,31 +99,5 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 			}
 		}
 		return super.call();
-	}
-
-	@Override
-	//EMF - do we need to keep this
-	protected ChangeInfo[] postProcessResult(ChangeInfo[] results) {
-		for (ChangeInfo changeInfo : results) {
-			EMap<String, RevisionInfo> map = changeInfo.getRevisions();
-			if (map != null) {
-				Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
-				while (revisions.hasNext()) {
-					Entry<String, RevisionInfo> revisionEntry = revisions.next();
-					RevisionInfo theRevision = revisionEntry.getValue();
-					theRevision.setId(revisionEntry.getKey());
-					EMap<String, FileInfo> filesMap = theRevision.getFiles();
-					if (filesMap != null) {
-						Iterator<Map.Entry<String, FileInfo>> files = filesMap.entrySet().iterator();
-						while (files.hasNext()) {
-							Entry<String, FileInfo> aFile = files.next();
-							aFile.getValue().setOld_path(aFile.getKey());
-							aFile.getValue().setContainedIn(theRevision);
-						}
-					}
-				}
-			}
-		}
-		return results;
 	}
 }

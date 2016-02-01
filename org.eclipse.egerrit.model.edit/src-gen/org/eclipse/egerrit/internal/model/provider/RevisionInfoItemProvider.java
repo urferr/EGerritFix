@@ -74,7 +74,7 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 			add_numberPropertyDescriptor(object);
 			addRefPropertyDescriptor(object);
 			addReviewedPropertyDescriptor(object);
-			addIdPropertyDescriptor(object);
+			addCommentsLoadedPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -160,19 +160,19 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
-	 * This adds a property descriptor for the Id feature.
+	 * This adds a property descriptor for the Comments Loaded feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addIdPropertyDescriptor(Object object) {
+	protected void addCommentsLoadedPropertyDescriptor(Object object) {
 		itemPropertyDescriptors
 				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_RevisionInfo_id_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_id_feature", //$NON-NLS-1$//$NON-NLS-2$
+						getResourceLocator(), getString("_UI_RevisionInfo_commentsLoaded_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_commentsLoaded_feature", //$NON-NLS-1$//$NON-NLS-2$
 								"_UI_RevisionInfo_type"), //$NON-NLS-1$
-						ModelPackage.Literals.REVISION_INFO__ID, true, false, false,
-						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+						ModelPackage.Literals.REVISION_INFO__COMMENTS_LOADED, true, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -227,10 +227,8 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((RevisionInfo) object).getId();
-		return label == null || label.length() == 0 ? getString("_UI_RevisionInfo_type") //$NON-NLS-1$
-				:
-				getString("_UI_RevisionInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
+		RevisionInfo revisionInfo = (RevisionInfo) object;
+		return getString("_UI_RevisionInfo_type") + " " + revisionInfo.isDraft(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -250,7 +248,7 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.REVISION_INFO__NUMBER:
 		case ModelPackage.REVISION_INFO__REF:
 		case ModelPackage.REVISION_INFO__REVIEWED:
-		case ModelPackage.REVISION_INFO__ID:
+		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.REVISION_INFO__FETCH:

@@ -14,11 +14,13 @@ package org.eclipse.egerrit.core.rest;
 
 import java.sql.Timestamp;
 
+import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.CommentRange;
 
 /**
- * Data model object for <a
- * href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#comment-input">CommentInput</a> and
+ * Data model object for
+ * <a href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#comment-input">CommentInput</a>
+ * and
  * <a href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#comment-info">CommentInput</a>.
  */
 public class CommentInput {
@@ -87,4 +89,21 @@ public class CommentInput {
 		this.message = message;
 	}
 
+	public static CommentInput fromCommentInfo(CommentInfo info) {
+		CommentInput input = new CommentInput();
+		input.id = info.getId();
+		input.path = info.getPath();
+		input.side = info.getSide();
+		input.line = info.getLine();
+
+		input.in_reply_to = info.getInReplyTo();
+		input.message = info.getMessage();
+		input.range = info.getRange();
+
+		return input;
+		// The URL encoded UUID of the comment to which this comment is a reply.
+//		private String in_reply_to;
+
+//		private Timestamp updated;
+	}
 }

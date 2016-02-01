@@ -14,21 +14,32 @@ package org.eclipse.egerrit.ui.editors.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.compare.IEditableContent;
 import org.eclipse.compare.IModificationDate;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftCommand;
+import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.CommentInput;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.ui.editors.QueryHelpers;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.graphics.Image;
 import org.slf4j.Logger;
@@ -44,8 +55,6 @@ public class PatchSetCompareItem extends Document
 		implements ITypedElement, IModificationDate, IEditableContent, IStreamContentAccessor {
 	private Logger logger = LoggerFactory.getLogger(PatchSetCompareItem.class);
 
-	private String fileName;
-
 	private IDocument originalDocument;
 
 	private AnnotationModel originalComments;
@@ -56,13 +65,9 @@ public class PatchSetCompareItem extends Document
 
 //	private final long time;
 
-	private String change_id;
-
 	private FileInfo fileInfo;
 
-	void setFilename(String name) {
-		this.fileName = name;
-	}
+	private boolean dataLoaded = false; //Indicate whether the data has been retrieved from the server
 
 	void setOriginalDocument(IDocument documentWithComments) {
 		this.originalDocument = documentWithComments;
@@ -80,12 +85,8 @@ public class PatchSetCompareItem extends Document
 		this.gerrit = gerrit;
 	}
 
-	void setRevision(FileInfo fileInfo) {
+	void setFile(FileInfo fileInfo) {
 		this.fileInfo = fileInfo;
-	}
-
-	void setChange_id(String change_id) {
-		this.change_id = change_id;
 	}
 
 	@Override
@@ -101,8 +102,8 @@ public class PatchSetCompareItem extends Document
 
 	@Override
 	public String getName() {
-		return "Patch Set " + fileInfo.getContainedIn().get_number() + ": " //$NON-NLS-1$ //$NON-NLS-2$
-				+ GerritCompareHelper.extractFilename(fileName);
+		return "Patch Set " + fileInfo.getRevision().get_number() + ": " //$NON-NLS-1$ //$NON-NLS-2$
+				+ GerritCompareHelper.extractFilename(fileInfo.getPath());
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class PatchSetCompareItem extends Document
 
 	@Override
 	public boolean isEditable() {
-		return true;
+		return !gerrit.getRepository().getServerInfo().isAnonymous();
 	}
 
 	@Override
@@ -123,12 +124,12 @@ public class PatchSetCompareItem extends Document
 				+ extractor.getRemovedComments().size() + " modifications: " + extractor.getModifiedComments().size()); //$NON-NLS-1$
 		extractor.extractComments(originalDocument, originalComments, this, editableComments);
 		for (CommentInfo newComment : extractor.getAddedComments()) {
-			CreateDraftCommand publishDraft = gerrit.createDraftComments(change_id, fileInfo.getContainedIn().getId());
+			CreateDraftCommand publishDraft = gerrit.createDraftComments(getChangeId(), fileInfo.getRevision().getId());
 			publishDraft.setCommandInput(newComment);
-			newComment.setPath(fileName);
+			newComment.setPath(fileInfo.getPath());
 			try {
-				logger.debug("Adding comment: " + newComment);
-				publishDraft.call();
+				logger.debug("Adding comment: " + newComment); //$NON-NLS-1$
+				fileInfo.getDraftComments().add(publishDraft.call());
 			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
@@ -137,11 +138,12 @@ public class PatchSetCompareItem extends Document
 			}
 		}
 		for (CommentInfo deletedComment : extractor.getRemovedComments()) {
-			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(change_id, fileInfo.getContainedIn().getId(),
+			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(getChangeId(), fileInfo.getRevision().getId(),
 					deletedComment.getId());
 			try {
-				logger.debug("Deleting comment: " + deletedComment);
+				logger.debug("Deleting comment: " + deletedComment); //$NON-NLS-1$
 				deleteDraft.call();
+				fileInfo.getDraftComments().remove(deletedComment);
 			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
@@ -150,12 +152,13 @@ public class PatchSetCompareItem extends Document
 			}
 		}
 		for (CommentInfo modifiedComment : extractor.getModifiedComments()) {
-			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(change_id, fileInfo.getContainedIn().getId(),
+			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(getChangeId(), fileInfo.getRevision().getId(),
 					modifiedComment.getId());
-			modifyDraft.setCommandInput(modifiedComment);
+			modifyDraft.setCommandInput(CommentInput.fromCommentInfo(modifiedComment));
 			try {
-				logger.debug("Modifying comment: " + modifiedComment);
+				logger.debug("Modifying comment: " + modifiedComment); //$NON-NLS-1$
 				modifyDraft.call();
+				//Don't need to update the fileInfo structure like we do in other blocks
 			} catch (EGerritException e) {
 				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
 				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
@@ -163,6 +166,36 @@ public class PatchSetCompareItem extends Document
 						new Throwable(String.valueOf(hashCode())));
 			}
 		}
+	}
+
+	private String loadFileContent() {
+		String fileContent = null;
+		// Create query
+		GetContentCommand command = gerrit.getContent(getChangeId(), fileInfo.getRevision().getId(),
+				fileInfo.getPath());
+
+		if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
+			try {
+				fileContent = command.call();
+				if (fileContent == null) {
+					fileContent = ""; //$NON-NLS-1$
+				}
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
+			}
+		} else {
+			fileContent = ""; //$NON-NLS-1$
+		}
+		return fileContent;
+	}
+
+	private void loadComments() {
+		QueryHelpers.loadComments(gerrit, fileInfo.getRevision());
+		QueryHelpers.loadDrafts(gerrit, fileInfo.getRevision());
+	}
+
+	private String getChangeId() {
+		return fileInfo.getRevision().getChangeInfo().getId();
 	}
 
 	@Override
@@ -190,6 +223,99 @@ public class PatchSetCompareItem extends Document
 
 	@Override
 	public InputStream getContents() throws CoreException {
+		prefetch();
 		return new ByteArrayInputStream(get().getBytes());
+	}
+
+	private void prefetch() {
+		if (dataLoaded) {
+			return;
+		}
+		QueryHelpers.markAsReviewed(gerrit, fileInfo);
+		loadComments();
+		mergeCommentsInText(
+				StringUtils.newStringUtf8(org.apache.commons.codec.binary.Base64.decodeBase64(loadFileContent())));
+		dataLoaded = true;
+	}
+
+	//Take the original text and merge the comments into it
+	//The insertion of comments starts from by last comment and proceed toward the first one. This allows for the insertion line to always be correct.
+	private void mergeCommentsInText(String text) {
+		//Create a document and an associated annotation model to keep track of the original text w/ comments
+		AnnotationModel originalComments = new CommentAnnotationManager();
+		Document originalDocument = new Document(text);
+		originalDocument.set(text);
+		originalComments.connect(originalDocument);
+		setOriginalComments(originalComments);
+		setOriginalDocument(originalDocument);
+
+		//Editable comments are a copy of the original comments but associated with the document that is presented in the UI
+		AnnotationModel editableComments = new CommentAnnotationManager();
+		set(text);
+		editableComments.connect(this);
+		setEditableComments(editableComments);
+
+		if (fileInfo.getAllComments().isEmpty()) {
+			return;
+		}
+
+		EList<CommentInfo> sortedComments = sortComments(fileInfo.getAllComments());
+
+		for (CommentInfo commentInfo : sortedComments) {
+			//We only consider the comments that apply to the revision
+			if (commentInfo.getSide() != null && !commentInfo.getSide().equals("REVISION")) { //$NON-NLS-1$
+				continue;
+			}
+			IRegion lineInfo;
+			try {
+				int insertionLineInDocument = 0;
+				int insertionPosition = 0;
+				String lineDelimiter = ""; //$NON-NLS-1$
+				if (commentInfo.getLine() > 0) {
+					insertionLineInDocument = commentInfo.getLine() - 1;
+					lineInfo = originalDocument.getLineInformation(insertionLineInDocument);
+					lineDelimiter = originalDocument.getLineDelimiter(insertionLineInDocument);
+					insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
+							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
+				}
+				int commentTextIndex = insertionPosition;
+				String formattedComment = CommentPrettyPrinter.printComment(commentInfo);
+				int commentTextLength = formattedComment.length();
+				if (lineDelimiter == null) {
+					formattedComment = originalDocument.getDefaultLineDelimiter() + formattedComment;
+					commentTextIndex += originalDocument.getDefaultLineDelimiter().length();
+				}
+				formattedComment += originalDocument.getDefaultLineDelimiter();
+				originalDocument.replace(insertionPosition, 0, formattedComment);
+				replace(insertionPosition, 0, formattedComment);
+				originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+						new Position(commentTextIndex, commentTextLength));
+				editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+						new Position(commentTextIndex, commentTextLength));
+			} catch (BadLocationException e) {
+				logger.debug("Exception merging text and comments.", e); //$NON-NLS-1$
+			}
+		}
+	}
+
+	private static EList<CommentInfo> sortComments(EList<CommentInfo> comments) {
+		Collections.sort(comments, new Comparator<CommentInfo>() {
+			@Override
+			public int compare(CommentInfo o1, CommentInfo o2) {
+				if (o1.getLine() == o2.getLine()) {
+					return o1.getUpdated().compareTo(o2.getUpdated());
+				}
+				if (o1.getLine() < o2.getLine()) {
+					return -1;
+				}
+				return 1;
+			}
+		});
+		Collections.reverse(comments);
+		return comments;
+	}
+
+	public void reset() {
+		dataLoaded = false;
 	}
 }

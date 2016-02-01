@@ -193,8 +193,7 @@ public class RelatedChangeAndCommitInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((RelatedChangeAndCommitInfo) object).getChange_id();
-		return label == null || label.length() == 0 ? getString("_UI_RelatedChangeAndCommitInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_RelatedChangeAndCommitInfo_type") : //$NON-NLS-1$
 				getString("_UI_RelatedChangeAndCommitInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

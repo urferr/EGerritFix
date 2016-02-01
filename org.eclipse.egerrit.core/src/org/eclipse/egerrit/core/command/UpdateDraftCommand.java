@@ -14,6 +14,7 @@ package org.eclipse.egerrit.core.command;
 
 import org.apache.http.client.methods.HttpPut;
 import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.core.rest.CommentInput;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 
 /**
@@ -24,7 +25,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
  * @since 1.0
  */
 
-public class UpdateDraftCommand extends BaseCommandChangeAndRevisionWithInput<CommentInfo, CommentInfo> {
+public class UpdateDraftCommand extends BaseCommandChangeAndRevisionWithInput<CommentInfo, CommentInput> {
 	/**
 	 * Construct a command to update a draft
 	 *
