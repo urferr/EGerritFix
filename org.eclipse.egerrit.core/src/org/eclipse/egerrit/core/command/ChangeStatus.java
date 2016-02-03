@@ -28,6 +28,9 @@ public enum ChangeStatus {
 	/** Review of the change is in progress */
 	OPEN("status:open"), //$NON-NLS-1$
 
+	/** Change is a draft */
+	DRAFT("status:draft"), //$NON-NLS-1$
+
 	/** Change is submitted and merge is pending */
 	PENDING("status:pending"), //$NON-NLS-1$
 

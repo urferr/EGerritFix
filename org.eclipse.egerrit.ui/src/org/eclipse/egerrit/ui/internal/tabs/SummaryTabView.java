@@ -14,7 +14,6 @@ package org.eclipse.egerrit.ui.internal.tabs;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -39,6 +38,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
@@ -761,16 +761,12 @@ public class SummaryTabView {
 			} catch (MalformedURLException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
-			List<ChangeInfo> conflictsWithChangeInfolist = null;
 			List<ChangeInfo> conflictsWithChangeInfolistNew = new ArrayList<ChangeInfo>();
 			if (conflictsWithChangeInfo != null) {
-				conflictsWithChangeInfolist = Arrays.asList(conflictsWithChangeInfo);
-
-				for (int i = 0; i < conflictsWithChangeInfolist.size(); i++) {
-					if (conflictsWithChangeInfolist.get(i).getChange_id().compareTo(fChangeInfo.getChange_id()) != 0) {
-						conflictsWithChangeInfolistNew.add(conflictsWithChangeInfolist.remove(i));
+				for (ChangeInfo conflictChangeInfo : conflictsWithChangeInfo) {
+					if (conflictChangeInfo.getChange_id().compareTo(fChangeInfo.getChange_id()) != 0) {
+						conflictsWithChangeInfolistNew.add(conflictChangeInfo);
 					}
-
 				}
 			}
 
@@ -913,7 +909,7 @@ public class SummaryTabView {
 			QueryChangesCommand command = gerritClient.queryChanges();
 			command.addConflicts(change_id);
 			command.addMergeable();
-			command.addStatus("NEW"); //$NON-NLS-1$
+			command.addStatus(ChangeStatus.OPEN);
 
 			try {
 				res = command.call();

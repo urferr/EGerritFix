@@ -78,8 +78,14 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		addQuery("conflicts:" + changeId); //$NON-NLS-1$
 	}
 
-	public void addStatus(String status) {
-		addQuery("status:" + status); //$NON-NLS-1$
+	/**
+	 * Adjust the status query parameter
+	 *
+	 * @param ChangeStatus
+	 *            status
+	 */
+	public void addStatus(ChangeStatus status) {
+		addQuery(status.getValue());
 	}
 
 	public void addMergeable() {
