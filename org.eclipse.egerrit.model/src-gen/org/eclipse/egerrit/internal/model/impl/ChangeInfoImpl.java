@@ -76,8 +76,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#is_more_changes <em>more changes</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getProblems <em>Problems</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getBase_change <em>Base change</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getCodeReviewedTally <em>Code Reviewed Tally</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getVerifiedTally <em>Verified Tally</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getIncludedIn <em>Included In</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getHashtags <em>Hashtags</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getRelatedChanges <em>Related Changes</em>}</li>
@@ -571,46 +569,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @ordered
 	 */
 	protected String base_change = BASE_CHANGE_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getCodeReviewedTally() <em>Code Reviewed Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getCodeReviewedTally()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int CODE_REVIEWED_TALLY_EDEFAULT = 0;
-
-	/**
-	 * The cached value of the '{@link #getCodeReviewedTally() <em>Code Reviewed Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getCodeReviewedTally()
-	 * @generated
-	 * @ordered
-	 */
-	protected int codeReviewedTally = CODE_REVIEWED_TALLY_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getVerifiedTally() <em>Verified Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getVerifiedTally()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int VERIFIED_TALLY_EDEFAULT = 0;
-
-	/**
-	 * The cached value of the '{@link #getVerifiedTally() <em>Verified Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getVerifiedTally()
-	 * @generated
-	 * @ordered
-	 */
-	protected int verifiedTally = VERIFIED_TALLY_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getIncludedIn() <em>Included In</em>}' containment reference.
@@ -1331,54 +1289,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
-	public int getCodeReviewedTally() {
-		return codeReviewedTally;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setCodeReviewedTally(int newCodeReviewedTally) {
-		int oldCodeReviewedTally = codeReviewedTally;
-		codeReviewedTally = newCodeReviewedTally;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY,
-					oldCodeReviewedTally, codeReviewedTally));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public int getVerifiedTally() {
-		return verifiedTally;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setVerifiedTally(int newVerifiedTally) {
-		int oldVerifiedTally = verifiedTally;
-		verifiedTally = newVerifiedTally;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.CHANGE_INFO__VERIFIED_TALLY,
-					oldVerifiedTally, verifiedTally));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public IncludedInInfo getIncludedIn() {
 		return includedIn;
 	}
@@ -1804,10 +1714,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return getProblems();
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
 			return getBase_change();
-		case ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY:
-			return getCodeReviewedTally();
-		case ModelPackage.CHANGE_INFO__VERIFIED_TALLY:
-			return getVerifiedTally();
 		case ModelPackage.CHANGE_INFO__INCLUDED_IN:
 			return getIncludedIn();
 		case ModelPackage.CHANGE_INFO__HASHTAGS:
@@ -1929,12 +1835,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return;
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
 			setBase_change((String) newValue);
-			return;
-		case ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY:
-			setCodeReviewedTally((Integer) newValue);
-			return;
-		case ModelPackage.CHANGE_INFO__VERIFIED_TALLY:
-			setVerifiedTally((Integer) newValue);
 			return;
 		case ModelPackage.CHANGE_INFO__INCLUDED_IN:
 			setIncludedIn((IncludedInInfo) newValue);
@@ -2060,12 +1960,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
 			setBase_change(BASE_CHANGE_EDEFAULT);
 			return;
-		case ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY:
-			setCodeReviewedTally(CODE_REVIEWED_TALLY_EDEFAULT);
-			return;
-		case ModelPackage.CHANGE_INFO__VERIFIED_TALLY:
-			setVerifiedTally(VERIFIED_TALLY_EDEFAULT);
-			return;
 		case ModelPackage.CHANGE_INFO__INCLUDED_IN:
 			setIncludedIn((IncludedInInfo) null);
 			return;
@@ -2159,10 +2053,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return problems != null && !problems.isEmpty();
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
 			return BASE_CHANGE_EDEFAULT == null ? base_change != null : !BASE_CHANGE_EDEFAULT.equals(base_change);
-		case ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY:
-			return codeReviewedTally != CODE_REVIEWED_TALLY_EDEFAULT;
-		case ModelPackage.CHANGE_INFO__VERIFIED_TALLY:
-			return verifiedTally != VERIFIED_TALLY_EDEFAULT;
 		case ModelPackage.CHANGE_INFO__INCLUDED_IN:
 			return includedIn != null;
 		case ModelPackage.CHANGE_INFO__HASHTAGS:
@@ -2252,10 +2142,6 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		result.append(_more_changes);
 		result.append(", base_change: "); //$NON-NLS-1$
 		result.append(base_change);
-		result.append(", codeReviewedTally: "); //$NON-NLS-1$
-		result.append(codeReviewedTally);
-		result.append(", verifiedTally: "); //$NON-NLS-1$
-		result.append(verifiedTally);
 		result.append(", hashtags: "); //$NON-NLS-1$
 		result.append(hashtags);
 		result.append(')');

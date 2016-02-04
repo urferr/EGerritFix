@@ -1884,31 +1884,13 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__BASE_CHANGE = 27;
 
 	/**
-	 * The feature id for the '<em><b>Code Reviewed Tally</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO__CODE_REVIEWED_TALLY = 28;
-
-	/**
-	 * The feature id for the '<em><b>Verified Tally</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO__VERIFIED_TALLY = 29;
-
-	/**
 	 * The feature id for the '<em><b>Included In</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__INCLUDED_IN = 30;
+	int CHANGE_INFO__INCLUDED_IN = 28;
 
 	/**
 	 * The feature id for the '<em><b>Hashtags</b></em>' attribute list.
@@ -1917,7 +1899,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__HASHTAGS = 31;
+	int CHANGE_INFO__HASHTAGS = 29;
 
 	/**
 	 * The feature id for the '<em><b>Related Changes</b></em>' containment reference.
@@ -1926,7 +1908,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__RELATED_CHANGES = 32;
+	int CHANGE_INFO__RELATED_CHANGES = 30;
 
 	/**
 	 * The feature id for the '<em><b>Reviewers</b></em>' containment reference list.
@@ -1935,7 +1917,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__REVIEWERS = 33;
+	int CHANGE_INFO__REVIEWERS = 31;
 
 	/**
 	 * The feature id for the '<em><b>Same Topic</b></em>' reference list.
@@ -1944,7 +1926,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__SAME_TOPIC = 34;
+	int CHANGE_INFO__SAME_TOPIC = 32;
 
 	/**
 	 * The feature id for the '<em><b>Conflicts With</b></em>' reference list.
@@ -1953,7 +1935,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__CONFLICTS_WITH = 35;
+	int CHANGE_INFO__CONFLICTS_WITH = 33;
 
 	/**
 	 * The feature id for the '<em><b>Mergeable Info</b></em>' containment reference.
@@ -1962,7 +1944,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__MERGEABLE_INFO = 36;
+	int CHANGE_INFO__MERGEABLE_INFO = 34;
 
 	/**
 	 * The feature id for the '<em><b>Revision</b></em>' reference.
@@ -1971,7 +1953,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__REVISION = 37;
+	int CHANGE_INFO__REVISION = 35;
 
 	/**
 	 * The feature id for the '<em><b>Latest Patch Set</b></em>' reference.
@@ -1980,7 +1962,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__LATEST_PATCH_SET = 38;
+	int CHANGE_INFO__LATEST_PATCH_SET = 36;
 
 	/**
 	 * The number of structural features of the '<em>Change Info</em>' class.
@@ -1989,7 +1971,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_FEATURE_COUNT = 39;
+	int CHANGE_INFO_FEATURE_COUNT = 37;
 
 	/**
 	 * The operation id for the '<em>Get Revision By Number</em>' operation.
@@ -4195,28 +4177,6 @@ public interface ModelPackage extends EPackage {
 	EAttribute getChangeInfo_Base_change();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getCodeReviewedTally <em>Code Reviewed Tally</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Code Reviewed Tally</em>'.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getCodeReviewedTally()
-	 * @see #getChangeInfo()
-	 * @generated
-	 */
-	EAttribute getChangeInfo_CodeReviewedTally();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getVerifiedTally <em>Verified Tally</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Verified Tally</em>'.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getVerifiedTally()
-	 * @see #getChangeInfo()
-	 * @generated
-	 */
-	EAttribute getChangeInfo_VerifiedTally();
-
-	/**
 	 * Returns the meta object for the containment reference '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getIncludedIn <em>Included In</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6053,22 +6013,6 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CHANGE_INFO__BASE_CHANGE = eINSTANCE.getChangeInfo_Base_change();
-
-		/**
-		 * The meta object literal for the '<em><b>Code Reviewed Tally</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute CHANGE_INFO__CODE_REVIEWED_TALLY = eINSTANCE.getChangeInfo_CodeReviewedTally();
-
-		/**
-		 * The meta object literal for the '<em><b>Verified Tally</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute CHANGE_INFO__VERIFIED_TALLY = eINSTANCE.getChangeInfo_VerifiedTally();
 
 		/**
 		 * The meta object literal for the '<em><b>Included In</b></em>' containment reference feature.

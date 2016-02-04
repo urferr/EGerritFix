@@ -1882,28 +1882,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getChangeInfo_CodeReviewedTally() {
-		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(28);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getChangeInfo_VerifiedTally() {
-		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(29);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EReference getChangeInfo_IncludedIn() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(30);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(28);
 	}
 
 	/**
@@ -1913,7 +1893,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EAttribute getChangeInfo_Hashtags() {
-		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(31);
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(29);
 	}
 
 	/**
@@ -1923,7 +1903,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_RelatedChanges() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(32);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(30);
 	}
 
 	/**
@@ -1933,7 +1913,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_Reviewers() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(33);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(31);
 	}
 
 	/**
@@ -1943,7 +1923,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_SameTopic() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(34);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(32);
 	}
 
 	/**
@@ -1953,7 +1933,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_ConflictsWith() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(35);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(33);
 	}
 
 	/**
@@ -1963,7 +1943,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_MergeableInfo() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(36);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(34);
 	}
 
 	/**
@@ -1973,7 +1953,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_Revision() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(37);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(35);
 	}
 
 	/**
@@ -1983,7 +1963,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 */
 	@Override
 	public EReference getChangeInfo_LatestPatchSet() {
-		return (EReference) changeInfoEClass.getEStructuralFeatures().get(38);
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(36);
 	}
 
 	/**
@@ -2611,8 +2591,6 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(changeInfoEClass, CHANGE_INFO__MORE_CHANGES);
 		createEReference(changeInfoEClass, CHANGE_INFO__PROBLEMS);
 		createEAttribute(changeInfoEClass, CHANGE_INFO__BASE_CHANGE);
-		createEAttribute(changeInfoEClass, CHANGE_INFO__CODE_REVIEWED_TALLY);
-		createEAttribute(changeInfoEClass, CHANGE_INFO__VERIFIED_TALLY);
 		createEReference(changeInfoEClass, CHANGE_INFO__INCLUDED_IN);
 		createEAttribute(changeInfoEClass, CHANGE_INFO__HASHTAGS);
 		createEReference(changeInfoEClass, CHANGE_INFO__RELATED_CHANGES);
@@ -3093,12 +3071,6 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getChangeInfo_Base_change(), ecorePackage.getEString(), "base_change", null, 0, 1, //$NON-NLS-1$
-				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getChangeInfo_CodeReviewedTally(), ecorePackage.getEInt(), "codeReviewedTally", null, 0, 1, //$NON-NLS-1$
-				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getChangeInfo_VerifiedTally(), ecorePackage.getEInt(), "verifiedTally", null, 0, 1, //$NON-NLS-1$
 				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 		initEReference(getChangeInfo_IncludedIn(), this.getIncludedInInfo(), null, "includedIn", null, 0, 1, //$NON-NLS-1$

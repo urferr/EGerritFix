@@ -53,8 +53,6 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#is_more_changes <em>more changes</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getProblems <em>Problems</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getBase_change <em>Base change</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getCodeReviewedTally <em>Code Reviewed Tally</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getVerifiedTally <em>Verified Tally</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getIncludedIn <em>Included In</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getHashtags <em>Hashtags</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRelatedChanges <em>Related Changes</em>}</li>
@@ -732,58 +730,6 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	void setBase_change(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Code Reviewed Tally</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Code Reviewed Tally</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Code Reviewed Tally</em>' attribute.
-	 * @see #setCodeReviewedTally(int)
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_CodeReviewedTally()
-	 * @model
-	 * @generated
-	 */
-	int getCodeReviewedTally();
-
-	/**
-	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getCodeReviewedTally <em>Code Reviewed Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Code Reviewed Tally</em>' attribute.
-	 * @see #getCodeReviewedTally()
-	 * @generated
-	 */
-	void setCodeReviewedTally(int value);
-
-	/**
-	 * Returns the value of the '<em><b>Verified Tally</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Verified Tally</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Verified Tally</em>' attribute.
-	 * @see #setVerifiedTally(int)
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_VerifiedTally()
-	 * @model
-	 * @generated
-	 */
-	int getVerifiedTally();
-
-	/**
-	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getVerifiedTally <em>Verified Tally</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Verified Tally</em>' attribute.
-	 * @see #getVerifiedTally()
-	 * @generated
-	 */
-	void setVerifiedTally(int value);
 
 	/**
 	 * Returns the value of the '<em><b>Included In</b></em>' containment reference.

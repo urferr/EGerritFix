@@ -89,8 +89,6 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 			addCurrent_revisionPropertyDescriptor(object);
 			add_more_changesPropertyDescriptor(object);
 			addBase_changePropertyDescriptor(object);
-			addCodeReviewedTallyPropertyDescriptor(object);
-			addVerifiedTallyPropertyDescriptor(object);
 			addHashtagsPropertyDescriptor(object);
 			addSameTopicPropertyDescriptor(object);
 			addConflictsWithPropertyDescriptor(object);
@@ -421,38 +419,6 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
-	 * This adds a property descriptor for the Code Reviewed Tally feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addCodeReviewedTallyPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_ChangeInfo_codeReviewedTally_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_codeReviewedTally_feature", //$NON-NLS-1$//$NON-NLS-2$
-								"_UI_ChangeInfo_type"), //$NON-NLS-1$
-						ModelPackage.Literals.CHANGE_INFO__CODE_REVIEWED_TALLY, true, false, false,
-						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
-	}
-
-	/**
-	 * This adds a property descriptor for the Verified Tally feature.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected void addVerifiedTallyPropertyDescriptor(Object object) {
-		itemPropertyDescriptors
-				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-						getResourceLocator(), getString("_UI_ChangeInfo_verifiedTally_feature"), //$NON-NLS-1$
-						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_verifiedTally_feature", //$NON-NLS-1$//$NON-NLS-2$
-								"_UI_ChangeInfo_type"), //$NON-NLS-1$
-						ModelPackage.Literals.CHANGE_INFO__VERIFIED_TALLY, true, false, false,
-						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
-	}
-
-	/**
 	 * This adds a property descriptor for the Hashtags feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -626,8 +592,6 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.CHANGE_INFO__CURRENT_REVISION:
 		case ModelPackage.CHANGE_INFO__MORE_CHANGES:
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
-		case ModelPackage.CHANGE_INFO__CODE_REVIEWED_TALLY:
-		case ModelPackage.CHANGE_INFO__VERIFIED_TALLY:
 		case ModelPackage.CHANGE_INFO__HASHTAGS:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
