@@ -12,6 +12,7 @@
 package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -174,7 +175,7 @@ public interface FileInfo extends EObject {
 	 * Returns the value of the '<em><b>Contained In</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Contained In</em>' containment reference isn't clear,
+	 * If the meaning of the '<em>Contained In</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->

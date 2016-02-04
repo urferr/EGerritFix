@@ -178,6 +178,9 @@
     <eOperations name="getRevisionByNumber" eType="#//RevisionInfo">
       <eParameters name="revisionId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eOperations>
+    <eOperations name="isActionAllowed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="action" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="project" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -295,5 +298,20 @@
   <eClassifiers xsi:type="ecore:EClass" name="Reviews">
     <eStructuralFeatures xsi:type="ecore:EReference" name="allReviews" upperBound="-1"
         eType="#//ChangeInfo"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ActionConstants">
+    <eLiterals name="abandon" literal="Abandon"/>
+    <eLiterals name="checkout" value="1"/>
+    <eLiterals name="cherrypick" value="2" literal="Cherry-Pick"/>
+    <eLiterals name="draft" value="3" literal="Draft ..."/>
+    <eLiterals name="followup" value="4" literal="Followup"/>
+    <eLiterals name="publish" value="5" literal="Publish"/>
+    <eLiterals name="rebase" value="6" literal="Rebase"/>
+    <eLiterals name="refresh" value="7" literal="Refresh"/>
+    <eLiterals name="reply" value="8" literal="Reply ..."/>
+    <eLiterals name="restore" value="9" literal="Restore"/>
+    <eLiterals name="revert" value="10" literal="Revert"/>
+    <eLiterals name="submit" value="11" literal="Submit"/>
+    <eLiterals name="topic" value="12" literal="Topic"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -1686,6 +1686,18 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public boolean isActionAllowed(String action) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.CHANGE_INFO__OWNER:
@@ -2183,6 +2195,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		switch (operationID) {
 		case ModelPackage.CHANGE_INFO___GET_REVISION_BY_NUMBER__INT:
 			return getRevisionByNumber((Integer) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___IS_ACTION_ALLOWED__STRING:
+			return isActionAllowed((String) arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

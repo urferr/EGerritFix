@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.model.impl;
 import java.util.Map;
 
 import org.eclipse.egerrit.internal.model.AccountInfo;
+import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.BranchInfo;
@@ -44,6 +45,7 @@ import org.eclipse.egerrit.internal.model.SubmitInfo;
 import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -293,6 +295,13 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	private EClass reviewsEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum actionConstantsEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -1993,6 +2002,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EOperation getChangeInfo__IsActionAllowed__String() {
+		return changeInfoEClass.getEOperations().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getProblemInfo() {
 		return problemInfoEClass;
 	}
@@ -2383,6 +2402,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EEnum getActionConstants() {
+		return actionConstantsEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public ModelFactory getModelFactory() {
 		return (ModelFactory) getEFactoryInstance();
 	}
@@ -2594,6 +2623,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(changeInfoEClass, CHANGE_INFO__REVISION);
 		createEReference(changeInfoEClass, CHANGE_INFO__LATEST_PATCH_SET);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
+		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
 
 		problemInfoEClass = createEClass(PROBLEM_INFO);
 		createEAttribute(problemInfoEClass, PROBLEM_INFO__MESSAGE);
@@ -2642,6 +2672,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
 		reviewsEClass = createEClass(REVIEWS);
 		createEReference(reviewsEClass, REVIEWS__ALL_REVIEWS);
+
+		// Create enums
+		actionConstantsEEnum = createEEnum(ACTION_CONSTANTS);
 	}
 
 	/**
@@ -3099,6 +3132,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				"getRevisionByNumber", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 		addEParameter(op, ecorePackage.getEInt(), "revisionId", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
+		op = initEOperation(getChangeInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", 0, //$NON-NLS-1$
+				1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "action", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
 		initEClass(problemInfoEClass, ProblemInfo.class, "ProblemInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getProblemInfo_Message(), ecorePackage.getEString(), "message", null, 0, 1, ProblemInfo.class, //$NON-NLS-1$
@@ -3202,6 +3239,22 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getReviews_AllReviews(), this.getChangeInfo(), null, "allReviews", null, 0, -1, Reviews.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(actionConstantsEEnum, ActionConstants.class, "ActionConstants"); //$NON-NLS-1$
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.ABANDON);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.CHECKOUT);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.CHERRYPICK);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.DRAFT);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.FOLLOWUP);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.PUBLISH);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.REBASE);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.REFRESH);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.REPLY);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.RESTORE);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.REVERT);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.SUBMIT);
+		addEEnumLiteral(actionConstantsEEnum, ActionConstants.TOPIC);
 
 		// Create resource
 		createResource(eNS_URI);

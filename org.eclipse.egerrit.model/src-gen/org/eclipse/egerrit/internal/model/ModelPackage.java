@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -2000,13 +2001,22 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO___GET_REVISION_BY_NUMBER__INT = 0;
 
 	/**
+	 * The operation id for the '<em>Is Action Allowed</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO___IS_ACTION_ALLOWED__STRING = 1;
+
+	/**
 	 * The number of operations of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_OPERATION_COUNT = 1;
+	int CHANGE_INFO_OPERATION_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
@@ -2529,6 +2539,16 @@ public interface ModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int REVIEWS_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.ActionConstants
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getActionConstants()
+	 * @generated
+	 */
+	int ACTION_CONSTANTS = 34;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo <em>Related Change And Commit Info</em>}'.
@@ -4306,6 +4326,16 @@ public interface ModelPackage extends EPackage {
 	EOperation getChangeInfo__GetRevisionByNumber__int();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Is Action Allowed</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#isActionAllowed(java.lang.String)
+	 * @generated
+	 */
+	EOperation getChangeInfo__IsActionAllowed__String();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.ProblemInfo <em>Problem Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4729,6 +4759,16 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getReviews_AllReviews();
+
+	/**
+	 * Returns the meta object for enum '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Action Constants</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ActionConstants
+	 * @generated
+	 */
+	EEnum getActionConstants();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -6111,6 +6151,14 @@ public interface ModelPackage extends EPackage {
 		EOperation CHANGE_INFO___GET_REVISION_BY_NUMBER__INT = eINSTANCE.getChangeInfo__GetRevisionByNumber__int();
 
 		/**
+		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CHANGE_INFO___IS_ACTION_ALLOWED__STRING = eINSTANCE.getChangeInfo__IsActionAllowed__String();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -6439,6 +6487,16 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference REVIEWS__ALL_REVIEWS = eINSTANCE.getReviews_AllReviews();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.egerrit.internal.model.ActionConstants
+		 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getActionConstants()
+		 * @generated
+		 */
+		EEnum ACTION_CONSTANTS = eINSTANCE.getActionConstants();
 
 	}
 

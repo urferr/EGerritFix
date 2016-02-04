@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -788,7 +789,7 @@ public interface ChangeInfo extends EObject {
 	 * Returns the value of the '<em><b>Included In</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Included In</em>' containment reference list isn't clear,
+	 * If the meaning of the '<em>Included In</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
@@ -830,7 +831,7 @@ public interface ChangeInfo extends EObject {
 	 * Returns the value of the '<em><b>Related Changes</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Related Changes</em>' containment reference list isn't clear,
+	 * If the meaning of the '<em>Related Changes</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
@@ -945,7 +946,7 @@ public interface ChangeInfo extends EObject {
 	 * Returns the value of the '<em><b>Latest Patch Set</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Latest Patch Set</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Latest Patch Set</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
@@ -1001,5 +1002,13 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	RevisionInfo getRevisionByNumber(int revisionId);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	boolean isActionAllowed(String action);
 
 } // ChangeInfo

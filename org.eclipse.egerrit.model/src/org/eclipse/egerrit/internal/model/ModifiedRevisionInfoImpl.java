@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.EAttribute;
 
 /**
  * @author Jacques Bouthillier

@@ -33,7 +33,6 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface CommentRange extends EObject {
-
 	/**
 	 * Returns the value of the '<em><b>Start Line</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -137,4 +136,5 @@ public interface CommentRange extends EObject {
 	 * @generated
 	 */
 	void setEndCharacter(int value);
+
 } // CommentRange

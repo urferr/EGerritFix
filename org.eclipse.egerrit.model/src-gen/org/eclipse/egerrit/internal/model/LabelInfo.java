@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**

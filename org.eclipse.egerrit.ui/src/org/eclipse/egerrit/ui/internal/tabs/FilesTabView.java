@@ -41,6 +41,7 @@ import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
@@ -831,8 +832,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private void setCurrentRevision(RevisionInfo revisionInfo) {
 		fChangeInfo.setCurrent_revision(revisionInfo.getId());
 		fSelectedRevision = revisionInfo;
-		fDeleteDraftRevisionButton.setEnabled(
-				fChangeInfo.getStatus().compareTo("DRAFT") == 0 && fSelectedRevision.isActionAllowed("publish")); //$NON-NLS-1$
+		fDeleteDraftRevisionButton.setEnabled(fChangeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
+				&& fSelectedRevision.isActionAllowed(ActionConstants.PUBLISH.getName()));
 	}
 
 	/**

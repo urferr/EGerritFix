@@ -51,7 +51,6 @@ import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftChangeCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
-import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
@@ -67,12 +66,12 @@ import org.eclipse.egerrit.core.rest.RestoreInput;
 import org.eclipse.egerrit.core.rest.RevertInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.SubmitInput;
+import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
@@ -137,19 +136,9 @@ import org.osgi.service.prefs.Preferences;
 import com.ibm.icu.text.NumberFormat;
 
 public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
-	private static final String REBASE = "rebase";
-
-	private static final String SUBMIT = "submit";
-
-	private static final String RESTORE = "restore";
-
-	private static final String ABANDON = "abandon";
-
 	private static final String VERIFIED = "Verified";
 
 	private static final String CODE_REVIEW = "Code-Review";
-
-	private static final String REVERT = "revert";
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -311,7 +300,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		Button refresh = new Button(c, SWT.PUSH);
 		refresh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		refresh.setText("Refresh");
+		refresh.setText(ActionConstants.REFRESH.getLiteral());
 		refresh.setToolTipText("Reload this change from the server.");
 		refresh.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -323,7 +312,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		fSubmitRevert = new Button(c, SWT.PUSH);
 		fSubmitRevert.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fSubmitRevert.setText("Submit");
+		fSubmitRevert.setText(ActionConstants.SUBMIT.getLiteral());
 		fSubmitRevert.setEnabled(false);
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fSubmitRevert.setToolTipText(anonymousUserToolTip);
@@ -442,7 +431,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		fRebase = new Button(c, SWT.PUSH);
 		fRebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fRebase.setText("Rebase");
+		fRebase.setText(ActionConstants.REBASE.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fRebase.setToolTipText(anonymousUserToolTip);
 			fRebase.setEnabled(false);
@@ -485,12 +474,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		checkout.setText("Checkout");
+		checkout.setText(ActionConstants.CHECKOUT.getLiteral());
 		checkout.addSelectionListener(checkoutButtonListener(parent));
 
 		fCherryPick = new Button(c, SWT.PUSH);
 		fCherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fCherryPick.setText("Cherry-Pick");
+		fCherryPick.setText(ActionConstants.CHERRYPICK.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fCherryPick.setToolTipText(anonymousUserToolTip);
 			fCherryPick.setEnabled(false);
@@ -526,7 +515,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fReply.setText("Reply...");
+		fReply.setText(ActionConstants.REPLY.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fReply.setToolTipText(anonymousUserToolTip);
 			fReply.setEnabled(false);
@@ -540,7 +529,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
 
 					final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
-					itemReply.setText("Reply...");
+					itemReply.setText(ActionConstants.REPLY.getLiteral());
 					itemReply.addSelectionListener(new SelectionListener() {
 
 						@Override
@@ -629,7 +618,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		fDraftPublishDelete = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fDraftPublishDelete.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fDraftPublishDelete.setText("Draft...");
+		fDraftPublishDelete.setText(ActionConstants.DRAFT.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fDraftPublishDelete.setToolTipText(anonymousUserToolTip);
 			fDraftPublishDelete.setEnabled(false);
@@ -643,7 +632,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 							SWT.POP_UP);
 
 					final MenuItem itemPublish = new MenuItem(menu, SWT.PUSH);
-					itemPublish.setText("Publish");
+					itemPublish.setText(ActionConstants.PUBLISH.getLiteral());
 					itemPublish.addSelectionListener(new SelectionListener() {
 
 						@Override
@@ -862,14 +851,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	}
 
 	private void draftButtonEnablement() {
-
-		fDraftPublishDelete.setEnabled(fChangeInfo.getStatus().compareTo("DRAFT") == 0 && canDeleteDraft());
-
+		fDraftPublishDelete.setEnabled(
+				fChangeInfo.getStatus().toLowerCase().compareTo(ActionConstants.DRAFT.getName().toLowerCase()) == 0
+						&& canDeleteDraft());
 	}
 
 	private void rebaseButtonEnablement() {
 		fRebase.setEnabled(canRebase());
-
 	}
 
 	private void submitrevertButtonEnablement() {
@@ -886,104 +874,72 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		//Adjust the text on the button
 		if (fSubmitMode) {
-			fSubmitRevert.setText("Submit");
+			fSubmitRevert.setText(ActionConstants.SUBMIT.getLiteral());
 		} else {
-			fSubmitRevert.setText("Revert");
+			fSubmitRevert.setText(ActionConstants.REVERT.getLiteral());
 		}
 
 	}
 
+	/**
+	 * Test a Publish Actions for a specific revision version and see if the delete option should be available
+	 *
+	 * @return boolean
+	 */
 	private boolean canDeleteDraft() {
-		EMap<String, ActionInfo> actions = getRevisionActions();
-
-		if (actions != null) {
-			ActionInfo delete = actions.get("publish");
-
-			if (delete != null) {
-				return delete.isEnabled();
-			}
-		}
-		return false;
+		return fChangeInfo.getRevisions()
+				.get(fChangeInfo.getCurrent_revision())
+				.isActionAllowed(ActionConstants.PUBLISH.getName());
 	}
 
+	/**
+	 * Test a Submit Actions for a specific revision version
+	 *
+	 * @return boolean
+	 */
 	private boolean canSubmit() {
-		EMap<String, ActionInfo> actions = getRevisionActions();
-		if (actions != null) {
-			ActionInfo submit = actions.get(SUBMIT);
-
-			if (submit != null) {
-				return submit.isEnabled();
-			}
-		}
-		return false;
+		return fChangeInfo.getRevisions()
+				.get(fChangeInfo.getCurrent_revision())
+				.isActionAllowed(ActionConstants.SUBMIT.getName());
 	}
 
+	/**
+	 * Test a Revert Actions for a specific change info version
+	 *
+	 * @return boolean
+	 */
 	private boolean canRevert() {
-		EMap<String, ActionInfo> actions = fChangeInfo.getActions();
-		if (actions != null) {
-			ActionInfo revert = actions.get(REVERT);
-			if (revert != null) {
-				if (revert.isEnabled()) {
-					return true;
-				}
-			}
-
-		}
-		return false;
+		return fChangeInfo.isActionAllowed(ActionConstants.REVERT.getName());
 	}
 
+	/**
+	 * Test a Rebase Actions for a specific revision version
+	 *
+	 * @return boolean
+	 */
 	private boolean canRebase() {
-		EMap<String, ActionInfo> actions = getRevisionActions();
-		if (actions != null) {
-			ActionInfo rebase = actions.get(REBASE);
-
-			if (rebase != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	//EMF this logic is weird...
-	private EMap<String, ActionInfo> getRevisionActions() {
-		//Test if we already have the info in the revision info structure, we should
-		EMap<String, RevisionInfo> maprev = fChangeInfo.getRevisions();
-		if (maprev != null) {
-			return maprev.get(fChangeInfo.getCurrent_revision()).getActions();
-		}
-
-		//Query if the action for a revision are not available yet Should not happen here
-		GetRevisionActionsCommand getRevisionActionsCmd = fGerritClient.getRevisionActions(fChangeInfo.getId(),
-				fChangeInfo.getCurrent_revision());
-
-		Map<String, ActionInfo> getRevisionActionsCmdResult = null;
-		try {
-			getRevisionActionsCmdResult = getRevisionActionsCmd.call();
-			fChangeInfo.getRevisions().get(fChangeInfo.getCurrent_revision()).eSet(
-					ModelPackage.Literals.REVISION_INFO__ACTIONS, getRevisionActionsCmdResult);
-		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-		}
-		return fChangeInfo.getRevisions().get(fChangeInfo.getCurrent_revision()).getActions();
+		return fChangeInfo.getRevisions()
+				.get(fChangeInfo.getCurrent_revision())
+				.isActionAllowed(ActionConstants.REBASE.getName());
 	}
 
 	private void abandonrestoreButtonEnablement() {
 
 		EMap<String, ActionInfo> actions = fChangeInfo.getActions();
 		if (actions != null) {
-			ActionInfo abandon = actions.get(ABANDON);
-			ActionInfo restore = actions.get(RESTORE);
-			fAbandonRestore.setText("Abandon");
+
+			ActionInfo abandon = actions.get(ActionConstants.ABANDON.getName());
+			ActionInfo restore = actions.get(ActionConstants.RESTORE.getName());
+			fAbandonRestore.setText(ActionConstants.ABANDON.getLiteral());
 			fAbandonRestore.setEnabled(true);
 
 			if (abandon != null && abandon.isEnabled()) {
 				fAbandonMode = true;
 			} else if (restore != null && restore.isEnabled()) {
-				fAbandonRestore.setText("Restore");
+				fAbandonRestore.setText(ActionConstants.RESTORE.getLiteral());
 			} else {
 				fAbandonRestore.setEnabled(false);
 			}
-
 		}
 	}
 

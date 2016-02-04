@@ -19,6 +19,7 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -115,5 +116,19 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isActionAllowed(String action) {
+		EMap<String, ActionInfo> actionsAvailable = getActions();
+
+		if (actionsAvailable != null) {
+			ActionInfo actionInfo = actionsAvailable.get(action);
+
+			if (actionInfo != null) {
+				return actionInfo.isEnabled();
+			}
+		}
+		return false;
 	}
 }
