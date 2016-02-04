@@ -14,9 +14,13 @@ package org.eclipse.egerrit.core.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.emf.common.util.EMap;
 
 /**
  * @author lmcbout
@@ -66,4 +70,30 @@ public class Utils {
 		return state;
 	}
 
+	/**
+	 * Verify the highest status of the testlabels
+	 *
+	 * @param testLabels
+	 * @param labels
+	 * @return int
+	 */
+	public static int verifyTally(String testLabels, EMap<String, LabelInfo> labels) {
+		int state = 0;
+
+		if (labels != null && labels.get(testLabels) != null) {
+			for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
+				if (entry.getKey() != null && entry.getKey().compareTo(testLabels) == 0) {
+					LabelInfo labelInfo = entry.getValue();
+					if (labelInfo.getAll() != null) {
+						for (ApprovalInfo it : labelInfo.getAll()) {
+							if (it.getValue() != null) {
+								state = Utils.getStateValue(it.getValue(), state);
+							}
+						}
+					}
+				}
+			}
+		}
+		return state;
+	}
 }

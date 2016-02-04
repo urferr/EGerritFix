@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -38,6 +39,10 @@ public class ReviewTableSorter extends ViewerSorter {
 
 	// The target column
 	private int fColumnIndex = 0;
+
+	private static final String VERIFIED = "Verified";
+
+	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Constructor
@@ -96,11 +101,12 @@ public class ReviewTableSorter extends ViewerSorter {
 				}
 				break;
 			case 8: // Code Review
-
-				result = changeInfo2.getCodeReviewedTally() - changeInfo1.getCodeReviewedTally();
+				result = Utils.verifyTally(CODE_REVIEW, changeInfo2.getLabels())
+						- Utils.verifyTally(CODE_REVIEW, changeInfo1.getLabels());
 				break;
 			case 9: // Verify
-				result = changeInfo2.getVerifiedTally() - changeInfo1.getVerifiedTally();
+				result = Utils.verifyTally(VERIFIED, changeInfo2.getLabels())
+						- Utils.verifyTally(VERIFIED, changeInfo1.getLabels());
 				break;
 			case 10: // IPLog Clean
 			default:

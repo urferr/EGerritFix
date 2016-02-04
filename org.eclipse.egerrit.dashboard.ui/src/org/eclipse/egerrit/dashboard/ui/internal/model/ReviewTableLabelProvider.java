@@ -15,15 +15,11 @@
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
-import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModifiedChangeInfoImpl;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -234,11 +230,11 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 				return Utils.formatDate(reviewSummary.getUpdated(), formatTimeOut);
 			}
 			case 8: {
-				fCodeReviewState = verifyTally((CODE_REVIEW), reviewSummary.getLabels());
+				fCodeReviewState = Utils.verifyTally((CODE_REVIEW), reviewSummary.getLabels());
 				return EMPTY_STRING;
 			}
 			case 9: {
-				fVerifyState = verifyTally((VERIFIED), reviewSummary.getLabels());
+				fVerifyState = Utils.verifyTally((VERIFIED), reviewSummary.getLabels());
 
 				return EMPTY_STRING;
 			}
@@ -247,26 +243,6 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 			}
 		}
 		return EMPTY_STRING;
-	}
-
-	private int verifyTally(String testLabels, EMap<String, LabelInfo> labels) {
-		int state = 0;
-
-		if (labels != null && labels.get(testLabels) != null) {
-			for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-				if (entry.getKey() != null && entry.getKey().compareTo(testLabels) == 0) {
-					LabelInfo labelInfo = entry.getValue();
-					if (labelInfo.getAll() != null) {
-						for (ApprovalInfo it : labelInfo.getAll()) {
-							if (it.getValue() != null) {
-								state = Utils.getStateValue(it.getValue(), state);
-							}
-						}
-					}
-				}
-			}
-		}
-		return state;
 	}
 
 	/**
