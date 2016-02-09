@@ -59,7 +59,6 @@ import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
-import org.eclipse.emf.databinding.IEMFListProperty;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -118,6 +117,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private static final String PATCHSET = "Patch Sets ";
 
 	private static final String SEPARATOR = "/"; //$NON-NLS-1$
+
+	private int fLastPSSelectedIndex = -1;
 
 	private final String TITLE = "Gerrit Server ";
 
@@ -202,6 +203,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 						setPatchSetLabelCombo();
 						setDiffAgainstCombo();
 						StringToRevisionInfoImpl revInfo = (StringToRevisionInfoImpl) structSel.getFirstElement();
+						//Keep track of the selection index
+						setLastSelectedPatchSetIndex(comboPatchsetViewer.getCombo().getSelectionIndex());
 
 						setCurrentRevision(revInfo.getValue());
 						//Adjust the reviewed files and the comments associated to the current patchset
@@ -552,14 +555,21 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		//Set the PatchSet Combo viewer
 		if (comboPatchsetViewer != null) {
+			IObservableList patchSetChanges = EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVISIONS)
+					.observe(fChangeInfo);
+
+			final FeaturePath revNumber = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_REVISION_INFO__VALUE,
+					ModelPackage.Literals.REVISION_INFO__NUMBER);
+			final FeaturePath revCommit = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_REVISION_INFO__VALUE,
+					ModelPackage.Literals.REVISION_INFO__COMMIT);
+
 			ObservableListContentProvider contentPatchSetProvider = new ObservableListContentProvider();
 			comboPatchsetViewer.setContentProvider(contentPatchSetProvider);
-			IEMFListProperty revisionsProperty = EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVISIONS);
-			IObservableMap[] observePatchSetMaps = Properties.observeEach(contentPatchSetProvider.getKnownElements(),
-					EMFProperties.value(ModelPackage.Literals.REVISION_INFO__NUMBER));
-			comboPatchsetViewer.setLabelProvider(new ComboPatchSetLabelProvider(observePatchSetMaps));
-			comboPatchsetViewer.setInput(revisionsProperty.observe(fChangeInfo));
-
+			final IObservableMap[] watchedProperties = Properties.observeEach(
+					contentPatchSetProvider.getKnownElements(),
+					new IValueProperty[] { EMFProperties.value(revNumber), EMFProperties.value(revCommit) });
+			comboPatchsetViewer.setLabelProvider(new ComboPatchSetLabelProvider(watchedProperties));
+			comboPatchsetViewer.setInput(patchSetChanges);
 		}
 
 		//Set the FilesViewer
@@ -906,12 +916,26 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	public void setInitPatchSet() {
 		ISelection selection = comboPatchsetViewer.getSelection();
 		if (selection.isEmpty()) {
-			//Select the latest patch-set and trigger the selection change
-			//The latest patch set is the first one in the list since we sort the data
-			//in this order
-			comboPatchsetViewer.getCombo().select(0);
-			comboPatchsetViewer.setSelection(comboPatchsetViewer.getSelection(), true);
+			//Select the last one selected before re-init
+			if (getLastSelectedPatchSetIndex() != -1) {
+				comboPatchsetViewer.getCombo().select(getLastSelectedPatchSetIndex());
+				comboPatchsetViewer.setSelection(comboPatchsetViewer.getSelection(), true);
+			} else {
+				//Select the latest patch-set and trigger the selection change
+				//The latest patch set is the first one in the list since we sort the data
+				//in this order
+				comboPatchsetViewer.getCombo().select(0);
+				comboPatchsetViewer.setSelection(comboPatchsetViewer.getSelection(), true);
+			}
 		}
+	}
+
+	private void setLastSelectedPatchSetIndex(int lastIndex) {
+		fLastPSSelectedIndex = lastIndex;
+	}
+
+	private int getLastSelectedPatchSetIndex() {
+		return fLastPSSelectedIndex;
 	}
 
 	/**

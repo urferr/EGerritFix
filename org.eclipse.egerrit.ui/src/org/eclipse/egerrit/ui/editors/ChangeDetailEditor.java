@@ -345,8 +345,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						}
 						fSubmitMode = false;
 						refreshStatus();
-						//Initialize the files tab with the latest patch-set
-						filesTab.setInitPatchSet();
 					} else {
 						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
 								+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number()
@@ -742,7 +740,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		try {
 			reviewToEmit.call();
 			refreshStatus();
-			filesTab.setInitPatchSet();
 		} catch (EGerritException e1) {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
@@ -832,6 +829,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		//Queries to fill the Summary Review tab data
 		summaryTab.setTabs(fGerritClient, fChangeInfo);
+		//Re-Initialize the files tab with the patch-set
+		filesTab.setInitPatchSet();
 
 		buttonsEnablement();
 
@@ -1276,7 +1275,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param Object
 	 */
 	@Override
-	//EMF this should go away
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof MessageTabView) {
 			//in this case, we need to update the Subject. The following request do more
@@ -1284,6 +1282,11 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
 			setEditorTitle();
 		}
+		if (arg0 instanceof FilesTabView) {
+			//in this case, we need to update the buttons enablement.
+			buttonsEnablement();
+		}
+
 	}
 
 	private void setEditorTitle() {
