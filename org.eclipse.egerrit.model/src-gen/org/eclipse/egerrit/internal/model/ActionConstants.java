@@ -45,7 +45,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CHECKOUT(1, "checkout", "checkout"), //$NON-NLS-1$ //$NON-NLS-2$
+	CHECKOUT(1, "checkout", "Checkout"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Cherrypick</b></em>' literal object.
@@ -181,7 +181,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #CHECKOUT
-	 * @model name="checkout"
+	 * @model name="checkout" literal="Checkout"
 	 * @generated
 	 * @ordered
 	 */

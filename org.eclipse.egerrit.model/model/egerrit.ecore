@@ -299,7 +299,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="ActionConstants">
     <eLiterals name="abandon" literal="Abandon"/>
-    <eLiterals name="checkout" value="1"/>
+    <eLiterals name="checkout" value="1" literal="Checkout"/>
     <eLiterals name="cherrypick" value="2" literal="Cherry-Pick"/>
     <eLiterals name="draft" value="3" literal="Draft ..."/>
     <eLiterals name="followup" value="4" literal="Followup"/>
