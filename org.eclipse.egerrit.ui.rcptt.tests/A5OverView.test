@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _9GHRgIPsEeWD_fYsit66JA
 Runtime-Version: 2.0.2.201511100828
-Save-Time: 1/25/16 1:53 PM
+Save-Time: 2/9/16 1:10 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -39,9 +39,9 @@ get-editor".*" | get-button Checkout | click
 get-window Error | get-button OK | click
 get-editor ".*" | get-button "Cherry-Pick" | click
 get-window "Code Review - Cherry Pick Change to Another Branch" | get-button "Cherry Pick Change" | click
-with [get-editor ".*" | get-button "Reply..."] {
+with [get-editor ".*" | get-button "Reply ..."] {
     click
-    get-menu "Reply..." | click
+    get-menu "Reply ..." | click
 }
 with [get-window "Reply dialog"] {
     with [get-editbox] {
