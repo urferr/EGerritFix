@@ -13,7 +13,6 @@ package org.eclipse.egerrit.internal.model;
 
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
 import org.eclipse.emf.common.util.EMap;
-import org.eclipse.emf.ecore.EAttribute;
 
 /**
  * @author Jacques Bouthillier
@@ -29,7 +28,11 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 			ActionInfo actionInfo = actionsAvailable.get(action);
 
 			if (actionInfo != null) {
-				return actionInfo.isEnabled();
+				//Checking if the action is defined. If so, then just return true, 
+				//Not checking the value "isEnabled()", sometimes, 
+				//it return false even if the action is defined
+				//return actionInfo.isEnabled();
+				return true;
 			}
 		}
 		return false;
