@@ -29,8 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getOld_path <em>Old path</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getLines_inserted <em>Lines inserted</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getLines_deleted <em>Lines deleted</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getContainedIn <em>Contained In</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getNewComments <em>New Comments</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getComments <em>Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getDraftComments <em>Draft Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#isReviewed <em>Reviewed</em>}</li>
  * </ul>
@@ -172,46 +171,20 @@ public interface FileInfo extends EObject {
 	void setLines_deleted(int value);
 
 	/**
-	 * Returns the value of the '<em><b>Contained In</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Contained In</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Contained In</em>' reference.
-	 * @see #setContainedIn(RevisionInfo)
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_ContainedIn()
-	 * @model
-	 * @generated
-	 */
-	RevisionInfo getContainedIn();
-
-	/**
-	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.FileInfo#getContainedIn <em>Contained In</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Contained In</em>' reference.
-	 * @see #getContainedIn()
-	 * @generated
-	 */
-	void setContainedIn(RevisionInfo value);
-
-	/**
-	 * Returns the value of the '<em><b>New Comments</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Comments</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.egerrit.internal.model.CommentInfo}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>New Comments</em>' containment reference list isn't clear,
+	 * If the meaning of the '<em>Comments</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>New Comments</em>' containment reference list.
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_NewComments()
+	 * @return the value of the '<em>Comments</em>' containment reference list.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_Comments()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<CommentInfo> getNewComments();
+	EList<CommentInfo> getComments();
 
 	/**
 	 * Returns the value of the '<em><b>Draft Comments</b></em>' containment reference list.
@@ -254,5 +227,29 @@ public interface FileInfo extends EObject {
 	 * @generated
 	 */
 	void setReviewed(boolean value);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation"
+	 * @generated
+	 */
+	String getPath();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation"
+	 * @generated
+	 */
+	RevisionInfo getRevision();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation"
+	 * @generated
+	 */
+	EList<CommentInfo> getAllComments();
 
 } // FileInfo

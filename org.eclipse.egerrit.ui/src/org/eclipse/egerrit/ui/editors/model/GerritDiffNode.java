@@ -14,14 +14,20 @@ package org.eclipse.egerrit.ui.editors.model;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.IDiffContainer;
+import org.eclipse.egerrit.internal.model.FileInfo;
 
 /**
  * GerritDiffNode is used as input to the compare editor.
  * <p>
  * It is necessary in order to be able to react to saves (e.g. reload the editor)
- *
  */
 public class GerritDiffNode extends DiffNode {
+
+	private FileInfo fileInfo;
+
+	public GerritDiffNode(int kind) {
+		super(kind);
+	}
 
 	public GerritDiffNode(IDiffContainer parent, int kind, ITypedElement ancestor, ITypedElement left,
 			ITypedElement right) {
@@ -33,4 +39,19 @@ public class GerritDiffNode extends DiffNode {
 		super.fireChange();
 	}
 
+	public void setFileInfo(FileInfo info) {
+		fileInfo = info;
+	}
+
+	public FileInfo getFileInfo() {
+		return fileInfo;
+	}
+
+	@Override
+	public String getName() {
+		if (getKind() != GerritDifferences.RENAMED) {
+			return fileInfo.getPath();
+		}
+		return String.format("%s (was %s)", fileInfo.getPath(), fileInfo.getOld_path());
+	}
 }

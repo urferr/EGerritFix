@@ -12,6 +12,7 @@ package org.eclipse.egerrit.internal.model;
 
 
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
+import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.emf.common.util.EMap;
 
 /**
@@ -36,5 +37,15 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public String getId() {
+		return ((StringToRevisionInfoImpl) this.eContainer()).getKey();
+	}
+
+	@Override
+	public ChangeInfo getChangeInfo() {
+		return (ChangeInfo) this.eContainer().eContainer();
 	}
 }

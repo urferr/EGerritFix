@@ -21,8 +21,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Observable;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
@@ -37,13 +35,10 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
-import org.eclipse.egerrit.core.command.ListCommentsCommand;
-import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
@@ -52,6 +47,7 @@ import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
@@ -357,22 +353,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
 					String diffSource = comboDiffAgainst.getText();
 					if (diffSource.equals(WORKSPACE)) {
-						compareEditor.compareAgainstWorkspace(selectedFile,
-								getParticipant(selectedFile.getContainedIn().getId()));
+						compareEditor.compareFiles("WORKSPACE", selectedFile.getRevision().getId(), selectedFile);
 					} else if (diffSource.equals(BASE)) {
-						compareEditor.compareAgainstBase(fChangeInfo.getProject(), selectedFile,
-								getParticipant(selectedFile.getContainedIn().getId()));
+						compareEditor.compareFiles("BASE", selectedFile.getRevision().getId(), selectedFile);
 					} else {
-						RevisionInfo rev = getRevisionInfoByNumber(diffSource);
-						if (rev != null) {
-							compareEditor.compareTwoRevisions(rev.getFiles().get(selectedFile.getOld_path()),
-									selectedFile, getParticipant(selectedFile.getContainedIn().getId()));
-							return;
-						}
-						MessageDialog.openError(null, "Can not open compare editor",
-								"The compare editor can not yet show difference with " + diffSource);
+						compareEditor.compareFiles(getRevisionInfoByNumber(diffSource).getId(), getSelectedPatchSetID(),
+								selectedFile);
 					}
-					setReviewedFlag(element);
 				}
 			}
 
@@ -454,8 +441,8 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				if (fileInfo.getDraftComments() != null) {
 					numDrafts += fileInfo.getDraftComments().size();
 				}
-				if (fileInfo.getNewComments() != null) {
-					numComment += fileInfo.getNewComments().size();
+				if (fileInfo.getComments() != null) {
+					numComment += fileInfo.getComments().size();
 				}
 			}
 			StringBuilder sb = new StringBuilder();
@@ -476,25 +463,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				sb.append(numComment);
 			}
 			lblTotal.setText(sb.toString());
-		}
-	}
-
-	private void setReviewedFlag(Object element) {
-		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-			FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-			if (!fileInfo.isReviewed()) {
-				SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
-						fSelectedRevision.getCommit().getCommit(), fileInfo.getOld_path());
-				try {
-					command.call();
-				} catch (EGerritException ex) {
-					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
-				}
-
-				fileInfo.setReviewed(true);
-
-				tableFilesViewer.refresh();
-			}
 		}
 	}
 
@@ -531,7 +499,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	private void toggleReviewed(FileInfo fileInfo) {
 		if (fileInfo.isReviewed()) {
 			DeleteReviewedCommand command = gerritClient.deleteReviewed(fChangeInfo.getId(),
-					fSelectedRevision.getCommit().getCommit(), fileInfo.getOld_path());
+					fSelectedRevision.getCommit().getCommit(), fileInfo.getPath());
 			try {
 				command.call();
 				fileInfo.setReviewed(false);
@@ -540,7 +508,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 		} else {
 			SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
-					fSelectedRevision.getCommit().getCommit(), fileInfo.getOld_path());
+					fSelectedRevision.getCommit().getCommit(), fileInfo.getPath());
 			try {
 				command.call();
 			} catch (EGerritException ex) {
@@ -586,7 +554,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			final FeaturePath filePath = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
 					ModelPackage.Literals.FILE_INFO__OLD_PATH);
 			final FeaturePath comment = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__NEW_COMMENTS);
+					ModelPackage.Literals.FILE_INFO__COMMENTS);
 			final FeaturePath size = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
 					ModelPackage.Literals.FILE_INFO__LINES_INSERTED);
 
@@ -688,7 +656,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 				while (file.hasNext()) {
 					FileInfo fi = file.next();
 					for (String e : reviewedFilesList) {
-						if (e.compareTo(fi.getOld_path()) == 0) {
+						if (e.compareTo(fi.getPath()) == 0) {
 							fi.setReviewed(true);
 						}
 					}
@@ -697,88 +665,17 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		}
 	}
 
-	private void fillCommentsRevisionFileInfo() {
-		RevisionInfo revInfo = fSelectedRevision;
-
-		Map<String, ArrayList<CommentInfo>> mapCommentInfo = queryComments(gerritClient, fChangeInfo.getId(),
-				revInfo.getId(), new NullProgressMonitor());
-
-		//Fill the Files table with comments
-		EMap<String, FileInfo> mapFiles = revInfo.getFiles();
-		Iterator<FileInfo> file = mapFiles.values().iterator();
-		while (file.hasNext()) {
-			FileInfo fi = file.next();
-			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapCommentInfo.entrySet().iterator();
-			while (commentIter.hasNext()) {
-				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
-				//Add comments associated to the file
-				if (fi.getOld_path().equals(entryComment.getKey())) {
-					fi.getNewComments().clear();
-					fi.getNewComments().addAll(entryComment.getValue());
-					break;
-				}
-			}
-		}
-
-		//Query for the DRAFTS comments
-		Map<String, ArrayList<CommentInfo>> mapDraftCommentInfo = queryDraftComments(gerritClient, fChangeInfo.getId(),
-				revInfo.getId(), new NullProgressMonitor());
-
-		//Fill the Files table
-		Iterator<FileInfo> fileIt = mapFiles.values().iterator();
-		while (fileIt.hasNext() && mapDraftCommentInfo != null) {
-			FileInfo displayFileInfo = fileIt.next();
-			Iterator<Map.Entry<String, ArrayList<CommentInfo>>> commentIter = mapDraftCommentInfo.entrySet().iterator();
-			while (commentIter.hasNext()) {
-				Entry<String, ArrayList<CommentInfo>> entryComment = commentIter.next();
-				//Add comments associated to the file
-				if (displayFileInfo.getOld_path().equals(entryComment.getKey())) {
-					displayFileInfo.getDraftComments().clear();
-					displayFileInfo.getDraftComments().addAll(entryComment.getValue());
-					break;
-				}
-			}
-		}
-
-	}
-
 	/**
 	 * Fill the data fields included in the Files Tab
 	 */
 	private void setFileTabFields() {
 		if (tableFilesViewer != null && !tableFilesViewer.getTable().isDisposed()) {
 			fillReviewedRevisionFileInfo();
-			fillCommentsRevisionFileInfo();
+			QueryHelpers.loadComments(gerritClient, fSelectedRevision);
+			QueryHelpers.loadDrafts(gerritClient, fSelectedRevision);
 			tableFilesViewer.refresh();
 			computeTotals();
 		}
-	}
-
-	/***************************************************************/
-	/*                                                             */
-	/* Section to QUERY the data structure                         */
-	/*                                                             */
-	/************************************************************* */
-	private Map<String, ArrayList<CommentInfo>> queryComments(GerritClient gerrit, String change_id, String revision_id,
-			IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			ListCommentsCommand command = gerrit.getListComments(change_id, revision_id);
-
-			Map<String, ArrayList<CommentInfo>> res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
-			}
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
 	}
 
 	/***************************************************************/
@@ -806,30 +703,6 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 		return null;
 
-	}
-
-	private Map<String, ArrayList<CommentInfo>> queryDraftComments(GerritClient gerrit, String change_id,
-			String revision_id, IProgressMonitor monitor) {
-
-		try {
-			if (gerrit.getRepository().getServerInfo().isAnonymous()) {
-				return null;
-			}
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			ListDraftsCommand command = gerrit.listDraftsComments(change_id, revision_id);
-			Map<String, ArrayList<CommentInfo>> res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
-			}
-		} finally {
-			monitor.done();
-		}
-
-		return null;
 	}
 
 	/**

@@ -5,20 +5,21 @@ import org.eclipse.egerrit.internal.model.impl.ModelFactoryImpl;
 public class ModifiedEGerritFactory extends ModelFactoryImpl {
 	@Override
 	public ChangeInfo createChangeInfo() {
-		ChangeInfo changeInfo = new ModifiedChangeInfoImpl();
-		return changeInfo;
+		return new ModifiedChangeInfoImpl();
 	}
 	
 	@Override
 	public CommitInfo createCommitInfo() {
-		CommitInfo commitInfo = new ModifiedCommitInfoImpl();
-		return commitInfo;
+		return new ModifiedCommitInfoImpl();
 	}
 
 	@Override
 	public RevisionInfo createRevisionInfo() {
-		RevisionInfo revisionInfo = new ModifiedRevisionInfoImpl();
-		return revisionInfo;
+		return new ModifiedRevisionInfoImpl();
 	}
 
+	@Override
+	public FileInfo createFileInfo() {
+		return new ModifiedFileInfoImpl();
+	}
 }

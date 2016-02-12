@@ -50,6 +50,27 @@ public class CreateDraftCommandTest extends CommandTestWithSimpleReview {
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
+	}
 
+	@Test
+	public void testCreateCommentOnLine0() {
+		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
+		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
+		commentInfo.setLine(0);
+		commentInfo.setMessage("This is a test comment");
+		commentInfo.setPath(filename);
+		command.setCommandInput(commentInfo);
+
+		try {
+			CommentInfo result = command.call();
+			assertEquals(result.getLine(), commentInfo.getLine());
+			assertEquals(result.getMessage(), commentInfo.getMessage());
+			assertEquals(result.getPath(), commentInfo.getPath());
+
+			ListDraftsCommand listCommand = fGerrit.listDraftsComments(change_id, commit_id);
+			assertEquals(1, listCommand.call().size());
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		}
 	}
 }

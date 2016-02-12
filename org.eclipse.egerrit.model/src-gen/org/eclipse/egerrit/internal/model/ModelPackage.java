@@ -955,22 +955,13 @@ public interface ModelPackage extends EPackage {
 	int FILE_INFO__LINES_DELETED = 4;
 
 	/**
-	 * The feature id for the '<em><b>Contained In</b></em>' reference.
+	 * The feature id for the '<em><b>Comments</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO__CONTAINED_IN = 5;
-
-	/**
-	 * The feature id for the '<em><b>New Comments</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int FILE_INFO__NEW_COMMENTS = 6;
+	int FILE_INFO__COMMENTS = 5;
 
 	/**
 	 * The feature id for the '<em><b>Draft Comments</b></em>' containment reference list.
@@ -979,7 +970,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO__DRAFT_COMMENTS = 7;
+	int FILE_INFO__DRAFT_COMMENTS = 6;
 
 	/**
 	 * The feature id for the '<em><b>Reviewed</b></em>' attribute.
@@ -988,7 +979,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO__REVIEWED = 8;
+	int FILE_INFO__REVIEWED = 7;
 
 	/**
 	 * The number of structural features of the '<em>File Info</em>' class.
@@ -997,7 +988,34 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO_FEATURE_COUNT = 9;
+	int FILE_INFO_FEATURE_COUNT = 8;
+
+	/**
+	 * The operation id for the '<em>Get Path</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FILE_INFO___GET_PATH = 0;
+
+	/**
+	 * The operation id for the '<em>Get Revision</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FILE_INFO___GET_REVISION = 1;
+
+	/**
+	 * The operation id for the '<em>Get All Comments</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FILE_INFO___GET_ALL_COMMENTS = 2;
 
 	/**
 	 * The number of operations of the '<em>File Info</em>' class.
@@ -1006,7 +1024,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO_OPERATION_COUNT = 0;
+	int FILE_INFO_OPERATION_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl <em>Mergeable Info</em>}' class.
@@ -2358,13 +2376,13 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO__REVIEWED = 8;
 
 	/**
-	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * The feature id for the '<em><b>Comments Loaded</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO__ID = 9;
+	int REVISION_INFO__COMMENTS_LOADED = 9;
 
 	/**
 	 * The number of structural features of the '<em>Revision Info</em>' class.
@@ -2385,13 +2403,31 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO___IS_ACTION_ALLOWED__STRING = 0;
 
 	/**
+	 * The operation id for the '<em>Get Id</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO___GET_ID = 1;
+
+	/**
+	 * The operation id for the '<em>Get Change Info</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO___GET_CHANGE_INFO = 2;
+
+	/**
 	 * The number of operations of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_OPERATION_COUNT = 1;
+	int REVISION_INFO_OPERATION_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.
@@ -3304,26 +3340,15 @@ public interface ModelPackage extends EPackage {
 	EAttribute getFileInfo_Lines_deleted();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.eclipse.egerrit.internal.model.FileInfo#getContainedIn <em>Contained In</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.egerrit.internal.model.FileInfo#getComments <em>Comments</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Contained In</em>'.
-	 * @see org.eclipse.egerrit.internal.model.FileInfo#getContainedIn()
+	 * @return the meta object for the containment reference list '<em>Comments</em>'.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getComments()
 	 * @see #getFileInfo()
 	 * @generated
 	 */
-	EReference getFileInfo_ContainedIn();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.egerrit.internal.model.FileInfo#getNewComments <em>New Comments</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>New Comments</em>'.
-	 * @see org.eclipse.egerrit.internal.model.FileInfo#getNewComments()
-	 * @see #getFileInfo()
-	 * @generated
-	 */
-	EReference getFileInfo_NewComments();
+	EReference getFileInfo_Comments();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.eclipse.egerrit.internal.model.FileInfo#getDraftComments <em>Draft Comments</em>}'.
@@ -3346,6 +3371,36 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getFileInfo_Reviewed();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.FileInfo#getPath() <em>Get Path</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Path</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getPath()
+	 * @generated
+	 */
+	EOperation getFileInfo__GetPath();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.FileInfo#getRevision() <em>Get Revision</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Revision</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getRevision()
+	 * @generated
+	 */
+	EOperation getFileInfo__GetRevision();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.FileInfo#getAllComments() <em>Get All Comments</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get All Comments</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getAllComments()
+	 * @generated
+	 */
+	EOperation getFileInfo__GetAllComments();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.MergeableInfo <em>Mergeable Info</em>}'.
@@ -4615,15 +4670,15 @@ public interface ModelPackage extends EPackage {
 	EAttribute getRevisionInfo_Reviewed();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#getId <em>Id</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommentsLoaded <em>Comments Loaded</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Id</em>'.
-	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#getId()
+	 * @return the meta object for the attribute '<em>Comments Loaded</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isCommentsLoaded()
 	 * @see #getRevisionInfo()
 	 * @generated
 	 */
-	EAttribute getRevisionInfo_Id();
+	EAttribute getRevisionInfo_CommentsLoaded();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
@@ -4634,6 +4689,26 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getRevisionInfo__IsActionAllowed__String();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#getId() <em>Get Id</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Id</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#getId()
+	 * @generated
+	 */
+	EOperation getRevisionInfo__GetId();
+
+	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#getChangeInfo() <em>Get Change Info</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Change Info</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#getChangeInfo()
+	 * @generated
+	 */
+	EOperation getRevisionInfo__GetChangeInfo();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo <em>Suggest Reviewer Info</em>}'.
@@ -5353,20 +5428,12 @@ public interface ModelPackage extends EPackage {
 		EAttribute FILE_INFO__LINES_DELETED = eINSTANCE.getFileInfo_Lines_deleted();
 
 		/**
-		 * The meta object literal for the '<em><b>Contained In</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Comments</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference FILE_INFO__CONTAINED_IN = eINSTANCE.getFileInfo_ContainedIn();
-
-		/**
-		 * The meta object literal for the '<em><b>New Comments</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference FILE_INFO__NEW_COMMENTS = eINSTANCE.getFileInfo_NewComments();
+		EReference FILE_INFO__COMMENTS = eINSTANCE.getFileInfo_Comments();
 
 		/**
 		 * The meta object literal for the '<em><b>Draft Comments</b></em>' containment reference list feature.
@@ -5383,6 +5450,30 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FILE_INFO__REVIEWED = eINSTANCE.getFileInfo_Reviewed();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Path</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation FILE_INFO___GET_PATH = eINSTANCE.getFileInfo__GetPath();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Revision</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation FILE_INFO___GET_REVISION = eINSTANCE.getFileInfo__GetRevision();
+
+		/**
+		 * The meta object literal for the '<em><b>Get All Comments</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation FILE_INFO___GET_ALL_COMMENTS = eINSTANCE.getFileInfo__GetAllComments();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl <em>Mergeable Info</em>}' class.
@@ -6347,12 +6438,12 @@ public interface ModelPackage extends EPackage {
 		EAttribute REVISION_INFO__REVIEWED = eINSTANCE.getRevisionInfo_Reviewed();
 
 		/**
-		 * The meta object literal for the '<em><b>Id</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Comments Loaded</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute REVISION_INFO__ID = eINSTANCE.getRevisionInfo_Id();
+		EAttribute REVISION_INFO__COMMENTS_LOADED = eINSTANCE.getRevisionInfo_CommentsLoaded();
 
 		/**
 		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.
@@ -6361,6 +6452,22 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation REVISION_INFO___IS_ACTION_ALLOWED__STRING = eINSTANCE.getRevisionInfo__IsActionAllowed__String();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Id</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation REVISION_INFO___GET_ID = eINSTANCE.getRevisionInfo__GetId();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Change Info</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation REVISION_INFO___GET_CHANGE_INFO = eINSTANCE.getRevisionInfo__GetChangeInfo();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.

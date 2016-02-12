@@ -124,8 +124,7 @@ public class GroupBaseInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((GroupBaseInfo) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_GroupBaseInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_GroupBaseInfo_type") : //$NON-NLS-1$
 				getString("_UI_GroupBaseInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

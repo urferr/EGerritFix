@@ -187,8 +187,7 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 	public Collection<? extends EStructuralFeature> getChildrenFeatures(Object object) {
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
-			childrenFeatures.add(ModelPackage.Literals.FILE_INFO__CONTAINED_IN);
-			childrenFeatures.add(ModelPackage.Literals.FILE_INFO__NEW_COMMENTS);
+			childrenFeatures.add(ModelPackage.Literals.FILE_INFO__COMMENTS);
 			childrenFeatures.add(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS);
 		}
 		return childrenFeatures;
@@ -227,8 +226,7 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((FileInfo) object).getStatus();
-		return label == null || label.length() == 0 ? getString("_UI_FileInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_FileInfo_type") : //$NON-NLS-1$
 				getString("_UI_FileInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -252,8 +250,7 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.FILE_INFO__REVIEWED:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
-		case ModelPackage.FILE_INFO__CONTAINED_IN:
-		case ModelPackage.FILE_INFO__NEW_COMMENTS:
+		case ModelPackage.FILE_INFO__COMMENTS:
 		case ModelPackage.FILE_INFO__DRAFT_COMMENTS:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
@@ -272,10 +269,7 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
 		super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.FILE_INFO__CONTAINED_IN,
-				ModelFactory.eINSTANCE.createRevisionInfo()));
-
-		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.FILE_INFO__NEW_COMMENTS,
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.FILE_INFO__COMMENTS,
 				ModelFactory.eINSTANCE.createCommentInfo()));
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS,
@@ -293,7 +287,7 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 		Object childFeature = feature;
 		Object childObject = child;
 
-		boolean qualify = childFeature == ModelPackage.Literals.FILE_INFO__NEW_COMMENTS
+		boolean qualify = childFeature == ModelPackage.Literals.FILE_INFO__COMMENTS
 				|| childFeature == ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS;
 
 		if (qualify) {

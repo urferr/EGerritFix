@@ -13,16 +13,9 @@
 
 package org.eclipse.egerrit.core.command;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.core.GerritRepository;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.emf.common.util.EMap;
 
 /**
  * The command GET /changes/{change-id}/detail
@@ -47,29 +40,5 @@ public class GetChangeCommand extends BaseCommandChange<ChangeInfo> {
 
 	public void addOption(ChangeOption option) {
 		addQueryParameter("o", option.getValue()); //$NON-NLS-1$
-	}
-
-	@Override
-	//EMF - is it necessary to keep all this
-	protected ChangeInfo postProcessResult(ChangeInfo changeInfo) {
-		EMap<String, RevisionInfo> map = changeInfo.getRevisions();
-		if (map != null) {
-			Iterator<Map.Entry<String, RevisionInfo>> revisions = map.entrySet().iterator();
-			while (revisions.hasNext()) {
-				Entry<String, RevisionInfo> revisionEntry = revisions.next();
-				RevisionInfo theRevision = revisionEntry.getValue();
-				theRevision.setId(revisionEntry.getKey());
-				EMap<String, FileInfo> filesMap = theRevision.getFiles();
-				if (filesMap != null) {
-					Iterator<Map.Entry<String, FileInfo>> files = filesMap.entrySet().iterator();
-					while (files.hasNext()) {
-						Entry<String, FileInfo> aFile = files.next();
-						aFile.getValue().setOld_path(aFile.getKey());
-						aFile.getValue().setContainedIn(theRevision);
-					}
-				}
-			}
-		}
-		return changeInfo;
 	}
 }

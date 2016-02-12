@@ -158,8 +158,7 @@ public class AccountInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((AccountInfo) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_AccountInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_AccountInfo_type") : //$NON-NLS-1$
 				getString("_UI_AccountInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

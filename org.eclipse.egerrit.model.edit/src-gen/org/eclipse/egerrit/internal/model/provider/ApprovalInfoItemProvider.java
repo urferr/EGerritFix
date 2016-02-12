@@ -125,8 +125,7 @@ public class ApprovalInfoItemProvider extends ItemProviderAdapter
 	public String getText(Object object) {
 		Integer labelValue = ((ApprovalInfo) object).getValue();
 		String label = labelValue == null ? null : labelValue.toString();
-		return label == null || label.length() == 0 ? getString("_UI_ApprovalInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_ApprovalInfo_type") : //$NON-NLS-1$
 				getString("_UI_ApprovalInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

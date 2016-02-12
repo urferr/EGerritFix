@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.egerrit.internal.model.ActionInfo;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -47,7 +48,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#getFiles <em>Files</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#getActions <em>Actions</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isReviewed <em>Reviewed</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#getId <em>Id</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isCommentsLoaded <em>Comments Loaded</em>}</li>
  * </ul>
  *
  * @generated
@@ -194,24 +195,24 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	protected boolean reviewed = REVIEWED_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * The default value of the '{@link #isCommentsLoaded() <em>Comments Loaded</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getId()
+	 * @see #isCommentsLoaded()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String ID_EDEFAULT = null;
+	protected static final boolean COMMENTS_LOADED_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * The cached value of the '{@link #isCommentsLoaded() <em>Comments Loaded</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getId()
+	 * @see #isCommentsLoaded()
 	 * @generated
 	 * @ordered
 	 */
-	protected String id = ID_EDEFAULT;
+	protected boolean commentsLoaded = COMMENTS_LOADED_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -449,9 +450,21 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
-	public String getId() {
-		return id;
+	public boolean isCommentsLoaded() {
+		return commentsLoaded;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setCommentsLoaded(boolean newCommentsLoaded) {
+		boolean oldCommentsLoaded = commentsLoaded;
+		commentsLoaded = newCommentsLoaded;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.REVISION_INFO__COMMENTS_LOADED,
+					oldCommentsLoaded, commentsLoaded));
 	}
 
 	/**
@@ -460,11 +473,22 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @generated
 	 */
 	@Override
-	public void setId(String newId) {
-		String oldId = id;
-		id = newId;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.REVISION_INFO__ID, oldId, id));
+	public String getId() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public ChangeInfo getChangeInfo() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -534,8 +558,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 				return getActions().map();
 		case ModelPackage.REVISION_INFO__REVIEWED:
 			return isReviewed();
-		case ModelPackage.REVISION_INFO__ID:
-			return getId();
+		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
+			return isCommentsLoaded();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -575,8 +599,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		case ModelPackage.REVISION_INFO__REVIEWED:
 			setReviewed((Boolean) newValue);
 			return;
-		case ModelPackage.REVISION_INFO__ID:
-			setId((String) newValue);
+		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
+			setCommentsLoaded((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -617,8 +641,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		case ModelPackage.REVISION_INFO__REVIEWED:
 			setReviewed(REVIEWED_EDEFAULT);
 			return;
-		case ModelPackage.REVISION_INFO__ID:
-			setId(ID_EDEFAULT);
+		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
+			setCommentsLoaded(COMMENTS_LOADED_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -650,8 +674,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return actions != null && !actions.isEmpty();
 		case ModelPackage.REVISION_INFO__REVIEWED:
 			return reviewed != REVIEWED_EDEFAULT;
-		case ModelPackage.REVISION_INFO__ID:
-			return ID_EDEFAULT == null ? id != null : !ID_EDEFAULT.equals(id);
+		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
+			return commentsLoaded != COMMENTS_LOADED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -666,6 +690,10 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		switch (operationID) {
 		case ModelPackage.REVISION_INFO___IS_ACTION_ALLOWED__STRING:
 			return isActionAllowed((String) arguments.get(0));
+		case ModelPackage.REVISION_INFO___GET_ID:
+			return getId();
+		case ModelPackage.REVISION_INFO___GET_CHANGE_INFO:
+			return getChangeInfo();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
@@ -691,8 +719,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		result.append(ref);
 		result.append(", reviewed: "); //$NON-NLS-1$
 		result.append(reviewed);
-		result.append(", id: "); //$NON-NLS-1$
-		result.append(id);
+		result.append(", commentsLoaded: "); //$NON-NLS-1$
+		result.append(commentsLoaded);
 		result.append(')');
 		return result.toString();
 	}

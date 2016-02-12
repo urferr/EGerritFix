@@ -157,8 +157,7 @@ public class FetchInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((FetchInfo) object).getUrl();
-		return label == null || label.length() == 0 ? getString("_UI_FetchInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_FetchInfo_type") : //$NON-NLS-1$
 				getString("_UI_FetchInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

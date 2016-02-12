@@ -92,29 +92,30 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 			case 1:
 				return fileInfo.getStatus();
 			case 2:
+				String path = null;
 				if (nameFirst) {
-					String path = fileInfo.getOld_path();
+					path = fileInfo.getPath();
 					int index = path.lastIndexOf("/"); //$NON-NLS-1$
 					if (index != -1) {
 						String fileName = path.substring(index + 1);
 						String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
-						return firstName;
-					} else {
-						//The file has no path, just a filename
-						return path;
+						path = firstName;
 					}
-
 				} else {
-					return fileInfo.getOld_path();
+					path = fileInfo.getPath();
 				}
+				if (fileInfo.getOld_path() != null) {
+					path += " (was " + fileInfo.getOld_path() + ")";
+				}
+				return path;
 			case 3:
 				String ret = EMPTY_STRING;
 				if (fileInfo.getDraftComments() != null && !fileInfo.getDraftComments().isEmpty()) {
 					ret = DRAFTS + fileInfo.getDraftComments().size() + " "; //$NON-NLS-1$
 				}
-				if (fileInfo.getNewComments() != null) {
+				if (fileInfo.getComments() != null) {
 					int newCommentCount = 0;
-					Iterator<CommentInfo> iterator = fileInfo.getNewComments().iterator();
+					Iterator<CommentInfo> iterator = fileInfo.getComments().iterator();
 					String currentUpdate = EMPTY_STRING;
 					//EMF to fix
 					String currentUser = "";//fileInfo.getCurrentUser();
@@ -133,7 +134,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					}
 
 					if (!currentUpdate.isEmpty()) {
-						Iterator<CommentInfo> iterator2 = fileInfo.getNewComments().iterator();
+						Iterator<CommentInfo> iterator2 = fileInfo.getComments().iterator();
 						while (iterator2.hasNext()) {
 							CommentInfo aComment2 = iterator2.next();
 							if ((Timestamp.valueOf(aComment2.getUpdated()).after(Timestamp.valueOf(currentUpdate)))) {
@@ -145,8 +146,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					if (ret.isEmpty()) {
 						ret = "                     "; //$NON-NLS-1$
 					}
-					if (fileInfo.getNewComments().size() - newCommentCount != 0) {
-						ret = ret + COMMENTS + (fileInfo.getNewComments().size() - newCommentCount) + " "; //$NON-NLS-1$
+					if (fileInfo.getComments().size() - newCommentCount != 0) {
+						ret = ret + COMMENTS + (fileInfo.getComments().size() - newCommentCount) + " "; //$NON-NLS-1$
 					}
 					if (newCommentCount != 0) {
 						ret = ret + NEW + newCommentCount;

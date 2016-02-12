@@ -33,7 +33,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#getFiles <em>Files</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#getActions <em>Actions</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isReviewed <em>Reviewed</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#getId <em>Id</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommentsLoaded <em>Comments Loaded</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo()
@@ -249,30 +249,50 @@ public interface RevisionInfo extends EObject {
 	void setReviewed(boolean value);
 
 	/**
-	 * Returns the value of the '<em><b>Id</b></em>' attribute.
+	 * Returns the value of the '<em><b>Comments Loaded</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Comments Loaded</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Comments Loaded</em>' attribute.
+	 * @see #setCommentsLoaded(boolean)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_CommentsLoaded()
+	 * @model
+	 * @generated
+	 */
+	boolean isCommentsLoaded();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommentsLoaded <em>Comments Loaded</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Comments Loaded</em>' attribute.
+	 * @see #isCommentsLoaded()
+	 * @generated
+	 */
+	void setCommentsLoaded(boolean value);
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Id</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Id</em>' attribute.
-	 * @see #setId(String)
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Id()
-	 * @model
+	 * @model kind="operation"
 	 * @generated
 	 */
 	String getId();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#getId <em>Id</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Id</em>' attribute.
-	 * @see #getId()
+	 * @model kind="operation"
 	 * @generated
 	 */
-	void setId(String value);
+	ChangeInfo getChangeInfo();
 
 	/**
 	 * <!-- begin-user-doc -->

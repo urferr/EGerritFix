@@ -1082,7 +1082,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EReference getFileInfo_ContainedIn() {
+	public EReference getFileInfo_Comments() {
 		return (EReference) fileInfoEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -1092,7 +1092,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EReference getFileInfo_NewComments() {
+	public EReference getFileInfo_DraftComments() {
 		return (EReference) fileInfoEClass.getEStructuralFeatures().get(6);
 	}
 
@@ -1102,8 +1102,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EReference getFileInfo_DraftComments() {
-		return (EReference) fileInfoEClass.getEStructuralFeatures().get(7);
+	public EAttribute getFileInfo_Reviewed() {
+		return (EAttribute) fileInfoEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -1112,8 +1112,28 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getFileInfo_Reviewed() {
-		return (EAttribute) fileInfoEClass.getEStructuralFeatures().get(8);
+	public EOperation getFileInfo__GetPath() {
+		return fileInfoEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getFileInfo__GetRevision() {
+		return fileInfoEClass.getEOperations().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getFileInfo__GetAllComments() {
+		return fileInfoEClass.getEOperations().get(2);
 	}
 
 	/**
@@ -2282,7 +2302,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EAttribute getRevisionInfo_Id() {
+	public EAttribute getRevisionInfo_CommentsLoaded() {
 		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(9);
 	}
 
@@ -2294,6 +2314,26 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	@Override
 	public EOperation getRevisionInfo__IsActionAllowed__String() {
 		return revisionInfoEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getRevisionInfo__GetId() {
+		return revisionInfoEClass.getEOperations().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getRevisionInfo__GetChangeInfo() {
+		return revisionInfoEClass.getEOperations().get(2);
 	}
 
 	/**
@@ -2500,10 +2540,12 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(fileInfoEClass, FILE_INFO__OLD_PATH);
 		createEAttribute(fileInfoEClass, FILE_INFO__LINES_INSERTED);
 		createEAttribute(fileInfoEClass, FILE_INFO__LINES_DELETED);
-		createEReference(fileInfoEClass, FILE_INFO__CONTAINED_IN);
-		createEReference(fileInfoEClass, FILE_INFO__NEW_COMMENTS);
+		createEReference(fileInfoEClass, FILE_INFO__COMMENTS);
 		createEReference(fileInfoEClass, FILE_INFO__DRAFT_COMMENTS);
 		createEAttribute(fileInfoEClass, FILE_INFO__REVIEWED);
+		createEOperation(fileInfoEClass, FILE_INFO___GET_PATH);
+		createEOperation(fileInfoEClass, FILE_INFO___GET_REVISION);
+		createEOperation(fileInfoEClass, FILE_INFO___GET_ALL_COMMENTS);
 
 		mergeableInfoEClass = createEClass(MERGEABLE_INFO);
 		createEAttribute(mergeableInfoEClass, MERGEABLE_INFO__SUBMIT_TYPE);
@@ -2637,8 +2679,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(revisionInfoEClass, REVISION_INFO__FILES);
 		createEReference(revisionInfoEClass, REVISION_INFO__ACTIONS);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__REVIEWED);
-		createEAttribute(revisionInfoEClass, REVISION_INFO__ID);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__COMMENTS_LOADED);
 		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
+		createEOperation(revisionInfoEClass, REVISION_INFO___GET_ID);
+		createEOperation(revisionInfoEClass, REVISION_INFO___GET_CHANGE_INFO);
 
 		suggestReviewerInfoEClass = createEClass(SUGGEST_REVIEWER_INFO);
 		createEReference(suggestReviewerInfoEClass, SUGGEST_REVIEWER_INFO__ACCOUNT);
@@ -2872,17 +2916,21 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				!IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFileInfo_Lines_deleted(), ecorePackage.getEInt(), "lines_deleted", null, 0, 1, FileInfo.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFileInfo_ContainedIn(), this.getRevisionInfo(), null, "containedIn", null, 0, 1, //$NON-NLS-1$
-				FileInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFileInfo_NewComments(), this.getCommentInfo(), null, "newComments", null, 0, -1, //$NON-NLS-1$
-				FileInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFileInfo_Comments(), this.getCommentInfo(), null, "comments", null, 0, -1, FileInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFileInfo_DraftComments(), this.getCommentInfo(), null, "draftComments", null, 0, -1, //$NON-NLS-1$
 				FileInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFileInfo_Reviewed(), ecorePackage.getEBoolean(), "reviewed", null, 0, 1, FileInfo.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEOperation(getFileInfo__GetPath(), ecorePackage.getEString(), "getPath", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getFileInfo__GetRevision(), this.getRevisionInfo(), "getRevision", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getFileInfo__GetAllComments(), this.getCommentInfo(), "getAllComments", 0, -1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
 
 		initEClass(mergeableInfoEClass, MergeableInfo.class, "MergeableInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
@@ -3184,12 +3232,18 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getRevisionInfo_Reviewed(), ecorePackage.getEBoolean(), "reviewed", null, 0, 1, //$NON-NLS-1$
 				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRevisionInfo_Id(), ecorePackage.getEString(), "id", null, 0, 1, RevisionInfo.class, //$NON-NLS-1$
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_CommentsLoaded(), ecorePackage.getEBoolean(), "commentsLoaded", null, 0, 1, //$NON-NLS-1$
+				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		op = initEOperation(getRevisionInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", //$NON-NLS-1$
 				0, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEString(), "action", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getRevisionInfo__GetId(), ecorePackage.getEString(), "getId", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		initEOperation(getRevisionInfo__GetChangeInfo(), this.getChangeInfo(), "getChangeInfo", 0, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
 
 		initEClass(suggestReviewerInfoEClass, SuggestReviewerInfo.class, "SuggestReviewerInfo", !IS_ABSTRACT, //$NON-NLS-1$
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

@@ -225,8 +225,7 @@ public class ProjectAccessInfoItemProvider extends ItemProviderAdapter
 	@Override
 	public String getText(Object object) {
 		String label = ((ProjectAccessInfo) object).getRevision();
-		return label == null || label.length() == 0 ? getString("_UI_ProjectAccessInfo_type") //$NON-NLS-1$
-				:
+		return label == null || label.length() == 0 ? getString("_UI_ProjectAccessInfo_type") : //$NON-NLS-1$
 				getString("_UI_ProjectAccessInfo_type") + " " + label; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
