@@ -58,7 +58,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -299,14 +298,14 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.PREVIOUS_CHANGE, //$NON-NLS-1$
 						(CompareEditorInputNavigator) getNavigator()));
 				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
+				toolbarManager.appendToGroup("modes", new ShowUnchangedFilesAction(gerrit,
+						changeInfo.getRevisions().get(rightSide), leftSide, () -> viewer));
 			}
 		};
 		viewer.setLabelProvider(new FileInfoLabelProvider());
 		viewer.getTree().setData(CompareUI.COMPARE_VIEWER_TITLE, getComparisonTitle());
-//		viewer.setFilters(getFilters());
 		viewer.setInput(root);
 		if (nodeToReveal != null) {
-
 			StructuredSelection selection = new StructuredSelection(nodeToReveal);
 			viewer.setSelection(selection, true);
 
