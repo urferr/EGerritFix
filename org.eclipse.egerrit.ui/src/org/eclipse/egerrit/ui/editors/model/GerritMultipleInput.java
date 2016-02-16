@@ -58,6 +58,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -93,9 +94,9 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	private Runnable postSaveListener;
 
 	/**
-	 * Define an input for the compare editor.
-	 * Left side represents what to display in the left side of the editor (workspace, revisionId, base)
-	 * Right side represents what to display in the left side of the editor (workspace, revisionId, base)
+	 * Define an input for the compare editor. Left side represents what to display in the left side of the editor
+	 * (workspace, revisionId, base) Right side represents what to display in the left side of the editor (workspace,
+	 * revisionId, base)
 	 */
 	public GerritMultipleInput(String leftSide, String rightSide, ChangeInfo changeInfo, GerritClient gerrit,
 			FileInfo toReveal) {
@@ -297,6 +298,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 						(CompareEditorInputNavigator) getNavigator()));
 				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.PREVIOUS_CHANGE, //$NON-NLS-1$
 						(CompareEditorInputNavigator) getNavigator()));
+				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
 			}
 		};
 		viewer.setLabelProvider(new FileInfoLabelProvider());
