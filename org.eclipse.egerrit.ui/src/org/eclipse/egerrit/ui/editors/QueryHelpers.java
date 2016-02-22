@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.ChangeOption;
+import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
@@ -171,6 +172,24 @@ public class QueryHelpers {
 		try {
 			command.call();
 			fileInfo.setReviewed(true);
+		} catch (EGerritException ex) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + ex.getMessage());
+		}
+	}
+
+	public static void markAsNotReviewed(GerritClient gerrit, FileInfo fileInfo) {
+		if (gerrit.getRepository().getServerInfo().isAnonymous()) {
+			return;
+		}
+		if (!fileInfo.isReviewed()) {
+			return;
+		}
+
+		DeleteReviewedCommand command = gerrit.deleteReviewed(fileInfo.getRevision().getChangeInfo().getId(),
+				fileInfo.getRevision().getId(), fileInfo.getPath());
+		try {
+			command.call();
+			fileInfo.setReviewed(false);
 		} catch (EGerritException ex) {
 			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + ex.getMessage());
 		}

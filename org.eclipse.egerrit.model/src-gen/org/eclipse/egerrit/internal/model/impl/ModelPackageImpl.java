@@ -1112,6 +1112,26 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getFileInfo_CommentsCount() {
+		return (EAttribute) fileInfoEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getFileInfo_DraftsCount() {
+		return (EAttribute) fileInfoEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EOperation getFileInfo__GetPath() {
 		return fileInfoEClass.getEOperations().get(0);
 	}
@@ -2543,6 +2563,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(fileInfoEClass, FILE_INFO__COMMENTS);
 		createEReference(fileInfoEClass, FILE_INFO__DRAFT_COMMENTS);
 		createEAttribute(fileInfoEClass, FILE_INFO__REVIEWED);
+		createEAttribute(fileInfoEClass, FILE_INFO__COMMENTS_COUNT);
+		createEAttribute(fileInfoEClass, FILE_INFO__DRAFTS_COUNT);
 		createEOperation(fileInfoEClass, FILE_INFO___GET_PATH);
 		createEOperation(fileInfoEClass, FILE_INFO___GET_REVISION);
 		createEOperation(fileInfoEClass, FILE_INFO___GET_ALL_COMMENTS);
@@ -2924,6 +2946,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFileInfo_Reviewed(), ecorePackage.getEBoolean(), "reviewed", null, 0, 1, FileInfo.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFileInfo_CommentsCount(), ecorePackage.getEInt(), "commentsCount", "0", 0, 1, FileInfo.class, //$NON-NLS-1$//$NON-NLS-2$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFileInfo_DraftsCount(), ecorePackage.getEInt(), "draftsCount", null, 0, 1, FileInfo.class, //$NON-NLS-1$
+				IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getFileInfo__GetPath(), ecorePackage.getEString(), "getPath", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 

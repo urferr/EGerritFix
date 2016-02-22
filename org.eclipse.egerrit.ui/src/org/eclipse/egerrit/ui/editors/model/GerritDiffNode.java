@@ -11,6 +11,8 @@
 
 package org.eclipse.egerrit.ui.editors.model;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.IDiffContainer;
@@ -35,6 +37,7 @@ public class GerritDiffNode extends DiffNode {
 	}
 
 	@Override
+	//This method makes the original fireChange method public
 	public void fireChange() {
 		super.fireChange();
 	}
@@ -52,6 +55,14 @@ public class GerritDiffNode extends DiffNode {
 		if (getKind() != GerritDifferences.RENAMED) {
 			return fileInfo.getPath();
 		}
-		return String.format("%s (was %s)", fileInfo.getPath(), fileInfo.getOld_path());
+		return String.format("%s (was %s)", fileInfo.getPath(), fileInfo.getOld_path()); //$NON-NLS-1$
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		//Do nothing. This is just here to make sure databinding is not throwing exception
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		//Do nothing. This is just here to make sure databinding is not throwing exception
 	}
 }

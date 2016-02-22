@@ -29,8 +29,15 @@ import org.eclipse.emf.ecore.util.EContentAdapter;
 public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 	public ModifiedChangeInfoImpl() {
 		eAdapters().add(new EContentAdapter() {
+			{
+				ModifiedChangeInfoImpl.this.eAdapters().add(this);
+			}
 			@Override
 			public void notifyChanged(Notification msg) {
+				super.notifyChanged(msg);
+				
+				if (msg.getFeature() == null)
+					return;
 				//Update the current revision field when revisions or the current revision id changes
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS) || msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)) {
 					InternalEObject modifiedChangeInfo = getModifiedChangeInfo(msg.getNotifier());
@@ -41,16 +48,27 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 					}
 				}
 				
-				//Notify that the value of latest patch set could have changed
-				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS)) {
-					InternalEObject modifiedChangeInfo = getModifiedChangeInfo(msg.getNotifier());
+				// Notify that the value of latest patch set could have changed
+				if (msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS)) {
+					InternalEObject modifiedFileInfo = (InternalEObject) msg.getNotifier();
 					if (eNotificationRequired()) {
-						eNotify(new ENotificationImpl(modifiedChangeInfo, Notification.SET, ModelPackage.Literals.CHANGE_INFO__LATEST_PATCH_SET, null,
-								modifiedChangeInfo.eGet(ModelPackage.Literals.CHANGE_INFO__LATEST_PATCH_SET)));
+						modifiedFileInfo.eNotify(new ENotificationImpl(modifiedFileInfo, Notification.SET,
+								ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT,
+								null,
+								modifiedFileInfo.eGet(ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT)));
 					}
-				}				
-			}
+				}
 
+				if (msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__COMMENTS)) {
+					InternalEObject modifiedFileInfo = (InternalEObject) msg.getNotifier();
+					if (eNotificationRequired()) {
+						modifiedFileInfo.eNotify(new ENotificationImpl(modifiedFileInfo, Notification.SET,
+								ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT,
+								null,
+								modifiedFileInfo.eGet(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT)));
+					}
+				}
+			}
 			private InternalEObject getModifiedChangeInfo(Object object) {
 				if (object instanceof ChangeInfo) {
 					return (InternalEObject) object;

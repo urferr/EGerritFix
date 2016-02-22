@@ -11,23 +11,25 @@
  ******************************************************************************/
 package org.eclipse.egerrit.ui.internal.table.model;
 
+import org.eclipse.egerrit.ui.internal.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 /**
  * This class implements the EGerrit UI view column sorter.
  *
  * @since 1.0
  */
-public class ReviewTableSorter extends ViewerSorter {
+public class ReviewTableSorter extends ViewerComparator {
 
 	// ------------------------------------------------------------------------
 	// Attributes
@@ -108,36 +110,11 @@ public class ReviewTableSorter extends ViewerSorter {
 		}
 
 		else if (aViewer instanceof TreeViewer) {
-
 			TreeViewer tv = (TreeViewer) aViewer;
 			tv.getTree().setSortColumn(tv.getTree().getColumn(fColumnIndex));
-			int idx1 = -1, idx2 = -1;
-
-			Object[] listObj = tv.getTree().getItems();
-
-			for (int i = 0; i < listObj.length; i++) {
-				Object obj = ((TreeItem) listObj[i]).getData();
-				((TreeItem) listObj[i]).setExpanded(true);
-
-				if (obj != null) {
-					if (obj.equals(aE1)) {
-						idx1 = i;
-					} else if (obj.equals(aE2)) {
-						idx2 = i;
-					}
-					if (idx1 > 0 && idx2 > 0) {
-						break;
-					}
-				}
-			}
-
-			int order = 0;
-			if (idx1 > -1 && idx2 > -1) {
-				String str1 = tv.getTree().getItems()[idx1].getText(this.fColumnIndex);
-				String str2 = tv.getTree().getItems()[idx2].getText(this.fColumnIndex);
-				order = str1.compareTo(str2);
-			}
-			return order;
+			FileInfoCompareCellLabelProvider provider = (FileInfoCompareCellLabelProvider) tv
+					.getLabelProvider(fColumnIndex);
+			return provider.getLabel(aE1, fColumnIndex).compareTo(provider.getLabel(aE2, fColumnIndex));
 		}
 		return 0;
 	}
@@ -164,6 +141,29 @@ public class ReviewTableSorter extends ViewerSorter {
 					table.setSortColumn(currentColumn);
 					table.setSortDirection(table.getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
 					aTableViewer.setComparator(sorter);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Bind a sorter to each tree column
+	 *
+	 * @param aTreeViewer
+	 */
+	public static void bind(final TreeViewer aTreeViewer) {
+		for (int i = 0; i < aTreeViewer.getTree().getColumnCount(); i++) {
+			final int columnNum = i;
+			TreeColumn column = aTreeViewer.getTree().getColumn(i);
+			column.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					ReviewTableSorter sorter = new ReviewTableSorter(columnNum);
+					Tree table = aTreeViewer.getTree();
+					TreeColumn currentColumn = (TreeColumn) e.widget;
+					table.setSortColumn(currentColumn);
+					table.setSortDirection(table.getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
+					aTreeViewer.setComparator(sorter);
 				}
 			});
 		}

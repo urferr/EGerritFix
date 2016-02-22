@@ -75,6 +75,8 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 			addLines_insertedPropertyDescriptor(object);
 			addLines_deletedPropertyDescriptor(object);
 			addReviewedPropertyDescriptor(object);
+			addCommentsCountPropertyDescriptor(object);
+			addDraftsCountPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -176,6 +178,38 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
+	 * This adds a property descriptor for the Comments Count feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addCommentsCountPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_FileInfo_commentsCount_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_FileInfo_commentsCount_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_FileInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT, false, false, false,
+						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Drafts Count feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addDraftsCountPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_FileInfo_draftsCount_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_FileInfo_draftsCount_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_FileInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT, false, false, false,
+						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -248,6 +282,8 @@ public class FileInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.FILE_INFO__LINES_INSERTED:
 		case ModelPackage.FILE_INFO__LINES_DELETED:
 		case ModelPackage.FILE_INFO__REVIEWED:
+		case ModelPackage.FILE_INFO__COMMENTS_COUNT:
+		case ModelPackage.FILE_INFO__DRAFTS_COUNT:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.FILE_INFO__COMMENTS:

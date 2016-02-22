@@ -33,9 +33,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
-import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
-import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -498,23 +496,9 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private void toggleReviewed(FileInfo fileInfo) {
 		if (fileInfo.isReviewed()) {
-			DeleteReviewedCommand command = gerritClient.deleteReviewed(fChangeInfo.getId(),
-					fSelectedRevision.getCommit().getCommit(), fileInfo.getPath());
-			try {
-				command.call();
-				fileInfo.setReviewed(false);
-			} catch (EGerritException ex) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
-			}
+			QueryHelpers.markAsNotReviewed(gerritClient, fileInfo);
 		} else {
-			SetReviewedCommand command = gerritClient.setReviewed(fChangeInfo.getId(),
-					fSelectedRevision.getCommit().getCommit(), fileInfo.getPath());
-			try {
-				command.call();
-			} catch (EGerritException ex) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + ex.getMessage());
-			}
-			fileInfo.setReviewed(true);
+			QueryHelpers.markAsReviewed(gerritClient, fileInfo);
 		}
 		tableFilesViewer.refresh();
 	}
@@ -549,22 +533,16 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
 					ModelPackage.Literals.FILE_INFO__REVIEWED);
-			final FeaturePath status = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__STATUS);
-			final FeaturePath filePath = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__OLD_PATH);
-			final FeaturePath comment = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__COMMENTS);
-			final FeaturePath size = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__LINES_INSERTED);
-
+			final FeaturePath commentsCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT);
+			final FeaturePath draftCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+					ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT);
 			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 			tableFilesViewer.setContentProvider(contentProvider);
-			final IObservableMap[] watchedProperties = Properties
-					.observeEach(contentProvider.getKnownElements(),
-							new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(status),
-									EMFProperties.value(filePath), EMFProperties.value(comment),
-									EMFProperties.value(size) });
+			final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
+					new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(commentsCount),
+							EMFProperties.value(draftCount) });
+
 			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
 			tableFilesViewer.setInput(revisionsChanges);
 		}

@@ -32,6 +32,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getComments <em>Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getDraftComments <em>Draft Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#isReviewed <em>Reviewed</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getCommentsCount <em>Comments Count</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.FileInfo#getDraftsCount <em>Drafts Count</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo()
@@ -227,6 +229,37 @@ public interface FileInfo extends EObject {
 	 * @generated
 	 */
 	void setReviewed(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Comments Count</b></em>' attribute.
+	 * The default value is <code>"0"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Comments Count</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Comments Count</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_CommentsCount()
+	 * @model default="0" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	int getCommentsCount();
+
+	/**
+	 * Returns the value of the '<em><b>Drafts Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Drafts Count</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Drafts Count</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFileInfo_DraftsCount()
+	 * @model transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	int getDraftsCount();
 
 	/**
 	 * <!-- begin-user-doc -->

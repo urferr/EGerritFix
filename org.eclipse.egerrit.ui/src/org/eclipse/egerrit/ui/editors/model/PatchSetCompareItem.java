@@ -113,7 +113,7 @@ public class PatchSetCompareItem extends Document
 
 	@Override
 	public boolean isEditable() {
-		return !gerrit.getRepository().getServerInfo().isAnonymous();
+		return !gerrit.getRepository().getServerInfo().isAnonymous() && !"D".equals(fileInfo.getStatus()); //$NON-NLS-1$
 	}
 
 	@Override

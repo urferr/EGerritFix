@@ -982,13 +982,31 @@ public interface ModelPackage extends EPackage {
 	int FILE_INFO__REVIEWED = 7;
 
 	/**
+	 * The feature id for the '<em><b>Comments Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FILE_INFO__COMMENTS_COUNT = 8;
+
+	/**
+	 * The feature id for the '<em><b>Drafts Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FILE_INFO__DRAFTS_COUNT = 9;
+
+	/**
 	 * The number of structural features of the '<em>File Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FILE_INFO_FEATURE_COUNT = 8;
+	int FILE_INFO_FEATURE_COUNT = 10;
 
 	/**
 	 * The operation id for the '<em>Get Path</em>' operation.
@@ -3373,6 +3391,28 @@ public interface ModelPackage extends EPackage {
 	EAttribute getFileInfo_Reviewed();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.FileInfo#getCommentsCount <em>Comments Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Comments Count</em>'.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getCommentsCount()
+	 * @see #getFileInfo()
+	 * @generated
+	 */
+	EAttribute getFileInfo_CommentsCount();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.FileInfo#getDraftsCount <em>Drafts Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Drafts Count</em>'.
+	 * @see org.eclipse.egerrit.internal.model.FileInfo#getDraftsCount()
+	 * @see #getFileInfo()
+	 * @generated
+	 */
+	EAttribute getFileInfo_DraftsCount();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.FileInfo#getPath() <em>Get Path</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -5450,6 +5490,22 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FILE_INFO__REVIEWED = eINSTANCE.getFileInfo_Reviewed();
+
+		/**
+		 * The meta object literal for the '<em><b>Comments Count</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FILE_INFO__COMMENTS_COUNT = eINSTANCE.getFileInfo_CommentsCount();
+
+		/**
+		 * The meta object literal for the '<em><b>Drafts Count</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FILE_INFO__DRAFTS_COUNT = eINSTANCE.getFileInfo_DraftsCount();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Path</b></em>' operation.

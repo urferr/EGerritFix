@@ -43,6 +43,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getComments <em>Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getDraftComments <em>Draft Comments</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#isReviewed <em>Reviewed</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getCommentsCount <em>Comments Count</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl#getDraftsCount <em>Drafts Count</em>}</li>
  * </ul>
  *
  * @generated
@@ -187,6 +189,26 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	 * @ordered
 	 */
 	protected boolean reviewed = REVIEWED_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getCommentsCount() <em>Comments Count</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCommentsCount()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int COMMENTS_COUNT_EDEFAULT = 0;
+
+	/**
+	 * The default value of the '{@link #getDraftsCount() <em>Drafts Count</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDraftsCount()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int DRAFTS_COUNT_EDEFAULT = 0;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -383,6 +405,30 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 	 * @generated
 	 */
 	@Override
+	public int getCommentsCount() {
+		// TODO: implement this method to return the 'Comments Count' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public int getDraftsCount() {
+		// TODO: implement this method to return the 'Drafts Count' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public String getPath() {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -453,6 +499,10 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 			return getDraftComments();
 		case ModelPackage.FILE_INFO__REVIEWED:
 			return isReviewed();
+		case ModelPackage.FILE_INFO__COMMENTS_COUNT:
+			return getCommentsCount();
+		case ModelPackage.FILE_INFO__DRAFTS_COUNT:
+			return getDraftsCount();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -556,6 +606,10 @@ public class FileInfoImpl extends MinimalEObjectImpl.Container implements FileIn
 			return draftComments != null && !draftComments.isEmpty();
 		case ModelPackage.FILE_INFO__REVIEWED:
 			return reviewed != REVIEWED_EDEFAULT;
+		case ModelPackage.FILE_INFO__COMMENTS_COUNT:
+			return getCommentsCount() != COMMENTS_COUNT_EDEFAULT;
+		case ModelPackage.FILE_INFO__DRAFTS_COUNT:
+			return getDraftsCount() != DRAFTS_COUNT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
