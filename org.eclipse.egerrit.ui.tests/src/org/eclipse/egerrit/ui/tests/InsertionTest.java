@@ -117,7 +117,7 @@ public class InsertionTest extends EditionLimiterTests {
 			final String documentWithPublishedComment = "000000000\nauthor\n111111111\n222222222\n333333333";
 			final String[] publishedComments = new String[] { "author" };
 			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 1, 0, "b"),
-					expectations(1, "b", 2, new Position(10, 1), new Position(12, 6)) });
+					expectations(1, "author", 2, new Position(10, 6), new Position(17, 1)) });
 			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 1, 1, "b"),
 					expectations(2, "b", 2, new Position(10, 6), new Position(17, 1)) });
 			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 1, 4, "b"),

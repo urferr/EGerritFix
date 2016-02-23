@@ -26,6 +26,7 @@ import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.link.InclusivePositionUpdater;
+import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.VerifyEvent;
@@ -105,10 +106,19 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				String commentText = text.trim();
 				if (!fromDoc) {
 					//Move insertion point to the next line if we are not inserting at the beginning of the line
-					if (!isBeginningOfLine(insertionPosition)) {
-						insertionPosition = getNextLine(start);
-						//If there is no next line, we first insert one, then compute it's position and proceed as usual
+					//or move at the end of the comment if we are in a middle of a comment
+					if (!isBeginningOfLine(insertionPosition)
+							|| (isBeginningOfLine(insertionPosition) && getCurrentAnnotation(start) != null)) {
+						GerritCommentAnnotation currentAnnotation = getCurrentAnnotation(start);
+						if (currentAnnotation != null) {
+							Position position = annotations.getPosition(currentAnnotation);
+							insertionPosition = getNextLine(position.getOffset() + position.getLength());
+						} else {
+							insertionPosition = getNextLine(start);
+						}
+
 						if (insertionPosition == -1) {
+							//If there is no next line, we first insert one, then compute it's position and proceed as usual
 							try {
 								document.replace(textWidget.getCharCount(), 0, textWidget.getLineDelimiter());
 							} catch (BadLocationException e) {
@@ -128,6 +138,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				}
 				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
 						new Position(insertionPosition, commentText.length()));
+
 				return false;
 			}
 
@@ -168,8 +179,22 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		return isInsertingAtTheEndOfExistingComment(offset, length);
 	}
 
+	private GerritCommentAnnotation getCurrentAnnotation(int offset) {
+		Iterator<Annotation> it = annotations.getAnnotationIterator();
+
+		while (it.hasNext()) {
+			GerritCommentAnnotation annotation = (GerritCommentAnnotation) it.next();
+			Position position = annotations.getPosition(annotation);
+			if (offset >= position.getOffset() && offset <= (position.getOffset() + position.getLength())) {
+				return annotation;
+			}
+		}
+		return null;
+	}
+
 	private boolean isInsertingAtTheEndOfExistingComment(int offset, int length) {
 		Iterator<?> it = annotations.getAnnotationIterator();
+
 		while (it.hasNext()) {
 			GerritCommentAnnotation annotation = (GerritCommentAnnotation) it.next();
 			if (annotation.getComment() == null || annotation.getComment().getAuthor() == null) {
