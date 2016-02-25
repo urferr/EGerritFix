@@ -136,8 +136,10 @@ public class QueryHelpers {
 		//Load the comments and set them in the fileInfo object
 		for (Entry<String, ArrayList<CommentInfo>> fileComment : comments.entrySet()) {
 			FileInfo files = revision.getFiles().get(fileComment.getKey());
-			files.getComments().clear();
-			files.getComments().addAll(fileComment.getValue());
+			if (files != null) {
+				files.getComments().clear();
+				files.getComments().addAll(fileComment.getValue());
+			}
 		}
 	}
 
@@ -155,8 +157,10 @@ public class QueryHelpers {
 		}
 		for (Entry<String, ArrayList<CommentInfo>> draftComment : drafts.entrySet()) {
 			FileInfo files = revision.getFiles().get(draftComment.getKey());
-			files.getDraftComments().clear();
-			files.getDraftComments().addAll(draftComment.getValue());
+			if (files != null) {
+				files.getDraftComments().clear();
+				files.getDraftComments().addAll(draftComment.getValue());
+			}
 		}
 	}
 
