@@ -274,7 +274,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 	private void initialize() {
 		document = textViewer.getDocument();
 		document.addDocumentListener(this);
-		annotations = ((PatchSetCompareItem) textViewer.getDocument()).getEditableComments();
+		annotations = ((CommentableCompareItem) textViewer.getDocument()).getEditableComments();
 		changePositionUpdater();
 		textViewer.addTextInputListener(new ITextInputListener() {
 

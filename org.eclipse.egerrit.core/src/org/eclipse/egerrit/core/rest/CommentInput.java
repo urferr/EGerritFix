@@ -101,9 +101,5 @@ public class CommentInput {
 		input.range = info.getRange();
 
 		return input;
-		// The URL encoded UUID of the comment to which this comment is a reply.
-//		private String in_reply_to;
-
-//		private Timestamp updated;
 	}
 }

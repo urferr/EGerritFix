@@ -52,6 +52,7 @@ public class CreateDraftCommand extends BaseCommandChangeAndRevisionWithInput<Co
 			values.put("id", commandInput.getId()); //$NON-NLS-1$
 			values.put("path", commandInput.getPath()); //$NON-NLS-1$
 			values.put("message", commandInput.getMessage()); //$NON-NLS-1$
+			values.put("side", commandInput.getSide()); //$NON-NLS-1$
 			setInput(values);
 		} else {
 			setInput(commandInput);
