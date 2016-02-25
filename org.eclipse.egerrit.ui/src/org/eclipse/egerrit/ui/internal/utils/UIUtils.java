@@ -17,8 +17,19 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.SetReviewCommand;
+import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.rest.ReviewInput;
+import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.editors.ReplyDialog;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -123,7 +134,39 @@ public class UIUtils {
 	 * @return boolean
 	 */
 	public static boolean hasComments(String msg) {
+		if (msg == null) {
+			return false;
+		}
 		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
 		return matcher.find(0);
+	}
+
+	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, GerritClient client) {
+		EMap<String, EList<String>> permittedLabels = revisionInfo.getChangeInfo().getPermitted_labels();
+		EMap<String, LabelInfo> labels = revisionInfo.getChangeInfo().getLabels();
+		final ReplyDialog replyDialog = new ReplyDialog(shell, permittedLabels, labels);
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				int ret = replyDialog.open();
+				if (ret == IDialogConstants.OK_ID) {
+					//Fill the data structure for the reply
+					ReviewInput reviewInput = new ReviewInput();
+					reviewInput.setMessage(replyDialog.getMessage());
+					reviewInput.setLabels(replyDialog.getRadiosSelection());
+					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
+					// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
+					//Send the data
+					SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(),
+							revisionInfo.getChangeInfo().getCurrent_revision());
+					reviewToEmit.setCommandInput(reviewInput);
+
+					try {
+						reviewToEmit.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+				}
+			}
+		});
 	}
 }

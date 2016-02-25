@@ -385,6 +385,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
 				toolbarManager.appendToGroup("modes", new ShowUnchangedFilesAction(gerritClient,
 						changeInfo.getRevisions().get(rightSide), leftSide, () -> viewer));
+				toolbarManager.appendToGroup("merge", new ReplyAction(gerritClient, GerritMultipleInput.this,
+						changeInfo.getRevisions().get(rightSide), leftSide, () -> viewer));
 			}
 		};
 		//Set a content provider
@@ -612,7 +614,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	@Override
-	protected void fireInputChange() {
+	public void fireInputChange() {
 		GerritDiffNode savedElement = (GerritDiffNode) getSelectedEdition();
 		IProgressMonitor pm = new NullProgressMonitor();
 

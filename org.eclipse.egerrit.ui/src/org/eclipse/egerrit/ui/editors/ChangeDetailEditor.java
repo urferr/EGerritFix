@@ -41,16 +41,13 @@ import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
-import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftChangeCommand;
-import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
@@ -80,8 +77,11 @@ import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
@@ -185,6 +185,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Composite headerSection;
 
+	private ReactToChange changeListener;
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -231,17 +232,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 
 		//This query fill the current revision
-		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
-
-		//Initialize the files tab with the latest patch-set
-		filesTab.setInitPatchSet();
-
-		//Queries to fill the Summary Review tab data
-		if (summaryTab != null) {
-			summaryTab.setTabs(fGerritClient, fChangeInfo);
-		}
-
-		buttonsEnablement();
+		QueryHelpers.reload(fGerritClient, fChangeInfo);
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -532,25 +523,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							// ignore
-							final ReplyDialog replyDialog = new ReplyDialog(itemReply.getParent().getShell(),
-									fChangeInfo.getPermitted_labels(), fChangeInfo.getLabels());
-							Display.getDefault().syncExec(new Runnable() {
-								public void run() {
-									int ret = replyDialog.open();
-									if (ret == IDialogConstants.OK_ID) {
-										//Fill the data structure for the reply
-										ReviewInput reviewInput = new ReviewInput();
-										reviewInput.setMessage(replyDialog.getMessage());
-										reviewInput.setLabels(replyDialog.getRadiosSelection());
-										reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-										// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
-										//Send the data
-										postReply(reviewInput);
-									}
-
-								}
-							});
+							UIUtils.replyToChange(shell, fChangeInfo.getRevision(), fGerritClient);
+							QueryHelpers.reload(fGerritClient, fChangeInfo);
 						}
 
 						@Override
@@ -777,6 +751,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setDeletions(element.getDeletions());
 			fChangeInfo.setCurrent_revision(element.getCurrent_revision());
 		}
+		changeListener = new ReactToChange();
+		fChangeInfo.eAdapters().add(changeListener);
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
@@ -818,25 +794,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * Refreshes the ChangeEditor
 	 */
 	public void refreshStatus() {
-		ChangeInfo changeInfo = QueryHelpers.lookupPartialChangeInfoFromChangeId(fGerritClient, fChangeInfo.getId(),
-				new NullProgressMonitor());
-
-		//Reset specific fields, not the whole model structure
-		setChangeInfo(fGerritClient, changeInfo);
-
-		//This query fills the current revision
-		setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
-
-		//Queries to fill the Summary Review tab data
-		summaryTab.setTabs(fGerritClient, fChangeInfo);
-		//Re-Initialize the files tab with the patch-set
-		filesTab.setInitPatchSet();
-
-		buttonsEnablement();
-
-		LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-		linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
-
+		QueryHelpers.reload(fGerritClient, fChangeInfo);
+		//Listeners on the update date will trigger additional loading
 	}
 
 	/**
@@ -939,78 +898,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			} else {
 				fAbandonRestore.setEnabled(false);
 			}
-		}
-	}
-
-	/************************************************************* */
-	/*                                                             */
-	/* Section to SET the data structure                           */
-	/*                                                             */
-	/************************************************************* */
-
-	/**
-	 * Fill the data related to the current revision, labels and messages. Also, the data for the Message tab is
-	 * available with this request
-	 *
-	 * @param GerritClient
-	 *            gerritClient
-	 * @param String
-	 *            change_id
-	 */
-	private void setCurrentRevisionAndMessageTab(GerritClient gerritClient, String id) {
-		ChangeInfo res = queryMessageTab(gerritClient, id, new NullProgressMonitor());
-
-		if (res != null) {
-			fChangeInfo.setCurrent_revision(res.getCurrent_revision());
-			fChangeInfo.getLabels().clear();
-			fChangeInfo.getLabels().addAll(res.getLabels());
-			fChangeInfo.getMessages().clear();
-			fChangeInfo.getMessages().addAll(res.getMessages());
-			fChangeInfo.getPermitted_labels().clear();
-			fChangeInfo.getPermitted_labels().addAll(res.getPermitted_labels());
-			fChangeInfo.setStatus(res.getStatus());
-			fChangeInfo.setSubject(res.getSubject());
-			fChangeInfo.getActions().clear();
-			fChangeInfo.getActions().addAll(res.getActions());
-			fChangeInfo.setTopic(res.getTopic());
-			fChangeInfo.setMergeable(res.isMergeable());
-			fChangeInfo.getRevisions().clear();
-			fChangeInfo.getRevisions().addAll(res.getRevisions());
-
-		}
-
-	}
-
-	/***************************************************************/
-	/*                                                             */
-	/* Section to QUERY the data structure                         */
-	/*                                                             */
-	/************************************************************* */
-
-	private ChangeInfo queryMessageTab(GerritClient gerrit, String id, IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-			// Create query
-
-			GetChangeCommand command = gerrit.getChange(id);
-			command.addOption(ChangeOption.DETAILED_LABELS);
-			command.addOption(ChangeOption.ALL_FILES);
-			command.addOption(ChangeOption.ALL_REVISIONS);
-			command.addOption(ChangeOption.ALL_COMMITS);
-			command.addOption(ChangeOption.REVIEWED);
-			command.addOption(ChangeOption.MESSAGES);
-			command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
-			command.addOption(ChangeOption.CURRENT_ACTIONS);
-
-			ChangeInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
-			}
-			return res;
-		} finally {
-			monitor.done();
 		}
 	}
 
@@ -1279,7 +1166,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		if (arg0 instanceof MessageTabView) {
 			//in this case, we need to update the Subject. The following request do more
 			//but at least, less than the whole refresh
-			setCurrentRevisionAndMessageTab(fGerritClient, fChangeInfo.getId());
+			QueryHelpers.reload(fGerritClient, fChangeInfo);
 			setEditorTitle();
 		}
 		if (arg0 instanceof FilesTabView) {
@@ -1358,4 +1245,33 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		}
 	}
 
+	@Override
+	public void dispose() {
+		if (changeListener != null) {
+			fChangeInfo.eAdapters().remove(changeListener);
+		}
+	}
+
+	private final class ReactToChange extends AdapterImpl {
+		@Override
+		public void notifyChanged(Notification msg) {
+			if (msg.getFeature() == null) {
+				return;
+			}
+			//Update the current revision field when revisions or the current revision id changes
+			if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)) {
+				//Queries to fill the Summary Review tab data
+				if (summaryTab != null) {
+					summaryTab.setTabs(fGerritClient, fChangeInfo);
+				}
+				//Re-Initialize the files tab with the patch-set
+				filesTab.setInitPatchSet();
+
+				buttonsEnablement();
+
+				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+				linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+	}
 }
