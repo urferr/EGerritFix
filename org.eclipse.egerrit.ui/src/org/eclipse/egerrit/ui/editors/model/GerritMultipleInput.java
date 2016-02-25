@@ -177,16 +177,16 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		EMap<String, FileInfo> leftFiles = leftRevision.getFiles();
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
-			GerritDiffNodeTwoRevisions node = createRevisionRevisionNode(monitor, leftFiles, rightFile);
+			GerritDiffNode node = createRevisionRevisionNode(monitor, leftFiles, rightFile);
 			root.add(node);
 			setElementToReveal(node, rightFile);
 		}
 	}
 
-	private GerritDiffNodeTwoRevisions createRevisionRevisionNode(IProgressMonitor monitor,
-			EMap<String, FileInfo> leftFiles, FileInfo rightFile) {
+	private GerritDiffNode createRevisionRevisionNode(IProgressMonitor monitor, EMap<String, FileInfo> leftFiles,
+			FileInfo rightFile) {
 		String fileName = rightFile.getPath();
-		GerritDiffNodeTwoRevisions node = new GerritDiffNodeTwoRevisions(getDifferenceFlag(rightFile));
+		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
 		node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName, changeInfo.getId(),
 				rightFile, monitor));
 		node.setFileInfo(rightFile);
@@ -194,7 +194,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		if (leftFile != null) {
 			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
 					changeInfo.getId(), leftFile, monitor));
-			node.setOtherFileInfo(leftFile);
+		} else if (!rightFile.getStatus().equals("A")) { //$NON-NLS-1$
+			//The file is not in the other revision, and it is not added, so compare against the base
+			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+					getBaseCommitId(rightFile), rightFile, monitor));
 		} else {
 			node.setLeft(new EmptyTypedElement(rightFile.getPath()));
 		}
@@ -405,7 +408,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		ReviewTableSorter.bind(viewer);
 		viewer.setComparator(new ReviewTableSorter(2)); // sort by File Path, descending. This way we are sorted like in the files tab
 
-		IBeanValueProperty fileInfo = PojoProperties.value("fileInfo");
+		IBeanValueProperty fileInfo = PojoProperties.value("fileInfo"); //$NON-NLS-1$
 		IValueProperty reviewedFlag = fileInfo.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
 		IValueProperty comments = fileInfo.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
 		IValueProperty draftComments = fileInfo
