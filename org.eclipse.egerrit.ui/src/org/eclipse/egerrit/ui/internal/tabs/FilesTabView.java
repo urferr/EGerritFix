@@ -240,7 +240,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		lblDiffAgainst.setLayoutData(gd_DiffAgainst);
 		lblDiffAgainst.setText("Diff against:");
 
-		comboDiffAgainst = new Combo(composite, SWT.NONE);
+		comboDiffAgainst = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		GridData gd_combo = new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1);
 		comboDiffAgainst.setLayoutData(gd_combo);
 
