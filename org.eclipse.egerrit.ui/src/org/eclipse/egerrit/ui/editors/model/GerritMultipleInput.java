@@ -177,22 +177,28 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		EMap<String, FileInfo> leftFiles = leftRevision.getFiles();
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
-			String fileName = rightFile.getPath();
-			GerritDiffNodeTwoRevisions node = new GerritDiffNodeTwoRevisions(getDifferenceFlag(rightFile));
-			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), rightFile, monitor));
-			node.setFileInfo(rightFile);
-			FileInfo leftFile = getFileWithName(getOldPathOrPath(rightFile), leftFiles);
-			if (leftFile != null) {
-				node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-						changeInfo.getId(), leftFile, monitor));
-				node.setOtherFileInfo(leftFile);
-			} else {
-				node.setLeft(new EmptyTypedElement(rightFile.getPath()));
-			}
+			GerritDiffNodeTwoRevisions node = createRevisionRevisionNode(monitor, leftFiles, rightFile);
 			root.add(node);
 			setElementToReveal(node, rightFile);
 		}
+	}
+
+	private GerritDiffNodeTwoRevisions createRevisionRevisionNode(IProgressMonitor monitor,
+			EMap<String, FileInfo> leftFiles, FileInfo rightFile) {
+		String fileName = rightFile.getPath();
+		GerritDiffNodeTwoRevisions node = new GerritDiffNodeTwoRevisions(getDifferenceFlag(rightFile));
+		node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName, changeInfo.getId(),
+				rightFile, monitor));
+		node.setFileInfo(rightFile);
+		FileInfo leftFile = getFileWithName(getOldPathOrPath(rightFile), leftFiles);
+		if (leftFile != null) {
+			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
+					changeInfo.getId(), leftFile, monitor));
+			node.setOtherFileInfo(leftFile);
+		} else {
+			node.setLeft(new EmptyTypedElement(rightFile.getPath()));
+		}
+		return node;
 	}
 
 	private int getDifferenceFlag(FileInfo file) {
@@ -221,36 +227,45 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
 			String fileName = rightFile.getPath();
-			GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
-			node.setFileInfo(rightFile);
-			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), rightFile, monitor));
-
-			IFile workspaceFile = new OpenCompareEditor(gerritClient, changeInfo)
-					.getCorrespondingWorkspaceFile(rightFile);
-			if (workspaceFile == null) {
-				workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName));
-			}
-			node.setLeft(createFileElement(workspaceFile));
+			GerritDiffNode node = createWorkspaceRevisionNode(monitor, rightFile, fileName);
 			root.add(node);
 			setElementToReveal(node, rightFile);
 		}
 	}
 
+	private GerritDiffNode createWorkspaceRevisionNode(IProgressMonitor monitor, FileInfo rightFile, String fileName) {
+		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
+		node.setFileInfo(rightFile);
+		node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName, changeInfo.getId(),
+				rightFile, monitor));
+
+		IFile workspaceFile = new OpenCompareEditor(gerritClient, changeInfo).getCorrespondingWorkspaceFile(rightFile);
+		if (workspaceFile == null) {
+			workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName));
+		}
+		node.setLeft(createFileElement(workspaceFile));
+		return node;
+	}
+
 	private void computeDifferencesWithBase(IProgressMonitor monitor) {
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
-			String fileName = rightFile.getPath();
-			GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
-			node.setFileInfo(rightFile);
-			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), rightFile, monitor));
-
-			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					getBaseCommitId(rightFile), getOldPathOrPath(rightFile), monitor));
+			GerritDiffNode node = createBaseRevisionNode(monitor, rightFile);
 			root.add(node);
 			setElementToReveal(node, rightFile);
 		}
+	}
+
+	private GerritDiffNode createBaseRevisionNode(IProgressMonitor monitor, FileInfo rightFile) {
+		String fileName = rightFile.getPath();
+		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
+		node.setFileInfo(rightFile);
+		node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName, changeInfo.getId(),
+				rightFile, monitor));
+
+		node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+				getBaseCommitId(rightFile), rightFile, monitor)); //Here we passing the right file so we have all the context necessary
+		return node;
 	}
 
 	//Test if the given node representing the given file should be revealed in the UI
@@ -459,7 +474,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private boolean isCommentable(ITypedElement element) {
-		if (element instanceof PatchSetCompareItem) {
+		if (element instanceof CommentableCompareItem) {
 			return true;
 		}
 		return false;
@@ -501,8 +516,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 					sourceViewer.addTextPresentationListener(commentPainter);
 					sourceViewer.addPainter(commentPainter);
 					sourceViewer.getTextWidget().addVerifyListener(editionLimiter);
-					if (oldInput instanceof PatchSetCompareItem) {
-						((PatchSetCompareItem) oldInput).reset();
+					if (oldInput instanceof CommentableCompareItem) {
+						((CommentableCompareItem) oldInput).reset();
 					}
 				}
 
@@ -526,8 +541,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			@Override
 			//Override to force the annotation model to be the one that contains the comments
 			protected IAnnotationModel findAnnotationModel(ISourceViewer sourceViewer) {
-				if (sourceViewer.getDocument() instanceof PatchSetCompareItem) {
-					return ((PatchSetCompareItem) sourceViewer.getDocument()).getEditableComments();
+				if (sourceViewer.getDocument() instanceof CommentableCompareItem) {
+					return ((CommentableCompareItem) sourceViewer.getDocument()).getEditableComments();
 				}
 				return null;
 			}
@@ -548,7 +563,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			super.saveChanges(monitor);
 		} catch (RuntimeException ex) {
 			//This works hand in hand with the PatchSetCompareItem#setContent method which raises a very specific RuntimeException
-			if (PatchSetCompareItem.class.getName().equals(ex.getMessage())) {
+			if (CommentableCompareItem.class.getName().equals(ex.getMessage())) {
 				if (ex.getCause().getMessage().equals(((GerritDiffNode) getSelectedEdition()).getLeft())) {
 					problemSavingChanges = 0;
 					setLeftDirty(true);
@@ -586,19 +601,20 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	@Override
 	protected void fireInputChange() {
 		GerritDiffNode savedElement = (GerritDiffNode) getSelectedEdition();
-		savedElement.setRight(
-				new CompareItemFactory(gerritClient).createCompareItemFromRevision(savedElement.getFileInfo().getPath(),
-						changeInfo.getId(), savedElement.getFileInfo(), new NullProgressMonitor()));
+		IProgressMonitor pm = new NullProgressMonitor();
 
-		if (!(savedElement.getLeft() instanceof EmptyTypedElement)) {
-			//TODO Review / reuse the logic from the code that creates the revision infos?
-			if (savedElement instanceof GerritDiffNodeTwoRevisions) {
-				GerritDiffNodeTwoRevisions twoRevionsNode = (GerritDiffNodeTwoRevisions) savedElement;
-				twoRevionsNode.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(
-						twoRevionsNode.getOtherFileInfo().getPath(), changeInfo.getId(),
-						twoRevionsNode.getOtherFileInfo(), new NullProgressMonitor()));
-			}
+		GerritDiffNode newEntry = null;
+		if (leftSide.equals("BASE")) {
+			newEntry = createBaseRevisionNode(pm, savedElement.getFileInfo());
+		} else if (leftSide.equals("WORKSPACE")) {
+			newEntry = createBaseRevisionNode(pm, savedElement.getFileInfo());
+		} else {
+			newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide).getFiles(),
+					savedElement.getFileInfo());
 		}
+		savedElement.setRight(newEntry.getRight());
+		savedElement.setLeft(newEntry.getLeft());
+
 		savedElement.fireChange();
 	}
 
