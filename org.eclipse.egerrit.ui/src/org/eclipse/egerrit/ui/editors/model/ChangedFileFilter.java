@@ -25,8 +25,8 @@ public class ChangedFileFilter extends ViewerFilter {
 		if (toShow == null) {
 			return true;
 		}
-		if (element instanceof GerritDiffNodeTwoRevisions) {
-			String path = ((GerritDiffNodeTwoRevisions) element).getFileInfo().getPath();
+		if (element instanceof GerritDiffNode) {
+			String path = ((GerritDiffNode) element).getFileInfo().getPath();
 			if (toShow.containsKey(path)) {
 				return true;
 			}
