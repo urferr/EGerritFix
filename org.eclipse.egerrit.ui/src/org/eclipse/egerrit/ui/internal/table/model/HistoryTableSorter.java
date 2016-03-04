@@ -12,6 +12,7 @@
 package org.eclipse.egerrit.ui.internal.table.model;
 
 import org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -77,7 +78,15 @@ public class HistoryTableSorter extends ViewerSorter {
 			String val2 = null;
 
 			switch (fColumnIndex) {
-			case 0: // date
+			case 0: // Comment
+				Boolean.toString(UIUtils.hasComments(changeInfo1.getMessage()));
+				val1 = Boolean.toString(UIUtils.hasComments(changeInfo1.getMessage()));
+				val2 = Boolean.toString(UIUtils.hasComments(changeInfo2.getMessage()));
+				if (val1 != null && val2 != null) {
+					result = val1.compareTo(val2);
+				}
+				break;
+			case 1: // date
 				val1 = changeInfo1.getDate();
 				val2 = changeInfo2.getDate();
 				if (val1 != null && val2 != null) {

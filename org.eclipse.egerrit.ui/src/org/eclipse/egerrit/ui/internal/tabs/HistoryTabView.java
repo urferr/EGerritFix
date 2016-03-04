@@ -29,9 +29,6 @@ import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.hyperlink.DefaultHyperlinkPresenter;
-import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -54,6 +51,10 @@ public class HistoryTabView {
 
 	private TextViewerWithLinks msgTextData;
 
+	private GerritClient gerritClient;
+
+	private ChangeInfo changeInfo;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -71,6 +72,8 @@ public class HistoryTabView {
 	 *            List<ChangeMessageInfo>
 	 */
 	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
+		this.gerritClient = gerritClient;
+		this.changeInfo = changeInfo;
 		createControls(tabFolder, changeInfo);
 	}
 
@@ -95,28 +98,20 @@ public class HistoryTabView {
 
 			@Override
 			public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-				return new IHyperlinkDetector[] { new HyperLinkDetector() };
+				return new IHyperlinkDetector[] { new HyperLinkDetector(tableHistoryViewer, gerritClient, changeInfo) };
 			}
 
 			@Override
 			public IHyperlinkPresenter getHyperlinkPresenter(final ISourceViewer sourceViewer) {
-				return new DefaultHyperlinkPresenter(new RGB(0, 0, 255)) {
-					@Override
-					public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-						super.inputDocumentChanged(oldInput, newInput);
-						IHyperlink[] links = new HyperLinkDetector().detectHyperlinks(sourceViewer, null, true);
-						if (links != null) {
-							showHyperlinks(links);
-						}
-					}
-				};
-			}
+				HyperLinkPresenter presenter = new HyperLinkPresenter(new RGB(0, 0, 255), sourceViewer,
+						tableHistoryViewer, gerritClient, changeInfo);
 
+				return presenter;
+			};
 		});
-		msgTextData.resetLinkManager();
 
-		//Set the % of display data.70% table and 30% for the comment message
-		sashForm.setWeights(new int[] { 70, 30 });
+		//Set the % of display data.50% table and 50% for the comment message
+		sashForm.setWeights(new int[] { 50, 50 });
 		bind(changeInfo);
 	}
 
@@ -130,7 +125,7 @@ public class HistoryTabView {
 				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__DATE),
 						EMFProperties.value(authorName),
 						EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__MESSAGE) });
-		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(watchedProperties));
+		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(watchedProperties, gerritClient));
 		tableHistoryViewer
 				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__MESSAGES).observe(changeInfo));
 
@@ -141,7 +136,7 @@ public class HistoryTabView {
 		IObservableValue textViewerDocument = BeanProperties.value(msgTextData.getClass(), "document") //$NON-NLS-1$
 				.observe(Realm.getDefault(), msgTextData);
 		UpdateValueStrategy textToDocumentStrategy = new UpdateValueStrategy();
-		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument());
+		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(changeInfo, selection, gerritClient));
 
 		new DataBindingContext().bindValue(textViewerDocument, detailObservable, null, textToDocumentStrategy);
 

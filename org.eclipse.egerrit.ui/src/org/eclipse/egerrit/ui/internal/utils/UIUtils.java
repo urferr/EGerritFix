@@ -12,6 +12,9 @@
 
 package org.eclipse.egerrit.ui.internal.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
@@ -33,6 +36,8 @@ import org.eclipse.ui.PlatformUI;
  */
 
 public class UIUtils {
+
+	private static final Pattern COMMENT_PATTERN = Pattern.compile("(\\d+ comme[nt])(\\w+)"); //$NON-NLS-1$
 
 	/**
 	 * Method notInplementedDialog.
@@ -106,9 +111,19 @@ public class UIUtils {
 	 * @return String
 	 */
 	public static String getLinkText(String text) {
-		text = text.replaceFirst("<a>", "");
-		text = text.replaceFirst("</a>", "");
+		text = text.replaceFirst("<a>", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		text = text.replaceFirst("</a>", ""); //$NON-NLS-1$//$NON-NLS-2$
 		return text.trim();
 	}
 
+	/**
+	 * Test to see if the string has some kind of indication for comments
+	 *
+	 * @param msg
+	 * @return boolean
+	 */
+	public static boolean hasComments(String msg) {
+		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
+		return matcher.find(0);
+	}
 }

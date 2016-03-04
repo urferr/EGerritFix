@@ -56,7 +56,7 @@ public class UIHistoryTable {
 
 		// Set the content sorter
 		HistoryTableSorter.bind(fViewer);
-		fViewer.setComparator(new HistoryTableSorter(0)); // sort by date, descending
+		fViewer.setComparator(new HistoryTableSorter(1)); // sort by date, descending
 
 		//
 		fViewer.getTable().addSelectionListener(new SelectionListener() {

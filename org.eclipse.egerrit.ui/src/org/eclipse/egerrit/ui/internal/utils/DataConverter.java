@@ -15,17 +15,29 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.MergeableInfo;
+import org.eclipse.egerrit.internal.model.ModifiedChangeInfoImpl;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.internal.databinding.viewers.ViewerObservableValueDecorator;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 
@@ -195,16 +207,83 @@ public class DataConverter {
 		};
 	}
 
-	public static IConverter fromStringToDocument() {
+	/**
+	 * Convert a string to a Document
+	 *
+	 * @param changeInfo
+	 * @param selection
+	 * @param gerritClient
+	 * @return IConverter
+	 */
+	public static IConverter fromStringToDocument(ChangeInfo changeInfo, IObservableValue selection,
+			GerritClient gerritClient) {
 		return new Converter(String.class, IDocument.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
+				String fileComments = null;
+				if (UIUtils.hasComments((String) fromObject)) {
+					//Now we need to find the comment related to this history comment
+					if (selection instanceof ViewerObservableValueDecorator) {
+						ViewerObservableValueDecorator obsValue = (ViewerObservableValueDecorator) selection;
+						Object obj = obsValue.getValue();
+						if (obj instanceof ChangeMessageInfo) {
+							ChangeMessageInfo chmsgInfo = (ChangeMessageInfo) obj;
+							EObject eobj = ((ChangeMessageInfo) obj).eContainer();
+							ModifiedChangeInfoImpl modChange = (ModifiedChangeInfoImpl) eobj;
+
+							RevisionInfo revInfo = modChange.getRevisionByNumber(chmsgInfo.get_revision_number());
+							//Now get the comments with QueryHelper.loadcomments if not loaded
+							QueryHelpers.loadComments(gerritClient, revInfo);
+
+							fileComments = fillFilesWithMessages(chmsgInfo, revInfo);
+						}
+					}
+				}
 				if (fromObject == null) {
+					if (fileComments != null && !fileComments.isEmpty()) {
+						return new Document(fileComments);
+					}
 					return new Document();
+				}
+				if (fileComments != null && !fileComments.isEmpty()) {
+					return new Document((String) fromObject + fileComments);
 				}
 				return new Document((String) fromObject);
 			}
+
 		};
 	}
+
+	/**
+	 * Creating a string with the file path and associated comments to this file.
+	 *
+	 * @param chmsgInfo
+	 * @param revInfo
+	 * @return String
+	 */
+	private static String fillFilesWithMessages(ChangeMessageInfo chmsgInfo, RevisionInfo revInfo) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<Entry<String, FileInfo>> iterator = revInfo.getFiles().entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, FileInfo> definedFiles = iterator.next();
+			FileInfo fileInfo = definedFiles.getValue();
+			if (!fileInfo.getComments().isEmpty()) {
+				sb.append("\n");
+				sb.append(fileInfo.getPath());
+				Iterator<CommentInfo> commentsIter = fileInfo.getComments().iterator();
+				while (commentsIter.hasNext()) {
+					//List the comments
+					CommentInfo comment = commentsIter.next();
+					if (comment.getUpdated().equals(chmsgInfo.getDate())) {
+						sb.append("\n\t Comment: ");
+						sb.append(comment.getMessage());
+					}
+				}
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
+	}
+
 }
