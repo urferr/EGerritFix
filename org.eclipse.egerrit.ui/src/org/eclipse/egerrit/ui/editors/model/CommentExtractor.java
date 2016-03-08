@@ -85,17 +85,16 @@ public class CommentExtractor {
 				createNewComment(newComment);
 				continue;
 			}
-			if ((match = wasPresentAndUnmodified(newComment)) != null) {
-				numberOfRemovedLines += numberOfLines(newComment);
-				originalComments.remove(match);
-				continue;
-			}
 			if ((match = wasPresentButModified(newComment)) != null) {
 				originalComments.remove(match);
 				handleModifiedComment(newComment, match);
 				continue;
 			}
-
+			if ((match = wasPresentAndUnmodified(newComment)) != null) {
+				numberOfRemovedLines += numberOfLines(newComment);
+				originalComments.remove(match);
+				continue;
+			}
 		}
 		handleOldComments();
 	}
