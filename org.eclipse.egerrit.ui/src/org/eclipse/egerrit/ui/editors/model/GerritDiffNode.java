@@ -27,6 +27,8 @@ public class GerritDiffNode extends DiffNode {
 
 	private FileInfo fileInfo;
 
+	private GerritMultipleInput input;
+
 	public GerritDiffNode(int kind) {
 		super(kind);
 	}
@@ -52,7 +54,13 @@ public class GerritDiffNode extends DiffNode {
 
 	@Override
 	public String getName() {
-		if (getKind() != GerritDifferences.RENAMED) {
+		if (fileInfo == null) {
+			if (input != null) {
+				return input.getName();
+			} else {
+				return "<no name>"; //$NON-NLS-1$
+			}
+		} else if (getKind() != GerritDifferences.RENAMED) {
 			return fileInfo.getPath();
 		}
 		return String.format("%s (was %s)", fileInfo.getPath(), fileInfo.getOld_path()); //$NON-NLS-1$
@@ -64,5 +72,11 @@ public class GerritDiffNode extends DiffNode {
 
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		//Do nothing. This is just here to make sure databinding is not throwing exception
+	}
+
+	// save the GerritMultipleInput for this instance.
+	public void setInput(GerritMultipleInput gerritMultipleInput) {
+		input = gerritMultipleInput;
+
 	}
 }

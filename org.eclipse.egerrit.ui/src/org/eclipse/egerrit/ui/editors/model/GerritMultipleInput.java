@@ -52,6 +52,7 @@ import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
@@ -95,7 +96,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	private static Logger logger = LoggerFactory.getLogger(GerritMultipleInput.class);
 
-	private DiffNode root;
+	private GerritDiffNode root;
 
 	private ChangeInfo changeInfo;
 
@@ -136,22 +137,27 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		this.fileToReveal = toReveal;
 		this.gerritClient = gerrit;
 
-		root = new DiffNode(GerritDifferences.NO_CHANGE) {
+		root = new GerritDiffNode(GerritDifferences.NO_CHANGE) {
+
 			@Override
 			public boolean hasChildren() {
 				return true;
 			}
 
+			@Override
 			@SuppressWarnings("unused")
 			public void addPropertyChangeListener(PropertyChangeListener listener) {
 				//Do nothing. This is just here to make sure databinding is not throwing exception
 			}
 
+			@Override
 			@SuppressWarnings("unused")
 			public void removePropertyChangeListener(PropertyChangeListener listener) {
 				//Do nothing. This is just here to make sure databinding is not throwing exception
 			}
+
 		};
+		root.setInput(GerritMultipleInput.this);
 	}
 
 	private static CompareConfiguration initConfiguration() {
@@ -298,7 +304,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				logger.debug("Problem preloading right", e); //$NON-NLS-1$
 			}
 		}
-
 	}
 
 	@Override
@@ -599,6 +604,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		} else {
 			super.setDirty(dirty);
 		}
+	}
+
+	@Override
+	public String getName() {
+		return ((StringToFileInfoImpl) fileToReveal.eContainer()).getKey();
 	}
 
 	@Override
