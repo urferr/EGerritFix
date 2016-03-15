@@ -144,6 +144,13 @@ public class UIUtils {
 	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, GerritClient client) {
 		EMap<String, EList<String>> permittedLabels = revisionInfo.getChangeInfo().getPermitted_labels();
 		EMap<String, LabelInfo> labels = revisionInfo.getChangeInfo().getLabels();
+
+		String current = revisionInfo.getChangeInfo().getCurrent_revision();
+		String latest = revisionInfo.getChangeInfo().getLatestPatchSet().getId();
+		boolean isVoteAllowed = current.compareTo(latest) == 0 ? true : false;
+		if (!isVoteAllowed) {
+			labels = null;
+		}
 		final ReplyDialog replyDialog = new ReplyDialog(shell, permittedLabels, labels);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {

@@ -124,8 +124,6 @@ public class ReplyDialog extends Dialog {
 	 */
 	@Override
 	protected Control createContents(Composite parent) {
-
-		//	GridLayout layout = new GridLayout(5, false);
 		parent.setLayout(new GridLayout(1, false));
 
 		Point fontSize = UIUtils.computeFontSize(parent);
@@ -141,7 +139,9 @@ public class ReplyDialog extends Dialog {
 		sc_msgtxt.setContent(msgTextData);
 
 		//Create the section handling the radio buttons
-		createMiddleRadioSection(parent);
+		if (labelsInfo != null) {
+			createMiddleRadioSection(parent);
+		}
 
 		//Create the bottom section for the buttons
 		createBottomButtons(parent);
