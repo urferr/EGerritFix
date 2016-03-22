@@ -29,7 +29,6 @@ import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
-import org.eclipse.compare.structuremergeviewer.IDiffElement;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
 import org.eclipse.core.databinding.beans.PojoProperties;
@@ -88,6 +87,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -346,7 +346,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private static class TreeFactoryImpl implements IObservableFactory {
-		public IObservableList<IDiffElement> createObservable(final Object target) {
+		public IObservableList createObservable(final Object target) {
 			return BeanProperties.list("children").observe(target);
 		}
 	}
@@ -571,6 +571,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	public void saveChanges(IProgressMonitor monitor) throws CoreException {
 		try {
 			super.saveChanges(monitor);
+			forceSaveWorkspaceFile(monitor);
 		} catch (RuntimeException ex) {
 			//This works hand in hand with the PatchSetCompareItem#setContent method which raises a very specific RuntimeException
 			if (CommentableCompareItem.class.getName().equals(ex.getMessage())) {
@@ -590,6 +591,21 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		}
 		if (postSaveListener != null) {
 			postSaveListener.run();
+		}
+	}
+
+	private void forceSaveWorkspaceFile(IProgressMonitor monitor) throws CoreException {
+		//Force persist the files that are in the workspace.
+		//This is necessary because the Saveable returned by default is not properly set
+		if (getSelectedEdition() != null) {
+			ITypedElement forceLeft = ((GerritDiffNode) getSelectedEdition()).getLeft();
+			if (forceLeft instanceof LocalResourceTypedElement) {
+				((LocalResourceTypedElement) forceLeft).commit(monitor);
+			}
+			ITypedElement forceright = ((GerritDiffNode) getSelectedEdition()).getRight();
+			if (forceright instanceof LocalResourceTypedElement) {
+				((LocalResourceTypedElement) forceright).commit(monitor);
+			}
 		}
 	}
 
