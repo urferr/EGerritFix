@@ -218,15 +218,15 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tabFolder.setBackground(parent.getBackground());
 
-		summaryTab = new SummaryTabView();
-		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
+		historytab = new HistoryTabView();
+		historytab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
 		messageTab.addObserver(this);
 
-		historytab = new HistoryTabView();
-		historytab.create(fGerritClient, tabFolder, fChangeInfo);
+		summaryTab = new SummaryTabView();
+		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		Composite compButton = buttonSection(parent);
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));

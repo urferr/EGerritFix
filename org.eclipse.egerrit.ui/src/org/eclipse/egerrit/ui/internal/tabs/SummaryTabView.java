@@ -238,7 +238,7 @@ public class SummaryTabView {
 		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
 
 		TabItem tabSummary = new TabItem(tabFolder, SWT.NONE);
-		tabSummary.setText("Summary");
+		tabSummary.setText("Details");
 
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(false);
