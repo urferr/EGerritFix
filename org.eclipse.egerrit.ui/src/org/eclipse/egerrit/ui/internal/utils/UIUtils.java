@@ -12,6 +12,7 @@
 
 package org.eclipse.egerrit.ui.internal.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ReviewInput;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
@@ -174,5 +176,42 @@ public class UIUtils {
 				}
 			}
 		});
+	}
+
+	public static String revisionToString(RevisionInfo revisionInfo) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(Integer.toString(revisionInfo.get_number())); //
+		sb.append("   ");
+		appendCommitTime(sb, revisionInfo);
+		sb.append("   ");
+		appendUserCommiter(sb, revisionInfo);
+		if (revisionInfo.isDraft()) {
+			sb.append(" (draft)");
+		}
+		return sb.toString();
+	}
+
+	private static void appendCommitTime(StringBuilder sb, RevisionInfo revisionInfo) {
+		if (revisionInfo.getCommit() != null) {
+			sb.append(Utils.formatDate(revisionInfo.getCommit().getCommitter().getDate(),
+					new SimpleDateFormat("MMM dd, yyyy hh:mm a"))); //$NON-NLS-1$
+		}
+	}
+
+	private static void appendUserCommiter(StringBuilder sb, RevisionInfo revisionInfo) {
+		if (revisionInfo.getCommit() != null) {
+			if (revisionInfo.getCommit().getAuthor() != null) {
+				//Use the Author
+				sb.append(revisionInfo.getCommit().getAuthor().getName());
+			}
+			if (!revisionInfo.getCommit()
+					.getAuthor()
+					.getName()
+					.equals(revisionInfo.getCommit().getCommitter().getName())) {
+				//Add the committer if different than the Author
+				sb.append("/"); //$NON-NLS-1$
+				sb.append(revisionInfo.getCommit().getCommitter().getName());
+			}
+		}
 	}
 }

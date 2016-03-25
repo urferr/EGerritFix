@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.CompareUI;
+import org.eclipse.compare.CompareViewerPane;
 import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
@@ -29,6 +30,7 @@ import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
+import org.eclipse.compare.structuremergeviewer.IDiffElement;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.beans.IBeanValueProperty;
 import org.eclipse.core.databinding.beans.PojoProperties;
@@ -168,6 +170,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	@Override
 	protected Object prepareInput(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		resetRoot();
 		if (leftSide.equals("BASE")) {
 			computeDifferencesWithBase(monitor);
 		} else if (leftSide.equals("WORKSPACE")) {
@@ -176,6 +179,47 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			computeDifferencesBetweenRevisions(monitor);
 		}
 		return root;
+	}
+
+	void switchInputs(String left, String right) {
+		try {
+			//Short-circuit if nothing has changed
+			if (left == null && rightSide.equals(right)) {
+				return;
+			}
+			if (right == null && leftSide.equals(left)) {
+				return;
+			}
+			//First, remember the currently opened file.
+			Object selectedElement = getSelectedEdition();
+			if (selectedElement != null) {
+				fileToReveal = ((GerritDiffNode) selectedElement).getFileInfo();
+			}
+			//Reset the input
+			if (left != null) {
+				this.leftSide = left;
+			}
+			if (right != null) {
+				this.rightSide = right;
+			}
+
+			//Compute the diffs
+			prepareInput(new NullProgressMonitor());
+			viewer.setInput(root);
+			viewer.getTree().setData(CompareUI.COMPARE_VIEWER_TITLE, getComparisonTitle());
+
+			//Reveal file that was opened before
+			revealFile();
+		} catch (InvocationTargetException | InterruptedException e) {
+			logger.error("Problem while switching input to " + left + " " + right, e);
+		}
+	}
+
+	public void resetRoot() {
+		IDiffElement[] children = root.getChildren();
+		for (IDiffElement child : children) {
+			root.remove(child);
+		}
 	}
 
 	private void computeDifferencesBetweenRevisions(IProgressMonitor monitor) {
@@ -381,11 +425,12 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 						(CompareEditorInputNavigator) getNavigator()));
 				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.PREVIOUS_CHANGE, //$NON-NLS-1$
 						(CompareEditorInputNavigator) getNavigator()));
-				toolbarManager.appendToGroup("modes", new ShowFilePathAction(() -> viewer));
-				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
-				toolbarManager.appendToGroup("modes", new ShowUnchangedFilesAction(gerritClient,
+				toolbarManager.appendToGroup("modes", new ShowFilePathAction(() -> viewer)); //$NON-NLS-1$
+				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer)); //$NON-NLS-1$
+				toolbarManager.appendToGroup("modes", new ShowUnchangedFilesAction(gerritClient, //$NON-NLS-1$
 						changeInfo.getRevisions().get(rightSide), leftSide, () -> viewer));
-				toolbarManager.appendToGroup("merge", new ReplyAction(gerritClient, GerritMultipleInput.this,
+
+				toolbarManager.appendToGroup("merge", new ReplyAction(gerritClient, GerritMultipleInput.this, //$NON-NLS-1$
 						changeInfo.getRevisions().get(rightSide), leftSide, () -> viewer));
 			}
 		};
@@ -425,14 +470,18 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		viewer.setLabelProvider(new FileInfoCompareCellLabelProvider(watchedProperties));
 		viewer.setInput(root);
 
+		revealFile();
+		return viewer;
+
+	}
+
+	private void revealFile() {
 		if (nodeToReveal != null) {
 			StructuredSelection selection = new StructuredSelection(nodeToReveal);
 			viewer.setSelection(selection, true);
 
 			callFeed1(selection);
 		}
-		return viewer;
-
 	}
 
 	/**
@@ -687,5 +736,30 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		} else {
 			QueryHelpers.markAsReviewed(gerritClient, fileInfo);
 		}
+	}
+
+	@Override
+	protected CompareViewerPane createStructureInputPane(final Composite parent) {
+		return new CompareUpperSection(parent, SWT.BORDER | SWT.FLAT, true, this) {
+			@Override
+			protected Viewer getViewer(Viewer oldViewer, Object input) {
+				if (GerritMultipleInput.this.root.hasChildren()) {
+					return createDiffViewer(this);
+				}
+				return super.getViewer(oldViewer, input);
+			}
+		};
+	}
+
+	public ChangeInfo getChangeInfo() {
+		return changeInfo;
+	}
+
+	public String getLeftSide() {
+		return leftSide;
+	}
+
+	public String getRightSide() {
+		return rightSide;
 	}
 }
