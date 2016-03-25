@@ -75,7 +75,6 @@ import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.table.provider.DeleteDraftRevisionProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
-import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
@@ -158,8 +157,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private MessageTabView messageTab = null;
 
-	public FilesTabView filesTab = null;
-
 	private PatchSetHandlerProvider fPatchSetProvider = null;
 
 	private ChangeInfo fChangeInfo;
@@ -227,10 +224,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
 		messageTab.addObserver(this);
-
-		filesTab = new FilesTabView();
-		filesTab.create(fGerritClient, tabFolder, fChangeInfo);
-		filesTab.addObserver(this);
 
 		historytab = new HistoryTabView();
 		historytab.create(fGerritClient, tabFolder, fChangeInfo);
@@ -552,7 +545,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 					itemCRPlus2.setText("Code-Review+2");
-					String latestPatchSet = fChangeInfo.getLatestPatchSet().getId();
 
 					//Test if we should allow the +2 button or not
 					//Condition:
@@ -568,8 +560,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					}
 					//Verify the patchset if we are allowed only, no need to check if not allowed
 					if (allowPlus2) {
-						String psSelectedID = filesTab.getSelectedPatchSetID();
-						if (!(psSelectedID != null && latestPatchSet.compareTo(psSelectedID) == 0)) {
+						String psSelectedID = fChangeInfo.getUserSelectedRevision().getId();
+						if (!(psSelectedID != null
+								&& fChangeInfo.getLatestPatchSet().getId().compareTo(psSelectedID) == 0)) {
 							allowPlus2 = false;
 						}
 					}
@@ -1024,7 +1017,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return;
 				}
 
-				String psSelected = filesTab.getSelectedPatchSet();
+				String psSelected = fChangeInfo.getUserSelectedRevision().getId();
 				if ((psSelected == null) || psSelected.isEmpty()) {
 					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No patchset selected");
 					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
@@ -1097,7 +1090,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
 			return "";
 		}
-		String shortName = fChangeInfo.get_number() + "/" + filesTab.getSelectedPatchSetNumber();
+		String shortName = fChangeInfo.get_number() + "/" + fChangeInfo.getUserSelectedRevision().get_number();
 		Iterator<String> iterator = branches.iterator();
 		String branchName = null;
 		while (iterator.hasNext()) {
@@ -1296,8 +1289,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				if (summaryTab != null) {
 					summaryTab.setTabs(fGerritClient, fChangeInfo);
 				}
-				//Re-Initialize the files tab with the patch-set
-				filesTab.setInitPatchSet();
 
 				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
 				linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$

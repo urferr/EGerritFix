@@ -11,6 +11,8 @@
  ******************************************************************************/
 package org.eclipse.egerrit.ui.internal.table;
 
+import java.util.Optional;
+
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -18,7 +20,9 @@ import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
@@ -28,8 +32,6 @@ import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
-import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
-import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
@@ -88,10 +90,6 @@ public class UIFilesTable {
 
 	private ChangeInfo fChangeInfo;
 
-	private FilesTabView filesTabView;
-
-	private HistoryTabView historyTabView;
-
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
@@ -103,12 +101,10 @@ public class UIFilesTable {
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent, GerritClient gerritClient, ChangeInfo changeInfo,
-			FilesTabView filesTabView) {
+	public TableViewer createTableViewerSection(Composite aParent, GerritClient gerritClient, ChangeInfo changeInfo) {
 
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
-		this.filesTabView = filesTabView;
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
 		buildAndLayoutTable();
@@ -119,23 +115,6 @@ public class UIFilesTable {
 
 		return fViewer;
 
-	}
-
-	public TableViewer createTableViewerSection(Composite aParent, GerritClient gerritClient, ChangeInfo changeInfo,
-			HistoryTabView historyTabView) {
-		// ignore
-		this.fGerritClient = gerritClient;
-		this.fChangeInfo = changeInfo;
-		this.historyTabView = historyTabView;
-		// Create the table viewer to maintain the list of reviews
-		fViewer = new TableViewer(aParent, TABLE_STYLE);
-		buildAndLayoutTable();
-		adjustTableData();//Set the properties for the files table
-
-		// Set the content sorter
-		ReviewTableSorter.bind(fViewer);
-
-		return fViewer;
 	}
 
 	/**
@@ -192,7 +171,6 @@ public class UIFilesTable {
 		column.setResizable(tableInfo.getResize());
 		column.setMoveable(tableInfo.getMoveable());
 		return viewerColumn;
-
 	}
 
 	/**
@@ -215,31 +193,14 @@ public class UIFilesTable {
 						showEditorTip();
 					}
 					compareEditor = new OpenCompareEditor(fGerritClient, fChangeInfo);
-					String diffSource = null;
-					if (filesTabView != null) {
-						diffSource = filesTabView.getComboSelection();
-					} else {
-						System.out.println("Using the table in the History View JBJB");
-					}
 
-					if (diffSource != null && diffSource.equals(WORKSPACE)) {
-						compareEditor.compareFiles("WORKSPACE", selectedFile.getRevision().getId(), selectedFile);
-					} else if (diffSource == null || diffSource.equals(BASE)) {
-						//If null, we are in the history tab and by default, we will compare against BASE for now
-						//Eventually, we should be able to select the patchset to compare with
-						compareEditor.compareFiles("BASE", selectedFile.getRevision().getId(), selectedFile);
-					} else {
-						if (filesTabView != null) {
-							compareEditor.compareFiles(getRevisionInfoByNumber(diffSource).getId(),
-									filesTabView.getSelectedPatchSetID(), selectedFile);
-						} else {
-							System.out.println(
-									"JBJB eventually, we need to be able to select a version in the HistoryView");
-						}
-					}
+					String left = guessLeft(fGerritClient);
+					String right = left.equals("WORKSPACE")
+							? getLastRevisionCommentedByReviewer(fGerritClient)
+							: fChangeInfo.getRevision().getId();
+					compareEditor.compareFiles(left, right, selectedFile);
 				}
 			}
-
 		};
 
 		fViewer.addDoubleClickListener(fdoubleClickListener);
@@ -249,6 +210,62 @@ public class UIFilesTable {
 
 		//Set the binding for this section
 		filesTabDataBindings();
+	}
+
+	private String getLastRevisionCommentedByReviewer(GerritClient gerritClient) {
+		GitPersonInfo author = fChangeInfo.getRevision().getCommit().getAuthor();
+		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
+				.stream()
+				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
+				.filter(message -> message.getAuthor().getEmail() != null
+						&& !author.equals(message.getAuthor().getEmail()))
+				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
+				.findFirst();
+		if (match.isPresent()) {
+			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
+		} else {
+			return fChangeInfo.getRevision().getId();
+		}
+	}
+
+	private String guessLeft(GerritClient gerritClient) {
+		if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			return "BASE";
+		}
+
+		if (fChangeInfo.getRevisions().size() == 1) {
+			return "BASE";
+		}
+		String currentUser = gerritClient.getRepository().getCredentials().getUsername();
+		//If I'm an author
+		GitPersonInfo author = fChangeInfo.getRevision().getCommit().getAuthor();
+//		if (author != null && (currentUser.equals(author.getEmail()) || currentUser.equals(author.getName()))) {
+//			//TODO Ideally we should first check if we are on the workspace
+//			Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
+//					.stream()
+//					.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
+//					.filter(message -> author.getEmail().equals(message.getAuthor().getEmail()))
+//					.filter(message -> message.get_revision_number() != fChangeInfo.getRevision().get_number())
+//					.findFirst();
+//			if (match.isPresent()) {
+//				return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
+//			}
+//			return "WORKSPACE";
+//		}
+//
+//		//I'm a reviewer, so find the last revision that I commented on
+//		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
+//				.stream()
+//				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
+//				.filter(message -> currentUser.equals(message.getAuthor().getEmail()))
+//				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
+//				.findFirst();
+//		if (match.isPresent()) {
+//			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
+//		} else {
+//			return "BASE";
+//		}
+		return "BASE"; //Previous optional value failed when trying to get a merged review file
 	}
 
 	/**
@@ -287,11 +304,9 @@ public class UIFilesTable {
 
 						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
 						toggleReviewed(fileInfo);
-
 					}
 				}
 			}
-
 		};
 	}
 
@@ -330,8 +345,8 @@ public class UIFilesTable {
 		}
 	}
 
-	private RevisionInfo getRevisionInfoByNumber(String number) {
-		return fChangeInfo.getRevisionByNumber(Integer.valueOf(number));
+	private RevisionInfo getRevisionInfoByNumber(int number) {
+		return fChangeInfo.getRevisionByNumber(number);
 	}
 
 	private void showEditorTip() {
@@ -361,8 +376,6 @@ public class UIFilesTable {
 	private void addPulldownMenu() {
 		MenuManager menuManager = new MenuManager();
 		Menu menu = menuManager.createContextMenu(fViewer.getTable());
-		MenuItem menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Jacques");
 		menuManager.addMenuListener(new IMenuListener() {
 
 			@Override

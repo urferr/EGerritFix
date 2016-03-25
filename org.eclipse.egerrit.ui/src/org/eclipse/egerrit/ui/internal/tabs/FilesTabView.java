@@ -328,7 +328,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		});
 
 		tableUIFiles = new UIFilesTable();
-		tableUIFiles.createTableViewerSection(composite, gerritClient, fChangeInfo, this);
+		tableUIFiles.createTableViewerSection(composite, gerritClient, fChangeInfo);
 
 		tableFilesViewer = tableUIFiles.getViewer();
 //		tableFilesViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
