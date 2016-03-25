@@ -217,8 +217,8 @@ public class UIFilesTable {
 		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
 				.stream()
 				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-				.filter(message -> message.getAuthor().getEmail() != null
-						&& !author.equals(message.getAuthor().getEmail()))
+				.filter(message -> message.getAuthor() != null)
+				.filter(message -> !author.equals(message.getAuthor().getEmail()))
 				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
 				.findFirst();
 		if (match.isPresent()) {
@@ -239,33 +239,34 @@ public class UIFilesTable {
 		String currentUser = gerritClient.getRepository().getCredentials().getUsername();
 		//If I'm an author
 		GitPersonInfo author = fChangeInfo.getRevision().getCommit().getAuthor();
-//		if (author != null && (currentUser.equals(author.getEmail()) || currentUser.equals(author.getName()))) {
-//			//TODO Ideally we should first check if we are on the workspace
-//			Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
-//					.stream()
-//					.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-//					.filter(message -> author.getEmail().equals(message.getAuthor().getEmail()))
-//					.filter(message -> message.get_revision_number() != fChangeInfo.getRevision().get_number())
-//					.findFirst();
-//			if (match.isPresent()) {
-//				return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
-//			}
-//			return "WORKSPACE";
-//		}
-//
-//		//I'm a reviewer, so find the last revision that I commented on
-//		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
-//				.stream()
-//				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-//				.filter(message -> currentUser.equals(message.getAuthor().getEmail()))
-//				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
-//				.findFirst();
-//		if (match.isPresent()) {
-//			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
-//		} else {
-//			return "BASE";
-//		}
-		return "BASE"; //Previous optional value failed when trying to get a merged review file
+		if (author != null && (currentUser.equals(author.getEmail()) || currentUser.equals(author.getName()))) {
+			//TODO Ideally we should first check if we are on the workspace
+			Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
+					.stream()
+					.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
+					.filter(message -> message.getAuthor() != null)
+					.filter(message -> author.getEmail().equals(message.getAuthor().getEmail()))
+					.filter(message -> message.get_revision_number() != fChangeInfo.getRevision().get_number())
+					.findFirst();
+			if (match.isPresent()) {
+				return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
+			}
+			return "WORKSPACE";
+		}
+
+		//I'm a reviewer, so find the last revision that I commented on
+		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
+				.stream()
+				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
+				.filter(message -> message.getAuthor() != null)
+				.filter(message -> currentUser.equals(message.getAuthor().getEmail()))
+				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
+				.findFirst();
+		if (match.isPresent()) {
+			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
+		} else {
+			return "BASE";
+		}
 	}
 
 	/**
