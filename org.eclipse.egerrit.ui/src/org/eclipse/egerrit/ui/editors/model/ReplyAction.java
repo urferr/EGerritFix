@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
@@ -34,14 +33,11 @@ public class ReplyAction extends Action {
 
 	private RevisionInfo revisionInfo;
 
-	private GerritClient client;
-
 	private GerritMultipleInput input;
 
-	public ReplyAction(GerritClient client, GerritMultipleInput input, RevisionInfo revisionInfo, String base,
+	public ReplyAction(GerritMultipleInput input, RevisionInfo revisionInfo, String base,
 			Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
-		this.client = client;
 		this.revisionInfo = revisionInfo;
 		this.input = input;
 
@@ -50,8 +46,8 @@ public class ReplyAction extends Action {
 		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(ICONS_REPLY));
 
 		String anonymousUserToolTip = "This button is disabled because you are connected anonymously to "
-				+ client.getRepository().getServerInfo().getServerURI() + ".";
-		if (client.getRepository().getServerInfo().isAnonymous()) {
+				+ input.gerritClient.getRepository().getServerInfo().getServerURI() + ".";
+		if (input.gerritClient.getRepository().getServerInfo().isAnonymous()) {
 			setToolTipText(anonymousUserToolTip);
 			setEnabled(false);
 		} else {
@@ -67,8 +63,8 @@ public class ReplyAction extends Action {
 		} catch (CoreException e) {
 			return;
 		}
-		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, client);
-		QueryHelpers.reload(client, revisionInfo.getChangeInfo());
+		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, input.gerritClient);
+		QueryHelpers.reload(input.gerritClient, revisionInfo.getChangeInfo());
 		input.fireInputChange();
 	}
 }
