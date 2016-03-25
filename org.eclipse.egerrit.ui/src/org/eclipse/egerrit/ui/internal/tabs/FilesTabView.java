@@ -29,7 +29,6 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
@@ -41,25 +40,21 @@ import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
-import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.provider.ComboPatchSetLabelProvider;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
+import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -67,13 +62,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -91,8 +83,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * This class is used in the editor to handle the Gerrit history view
@@ -126,13 +116,14 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 
 	private Label lblTotal;
 
-	private Combo comboDiffAgainst;
+	public Combo comboDiffAgainst;
 
 	private Label lblPatchSet;
 
 	private ComboViewer comboPatchsetViewer;
 
-	private IDoubleClickListener fdoubleClickListener;
+//	private IDoubleClickListener fdoubleClickListener;
+	private UIFilesTable tableUIFiles;
 
 	private Button fDeleteDraftRevisionButton;
 
@@ -176,10 +167,13 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		tbtmFiles.setControl(composite);
 		composite.setLayout(new GridLayout(10, false));
 
-		lblPatchSet = new Label(composite, SWT.NONE);
-		GridData gd_lblPatchSet = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-		lblPatchSet.setLayoutData(gd_lblPatchSet);
-		lblPatchSet.setText("Patch Sets (    /    )");
+//		lblPatchSet = new Label(composite, SWT.NONE);
+//		GridData gd_lblPatchSet = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+//		lblPatchSet.setLayoutData(gd_lblPatchSet);
+//		lblPatchSet.setText("Patch Sets (    /    )");
+		//Create the PatchSetButton
+		PatchSetHandlerProvider fPatchSetProvider = new PatchSetHandlerProvider();
+		fPatchSetProvider.create(composite, fChangeInfo);
 
 		comboPatchsetViewer = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 
@@ -194,7 +188,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 					IStructuredSelection structSel = (IStructuredSelection) selection;
 					if (structSel.getFirstElement() instanceof StringToRevisionInfoImpl) {
 
-						setPatchSetLabelCombo();
+//						setPatchSetLabelCombo();
 						setDiffAgainstCombo();
 						StringToRevisionInfoImpl revInfo = (StringToRevisionInfoImpl) structSel.getFirstElement();
 						//Keep track of the selection index
@@ -333,81 +327,92 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			}
 		});
 
-		UIFilesTable tableUIFiles = new UIFilesTable();
-		tableUIFiles.createTableViewerSection(composite);
+		tableUIFiles = new UIFilesTable();
+		tableUIFiles.createTableViewerSection(composite, gerritClient, fChangeInfo, this);
 
 		tableFilesViewer = tableUIFiles.getViewer();
-		tableFilesViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		fdoubleClickListener = new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				Object element = sel.getFirstElement();
-				if (element instanceof StringToFileInfoImpl) {
-					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
-					OpenCompareEditor compareEditor;
-					if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-						showEditorTip();
-					}
-					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
-					String diffSource = comboDiffAgainst.getText();
-					if (diffSource.equals(WORKSPACE)) {
-						compareEditor.compareFiles("WORKSPACE", selectedFile.getRevision().getId(), selectedFile);
-					} else if (diffSource.equals(BASE)) {
-						compareEditor.compareFiles("BASE", selectedFile.getRevision().getId(), selectedFile);
-					} else {
-						compareEditor.compareFiles(getRevisionInfoByNumber(diffSource).getId(), getSelectedPatchSetID(),
-								selectedFile);
-					}
-				}
-			}
+//		tableFilesViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
+//		fdoubleClickListener = new IDoubleClickListener() {
+//			public void doubleClick(DoubleClickEvent event) {
+//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+//				Object element = sel.getFirstElement();
+//				if (element instanceof StringToFileInfoImpl) {
+//					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
+//					OpenCompareEditor compareEditor;
+//					if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+//						showEditorTip();
+//					}
+//					compareEditor = new OpenCompareEditor(gerritClient, fChangeInfo);
+//					String diffSource = comboDiffAgainst.getText();
+//					if (diffSource.equals(WORKSPACE)) {
+//						compareEditor.compareFiles("WORKSPACE", selectedFile.getRevision().getId(), selectedFile);
+//					} else if (diffSource.equals(BASE)) {
+//						compareEditor.compareFiles("BASE", selectedFile.getRevision().getId(), selectedFile);
+//					} else {
+//						compareEditor.compareFiles(getRevisionInfoByNumber(diffSource).getId(), getSelectedPatchSetID(),
+//								selectedFile);
+//					}
+//				}
+//			}
+//
+//		};
+//
+//		tableFilesViewer.addDoubleClickListener(fdoubleClickListener);
+//		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
+//			tableFilesViewer.getTable().addMouseListener(toggleReviewedStateListener());
+//		}
+//
+//		//Set the binding for this section
+//		filesTabDataBindings(tableFilesViewer);
+		filesTabDataBindings();
+	}
+//
+//	/**
+//	 * This method is for the command double click on a row
+//	 *
+//	 * @return none
+//	 */
+//	public void selectRow() {
+//		if (tableFilesViewer.getElementAt(0) != null) {
+//			tableFilesViewer.setSelection(new StructuredSelection(tableFilesViewer.getElementAt(0)), true);
+//			IStructuredSelection selection = (IStructuredSelection) tableFilesViewer.getSelection();
+//			final DoubleClickEvent event = new DoubleClickEvent(tableFilesViewer, selection);
+//			fdoubleClickListener.doubleClick(event);
+//		}
+//	}
+//
+//	private void showEditorTip() {
+//		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
+//
+//		Preferences editorPrefs = prefs.node("editor");
+//		boolean choice = editorPrefs.getBoolean("editortip", false);
+//
+//		if (choice) {
+//			return;
+//		}
+//		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
+//				tableFilesViewer.getControl().getShell(), Messages.FileTabView_EGerriTip,
+//				Messages.FileTabView_EGerriTipValue, Messages.FileTabView_EGerriTipShowAgain, false, null, null);
+//
+//		if (dialog.getToggleState()) {
+//			editorPrefs.putBoolean("editortip", true);
+//			try {
+//				editorPrefs.flush();
+//			} catch (BackingStoreException e) {
+//				//There is not much we can do
+//			}
+//		}
+//		return;
+//	}
 
-		};
-
-		tableFilesViewer.addDoubleClickListener(fdoubleClickListener);
-		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-			tableFilesViewer.getTable().addMouseListener(toggleReviewedStateListener());
-		}
-
-		//Set the binding for this section
-		filesTabDataBindings(tableFilesViewer);
+	public String getComboSelection() {
+		return comboDiffAgainst.getText();
 	}
 
-	/**
-	 * This method is for the command double click on a row
-	 *
-	 * @return none
-	 */
 	public void selectRow() {
-		if (tableFilesViewer.getElementAt(0) != null) {
-			tableFilesViewer.setSelection(new StructuredSelection(tableFilesViewer.getElementAt(0)), true);
-			IStructuredSelection selection = (IStructuredSelection) tableFilesViewer.getSelection();
-			final DoubleClickEvent event = new DoubleClickEvent(tableFilesViewer, selection);
-			fdoubleClickListener.doubleClick(event);
+		if (tableUIFiles != null) {
+			tableUIFiles.selectRow();
 		}
-	}
-
-	private void showEditorTip() {
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
-
-		Preferences editorPrefs = prefs.node("editor");
-		boolean choice = editorPrefs.getBoolean("editortip", false);
-
-		if (choice) {
-			return;
-		}
-		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(
-				tableFilesViewer.getControl().getShell(), Messages.FileTabView_EGerriTip,
-				Messages.FileTabView_EGerriTipValue, Messages.FileTabView_EGerriTipShowAgain, false, null, null);
-
-		if (dialog.getToggleState()) {
-			editorPrefs.putBoolean("editortip", true);
-			try {
-				editorPrefs.flush();
-			} catch (BackingStoreException e) {
-				//There is not much we can do
-			}
-		}
-		return;
 	}
 
 	private Runnable getParticipant(final String revisionId) {
@@ -464,49 +469,51 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		}
 	}
 
-	/**
-	 * This method is the listener to toggle a file's reviewed state
-	 *
-	 * @return MouseAdapter
-	 */
-	private MouseAdapter toggleReviewedStateListener() {
-		return new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				ViewerCell viewerCell = tableFilesViewer.getCell(new Point(e.x, e.y));
-				if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
-					//Selected the first column, so we can send the delete option
-					//Otherwise, do not delete
-					ISelection selection = tableFilesViewer.getSelection();
-					if (selection instanceof IStructuredSelection) {
+//	/**
+//	 * This method is the listener to toggle a file's reviewed state
+//	 *
+//	 * @return MouseAdapter
+//	 */
+//	private MouseAdapter toggleReviewedStateListener() {
+//		return new MouseAdapter() {
+//			@Override
+//			public void mouseDown(MouseEvent e) {
+//				ViewerCell viewerCell = tableFilesViewer.getCell(new Point(e.x, e.y));
+//				if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
+//					//Selected the first column, so we can send the delete option
+//					//Otherwise, do not delete
+//					ISelection selection = tableFilesViewer.getSelection();
+//					if (selection instanceof IStructuredSelection) {
+//
+//						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+//
+//						Object element = structuredSelection.getFirstElement();
+//
+//						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
+//						toggleReviewed(fileInfo);
+//
+//					}
+//				}
+//			}
+//
+//		};
+//	}
+//
+//	private void toggleReviewed(FileInfo fileInfo) {
+//		if (fileInfo.isReviewed()) {
+//			QueryHelpers.markAsNotReviewed(gerritClient, fileInfo);
+//		} else {
+//			QueryHelpers.markAsReviewed(gerritClient, fileInfo);
+//		}
+//		tableFilesViewer.refresh();
+//	}
 
-						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-
-						Object element = structuredSelection.getFirstElement();
-
-						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-						toggleReviewed(fileInfo);
-
-					}
-				}
-			}
-
-		};
-	}
-
-	private void toggleReviewed(FileInfo fileInfo) {
-		if (fileInfo.isReviewed()) {
-			QueryHelpers.markAsNotReviewed(gerritClient, fileInfo);
-		} else {
-			QueryHelpers.markAsReviewed(gerritClient, fileInfo);
-		}
-		tableFilesViewer.refresh();
-	}
-
-	protected void filesTabDataBindings(TableViewer tableFilesViewer) {
+//	protected void filesTabDataBindings(TableViewer tableFilesViewer) {
+	protected void filesTabDataBindings() {
 
 		//Set the PatchSet Combo viewer
 		if (comboPatchsetViewer != null) {
+
 			IObservableList patchSetChanges = EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVISIONS)
 					.observe(fChangeInfo);
 
@@ -520,39 +527,40 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 			final IObservableMap[] watchedProperties = Properties.observeEach(
 					contentPatchSetProvider.getKnownElements(),
 					new IValueProperty[] { EMFProperties.value(revNumber), EMFProperties.value(revCommit) });
+
 			comboPatchsetViewer.setLabelProvider(new ComboPatchSetLabelProvider(watchedProperties));
 			comboPatchsetViewer.setInput(patchSetChanges);
 		}
 
-		//Set the FilesViewer
-		if (tableFilesViewer != null) {
-			FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__FILES);
-
-			IObservableList revisionsChanges = EMFProperties.list(changerev).observe(fChangeInfo);
-
-			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__REVIEWED);
-			final FeaturePath commentsCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT);
-			final FeaturePath draftCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
-					ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT);
-			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-			tableFilesViewer.setContentProvider(contentProvider);
-			final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
-					new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(commentsCount),
-							EMFProperties.value(draftCount) });
-
-			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
-			tableFilesViewer.setInput(revisionsChanges);
-		}
+//		//Set the FilesViewer
+//		if (tableFilesViewer != null) {
+//			FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+//					ModelPackage.Literals.REVISION_INFO__FILES);
+//
+//			IObservableList revisionsChanges = EMFProperties.list(changerev).observe(fChangeInfo);
+//
+//			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+//					ModelPackage.Literals.FILE_INFO__REVIEWED);
+//			final FeaturePath commentsCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+//					ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT);
+//			final FeaturePath draftCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
+//					ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT);
+//			ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+//			tableFilesViewer.setContentProvider(contentProvider);
+//			final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
+//					new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(commentsCount),
+//							EMFProperties.value(draftCount) });
+//
+//			tableFilesViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
+//			tableFilesViewer.setInput(revisionsChanges);
+//		}
 	}
 
 	/**
 	 * Fill the combo box with all patch set to compare with except the selected one. Also, add the Base and the
 	 * Workspace which is the default one
 	 */
-	private void setDiffAgainstCombo() {
+	public void setDiffAgainstCombo() {
 		List<String> listPatch = new ArrayList<String>();
 		//Always start the list with the following items
 		listPatch.add(BASE);
@@ -646,7 +654,7 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 	/**
 	 * Fill the data fields included in the Files Tab
 	 */
-	private void setFileTabFields() {
+	public void setFileTabFields() {
 		if (tableFilesViewer != null && !tableFilesViewer.getTable().isDisposed()) {
 			fillReviewedRevisionFileInfo();
 			QueryHelpers.loadComments(gerritClient, fSelectedRevision);
@@ -690,9 +698,10 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		return tableFilesViewer;
 	}
 
-	private void setCurrentRevision(RevisionInfo revisionInfo) {
-		fChangeInfo.setCurrent_revision(revisionInfo.getId());
+	public void setCurrentRevision(RevisionInfo revisionInfo) {
+		fChangeInfo.setUserSelectedRevision(revisionInfo);
 		fSelectedRevision = revisionInfo;
+		fChangeInfo.setUserSelectedRevision(revisionInfo);
 		fDeleteDraftRevisionButton.setEnabled(fChangeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
 				&& fSelectedRevision.isActionAllowed(ActionConstants.PUBLISH.getName()));
 	}
@@ -829,10 +838,10 @@ public class FilesTabView extends Observable implements PropertyChangeListener {
 		return selectInfo;
 	}
 
-	private RevisionInfo getRevisionInfoByNumber(String number) {
-		return fChangeInfo.getRevisionByNumber(Integer.valueOf(number));
-	}
-
+//	private RevisionInfo getRevisionInfoByNumber(String number) {
+//		return fChangeInfo.getRevisionByNumber(Integer.valueOf(number));
+//	}
+//
 	public void update() {
 		RevisionInfo revInfo = fSelectedRevision;
 

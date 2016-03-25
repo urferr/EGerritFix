@@ -32,15 +32,20 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -80,6 +85,8 @@ public class MessageTabView extends Observable {
 
 	private GerritClient fGerritClient;
 
+	private Boolean fShowExtraInfo = true;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -91,12 +98,11 @@ public class MessageTabView extends Observable {
 	}
 
 	/**
-	 * @param fGerritClient
-	 * @param tabFolder
-	 * @param listMessages
-	 *            List<ChangeMessageInfo>
+	 * @param GerritClient
+	 * @param Composite
+	 * @param ChangeInfo
 	 */
-	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
+	public void create(GerritClient gerritClient, Composite tabFolder, ChangeInfo changeInfo) {
 		fGerritClient = gerritClient;
 		createControls(tabFolder, changeInfo);
 	}
@@ -105,16 +111,67 @@ public class MessageTabView extends Observable {
 		return !fGerritClient.getRepository().getServerInfo().isAnonymous();
 	}
 
-	private void createControls(TabFolder tabFolder, final ChangeInfo changeInfo) {
-		final TabItem tabMessages = new TabItem(tabFolder, SWT.NONE);
+	/**
+	 * Create the top parent as a tab folder
+	 *
+	 * @param tabFolder
+	 * @return Composite
+	 */
+	private Composite createAsTabfolder(Composite tabFolder) {
+		final TabItem tabMessages = new TabItem((TabFolder) tabFolder, SWT.NONE);
 		tabMessages.setText("Messages");
 
 		final Composite messagesComposite = new Composite(tabFolder, SWT.NONE);
 		tabMessages.setControl(messagesComposite);
 		messagesComposite.setLayout(new GridLayout(4, false));
+		return messagesComposite;
+	}
+
+	/**
+	 * Create the top parent as a composite
+	 *
+	 * @param tabFolder
+	 * @return Composite
+	 */
+	private Composite createAsComposite(Composite parent) {
+
+		final ScrolledComposite scrollComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+
+		final Composite messagesComposite = new Composite(scrollComposite, SWT.NONE);
+		messagesComposite.setLayout(new GridLayout(4, false));
+
+		scrollComposite.setContent(messagesComposite);
+		scrollComposite.setExpandVertical(true);
+		scrollComposite.setExpandHorizontal(true);
+		scrollComposite.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+//				Rectangle r = scrollComposite.getClientArea();
+//				scrollComposite.setMinSize(messagesComposite.computeSize(r.width, SWT.DEFAULT));
+				scrollComposite.setMinSize(messagesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+		});
+
+		//Do not show the Extra data
+		fShowExtraInfo = false;
+		return messagesComposite;
+	}
+
+	private void createControls(Composite composite, final ChangeInfo changeInfo) {
+		final Composite messagesComposite;
+
+		//Define the proper instance of the composite, i.e. Tabfolder or anything else
+		if (composite instanceof TabFolder) {
+			messagesComposite = createAsTabfolder(composite);
+		} else {
+			messagesComposite = createAsComposite(composite);
+		}
 
 		msgTextData = new Text(messagesComposite, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-		msgTextData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
+		Point fontsize = UIUtils.computeFontSize(messagesComposite);
+		gridData.minimumHeight = fontsize.y * 3;//Set a minimum height to 3 lines
+		msgTextData.setLayoutData(gridData);
 		msgTextData.setEditable(isEditingAllowed());
 
 		final Button btnCancel = new Button(messagesComposite, SWT.NONE);
@@ -133,7 +190,7 @@ public class MessageTabView extends Observable {
 			btnCancel.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					msgTextData.setText(changeInfo.getRevision().getCommit().getMessage());
+					msgTextData.setText(changeInfo.getUserSelectedRevision().getCommit().getMessage());
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
 				}
@@ -143,7 +200,10 @@ public class MessageTabView extends Observable {
 		if (isEditingAllowed()) {
 			ModifyListener textModifiedListener = new ModifyListener() {
 				public void modifyText(ModifyEvent event) {
-					if (changeInfo.getRevision().getCommit().getMessage().compareTo(msgTextData.getText()) != 0) {
+					if (changeInfo.getUserSelectedRevision()
+							.getCommit()
+							.getMessage()
+							.compareTo(msgTextData.getText()) != 0) {
 						fBtnSave.setEnabled(true);
 						btnCancel.setEnabled(true);
 					} else {
@@ -155,83 +215,87 @@ public class MessageTabView extends Observable {
 			msgTextData.addModifyListener(textModifiedListener);
 		}
 
-		//LINE 1 - Author: <authorname> date
-		Label lblAuthor = new Label(messagesComposite, SWT.NONE);
-		lblAuthor.setText("Author:");
-		lblAuthor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		if (fShowExtraInfo) {
+			//LINE 1 - Author: <authorname> date
+			Label lblAuthor = new Label(messagesComposite, SWT.NONE);
+			lblAuthor.setText("Author:");
+			lblAuthor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgAuthorData = new Link(messagesComposite, SWT.NONE);
-		msgAuthorData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		msgAuthorData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				//Need to put the text in quotes since there might be some empty spaces or special char in the user name
-				linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER, "\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			}
-		});
+			msgAuthorData = new Link(messagesComposite, SWT.NONE);
+			msgAuthorData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			msgAuthorData.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+					//Need to put the text in quotes since there might be some empty spaces or special char in the user name
+					linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER,
+							"\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+				}
+			});
 
-		msgDatePushData = new Label(messagesComposite, SWT.NONE);
-		msgDatePushData.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+			msgDatePushData = new Label(messagesComposite, SWT.NONE);
+			msgDatePushData.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
 
-		//LINE 2 - Committer: <committername> date
-		Label lblCommitter = new Label(messagesComposite, SWT.NONE);
-		lblCommitter.setText("Committer:");
-		lblCommitter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			//LINE 2 - Committer: <committername> date
+			Label lblCommitter = new Label(messagesComposite, SWT.NONE);
+			lblCommitter.setText("Committer:");
+			lblCommitter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgCommitterData = new Link(messagesComposite, SWT.NONE);
-		msgCommitterData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		msgCommitterData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				//Need to put the text in quotes since there might be some empty spaces or special char in the user name
-				linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER, "\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-			}
-		});
+			msgCommitterData = new Link(messagesComposite, SWT.NONE);
+			msgCommitterData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+			msgCommitterData.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+					//Need to put the text in quotes since there might be some empty spaces or special char in the user name
+					linkDash.invokeRefreshDashboardCommand(EGerritConstants.OWNER,
+							"\"" + e.text + "\"" + " status:open"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+				}
+			});
 
-		msgDatecommitterData = new Label(messagesComposite, SWT.NONE);
-		GridData gd_DateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-		msgDatecommitterData.setLayoutData(gd_DateCommitter);
+			msgDatecommitterData = new Label(messagesComposite, SWT.NONE);
+			GridData gd_DateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
+			msgDatecommitterData.setLayoutData(gd_DateCommitter);
 
-		//LINE 3 - Commit: <commitId>
-		Label lblCommit = new Label(messagesComposite, SWT.NONE);
-		lblCommit.setText("Commit:");
-		lblCommit.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			//LINE 3 - Commit: <commitId>
+			Label lblCommit = new Label(messagesComposite, SWT.NONE);
+			lblCommit.setText("Commit:");
+			lblCommit.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgCommitidData = new Link(messagesComposite, SWT.NONE);
-		msgCommitidData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				linkDash.invokeRefreshDashboardCommand("", e.text);
-			}
-		});
+			msgCommitidData = new Link(messagesComposite, SWT.NONE);
+			msgCommitidData.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+					linkDash.invokeRefreshDashboardCommand("", e.text);
+				}
+			});
 
-		msgCommitidData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+			msgCommitidData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
-		//LINE 4 - Parents: <parentId>
-		Label lblParents = new Label(messagesComposite, SWT.NONE);
-		lblParents.setText("Parent(s):");
-		lblParents.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			//LINE 4 - Parents: <parentId>
+			Label lblParents = new Label(messagesComposite, SWT.NONE);
+			lblParents.setText("Parent(s):");
+			lblParents.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgParentIdData = new Label(messagesComposite, SWT.NONE);
-		msgParentIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+			msgParentIdData = new Label(messagesComposite, SWT.NONE);
+			msgParentIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
 
-		//LINE 5 - ChangeId: <id>
-		Label lblChangeid = new Label(messagesComposite, SWT.NONE);
-		lblChangeid.setText("Change-Id:");
-		lblChangeid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			//LINE 5 - ChangeId: <id>
+			Label lblChangeid = new Label(messagesComposite, SWT.NONE);
+			lblChangeid.setText("Change-Id:");
+			lblChangeid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		msgChangeIdData = new Link(messagesComposite, SWT.NONE);
-		msgChangeIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-		msgChangeIdData.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				linkDash.invokeRefreshDashboardCommand("", e.text);
-			}
-		});
+			msgChangeIdData = new Link(messagesComposite, SWT.NONE);
+			msgChangeIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+			msgChangeIdData.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+					linkDash.invokeRefreshDashboardCommand("", e.text);
+				}
+			});
+		}
 
 		if (isEditingAllowed()) {
 			fBtnSave.addSelectionListener(new SelectionAdapter() {
@@ -263,7 +327,9 @@ public class MessageTabView extends Observable {
 			});
 		}
 
-		new Label(messagesComposite, SWT.NONE);
+		if (fShowExtraInfo) {
+			new Label(messagesComposite, SWT.NONE);
+		}
 
 		//Set the binding for this section
 		msgTabDataBindings(changeInfo);
@@ -279,6 +345,10 @@ public class MessageTabView extends Observable {
 			IObservableValue msgTextDataValue = EMFProperties.value(commitMessage).observe(changeInfo);
 			bindingContext.bindValue(WidgetProperties.text().observe(msgTextData), msgTextDataValue, null, null);
 		}
+		if (!fShowExtraInfo) {
+			return bindingContext;// Do not bind any other functionality when not shown
+		}
+
 		{
 			//show commit author
 			final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,

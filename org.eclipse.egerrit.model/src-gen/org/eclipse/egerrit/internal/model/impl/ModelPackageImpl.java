@@ -2012,6 +2012,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EReference getChangeInfo_UserSelectedRevision() {
+		return (EReference) changeInfoEClass.getEStructuralFeatures().get(37);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EOperation getChangeInfo__GetRevisionByNumber__int() {
 		return changeInfoEClass.getEOperations().get(0);
 	}
@@ -2664,6 +2674,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(changeInfoEClass, CHANGE_INFO__MERGEABLE_INFO);
 		createEReference(changeInfoEClass, CHANGE_INFO__REVISION);
 		createEReference(changeInfoEClass, CHANGE_INFO__LATEST_PATCH_SET);
+		createEReference(changeInfoEClass, CHANGE_INFO__USER_SELECTED_REVISION);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
 
@@ -3173,6 +3184,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getChangeInfo_LatestPatchSet(), this.getRevisionInfo(), null, "latestPatchSet", null, 0, 1, //$NON-NLS-1$
 				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getChangeInfo_UserSelectedRevision(), this.getRevisionInfo(), null, "userSelectedRevision", null, //$NON-NLS-1$
+				0, 1, ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		EOperation op = initEOperation(getChangeInfo__GetRevisionByNumber__int(), this.getRevisionInfo(),
 				"getRevisionByNumber", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$

@@ -85,6 +85,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getMergeableInfo <em>Mergeable Info</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getRevision <em>Revision</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getLatestPatchSet <em>Latest Patch Set</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getUserSelectedRevision <em>User Selected Revision</em>}</li>
  * </ul>
  *
  * @generated
@@ -639,6 +640,16 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @ordered
 	 */
 	protected MergeableInfo mergeableInfo;
+
+	/**
+	 * The cached value of the '{@link #getUserSelectedRevision() <em>User Selected Revision</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUserSelectedRevision()
+	 * @generated
+	 * @ordered
+	 */
+	protected RevisionInfo userSelectedRevision;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1584,6 +1595,49 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public RevisionInfo getUserSelectedRevision() {
+		if (userSelectedRevision != null && userSelectedRevision.eIsProxy()) {
+			InternalEObject oldUserSelectedRevision = (InternalEObject) userSelectedRevision;
+			userSelectedRevision = (RevisionInfo) eResolveProxy(oldUserSelectedRevision);
+			if (userSelectedRevision != oldUserSelectedRevision) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION, oldUserSelectedRevision,
+							userSelectedRevision));
+			}
+		}
+		return userSelectedRevision;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public RevisionInfo basicGetUserSelectedRevision() {
+		return userSelectedRevision;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setUserSelectedRevision(RevisionInfo newUserSelectedRevision) {
+		RevisionInfo oldUserSelectedRevision = userSelectedRevision;
+		userSelectedRevision = newUserSelectedRevision;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION,
+					oldUserSelectedRevision, userSelectedRevision));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public RevisionInfo getRevisionByNumber(int revisionId) {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -1736,6 +1790,10 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			if (resolve)
 				return getLatestPatchSet();
 			return basicGetLatestPatchSet();
+		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
+			if (resolve)
+				return getUserSelectedRevision();
+			return basicGetUserSelectedRevision();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -1864,6 +1922,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
 			setLatestPatchSet((RevisionInfo) newValue);
 			return;
+		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
+			setUserSelectedRevision((RevisionInfo) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -1984,6 +2045,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
 			unsetLatestPatchSet();
 			return;
+		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
+			setUserSelectedRevision((RevisionInfo) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -2071,6 +2135,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return basicGetRevision() != null;
 		case ModelPackage.CHANGE_INFO__LATEST_PATCH_SET:
 			return isSetLatestPatchSet();
+		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
+			return userSelectedRevision != null;
 		}
 		return super.eIsSet(featureID);
 	}

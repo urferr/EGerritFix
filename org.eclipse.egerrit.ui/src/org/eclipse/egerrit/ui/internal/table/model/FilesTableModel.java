@@ -36,7 +36,9 @@ public enum FilesTableModel implements ITableModel {
 
 	private final String fHeader;
 
-	private final int fwidth;
+	private int fwidth;
+
+	private final int fInitialwidth;
 
 	private final boolean fResize;
 
@@ -44,12 +46,16 @@ public enum FilesTableModel implements ITableModel {
 
 	private final int fAlignment;
 
+	private boolean fVisible = true;
+
 	private FilesTableModel(String aName, int aWidth, boolean aResize, boolean aMove, int align) {
 		fHeader = aName;
 		fwidth = aWidth;
+		fInitialwidth = aWidth;
 		fResize = aResize;
 		fMoveable = aMove;
 		fAlignment = align;
+		fVisible = true;
 	}
 
 	public String getName() {
@@ -86,5 +92,18 @@ public enum FilesTableModel implements ITableModel {
 			width += FilesTableModel.values()[index].getWidth();
 		}
 		return width;
+	}
+
+	public boolean isColumnVisible() {
+		return fVisible;
+	}
+
+	public void setColumnVisible(boolean value) {
+		fVisible = value;
+		if (value) {
+			fwidth = fInitialwidth;
+		} else {
+			fwidth = 0;
+		}
 	}
 }

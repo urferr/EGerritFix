@@ -25,6 +25,7 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
@@ -40,6 +41,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.internal.databinding.viewers.ViewerObservableValueDecorator;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.swt.widgets.Button;
 
 /**
  * This class in used to transform the Gerrit data to a databinding display value
@@ -215,31 +217,44 @@ public class DataConverter {
 	 * @param gerritClient
 	 * @return IConverter
 	 */
-	public static IConverter fromStringToDocument(ChangeInfo changeInfo, IObservableValue selection,
+	public static IConverter fromStringToDocument(ChangeInfo changeInfo, IObservableValue<?> selection,
 			GerritClient gerritClient) {
 		return new Converter(String.class, IDocument.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
 				String fileComments = null;
-				if (UIUtils.hasComments((String) fromObject)) {
-					//Now we need to find the comment related to this history comment
-					if (selection instanceof ViewerObservableValueDecorator) {
-						ViewerObservableValueDecorator obsValue = (ViewerObservableValueDecorator) selection;
-						Object obj = obsValue.getValue();
-						if (obj instanceof ChangeMessageInfo) {
-							ChangeMessageInfo chmsgInfo = (ChangeMessageInfo) obj;
-							EObject eobj = ((ChangeMessageInfo) obj).eContainer();
-							ModifiedChangeInfoImpl modChange = (ModifiedChangeInfoImpl) eobj;
 
-							RevisionInfo revInfo = modChange.getRevisionByNumber(chmsgInfo.get_revision_number());
-							//Now get the comments with QueryHelper.loadcomments if not loaded
-							QueryHelpers.loadComments(gerritClient, revInfo);
+				RevisionInfo revInfo = null;
+				ChangeMessageInfo chmsgInfo = null;
+				if (selection instanceof ViewerObservableValueDecorator) {
+					ViewerObservableValueDecorator obsValue = (ViewerObservableValueDecorator) selection;
+					Object obj = obsValue.getValue();
+					if (obj instanceof ChangeMessageInfo) {
+						chmsgInfo = (ChangeMessageInfo) obj;
+						EObject eobj = ((ChangeMessageInfo) obj).eContainer();
+						ModifiedChangeInfoImpl modChange = (ModifiedChangeInfoImpl) eobj;
 
-							fileComments = fillFilesWithMessages(chmsgInfo, revInfo);
+						revInfo = modChange.getRevisionByNumber(chmsgInfo.get_revision_number());
+						if (!revInfo.equals(modChange.getUserSelectedRevision())) {
+							changeInfo.setUserSelectedRevision(revInfo);
 						}
 					}
+
+					if (UIUtils.hasComments((String) fromObject)) {
+						//Now we need to find the comment related to this history comment
+						//Now get the comments with QueryHelper.loadcomments if not loaded
+						if (revInfo != null) {
+							QueryHelpers.loadComments(gerritClient, revInfo);
+
+							if (chmsgInfo != null) {
+								fileComments = fillFilesWithMessages(chmsgInfo, revInfo);
+							}
+						}
+					}
+
 				}
+
 				if (fromObject == null) {
 					if (fileComments != null && !fileComments.isEmpty()) {
 						return new Document(fileComments);
@@ -269,7 +284,7 @@ public class DataConverter {
 			Entry<String, FileInfo> definedFiles = iterator.next();
 			FileInfo fileInfo = definedFiles.getValue();
 			if (!fileInfo.getComments().isEmpty()) {
-				sb.append("\n");
+				sb.append("\n"); //$NON-NLS-1$
 				sb.append(fileInfo.getPath());
 				Iterator<CommentInfo> commentsIter = fileInfo.getComments().iterator();
 				while (commentsIter.hasNext()) {
@@ -280,10 +295,67 @@ public class DataConverter {
 						sb.append(comment.getMessage());
 					}
 				}
-				sb.append("\n");
+				sb.append("\n"); //$NON-NLS-1$
 			}
 		}
 		return sb.toString();
 	}
 
+	/**
+	 * Insert the tag for the link text
+	 *
+	 * @param fChangeInfo
+	 * @return
+	 */
+	public static IConverter patchSetSelected(ChangeInfo changeInfo) {
+		return new Converter(String.class, String.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+
+				if (fromObject == null) {
+					return ""; //$NON-NLS-1$
+				}
+				final String PATCHSET = "Patch Sets ";
+				final String SEPARATOR = "/"; //$NON-NLS-1$
+				RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
+				StringBuilder sb = new StringBuilder();
+				sb.append(PATCHSET);
+				sb.append(revInfo.get_number());
+				sb.append(SEPARATOR);
+				if (changeInfo.getRevisions().size() > revInfo.get_number()) {
+					sb.append(changeInfo.getRevisions().size());
+				} else {
+					//Left side has to be equal or greater than the right side
+					sb.append(revInfo.get_number());
+				}
+				return sb.toString();
+			}
+		};
+	}
+
+	public static IConverter deleteRevisionConverter(ChangeInfo changeInfo, Button delButton) {
+		IConverter converter = new Converter(Boolean.class, String.class) {
+
+			@Override
+			public Object convert(Object fromObject) {
+
+				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+					if (fromObject instanceof Boolean) {
+						//We have the flag inside the RevisionInfo saying it is a DRAFT
+						delButton.setEnabled(changeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
+								&& (Boolean) fromObject);
+					} else {
+						delButton.setEnabled(changeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
+								&& changeInfo.getUserSelectedRevision()
+										.isActionAllowed(ActionConstants.PUBLISH.getName()));
+					}
+					return delButton.getText();
+				} else {
+					return delButton.getText();
+				}
+			}
+		};
+		return converter;
+	}
 }

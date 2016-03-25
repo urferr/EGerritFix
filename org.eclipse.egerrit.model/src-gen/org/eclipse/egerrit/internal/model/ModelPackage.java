@@ -2001,13 +2001,22 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__LATEST_PATCH_SET = 36;
 
 	/**
+	 * The feature id for the '<em><b>User Selected Revision</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__USER_SELECTED_REVISION = 37;
+
+	/**
 	 * The number of structural features of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_FEATURE_COUNT = 37;
+	int CHANGE_INFO_FEATURE_COUNT = 38;
 
 	/**
 	 * The operation id for the '<em>Get Revision By Number</em>' operation.
@@ -4371,6 +4380,17 @@ public interface ModelPackage extends EPackage {
 	EReference getChangeInfo_LatestPatchSet();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getUserSelectedRevision <em>User Selected Revision</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>User Selected Revision</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getUserSelectedRevision()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EReference getChangeInfo_UserSelectedRevision();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevisionByNumber(int) <em>Get Revision By Number</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6232,6 +6252,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CHANGE_INFO__LATEST_PATCH_SET = eINSTANCE.getChangeInfo_LatestPatchSet();
+
+		/**
+		 * The meta object literal for the '<em><b>User Selected Revision</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CHANGE_INFO__USER_SELECTED_REVISION = eINSTANCE.getChangeInfo_UserSelectedRevision();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Revision By Number</b></em>' operation.

@@ -709,7 +709,7 @@ public class SummaryTabView {
 	 */
 	private void setRelatedChanges(GerritClient gerritClient) {
 		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getId(),
-				fChangeInfo.getCurrent_revision(), new NullProgressMonitor());
+				fChangeInfo.getUserSelectedRevision().getId(), new NullProgressMonitor());
 		fChangeInfo.setRelatedChanges(relatedchangesinfo);
 	}
 

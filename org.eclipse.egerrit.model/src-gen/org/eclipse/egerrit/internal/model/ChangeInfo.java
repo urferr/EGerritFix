@@ -62,6 +62,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getMergeableInfo <em>Mergeable Info</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevision <em>Revision</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getUserSelectedRevision <em>User Selected Revision</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo()
@@ -940,6 +941,32 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	boolean isSetLatestPatchSet();
+
+	/**
+	 * Returns the value of the '<em><b>User Selected Revision</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>User Selected Revision</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>User Selected Revision</em>' reference.
+	 * @see #setUserSelectedRevision(RevisionInfo)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_UserSelectedRevision()
+	 * @model
+	 * @generated
+	 */
+	RevisionInfo getUserSelectedRevision();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getUserSelectedRevision <em>User Selected Revision</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>User Selected Revision</em>' reference.
+	 * @see #getUserSelectedRevision()
+	 * @generated
+	 */
+	void setUserSelectedRevision(RevisionInfo value);
 
 	/**
 	 * <!-- begin-user-doc -->

@@ -38,6 +38,7 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -69,8 +70,11 @@ import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
+import org.eclipse.egerrit.ui.internal.table.provider.DeleteDraftRevisionProvider;
+import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
 import org.eclipse.egerrit.ui.internal.tabs.FilesTabView;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
@@ -85,6 +89,7 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
+import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -155,6 +160,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	public FilesTabView filesTab = null;
 
+	private PatchSetHandlerProvider fPatchSetProvider = null;
+
 	private ChangeInfo fChangeInfo;
 
 	private GerritClient fGerritClient = null;
@@ -186,6 +193,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	private Composite headerSection;
 
 	private ReactToChange changeListener;
+
+	private Button fButtonPatchset;
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -237,7 +246,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Composite headerSection(final Composite parent) {
 		Group group_header = new Group(parent, SWT.NONE);
-		group_header.setLayout(new GridLayout(5, false));
+		group_header.setLayout(new GridLayout(10, false));
 		group_header.setBackground(parent.getBackground());
 
 		Label lblId = new Label(group_header, SWT.NONE);
@@ -278,6 +287,14 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				subjectData.getParent().layout();
 			}
 		});
+
+		//Add Delete revision button for DRAFT patchset
+		DeleteDraftRevisionProvider deleteDraftRevision = new DeleteDraftRevisionProvider();
+		deleteDraftRevision.create(group_header, fGerritClient, fChangeInfo);
+
+		//Create the PatchSetButton
+		fPatchSetProvider = new PatchSetHandlerProvider();
+		fButtonPatchset = fPatchSetProvider.create(group_header, fChangeInfo);
 
 		//Set the binding for this section
 		headerSectionDataBindings();
@@ -337,8 +354,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						fSubmitMode = false;
 						refreshStatus();
 					} else {
-						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit "
-								+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number()
+						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit " //$NON-NLS-1$
+								+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number() //$NON-NLS-1$
 								+ ".";
 						RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
 						RevertInput revertInput = new RevertInput();
@@ -487,12 +504,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					}
 
 					final CherryPickDialog cherryPickDialog = new CherryPickDialog(fCherryPick.getParent().getShell(),
-							listBranchesRef, fChangeInfo.getRevision().getCommit().getMessage());
+							listBranchesRef, fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
 					Display.getDefault().syncExec(new Runnable() {
 						public void run() {
 							int ret = cherryPickDialog.open();
 							if (ret == IDialogConstants.OK_ID) {
-								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getCurrent_revision(),
+								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getUserSelectedRevision().getId(),
 										cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
 							}
 						}
@@ -523,7 +540,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							UIUtils.replyToChange(shell, fChangeInfo.getRevision(), fGerritClient);
+							UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
 							QueryHelpers.reload(fGerritClient, fChangeInfo);
 						}
 
@@ -670,8 +687,31 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		}
 
+		addButtonEnablementBinding();
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
+	}
+
+	/**
+	 * Have a method binded to the user selected patch set
+	 */
+	private void addButtonEnablementBinding() {
+		//Add binding when the user selected patchset changes,
+		//need to adjust the button enablement
+		IObservableValue userRevObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(fChangeInfo);
+		ComputedValue cv = new ComputedValue<String>() {
+			@Override
+			protected String calculate() {
+				if (userRevObserveValue.getValue() instanceof RevisionInfo) {
+					buttonsEnablement();
+				}
+				return null;
+			}
+
+		};
+		ISWTObservableValue o = WidgetProperties.text().observe(fButtonPatchset);
+		new DataBindingContext().bindValue(o, cv, null, null);
 	}
 
 	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
@@ -708,7 +748,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @param reviewInput
 	 */
 	private void postReply(ReviewInput reviewInput) {
-		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(), fChangeInfo.getCurrent_revision());
+		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(),
+				fChangeInfo.getUserSelectedRevision().getId());
 		reviewToEmit.setCommandInput(reviewInput);
 
 		try {
@@ -737,6 +778,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		if (fChangeInfo == null) {
 			fChangeInfo = element;
+			//Initial setting for the user selected revision
+			fChangeInfo.setUserSelectedRevision(element.getRevisions().get(element.getCurrent_revision()));
 		} else {
 			//Refresh only potential modified fields, otherwise the data binding seems not to know which fields are modified
 			fChangeInfo.set_number(element.get_number());
@@ -845,9 +888,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @return boolean
 	 */
 	private boolean canDeleteDraft() {
-		return fChangeInfo.getRevisions()
-				.get(fChangeInfo.getCurrent_revision())
-				.isActionAllowed(ActionConstants.PUBLISH.getName());
+		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.PUBLISH.getName());
 	}
 
 	/**
@@ -856,9 +897,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @return boolean
 	 */
 	private boolean canSubmit() {
-		return fChangeInfo.getRevisions()
-				.get(fChangeInfo.getCurrent_revision())
-				.isActionAllowed(ActionConstants.SUBMIT.getName());
+		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.SUBMIT.getName());
 	}
 
 	/**
@@ -876,9 +915,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * @return boolean
 	 */
 	private boolean canRebase() {
-		return fChangeInfo.getRevisions()
-				.get(fChangeInfo.getCurrent_revision())
-				.isActionAllowed(ActionConstants.REBASE.getName());
+		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.REBASE.getName());
 	}
 
 	private void abandonrestoreButtonEnablement() {
@@ -1169,11 +1206,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			QueryHelpers.reload(fGerritClient, fChangeInfo);
 			setEditorTitle();
 		}
-		if (arg0 instanceof FilesTabView) {
-			//in this case, we need to update the buttons enablement.
-			buttonsEnablement();
-		}
-
 	}
 
 	private void setEditorTitle() {
@@ -1266,8 +1298,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 				}
 				//Re-Initialize the files tab with the patch-set
 				filesTab.setInitPatchSet();
-
-				buttonsEnablement();
 
 				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
 				linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$

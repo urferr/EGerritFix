@@ -145,7 +145,7 @@ public class UIUtils {
 		EMap<String, EList<String>> permittedLabels = revisionInfo.getChangeInfo().getPermitted_labels();
 		EMap<String, LabelInfo> labels = revisionInfo.getChangeInfo().getLabels();
 
-		String current = revisionInfo.getChangeInfo().getCurrent_revision();
+		String current = revisionInfo.getChangeInfo().getUserSelectedRevision().getId();
 		String latest = revisionInfo.getChangeInfo().getLatestPatchSet().getId();
 		boolean isVoteAllowed = current.compareTo(latest) == 0 ? true : false;
 		if (!isVoteAllowed) {
@@ -163,8 +163,7 @@ public class UIUtils {
 					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 					// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
 					//Send the data
-					SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(),
-							revisionInfo.getChangeInfo().getCurrent_revision());
+					SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(), current);
 					reviewToEmit.setCommandInput(reviewInput);
 
 					try {

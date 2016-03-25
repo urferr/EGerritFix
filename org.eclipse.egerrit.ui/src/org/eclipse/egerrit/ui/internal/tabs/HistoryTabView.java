@@ -22,6 +22,7 @@ import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
@@ -53,7 +54,7 @@ public class HistoryTabView {
 
 	private GerritClient gerritClient;
 
-	private ChangeInfo changeInfo;
+	private MessageTabView messageTab = null;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -73,7 +74,6 @@ public class HistoryTabView {
 	 */
 	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
 		this.gerritClient = gerritClient;
-		this.changeInfo = changeInfo;
 		createControls(tabFolder, changeInfo);
 	}
 
@@ -88,8 +88,14 @@ public class HistoryTabView {
 		tableUIHistory.createTableViewerSection(sashForm);
 
 		tableHistoryViewer = tableUIHistory.getViewer();
+		SashForm sashFormHorizon = new SashForm(sashForm, SWT.HORIZONTAL);
 
-		msgTextData = new TextViewerWithLinks(sashForm, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
+		msgTextData = new TextViewerWithLinks(sashFormHorizon, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
+		UIFilesTable tableUIFiles = new UIFilesTable();
+		tableUIFiles.createTableViewerSection(sashFormHorizon, gerritClient, changeInfo, this);
+		//Set the % of display data.40% table and 60% for the comment message
+		sashFormHorizon.setWeights(new int[] { 40, 60 });
+
 		msgTextData.configure(new SourceViewerConfiguration() {
 			@Override
 			public int getHyperlinkStateMask(ISourceViewer sourceViewer) {
@@ -110,8 +116,8 @@ public class HistoryTabView {
 			};
 		});
 
-		//Set the % of display data.50% table and 50% for the comment message
-		sashForm.setWeights(new int[] { 50, 50 });
+		//Set the % of display data.40% table and 60% for the comment message
+		sashForm.setWeights(new int[] { 40, 60 });
 		bind(changeInfo);
 	}
 
