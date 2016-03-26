@@ -8,7 +8,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.swt.graphics.Image;

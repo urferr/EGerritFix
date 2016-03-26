@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.jface.text.source.Annotation;

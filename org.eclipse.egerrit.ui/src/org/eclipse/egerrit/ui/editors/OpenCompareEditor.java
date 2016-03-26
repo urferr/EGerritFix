@@ -21,7 +21,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.ui.editors.model.GerritMultipleInput;
+import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;

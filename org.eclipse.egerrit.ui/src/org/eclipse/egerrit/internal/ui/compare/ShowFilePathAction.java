@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.function.Supplier;
 
@@ -20,9 +20,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 
-/**
- * @author lmcbout
- */
 public class ShowFilePathAction extends Action {
 	private static final String TOGGLE_FILEPATH = "icons/toggleFilePathpane.gif"; //$NON-NLS-1$
 

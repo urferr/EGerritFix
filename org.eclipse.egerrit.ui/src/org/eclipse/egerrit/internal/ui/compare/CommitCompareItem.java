@@ -10,7 +10,7 @@
  *
  *******************************************************************************/
 
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.stream.Collectors;
 

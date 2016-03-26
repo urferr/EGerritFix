@@ -10,7 +10,7 @@
  *
  *******************************************************************************/
 
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.stream.Collectors;
 
@@ -28,8 +28,6 @@ import org.eclipse.emf.common.util.EList;
 /**
  * The compare item is the input to the compare editor, and it ALSO is the document that is shown in the compare editor.
  * Finally it is responsible for pushing the new comments to the server
- *
- * @since 1.0
  */
 public class PatchSetCompareItem extends CommentableCompareItem
 		implements ITypedElement, IModificationDate, IEditableContent, IStreamContentAccessor {

@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.ui.editors.model;
+package org.eclipse.egerrit.internal.ui.compare;
 
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
