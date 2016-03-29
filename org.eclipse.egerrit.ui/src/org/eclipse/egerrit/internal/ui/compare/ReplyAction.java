@@ -31,15 +31,11 @@ public class ReplyAction extends Action {
 	//The reference to the viewer
 	private Supplier<TreeViewer> viewer;
 
-	private RevisionInfo revisionInfo;
+	private GerritMultipleInput compareInput;
 
-	private GerritMultipleInput input;
-
-	public ReplyAction(GerritMultipleInput input, RevisionInfo revisionInfo, String base,
-			Supplier<TreeViewer> viewerRef) {
+	public ReplyAction(GerritMultipleInput input, Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
-		this.revisionInfo = revisionInfo;
-		this.input = input;
+		this.compareInput = input;
 
 		setText("Reply to the review");
 		setDescription("Reply to the review");
@@ -59,12 +55,13 @@ public class ReplyAction extends Action {
 	@Override
 	public void run() {
 		try {
-			input.saveChanges(new NullProgressMonitor());
+			compareInput.saveChanges(new NullProgressMonitor());
 		} catch (CoreException e) {
 			return;
 		}
-		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, input.gerritClient);
-		QueryHelpers.reload(input.gerritClient, revisionInfo.getChangeInfo());
-		input.fireInputChange();
+		RevisionInfo revisionInfo = compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide());
+		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, compareInput.gerritClient);
+		QueryHelpers.reload(compareInput.gerritClient, revisionInfo.getChangeInfo());
+		compareInput.fireInputChange();
 	}
 }

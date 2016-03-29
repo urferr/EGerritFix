@@ -155,9 +155,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 								compareInput.getLeftSide(), () -> viewer));
 
 				toolbarManager.appendToGroup("merge", //$NON-NLS-1$
-						new ReplyAction(compareInput,
-								compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide()),
-								compareInput.getLeftSide(), () -> viewer));
+						new ReplyAction(compareInput, () -> viewer));
 			}
 		};
 		//Set a content provider
