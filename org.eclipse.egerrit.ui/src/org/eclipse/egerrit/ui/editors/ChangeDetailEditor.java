@@ -1020,7 +1020,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					return;
 				}
 
-				String psSelected = fChangeInfo.getUserSelectedRevision().getId();
+				String psSelected = fChangeInfo.getUserSelectedRevision().getRef();
 				if ((psSelected == null) || psSelected.isEmpty()) {
 					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No patchset selected");
 					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
