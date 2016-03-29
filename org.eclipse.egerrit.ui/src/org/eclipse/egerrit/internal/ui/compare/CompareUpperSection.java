@@ -18,7 +18,6 @@ import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.CompareViewerSwitchingPane;
 import org.eclipse.compare.INavigatable;
-import org.eclipse.compare.internal.CompareEditorInputNavigator;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -145,9 +144,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			protected void createToolItems(ToolBarManager toolbarManager) {
 				// ignore
 				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.NEXT_CHANGE, //$NON-NLS-1$
-						(CompareEditorInputNavigator) compareInput.getNavigator()));
+						compareInput));
 				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.PREVIOUS_CHANGE, //$NON-NLS-1$
-						(CompareEditorInputNavigator) compareInput.getNavigator()));
+						compareInput));
 				toolbarManager.appendToGroup("modes", new ShowFilePathAction(() -> viewer)); //$NON-NLS-1$
 				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer)); //$NON-NLS-1$
 				toolbarManager.appendToGroup("modes", //$NON-NLS-1$

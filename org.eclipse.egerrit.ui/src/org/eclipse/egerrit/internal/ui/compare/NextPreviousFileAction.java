@@ -25,11 +25,11 @@ public class NextPreviousFileAction extends Action {
 
 	private int direction;
 
-	private CompareEditorInputNavigator navigator;
+	private GerritMultipleInput compareInput;
 
-	public NextPreviousFileAction(int direction, CompareEditorInputNavigator navigator) {
+	public NextPreviousFileAction(int direction, GerritMultipleInput compareInput) {
 		this.direction = direction;
-		this.navigator = navigator;
+		this.compareInput = compareInput;
 		if (direction == INavigatable.NEXT_CHANGE) {
 			setAccelerator(Action.convertAccelerator("]"));
 			setDescription("Go the next file in the review");
@@ -46,7 +46,7 @@ public class NextPreviousFileAction extends Action {
 
 	//Helper method to return the top left pane
 	private Object getTopPane() {
-		Object topPane = navigator.getPanes()[0];
+		Object topPane = ((CompareEditorInputNavigator) compareInput.getNavigator()).getPanes()[0];
 		return Utilities.getAdapter(topPane, INavigatable.class);
 	}
 
