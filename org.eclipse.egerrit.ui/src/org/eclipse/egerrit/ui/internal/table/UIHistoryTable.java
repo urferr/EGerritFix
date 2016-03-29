@@ -17,9 +17,9 @@ import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -59,19 +59,30 @@ public class UIHistoryTable {
 		fViewer.setComparator(new HistoryTableSorter(1)); // sort by date, descending
 
 		//
-		fViewer.getTable().addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+		fViewer.getTable().addListener(SWT.Paint, initPaintListener());
 
 		return fViewer;
 
+	}
+
+	/**
+	 * Listener selecting the first item in the table if the table is not empty when available
+	 *
+	 * @return
+	 */
+	private Listener initPaintListener() {
+		Listener paint = new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				if (fViewer.getTable().getItemCount() > 0) {
+					fViewer.getTable().select(0); //initially select the first item in the table
+					fViewer.setSelection(fViewer.getSelection());
+					fViewer.getTable().removeListener(SWT.Paint, this);
+				}
+			}
+		};
+		return paint;
 	}
 
 	/**
