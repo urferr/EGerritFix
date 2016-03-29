@@ -235,6 +235,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		//This query fill the current revision
 		QueryHelpers.reload(fGerritClient, fChangeInfo);
+		buttonsEnablement();
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -535,6 +536,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 						public void widgetSelected(SelectionEvent e) {
 							UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
 							QueryHelpers.reload(fGerritClient, fChangeInfo);
+							buttonsEnablement();
 						}
 
 						@Override
@@ -832,6 +834,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	public void refreshStatus() {
 		QueryHelpers.reload(fGerritClient, fChangeInfo);
 		//Listeners on the update date will trigger additional loading
+		buttonsEnablement();
 	}
 
 	/**
