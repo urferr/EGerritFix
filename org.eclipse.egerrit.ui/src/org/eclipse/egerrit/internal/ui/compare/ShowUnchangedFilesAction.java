@@ -13,16 +13,15 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
-import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Provide the action that allow to only show/hide files that have changed between two revisions Given a revision and a
@@ -46,69 +45,77 @@ public class ShowUnchangedFilesAction extends Action {
 	//Future used to get the data. This stays null if we are comparing against "BASE" or "WORKSPACE" or if there was a pb retrieving the data
 	private CompletableFuture<Map<String, FileInfo>> data;
 
-	//The value to compare against
-	private String base;
+	private GerritMultipleInput compareInput;
 
-	private RevisionInfo revisionInfo;
-
-	private GerritClient client;
-
-	public ShowUnchangedFilesAction(GerritClient client, RevisionInfo revisionInfo, String base,
-			Supplier<TreeViewer> viewerRef) {
+	public ShowUnchangedFilesAction(GerritMultipleInput compareInput, Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
 		this.filter = new ChangedFileFilter();
-		this.client = client;
-		this.revisionInfo = revisionInfo;
-		this.base = base;
+		this.compareInput = compareInput;
 
 		setText("Show/hide files that have not been changed");
 		setDescription("Show/hide files that have not been changed");
 		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(ICONS_COMPARE_WITH_OTHER_GIF));
-		if (base.equals("WORKSPACE")) {
-			setToolTipText("This option can't be used when comparing with the workspace");
-			setEnabled(false);
-		} else {
-			setToolTipText("Show/hide files that have not been changed");
-		}
 		setChecked(filterOn);
-		if (base.equals("BASE") || base.equals("WORKSPACE")) {
-			//We short circuit here because we don't need to retrieve data for this two cases
-			return;
-		}
-		retrieveData();
 	}
 
-	//Asynchronously retrieve the data necessary to filter the content
-	private void retrieveData() {
+	//Asynchronously retrieve the data necessary to filter the content and set the filter
+	private void retrieveData(RevisionInfo revisionInfo, String base) {
 		data = CompletableFuture.supplyAsync(new Supplier<Map<String, FileInfo>>() {
 			@Override
 			public Map<String, FileInfo> get() {
 				try {
-					return client.getFilesModifiedSince(revisionInfo.getChangeInfo().getChange_id(),
+					return compareInput.gerritClient.getFilesModifiedSince(revisionInfo.getChangeInfo().getChange_id(),
 							revisionInfo.getId(), base).call();
 				} catch (EGerritException e) {
 					return null;
 				}
 			}
+		}).whenComplete((results, error) -> {
+			setupFilter(results);
 		});
+	}
+
+	private void setupFilter(Map<String, FileInfo> results) {
+		//Here we group the removes and the adds in the same asyncExec to avoid flickering
+		if (filterOn) {
+			Display.getDefault().asyncExec(() -> {
+				viewer.get().removeFilter(filter);
+				filter.setFilesToShow(results);
+				viewer.get().addFilter(filter);
+			});
+		} else {
+			Display.getDefault().asyncExec(() -> {
+				viewer.get().removeFilter(filter);
+			});
+			filter.setFilesToShow(results);
+		}
+	}
+
+	void refresh() {
+		//Disable the current filter
+		RevisionInfo revisionInfo = compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide());
+		String base = compareInput.getLeftSide();
+		if (base.equals("BASE") || base.equals("WORKSPACE")) {
+			setToolTipText("This option can't be used when comparing with the workspace");
+			setEnabled(false);
+			if (filter != null) {
+				Display.getDefault().asyncExec(() -> {
+					viewer.get().removeFilter(filter);
+				});
+			}
+			return;
+		}
+
+		setToolTipText("Show/hide files that have not been changed");
+		setEnabled(true);
+
+		retrieveData(revisionInfo, base);
 	}
 
 	@Override
 	public void run() {
-		if (data != null) {
-			try {
-				filter.setFilesToShow(data.get());
-			} catch (InterruptedException | ExecutionException e) {
-				//to do log something
-			}
-			if (filterOn) {
-				viewer.get().removeFilter(filter);
-			} else {
-				viewer.get().addFilter(filter);
-			}
-		}
 		filterOn = !filterOn;
 		setChecked(filterOn);
-
+		refresh();
 	}
 }
