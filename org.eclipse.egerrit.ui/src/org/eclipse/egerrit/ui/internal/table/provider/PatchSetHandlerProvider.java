@@ -271,5 +271,12 @@ public class PatchSetHandlerProvider {
 
 		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));
+
+		//See when a REBASE occurs, the current revision is updated
+		IObservableValue observerRevisionsValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION).observe(fChangeInfo);
+
+		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerRevisionsValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));
 	}
 }

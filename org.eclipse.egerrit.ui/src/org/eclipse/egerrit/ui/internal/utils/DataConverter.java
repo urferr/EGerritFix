@@ -323,12 +323,7 @@ public class DataConverter {
 				sb.append(PATCHSET);
 				sb.append(revInfo.get_number());
 				sb.append(SEPARATOR);
-				if (changeInfo.getRevisions().size() > revInfo.get_number()) {
-					sb.append(changeInfo.getRevisions().size());
-				} else {
-					//Left side has to be equal or greater than the right side
-					sb.append(revInfo.get_number());
-				}
+				sb.append(changeInfo.getRevision().get_number());
 				return sb.toString();
 			}
 		};

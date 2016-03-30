@@ -29,13 +29,11 @@ import org.eclipse.egerrit.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.emf.common.util.EMap;
 
 /**
  * A helper class wrapping the common server queries.
@@ -224,7 +222,6 @@ public class QueryHelpers {
 		toRefresh.setReviewed(newChangeInfo.isReviewed());
 		toRefresh.setInsertions(newChangeInfo.getInsertions());
 		toRefresh.setDeletions(newChangeInfo.getDeletions());
-		toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
 		toRefresh.setTopic(newChangeInfo.getTopic());
 		toRefresh.setMergeable(newChangeInfo.isMergeable());
 
@@ -232,9 +229,10 @@ public class QueryHelpers {
 		toRefresh.getLabels().addAll(newChangeInfo.getLabels());
 		toRefresh.getMessages().clear();
 		toRefresh.getMessages().addAll(newChangeInfo.getMessages());
+		mergeRevisions(toRefresh, newChangeInfo); //need to be before setting the actions and the current revision
+		toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
 		toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__PERMITTED_LABELS, newChangeInfo.getPermitted_labels());
 		toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__ACTIONS, newChangeInfo.getActions());
-		mergeRevisions(toRefresh, newChangeInfo);
 
 		//Set the date at the end because it is used to trigger other refreshes
 		toRefresh.setUpdated(newChangeInfo.getUpdated());
