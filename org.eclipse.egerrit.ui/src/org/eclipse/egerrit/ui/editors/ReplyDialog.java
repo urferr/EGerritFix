@@ -74,8 +74,6 @@ public class ReplyDialog extends Dialog {
 
 	private Button post;
 
-	private Button sendEmail;
-
 	private Button cancel;
 
 	private LinkedHashMap<String, String> radioMap = new LinkedHashMap<String, String>();
@@ -194,13 +192,6 @@ public class ReplyDialog extends Dialog {
 
 		//Callback handle by the okPressed()
 		post = createButton(buttonComposite, IDialogConstants.OK_ID, "Post", false);
-
-		Label and = new Label(buttonComposite, SWT.NONE);
-		and.setText("and");
-
-		sendEmail = new Button(buttonComposite, SWT.CHECK);
-		sendEmail.setText("send e-mail");
-		sendEmail.setSelection(true);
 
 		cancel = createButton(buttonComposite, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
 		GridData gd_cancel = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
@@ -474,17 +465,12 @@ public class ReplyDialog extends Dialog {
 	protected void okPressed() {
 		//Fill the data structure
 		setMessage();
-		setEmail();
 
 		super.okPressed();
 	}
 
 	private void setMessage() {
 		message = msgTextData.getText();
-	}
-
-	private void setEmail() {
-		eMailSet = sendEmail.getSelection();
 	}
 
 	/**
@@ -494,15 +480,6 @@ public class ReplyDialog extends Dialog {
 	 */
 	public String getMessage() {
 		return message;
-	}
-
-	/**
-	 * This method return the boolean value for the e-mail value.
-	 *
-	 * @return boolean
-	 */
-	public boolean getEmail() {
-		return eMailSet;
 	}
 
 	/**
