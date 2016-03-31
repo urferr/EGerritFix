@@ -231,6 +231,11 @@ public class QueryHelpers {
 		toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 		mergeRevisions(toRefresh, newChangeInfo); //need to be before setting the actions and the current revision
 		toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
+		//Re-init the userselected revision after a revert
+		if (toRefresh.getUserSelectedRevision() == null) {
+			//Initial setting for the user selected revision if not done yet
+			toRefresh.setUserSelectedRevision(toRefresh.getRevisions().get(toRefresh.getCurrent_revision()));
+		}
 		toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__PERMITTED_LABELS, newChangeInfo.getPermitted_labels());
 		toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__ACTIONS, newChangeInfo.getActions());
 
