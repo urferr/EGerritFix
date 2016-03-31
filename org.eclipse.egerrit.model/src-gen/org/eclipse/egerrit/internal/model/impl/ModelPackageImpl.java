@@ -2022,6 +2022,46 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getChangeInfo_Revertable() {
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(38);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getChangeInfo_Abandonable() {
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(39);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getChangeInfo_Restoreable() {
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(40);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getChangeInfo_Deleteable() {
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(41);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EOperation getChangeInfo__GetRevisionByNumber__int() {
 		return changeInfoEClass.getEOperations().get(0);
 	}
@@ -2334,6 +2374,56 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	@Override
 	public EAttribute getRevisionInfo_CommentsLoaded() {
 		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Submitable() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Rebaseable() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(11);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Cherrypickable() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(12);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Deleteable() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(13);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Publishable() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(14);
 	}
 
 	/**
@@ -2675,6 +2765,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(changeInfoEClass, CHANGE_INFO__REVISION);
 		createEReference(changeInfoEClass, CHANGE_INFO__LATEST_PATCH_SET);
 		createEReference(changeInfoEClass, CHANGE_INFO__USER_SELECTED_REVISION);
+		createEAttribute(changeInfoEClass, CHANGE_INFO__REVERTABLE);
+		createEAttribute(changeInfoEClass, CHANGE_INFO__ABANDONABLE);
+		createEAttribute(changeInfoEClass, CHANGE_INFO__RESTOREABLE);
+		createEAttribute(changeInfoEClass, CHANGE_INFO__DELETEABLE);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
 
@@ -2713,6 +2807,11 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(revisionInfoEClass, REVISION_INFO__ACTIONS);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__REVIEWED);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__COMMENTS_LOADED);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__SUBMITABLE);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__REBASEABLE);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__CHERRYPICKABLE);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__DELETEABLE);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__PUBLISHABLE);
 		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_ID);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_CHANGE_INFO);
@@ -3187,6 +3286,18 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getChangeInfo_UserSelectedRevision(), this.getRevisionInfo(), null, "userSelectedRevision", null, //$NON-NLS-1$
 				0, 1, ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeInfo_Revertable(), ecorePackage.getEBoolean(), "revertable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeInfo_Abandonable(), ecorePackage.getEBoolean(), "abandonable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeInfo_Restoreable(), ecorePackage.getEBoolean(), "restoreable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeInfo_Deleteable(), ecorePackage.getEBoolean(), "deleteable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
 
 		EOperation op = initEOperation(getChangeInfo__GetRevisionByNumber__int(), this.getRevisionInfo(),
 				"getRevisionByNumber", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
@@ -3275,6 +3386,21 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getRevisionInfo_CommentsLoaded(), ecorePackage.getEBoolean(), "commentsLoaded", null, 0, 1, //$NON-NLS-1$
 				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Submitable(), ecorePackage.getEBoolean(), "submitable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Rebaseable(), ecorePackage.getEBoolean(), "rebaseable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Cherrypickable(), ecorePackage.getEBoolean(), "cherrypickable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Deleteable(), ecorePackage.getEBoolean(), "deleteable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Publishable(), ecorePackage.getEBoolean(), "publishable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
 
 		op = initEOperation(getRevisionInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", //$NON-NLS-1$
 				0, 1, IS_UNIQUE, IS_ORDERED);

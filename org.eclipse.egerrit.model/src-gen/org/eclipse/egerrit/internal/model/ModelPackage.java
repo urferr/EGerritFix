@@ -2010,13 +2010,49 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__USER_SELECTED_REVISION = 37;
 
 	/**
+	 * The feature id for the '<em><b>Revertable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__REVERTABLE = 38;
+
+	/**
+	 * The feature id for the '<em><b>Abandonable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__ABANDONABLE = 39;
+
+	/**
+	 * The feature id for the '<em><b>Restoreable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__RESTOREABLE = 40;
+
+	/**
+	 * The feature id for the '<em><b>Deleteable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__DELETEABLE = 41;
+
+	/**
 	 * The number of structural features of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_FEATURE_COUNT = 38;
+	int CHANGE_INFO_FEATURE_COUNT = 42;
 
 	/**
 	 * The operation id for the '<em>Get Revision By Number</em>' operation.
@@ -2412,13 +2448,58 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO__COMMENTS_LOADED = 9;
 
 	/**
+	 * The feature id for the '<em><b>Submitable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__SUBMITABLE = 10;
+
+	/**
+	 * The feature id for the '<em><b>Rebaseable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__REBASEABLE = 11;
+
+	/**
+	 * The feature id for the '<em><b>Cherrypickable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__CHERRYPICKABLE = 12;
+
+	/**
+	 * The feature id for the '<em><b>Deleteable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__DELETEABLE = 13;
+
+	/**
+	 * The feature id for the '<em><b>Publishable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__PUBLISHABLE = 14;
+
+	/**
 	 * The number of structural features of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_FEATURE_COUNT = 10;
+	int REVISION_INFO_FEATURE_COUNT = 15;
 
 	/**
 	 * The operation id for the '<em>Is Action Allowed</em>' operation.
@@ -4391,6 +4472,50 @@ public interface ModelPackage extends EPackage {
 	EReference getChangeInfo_UserSelectedRevision();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#isRevertable <em>Revertable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Revertable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#isRevertable()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EAttribute getChangeInfo_Revertable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#isAbandonable <em>Abandonable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Abandonable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#isAbandonable()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EAttribute getChangeInfo_Abandonable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#isRestoreable <em>Restoreable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Restoreable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#isRestoreable()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EAttribute getChangeInfo_Restoreable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#isDeleteable <em>Deleteable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Deleteable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#isDeleteable()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EAttribute getChangeInfo_Deleteable();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevisionByNumber(int) <em>Get Revision By Number</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4739,6 +4864,61 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getRevisionInfo_CommentsLoaded();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isSubmitable <em>Submitable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Submitable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isSubmitable()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Submitable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isRebaseable <em>Rebaseable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Rebaseable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isRebaseable()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Rebaseable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCherrypickable <em>Cherrypickable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Cherrypickable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isCherrypickable()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Cherrypickable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isDeleteable <em>Deleteable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Deleteable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isDeleteable()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Deleteable();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isPublishable <em>Publishable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Publishable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isPublishable()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Publishable();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
@@ -6262,6 +6442,38 @@ public interface ModelPackage extends EPackage {
 		EReference CHANGE_INFO__USER_SELECTED_REVISION = eINSTANCE.getChangeInfo_UserSelectedRevision();
 
 		/**
+		 * The meta object literal for the '<em><b>Revertable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_INFO__REVERTABLE = eINSTANCE.getChangeInfo_Revertable();
+
+		/**
+		 * The meta object literal for the '<em><b>Abandonable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_INFO__ABANDONABLE = eINSTANCE.getChangeInfo_Abandonable();
+
+		/**
+		 * The meta object literal for the '<em><b>Restoreable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_INFO__RESTOREABLE = eINSTANCE.getChangeInfo_Restoreable();
+
+		/**
+		 * The meta object literal for the '<em><b>Deleteable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_INFO__DELETEABLE = eINSTANCE.getChangeInfo_Deleteable();
+
+		/**
 		 * The meta object literal for the '<em><b>Get Revision By Number</b></em>' operation.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -6528,6 +6740,46 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute REVISION_INFO__COMMENTS_LOADED = eINSTANCE.getRevisionInfo_CommentsLoaded();
+
+		/**
+		 * The meta object literal for the '<em><b>Submitable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__SUBMITABLE = eINSTANCE.getRevisionInfo_Submitable();
+
+		/**
+		 * The meta object literal for the '<em><b>Rebaseable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__REBASEABLE = eINSTANCE.getRevisionInfo_Rebaseable();
+
+		/**
+		 * The meta object literal for the '<em><b>Cherrypickable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__CHERRYPICKABLE = eINSTANCE.getRevisionInfo_Cherrypickable();
+
+		/**
+		 * The meta object literal for the '<em><b>Deleteable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__DELETEABLE = eINSTANCE.getRevisionInfo_Deleteable();
+
+		/**
+		 * The meta object literal for the '<em><b>Publishable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__PUBLISHABLE = eINSTANCE.getRevisionInfo_Publishable();
 
 		/**
 		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.

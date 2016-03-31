@@ -282,4 +282,7 @@ public abstract class BaseCommand<T> {
 		pathFormat = pathPattern;
 	}
 
+	protected GerritRepository getRepository() {
+		return server;
+	}
 }

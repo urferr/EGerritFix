@@ -34,6 +34,11 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#getActions <em>Actions</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isReviewed <em>Reviewed</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommentsLoaded <em>Comments Loaded</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isSubmitable <em>Submitable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isRebaseable <em>Rebaseable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCherrypickable <em>Cherrypickable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isDeleteable <em>Deleteable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isPublishable <em>Publishable</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo()
@@ -273,6 +278,86 @@ public interface RevisionInfo extends EObject {
 	 * @generated
 	 */
 	void setCommentsLoaded(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Submitable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Submitable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Submitable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Submitable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isSubmitable();
+
+	/**
+	 * Returns the value of the '<em><b>Rebaseable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Rebaseable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rebaseable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Rebaseable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isRebaseable();
+
+	/**
+	 * Returns the value of the '<em><b>Cherrypickable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Cherrypickable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Cherrypickable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Cherrypickable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isCherrypickable();
+
+	/**
+	 * Returns the value of the '<em><b>Deleteable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Deleteable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deleteable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Deleteable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isDeleteable();
+
+	/**
+	 * Returns the value of the '<em><b>Publishable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Publishable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Publishable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Publishable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isPublishable();
 
 	/**
 	 * <!-- begin-user-doc -->

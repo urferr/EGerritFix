@@ -38,7 +38,6 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -65,12 +64,10 @@ import org.eclipse.egerrit.core.rest.RevertInput;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.internal.model.ActionConstants;
-import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.table.provider.DeleteDraftRevisionProvider;
@@ -88,7 +85,6 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -157,8 +153,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private MessageTabView messageTab = null;
 
-	private PatchSetHandlerProvider fPatchSetProvider = null;
-
 	private ChangeInfo fChangeInfo;
 
 	private GerritClient fGerritClient = null;
@@ -169,21 +163,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Text shortIdData;
 
-	private Button fSubmitRevert;
-
-	private Button fAbandonRestore;
-
-	private Button fRebase;
-
-	private Button fCherryPick;
-
 	private Button fReply;
-
-	private String anonymousUserToolTip;
-
-	private boolean fAbandonMode = false;
-
-	private boolean fSubmitMode = true;
 
 	private Button fDraftPublishDelete;
 
@@ -191,7 +171,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private ReactToChange changeListener;
 
-	private Button fButtonPatchset;
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -205,9 +184,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void createPartControl(final Composite parent) {
-		anonymousUserToolTip = "This button is disabled because you are connected anonymously to "
-				+ fGerritClient.getRepository().getServerInfo().getServerURI() + ".";
-
 		parent.setLayout(new GridLayout(1, false));
 		parent.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
@@ -235,7 +211,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		//This query fill the current revision
 		QueryHelpers.reload(fGerritClient, fChangeInfo);
-		buttonsEnablement();
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -287,8 +262,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		deleteDraftRevision.create(group_header, fGerritClient, fChangeInfo);
 
 		//Create the PatchSetButton
-		fPatchSetProvider = new PatchSetHandlerProvider();
-		fButtonPatchset = fPatchSetProvider.create(group_header, fChangeInfo);
+		new PatchSetHandlerProvider().create(group_header, fChangeInfo);
 
 		//Set the binding for this section
 		headerSectionDataBindings();
@@ -312,401 +286,449 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 		});
 
-		fSubmitRevert = new Button(c, SWT.PUSH);
-		fSubmitRevert.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fSubmitRevert.setText(ActionConstants.SUBMIT.getLiteral());
-		fSubmitRevert.setEnabled(false);
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fSubmitRevert.setToolTipText(anonymousUserToolTip);
-			fSubmitRevert.addListener(SWT.MouseHover, new Listener() {
+		DataBindingContext dbc = new DataBindingContext();
 
-				@Override
-				public void handleEvent(Event event) {
-					// ignore
+		Button submitButton = new Button(c, SWT.PUSH);
+		submitButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		submitButton.setText(ActionConstants.SUBMIT.getLiteral());
+		submitButton.setEnabled(false);
 
-				}
-			});
-		} else {
-			fSubmitRevert.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
+		Button revertButton = new Button(c, SWT.PUSH);
+		revertButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		revertButton.setText(ActionConstants.REVERT.getLiteral());
+		revertButton.setEnabled(false);
 
-					if (fSubmitMode == true) {
-						SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
-						SubmitInput submitInput = new SubmitInput();
-						submitInput.setWait_for_merge(true);
-
-						submitCmd.setCommandInput(submitInput);
-
-						try {
-							submitCmd.call();
-						} catch (EGerritException e3) {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+		//Bind the submit button
+		{
+			IObservableValue observeSubmitable = EMFProperties
+					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+					.value(ModelPackage.Literals.REVISION_INFO__SUBMITABLE)
+					.observe(fChangeInfo);
+			dbc.bindValue(WidgetProperties.enabled().observe(submitButton), observeSubmitable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			dbc.bindValue(WidgetProperties.visible().observe(submitButton), observeSubmitable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
+						@Override
+						public Object convert(Object value) {
+							boolean state = ((Boolean) value).booleanValue();
+							if (state) {
+								return true;
+							}
+							if (revertButton.isVisible()) {
+								return false;
+							}
+							return true;
 						}
-						fSubmitMode = false;
-						refreshStatus();
+					});
+		}
+
+		//Bind the revert button
+		{
+			IObservableValue observeRevertable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__REVERTABLE)
+					.observe(fChangeInfo);
+			dbc.bindValue(WidgetProperties.enabled().observe(revertButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			dbc.bindValue(WidgetProperties.visible().observe(revertButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+
+			//When the revert is not enable, we need to force the submit button to be visible
+			dbc.bindValue(WidgetProperties.visible().observe(submitButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+
+			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
+			dbc.bindValue(new HideControlObservable(submitButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+			dbc.bindValue(new HideControlObservable(revertButton), observeRevertable, null, null);
+		}
+
+		submitButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
+				SubmitInput submitInput = new SubmitInput();
+				submitInput.setWait_for_merge(true);
+
+				submitCmd.setCommandInput(submitInput);
+
+				try {
+					submitCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				}
+				refreshStatus();
+			}
+		});
+
+		revertButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+
+				String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit " //$NON-NLS-1$
+						+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number() //$NON-NLS-1$
+						+ ".";
+				RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
+				RevertInput revertInput = new RevertInput();
+				revertInput.setMessage(revertMsg);
+
+				revertCmd.setCommandInput(revertInput);
+
+				ChangeInfo revertResult = null;
+				try {
+					revertResult = revertCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				}
+				openAnotherEditor(revertResult);
+			}
+		});
+
+		Button fAbandon = new Button(c, SWT.PUSH);
+		fAbandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fAbandon.setEnabled(false);
+		fAbandon.setText(ActionConstants.ABANDON.getLiteral());
+
+		Button fRestore = new Button(c, SWT.PUSH);
+		fRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		fRestore.setEnabled(false);
+		fRestore.setText(ActionConstants.RESTORE.getLiteral());
+		//Bind the abandon button
+		{
+			IObservableValue observeAbandonable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__ABANDONABLE)
+					.observe(fChangeInfo);
+			dbc.bindValue(WidgetProperties.enabled().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
+						@Override
+						public Object convert(Object value) {
+							boolean state = ((Boolean) value).booleanValue();
+							if (state) {
+								return true;
+							}
+							if (fRestore.isVisible()) {
+								//We want to make sure to always show the submit button even if the restore is disabled so we at least get one button
+								return false;
+							}
+							return true;
+						}
+					});
+		}
+		//Bind the restore button
+		{
+			IObservableValue observeRestorable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__RESTOREABLE)
+					.observe(fChangeInfo);
+			dbc.bindValue(WidgetProperties.enabled().observe(fRestore), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			dbc.bindValue(WidgetProperties.visible().observe(fRestore), observeRestorable, null,
+					new NegateBooleanConverter());
+
+			//When restore is not enable, we need to force the abandon button to be visible
+			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+
+			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
+			dbc.bindValue(new HideControlObservable(fAbandon), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+			dbc.bindValue(new HideControlObservable(fRestore), observeRestorable, null, null);
+		}
+
+		fAbandon.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message",
+						"Enter the abandon message", "", null);
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
+				AbandonInput abandonInput = new AbandonInput();
+				abandonInput.setMessage(inputDialog.getValue());
+
+				abandonCmd.setCommandInput(abandonInput);
+
+				try {
+					abandonCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				}
+				refreshStatus();
+			}
+		});
+
+		fRestore.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message",
+						"Enter the restore message", "", null);
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
+				RestoreInput restoreInput = new RestoreInput();
+				restoreInput.setMessage(inputDialog.getValue());
+
+				restoreCmd.setCommandInput(restoreInput);
+
+				try {
+					restoreCmd.call();
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				}
+				refreshStatus();
+			}
+		});
+
+		Button rebaseButton = new Button(c, SWT.PUSH);
+		rebaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		rebaseButton.setText(ActionConstants.REBASE.getLiteral());
+		IObservableValue observeRebaseable = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+				.value(ModelPackage.Literals.REVISION_INFO__REBASEABLE)
+				.observe(fChangeInfo);
+		dbc.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebaseable, null, null);
+
+		rebaseButton.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				InputDialog inputDialog = new InputDialog(rebaseButton.getParent().getShell(),
+						"Code Review - Rebase Change",
+						"Change parent revision (leave empty to rebase on targeted branch)", "", null);
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId());
+				RebaseInput rebaseInput = new RebaseInput();
+				rebaseInput.setBase(inputDialog.getValue());
+
+				rebaseCmd.setCommandInput(rebaseInput);
+
+				try {
+					rebaseCmd.call();
+				} catch (EGerritException e1) {
+					if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
+						MessageDialog.open(MessageDialog.INFORMATION, null, "Rebase failed",
+								"Gerrit could not perform the rebase automatically. You need to perform the rebase locally.",
+								SWT.NONE);
 					} else {
-						String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit " //$NON-NLS-1$
-								+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number() //$NON-NLS-1$
-								+ ".";
-						RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
-						RevertInput revertInput = new RevertInput();
-						revertInput.setMessage(revertMsg);
-
-						revertCmd.setCommandInput(revertInput);
-
-						ChangeInfo revertResult = null;
-						try {
-							revertResult = revertCmd.call();
-						} catch (EGerritException e3) {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-						}
-						openAnotherEditor(revertResult);
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 					}
 				}
-			});
-		}
-
-		fAbandonRestore = new Button(c, SWT.PUSH);
-		fAbandonRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fAbandonRestore.setEnabled(false);
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fAbandonRestore.setToolTipText(anonymousUserToolTip);
-		} else {
-			fAbandonRestore.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-
-					if (fAbandonMode == true) {
-						InputDialog inputDialog = new InputDialog(fAbandonRestore.getParent().getShell(),
-								"Abandon message", "Enter the abandon message", "", null);
-						if (inputDialog.open() != Window.OK) {
-							return;
-						}
-
-						AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
-						AbandonInput abandonInput = new AbandonInput();
-						abandonInput.setMessage(inputDialog.getValue());
-
-						abandonCmd.setCommandInput(abandonInput);
-
-						try {
-							abandonCmd.call();
-						} catch (EGerritException e3) {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-						}
-						fAbandonMode = false;
-						refreshStatus();
-					} else {
-						InputDialog inputDialog = new InputDialog(fAbandonRestore.getParent().getShell(),
-								"Restore message", "Enter the restore message", "", null);
-						if (inputDialog.open() != Window.OK) {
-							return;
-						}
-
-						RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
-						RestoreInput restoreInput = new RestoreInput();
-						restoreInput.setMessage(inputDialog.getValue());
-
-						restoreCmd.setCommandInput(restoreInput);
-
-						try {
-							restoreCmd.call();
-						} catch (EGerritException e3) {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-						}
-						fAbandonMode = true;
-						refreshStatus();
-
-					}
-				}
-			});
-		}
-
-		fRebase = new Button(c, SWT.PUSH);
-		fRebase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fRebase.setText(ActionConstants.REBASE.getLiteral());
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fRebase.setToolTipText(anonymousUserToolTip);
-			fRebase.setEnabled(false);
-		} else {
-			fRebase.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-
-					InputDialog inputDialog = new InputDialog(fRebase.getParent().getShell(),
-							"Code Review - Rebase Change",
-							"Change parent revision (leave empty to rebase on targeted branch)", "", null);
-					if (inputDialog.open() != Window.OK) {
-						return;
-					}
-
-					RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId());
-					RebaseInput rebaseInput = new RebaseInput();
-					rebaseInput.setBase(inputDialog.getValue());
-
-					rebaseCmd.setCommandInput(rebaseInput);
-
-					try {
-						rebaseCmd.call();
-					} catch (EGerritException e1) {
-						if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-							MessageDialog.open(MessageDialog.INFORMATION, null, "Rebase failed",
-									"Gerrit could not perform the rebase automatically. You need to perform the rebase locally.",
-									SWT.NONE);
-						} else {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-						}
-					}
-					refreshStatus();
-				}
-			});
-		}
+				refreshStatus();
+			}
+		});
 
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		checkout.setText(ActionConstants.CHECKOUT.getLiteral());
 		checkout.addSelectionListener(checkoutButtonListener(parent));
 
-		fCherryPick = new Button(c, SWT.PUSH);
-		fCherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fCherryPick.setText(ActionConstants.CHERRYPICK.getLiteral());
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fCherryPick.setToolTipText(anonymousUserToolTip);
-			fCherryPick.setEnabled(false);
-		} else {
-			fCherryPick.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
+		Button cherryPick = new Button(c, SWT.PUSH);
+		cherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		cherryPick.setText(ActionConstants.CHERRYPICK.getLiteral());
+		IObservableValue cherryPickAble = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+				.value(ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE)
+				.observe(fChangeInfo);
+		dbc.bindValue(WidgetProperties.enabled().observe(cherryPick), cherryPickAble, null, null);
 
-					BranchInfo[] listBranchesCmdResult = listBranches();
+		cherryPick.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				BranchInfo[] listBranchesCmdResult = listBranches();
 
-					List<String> listBranchesRef = new ArrayList<String>();
-					Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
-					while (it.hasNext()) {
-						listBranchesRef.add(it.next().getRef());
+				List<String> listBranchesRef = new ArrayList<String>();
+				Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
+				while (it.hasNext()) {
+					listBranchesRef.add(it.next().getRef());
+				}
+
+				final CherryPickDialog cherryPickDialog = new CherryPickDialog(cherryPick.getParent().getShell(),
+						listBranchesRef, fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						int ret = cherryPickDialog.open();
+						if (ret == IDialogConstants.OK_ID) {
+							cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getUserSelectedRevision().getId(),
+									cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
+						}
 					}
 
-					final CherryPickDialog cherryPickDialog = new CherryPickDialog(fCherryPick.getParent().getShell(),
-							listBranchesRef, fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
-					Display.getDefault().syncExec(new Runnable() {
-						public void run() {
-							int ret = cherryPickDialog.open();
-							if (ret == IDialogConstants.OK_ID) {
-								cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getUserSelectedRevision().getId(),
-										cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
-							}
-						}
-
-					});
-				}
-			});
-		}
+				});
+			}
+		});
 
 		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fReply.setText(ActionConstants.REPLY.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fReply.setToolTipText(anonymousUserToolTip);
 			fReply.setEnabled(false);
-		} else {
-			fReply.addSelectionListener(new SelectionAdapter() {
+		}
+		fReply.addSelectionListener(new SelectionAdapter() {
 
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-					final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-					org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
 
-					final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
-					itemReply.setText(ActionConstants.REPLY.getLiteral());
-					itemReply.addSelectionListener(new SelectionListener() {
+				final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
+				itemReply.setText(ActionConstants.REPLY.getLiteral());
+				itemReply.addSelectionListener(new SelectionListener() {
 
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
+						QueryHelpers.reload(fGerritClient, fChangeInfo);
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// ignore
+					}
+				});
+
+				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
+				itemCRPlus2.setText("Code-Review+2");
+
+				//Test if we should allow the +2 button or not
+				//Condition:
+				//     - User is a committer (maxCRDefined == maxCRPermitted)
+				//     - If user permitted, the maxCRPermitted > 0 if not Abandoned
+				//     - Selected patch set is the latest
+				//     - User cannot submit yet
+				int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
+				int maxCRDefined = findMaxDefinedLabelValue(CODE_REVIEW);
+				boolean allowPlus2 = false;
+				if (maxCRDefined == maxCRPermitted && maxCRPermitted > 0) {
+					allowPlus2 = true;
+				}
+				//Verify the patchset if we are allowed only, no need to check if not allowed
+				if (allowPlus2) {
+					String psSelectedID = fChangeInfo.getUserSelectedRevision().getId();
+					if (!(psSelectedID != null
+							&& fChangeInfo.getLatestPatchSet().getId().compareTo(psSelectedID) == 0)) {
+						allowPlus2 = false;
+					}
+				}
+
+				itemCRPlus2.setEnabled(!fChangeInfo.getUserSelectedRevision().isSubmitable() && allowPlus2);
+
+				if (itemCRPlus2.isEnabled()) {
+					itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
-							QueryHelpers.reload(fGerritClient, fChangeInfo);
-							buttonsEnablement();
-						}
+							super.widgetSelected(e);
+							// Code-Review +2
+							ReviewInput reviewInput = new ReviewInput();
+							reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
+							Map<String, String> obj = new HashMap<String, String>();
+							obj.put(CODE_REVIEW, "2");
 
-						@Override
-						public void widgetDefaultSelected(SelectionEvent e) {
-							// ignore
+							reviewInput.setLabels(obj);
+							postReply(reviewInput);
 						}
 					});
-
-					MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
-					itemCRPlus2.setText("Code-Review+2");
-
-					//Test if we should allow the +2 button or not
-					//Condition:
-					//     - User is a committer (maxCRDefined == maxCRPermitted)
-					//     - If user permitted, the maxCRPermitted > 0 if not Abandoned
-					//     - Selected patch set is the latest
-					//     - User cannot submit yet
-					int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-					int maxCRDefined = findMaxDefinedLabelValue(CODE_REVIEW);
-					boolean allowPlus2 = false;
-					if (maxCRDefined == maxCRPermitted && maxCRPermitted > 0) {
-						allowPlus2 = true;
-					}
-					//Verify the patchset if we are allowed only, no need to check if not allowed
-					if (allowPlus2) {
-						String psSelectedID = fChangeInfo.getUserSelectedRevision().getId();
-						if (!(psSelectedID != null
-								&& fChangeInfo.getLatestPatchSet().getId().compareTo(psSelectedID) == 0)) {
-							allowPlus2 = false;
-						}
-					}
-
-					itemCRPlus2.setEnabled(!canSubmit() && allowPlus2);
-
-					if (itemCRPlus2.isEnabled()) {
-						itemCRPlus2.addSelectionListener(new SelectionAdapter() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								super.widgetSelected(e);
-								// Code-Review +2
-								ReviewInput reviewInput = new ReviewInput();
-								reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-								Map<String, String> obj = new HashMap<String, String>();
-								obj.put(CODE_REVIEW, "2");
-
-								reviewInput.setLabels(obj);
-								postReply(reviewInput);
-							}
-						});
-					}
-
-					Point loc = fReply.getLocation();
-					Rectangle rect = fReply.getBounds();
-
-					Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
-
-					menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
-
-					menu.setVisible(true);
 				}
-			});
-		}
+
+				Point loc = fReply.getLocation();
+				Rectangle rect = fReply.getBounds();
+
+				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+
+				menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
+
+				menu.setVisible(true);
+			}
+		});
 
 		fDraftPublishDelete = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		fDraftPublishDelete.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fDraftPublishDelete.setText(ActionConstants.DRAFT.getLiteral());
-		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fDraftPublishDelete.setToolTipText(anonymousUserToolTip);
-			fDraftPublishDelete.setEnabled(false);
-		} else {
-			fDraftPublishDelete.addSelectionListener(new SelectionAdapter() {
+		IObservableValue observeDeleteable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__DELETEABLE)
+				.observe(fChangeInfo);
+		dbc.bindValue(WidgetProperties.enabled().observe(fDraftPublishDelete), observeDeleteable,
+				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+		fDraftPublishDelete.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(fDraftPublishDelete.getShell(),
+						SWT.POP_UP);
 
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-					org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(fDraftPublishDelete.getShell(),
-							SWT.POP_UP);
+				final MenuItem itemPublish = new MenuItem(menu, SWT.PUSH);
+				itemPublish.setText(ActionConstants.PUBLISH.getLiteral());
+				itemPublish.addSelectionListener(new SelectionListener() {
 
-					final MenuItem itemPublish = new MenuItem(menu, SWT.PUSH);
-					itemPublish.setText(ActionConstants.PUBLISH.getLiteral());
-					itemPublish.addSelectionListener(new SelectionListener() {
-
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							PublishDraftChangeCommand publishCommand = fGerritClient
-									.publishDraftChange(fChangeInfo.getId());
-							try {
-								publishCommand.call();
-								refreshStatus();
-							} catch (EGerritException e1) {
-								EGerritCorePlugin.logError(
-										fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-							}
-
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						PublishDraftChangeCommand publishCommand = fGerritClient
+								.publishDraftChange(fChangeInfo.getId());
+						try {
+							publishCommand.call();
+							refreshStatus();
+						} catch (EGerritException e1) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 						}
 
-						@Override
-						public void widgetDefaultSelected(SelectionEvent e) {
-							// ignore
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// ignore
+					}
+				});
+
+				MenuItem itemDeleteDraftChange = new MenuItem(menu, SWT.PUSH);
+				itemDeleteDraftChange.setText("Delete");
+
+				itemDeleteDraftChange.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						super.widgetSelected(e);
+						if (!MessageDialog.openConfirm(fDraftPublishDelete.getParent().getShell(),
+								"Delete draft review", "Continue ?")) {
+							return;
 						}
-					});
+						DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
+								.deleteDraftChange(fChangeInfo.getId());
+						try {
+							deleteDraftChangeCmd.call();
+							IWorkbench workbench = PlatformUI.getWorkbench();
+							final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
 
-					MenuItem itemDeleteDraftChange = new MenuItem(menu, SWT.PUSH);
-					itemDeleteDraftChange.setText("Delete");
-
-					final IEditorSite site = getEditorSite();
-					itemDeleteDraftChange.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							super.widgetSelected(e);
-							if (!MessageDialog.openConfirm(fDraftPublishDelete.getParent().getShell(),
-									"Delete draft review", "Continue ?")) {
-								return;
-							}
-							DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
-									.deleteDraftChange(fChangeInfo.getId());
-							try {
-								deleteDraftChangeCmd.call();
-								IWorkbench workbench = PlatformUI.getWorkbench();
-								final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
-
-								IEditorPart editor = activePage.getActiveEditor();
-								activePage.closeEditor(editor, false);
-								LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-								linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
-							} catch (EGerritException e1) {
-								EGerritCorePlugin.logError(
-										fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-							}
+							IEditorPart editor = activePage.getActiveEditor();
+							activePage.closeEditor(editor, false);
+							LinkDashboard linkDash = new LinkDashboard(fGerritClient);
+							linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+						} catch (EGerritException e1) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 						}
-					});
+					}
+				});
 
-					Point loc = fDraftPublishDelete.getLocation();
-					Rectangle rect = fDraftPublishDelete.getBounds();
+				Point loc = fDraftPublishDelete.getLocation();
+				Rectangle rect = fDraftPublishDelete.getBounds();
 
-					Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
 
-					menu.setLocation(fDraftPublishDelete.getDisplay().map(fDraftPublishDelete.getParent(), null, mLoc));
+				menu.setLocation(fDraftPublishDelete.getDisplay().map(fDraftPublishDelete.getParent(), null, mLoc));
 
-					menu.setVisible(true);
-				}
-			});
+				menu.setVisible(true);
+			}
+		});
 
-		}
-
-		addButtonEnablementBinding();
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
-	}
-
-	/**
-	 * Have a method binded to the user selected patch set
-	 */
-	private void addButtonEnablementBinding() {
-		//Add binding when the user selected patchset changes,
-		//need to adjust the button enablement
-		IObservableValue userRevObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(fChangeInfo);
-		ComputedValue cv = new ComputedValue<String>() {
-			@Override
-			protected String calculate() {
-				if (userRevObserveValue.getValue() instanceof RevisionInfo) {
-					buttonsEnablement();
-				}
-				return null;
-			}
-
-		};
-		ISWTObservableValue o = WidgetProperties.text().observe(fButtonPatchset);
-		new DataBindingContext().bindValue(o, cv, null, null);
 	}
 
 	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
@@ -833,112 +855,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 */
 	public void refreshStatus() {
 		QueryHelpers.reload(fGerritClient, fChangeInfo);
-		//Listeners on the update date will trigger additional loading
-		buttonsEnablement();
 	}
-
-	/**
-	 * The logic that controls when bottom buttons are enabled or not
-	 */
-	private void buttonsEnablement() {
-		submitrevertButtonEnablement();
-		abandonrestoreButtonEnablement();
-		rebaseButtonEnablement();
-		draftButtonEnablement();
-	}
-
-	private void draftButtonEnablement() {
-		fDraftPublishDelete.setEnabled(
-				fChangeInfo.getStatus().toLowerCase().compareTo(ActionConstants.DRAFT.getName().toLowerCase()) == 0
-						&& canDeleteDraft());
-	}
-
-	private void rebaseButtonEnablement() {
-		fRebase.setEnabled(canRebase());
-	}
-
-	private void submitrevertButtonEnablement() {
-
-		if (canSubmit()) {
-			fSubmitRevert.setEnabled(true);
-			fSubmitMode = true;
-		} else if (canRevert()) {
-			fSubmitRevert.setEnabled(true);
-			fSubmitMode = false;
-		} else {
-			fSubmitRevert.setEnabled(false);
-		}
-
-		//Adjust the text on the button
-		if (fSubmitMode) {
-			fSubmitRevert.setText(ActionConstants.SUBMIT.getLiteral());
-		} else {
-			fSubmitRevert.setText(ActionConstants.REVERT.getLiteral());
-		}
-
-	}
-
-	/**
-	 * Test a Publish Actions for a specific revision version and see if the delete option should be available
-	 *
-	 * @return boolean
-	 */
-	private boolean canDeleteDraft() {
-		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.PUBLISH.getName());
-	}
-
-	/**
-	 * Test a Submit Actions for a specific revision version
-	 *
-	 * @return boolean
-	 */
-	private boolean canSubmit() {
-		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.SUBMIT.getName());
-	}
-
-	/**
-	 * Test a Revert Actions for a specific change info version
-	 *
-	 * @return boolean
-	 */
-	private boolean canRevert() {
-		return fChangeInfo.isActionAllowed(ActionConstants.REVERT.getName());
-	}
-
-	/**
-	 * Test a Rebase Actions for a specific revision version
-	 *
-	 * @return boolean
-	 */
-	private boolean canRebase() {
-		return fChangeInfo.getUserSelectedRevision().isActionAllowed(ActionConstants.REBASE.getName());
-	}
-
-	private void abandonrestoreButtonEnablement() {
-
-		EMap<String, ActionInfo> actions = fChangeInfo.getActions();
-		if (actions != null) {
-
-			ActionInfo abandon = actions.get(ActionConstants.ABANDON.getName());
-			ActionInfo restore = actions.get(ActionConstants.RESTORE.getName());
-			fAbandonRestore.setText(ActionConstants.ABANDON.getLiteral());
-			fAbandonRestore.setEnabled(true);
-
-			if (abandon != null && abandon.isEnabled()) {
-				fAbandonMode = true;
-			} else if (restore != null && restore.isEnabled()) {
-				fAbandonRestore.setText(ActionConstants.RESTORE.getLiteral());
-			} else {
-				fAbandonRestore.setEnabled(false);
-			}
-		}
-	}
-
-	/************************************************************* */
-	/*                                                             */
-	/* Section adjust the DATA binding                             */
-	/*                                                             */
-	/************************************************************* */
 
 	protected DataBindingContext headerSectionDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();

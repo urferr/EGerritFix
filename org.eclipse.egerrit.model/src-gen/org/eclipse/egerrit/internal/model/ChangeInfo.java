@@ -63,6 +63,10 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevision <em>Revision</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLatestPatchSet <em>Latest Patch Set</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getUserSelectedRevision <em>User Selected Revision</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isRevertable <em>Revertable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isAbandonable <em>Abandonable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isRestoreable <em>Restoreable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isDeleteable <em>Deleteable</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo()
@@ -983,5 +987,69 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	boolean isActionAllowed(String action);
+
+	/**
+	 * Returns the value of the '<em><b>Revertable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Revertable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Revertable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_Revertable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isRevertable();
+
+	/**
+	 * Returns the value of the '<em><b>Abandonable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Abandonable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Abandonable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_Abandonable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isAbandonable();
+
+	/**
+	 * Returns the value of the '<em><b>Restoreable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Restoreable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Restoreable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_Restoreable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isRestoreable();
+
+	/**
+	 * Returns the value of the '<em><b>Deleteable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Deleteable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deleteable</em>' attribute.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_Deleteable()
+	 * @model default="false" transient="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	boolean isDeleteable();
 
 } // ChangeInfo

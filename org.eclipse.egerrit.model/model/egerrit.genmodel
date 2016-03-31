@@ -11,6 +11,21 @@
   <foreignModel>egerrit.ecore</foreignModel>
   <genPackages prefix="Model" basePackage="org.eclipse.egerrit.internal" disposableProviderFactory="true"
       ecorePackage="egerrit.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="egerrit.ecore#//ActionConstants">
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/abandon"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/checkout"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/cherrypick"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/draft"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/followup"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/publish"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/rebase"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/refresh"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/reply"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/restore"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/revert"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/submit"/>
+      <genEnumLiterals ecoreEnumLiteral="egerrit.ecore#//ActionConstants/topic"/>
+    </genEnums>
     <genClasses ecoreClass="egerrit.ecore#//RelatedChangeAndCommitInfo">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RelatedChangeAndCommitInfo/change_id"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//RelatedChangeAndCommitInfo/commit"/>
@@ -95,7 +110,14 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/old_path"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/lines_inserted"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/lines_deleted"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//FileInfo/containedIn"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//FileInfo/comments"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//FileInfo/draftComments"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/reviewed"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/commentsCount"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//FileInfo/draftsCount"/>
+      <genOperations ecoreOperation="egerrit.ecore#//FileInfo/getPath"/>
+      <genOperations ecoreOperation="egerrit.ecore#//FileInfo/getRevision"/>
+      <genOperations ecoreOperation="egerrit.ecore#//FileInfo/getAllComments"/>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//MergeableInfo">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//MergeableInfo/submit_type"/>
@@ -183,13 +205,27 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/_more_changes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/problems"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/base_change"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/codeReviewedTally"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/verifiedTally"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/VERIFIED"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/CODE_REVIEW"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/includedIn"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/hashtags"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/relatedChanges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/reviewers"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/sameTopic"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/conflictsWith"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/mergeableInfo"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/revision"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/latestPatchSet"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/userSelectedRevision"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/repository"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/revertable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/abandonable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/restoreable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/deleteable"/>
+      <genOperations ecoreOperation="egerrit.ecore#//ChangeInfo/getRevisionByNumber">
+        <genParameters ecoreParameter="egerrit.ecore#//ChangeInfo/getRevisionByNumber/revisionId"/>
+      </genOperations>
+      <genOperations ecoreOperation="egerrit.ecore#//ChangeInfo/isActionAllowed">
+        <genParameters ecoreParameter="egerrit.ecore#//ChangeInfo/isActionAllowed/action"/>
+      </genOperations>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//ProblemInfo">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ProblemInfo/message"/>
@@ -209,7 +245,7 @@
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//StringToListOfString">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//StringToListOfString/key"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//StringToListOfString/value"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EAttribute egerrit.ecore#//StringToListOfString/value"/>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//StringToFetchInfo">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//StringToFetchInfo/key"/>
@@ -225,7 +261,17 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//RevisionInfo/files"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//RevisionInfo/actions"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/reviewed"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/commentsLoaded"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/submitable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/rebaseable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/cherrypickable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/deleteable"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/publishable"/>
+      <genOperations ecoreOperation="egerrit.ecore#//RevisionInfo/isActionAllowed">
+        <genParameters ecoreParameter="egerrit.ecore#//RevisionInfo/isActionAllowed/action"/>
+      </genOperations>
+      <genOperations ecoreOperation="egerrit.ecore#//RevisionInfo/getId"/>
+      <genOperations ecoreOperation="egerrit.ecore#//RevisionInfo/getChangeInfo"/>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//SuggestReviewerInfo">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference egerrit.ecore#//SuggestReviewerInfo/account"/>

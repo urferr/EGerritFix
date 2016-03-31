@@ -243,6 +243,18 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="latestPatchSet" eType="#//RevisionInfo"
         volatile="true" transient="true" unsettable="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="userSelectedRevision" eType="#//RevisionInfo"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="revertable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abandonable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="restoreable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleteable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ProblemInfo">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -292,6 +304,21 @@
         eType="#//StringToActionInfo" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="reviewed" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="commentsLoaded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="submitable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rebaseable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="cherrypickable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleteable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="publishable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
+        derived="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SuggestReviewerInfo">
     <eStructuralFeatures xsi:type="ecore:EReference" name="account" eType="#//AccountInfo"

@@ -12,7 +12,6 @@
 package org.eclipse.egerrit.ui.internal.table.provider;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
@@ -20,7 +19,6 @@ import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -50,6 +48,15 @@ public class DeleteDraftRevisionProvider {
 		GridData gd_deleteDraft = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
 		fDeleteDraftRevisionButton.setLayoutData(gd_deleteDraft);
 		fDeleteDraftRevisionButton.setToolTipText("Delete Draft Revision");
+
+		IObservableValue revisionInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+				.value(ModelPackage.Literals.REVISION_INFO__DELETEABLE)
+				.observe(changeInfo);
+		DataBindingContext dbc = new DataBindingContext();
+		dbc.bindValue(WidgetProperties.enabled().observe(fDeleteDraftRevisionButton), revisionInfoObserveValue, null,
+				null);
+
 		fDeleteDraftRevisionButton.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -80,38 +87,6 @@ public class DeleteDraftRevisionProvider {
 				// ignore
 			}
 		});
-		addBinding(changeInfo);
-	}
-
-	/**
-	 * Create all potential binding which could affect the delete revision button
-	 *
-	 * @param changeInfo
-	 */
-	private void addBinding(ChangeInfo changeInfo) {
-		DataBindingContext bindingContext = new DataBindingContext();
-		{
-			//show when revision number changes
-			IObservableValue revisionInfoObserveValue = EMFProperties
-					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(fDeleteDraftRevisionButton),
-					revisionInfoObserveValue, null, new UpdateValueStrategy().setConverter(
-							DataConverter.deleteRevisionConverter(changeInfo, fDeleteDraftRevisionButton)));
-
-			//Test on STATUS if status changes when the editor is open
-			IObservableValue statusObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
-					.observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(fDeleteDraftRevisionButton), statusObserveValue,
-					null, new UpdateValueStrategy().setConverter(
-							DataConverter.deleteRevisionConverter(changeInfo, fDeleteDraftRevisionButton)));
-
-			//Testing the value DRAFT in the revision Info structure
-			IObservableValue actionObserveTest = EMFProperties.value(ModelPackage.Literals.REVISION_INFO__DRAFT)
-					.observe(changeInfo.getUserSelectedRevision());
-
-			bindingContext.bindValue(WidgetProperties.text().observe(fDeleteDraftRevisionButton), actionObserveTest,
-					null, new UpdateValueStrategy().setConverter(
-							DataConverter.deleteRevisionConverter(changeInfo, fDeleteDraftRevisionButton)));
-		}
+//		addBinding(changeInfo);
 	}
 }

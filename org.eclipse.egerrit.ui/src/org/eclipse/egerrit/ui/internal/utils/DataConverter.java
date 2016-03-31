@@ -25,7 +25,6 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.internal.model.ActionConstants;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
@@ -41,7 +40,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.internal.databinding.viewers.ViewerObservableValueDecorator;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.swt.widgets.Button;
 
 /**
  * This class in used to transform the Gerrit data to a databinding display value
@@ -327,30 +325,5 @@ public class DataConverter {
 				return sb.toString();
 			}
 		};
-	}
-
-	public static IConverter deleteRevisionConverter(ChangeInfo changeInfo, Button delButton) {
-		IConverter converter = new Converter(Boolean.class, String.class) {
-
-			@Override
-			public Object convert(Object fromObject) {
-
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
-					if (fromObject instanceof Boolean) {
-						//We have the flag inside the RevisionInfo saying it is a DRAFT
-						delButton.setEnabled(changeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
-								&& (Boolean) fromObject);
-					} else {
-						delButton.setEnabled(changeInfo.getStatus().compareTo("DRAFT") == 0 //$NON-NLS-1$
-								&& changeInfo.getUserSelectedRevision()
-										.isActionAllowed(ActionConstants.PUBLISH.getName()));
-					}
-					return delButton.getText();
-				} else {
-					return delButton.getText();
-				}
-			}
-		};
-		return converter;
 	}
 }

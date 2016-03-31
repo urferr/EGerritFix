@@ -86,6 +86,10 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getRevision <em>Revision</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getLatestPatchSet <em>Latest Patch Set</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getUserSelectedRevision <em>User Selected Revision</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isRevertable <em>Revertable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isAbandonable <em>Abandonable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isRestoreable <em>Restoreable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isDeleteable <em>Deleteable</em>}</li>
  * </ul>
  *
  * @generated
@@ -650,6 +654,46 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @ordered
 	 */
 	protected RevisionInfo userSelectedRevision;
+
+	/**
+	 * The default value of the '{@link #isRevertable() <em>Revertable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isRevertable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean REVERTABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isAbandonable() <em>Abandonable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAbandonable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean ABANDONABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isRestoreable() <em>Restoreable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isRestoreable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean RESTOREABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isDeleteable() <em>Deleteable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDeleteable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean DELETEABLE_EDEFAULT = false;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1662,6 +1706,54 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public boolean isRevertable() {
+		// TODO: implement this method to return the 'Revertable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isAbandonable() {
+		// TODO: implement this method to return the 'Abandonable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isRestoreable() {
+		// TODO: implement this method to return the 'Restoreable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isDeleteable() {
+		// TODO: implement this method to return the 'Deleteable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.CHANGE_INFO__OWNER:
@@ -1794,6 +1886,14 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			if (resolve)
 				return getUserSelectedRevision();
 			return basicGetUserSelectedRevision();
+		case ModelPackage.CHANGE_INFO__REVERTABLE:
+			return isRevertable();
+		case ModelPackage.CHANGE_INFO__ABANDONABLE:
+			return isAbandonable();
+		case ModelPackage.CHANGE_INFO__RESTOREABLE:
+			return isRestoreable();
+		case ModelPackage.CHANGE_INFO__DELETEABLE:
+			return isDeleteable();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -2137,6 +2237,14 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return isSetLatestPatchSet();
 		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
 			return userSelectedRevision != null;
+		case ModelPackage.CHANGE_INFO__REVERTABLE:
+			return isRevertable() != REVERTABLE_EDEFAULT;
+		case ModelPackage.CHANGE_INFO__ABANDONABLE:
+			return isAbandonable() != ABANDONABLE_EDEFAULT;
+		case ModelPackage.CHANGE_INFO__RESTOREABLE:
+			return isRestoreable() != RESTOREABLE_EDEFAULT;
+		case ModelPackage.CHANGE_INFO__DELETEABLE:
+			return isDeleteable() != DELETEABLE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}

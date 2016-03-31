@@ -48,4 +48,30 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 	public ChangeInfo getChangeInfo() {
 		return (ChangeInfo) this.eContainer().eContainer();
 	}
+	
+	@Override
+	public boolean isRebaseable() {
+		return isActionAllowed(ActionConstants.REBASE.getName());
+	}
+	
+	@Override
+	public boolean isSubmitable() {
+		return isActionAllowed(ActionConstants.SUBMIT.getName());
+	}
+	
+	@Override
+	public boolean isCherrypickable() {
+		return isActionAllowed(ActionConstants.CHERRYPICK.getName());
+	}
+
+	@Override
+	public boolean isDeleteable() {
+		return isActionAllowed("/");
+	}
+	
+	@Override
+	public boolean isPublishable() {
+		return isActionAllowed(ActionConstants.PUBLISH.getName());
+	}
+
 }

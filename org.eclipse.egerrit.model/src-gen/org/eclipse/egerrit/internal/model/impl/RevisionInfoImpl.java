@@ -49,6 +49,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#getActions <em>Actions</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isReviewed <em>Reviewed</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isCommentsLoaded <em>Comments Loaded</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isSubmitable <em>Submitable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isRebaseable <em>Rebaseable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isCherrypickable <em>Cherrypickable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isDeleteable <em>Deleteable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isPublishable <em>Publishable</em>}</li>
  * </ul>
  *
  * @generated
@@ -213,6 +218,56 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @ordered
 	 */
 	protected boolean commentsLoaded = COMMENTS_LOADED_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isSubmitable() <em>Submitable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSubmitable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean SUBMITABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isRebaseable() <em>Rebaseable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isRebaseable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean REBASEABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isCherrypickable() <em>Cherrypickable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isCherrypickable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean CHERRYPICKABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isDeleteable() <em>Deleteable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDeleteable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean DELETEABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #isPublishable() <em>Publishable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isPublishable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean PUBLISHABLE_EDEFAULT = false;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -450,6 +505,7 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isCommentsLoaded() {
 		return commentsLoaded;
 	}
@@ -459,12 +515,73 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setCommentsLoaded(boolean newCommentsLoaded) {
 		boolean oldCommentsLoaded = commentsLoaded;
 		commentsLoaded = newCommentsLoaded;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.REVISION_INFO__COMMENTS_LOADED,
 					oldCommentsLoaded, commentsLoaded));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isSubmitable() {
+		// TODO: implement this method to return the 'Submitable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isRebaseable() {
+		// TODO: implement this method to return the 'Rebaseable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isCherrypickable() {
+		// TODO: implement this method to return the 'Cherrypickable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isDeleteable() {
+		// TODO: implement this method to return the 'Deleteable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isPublishable() {
+		// TODO: implement this method to return the 'Publishable' attribute
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -560,6 +677,16 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return isReviewed();
 		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
 			return isCommentsLoaded();
+		case ModelPackage.REVISION_INFO__SUBMITABLE:
+			return isSubmitable();
+		case ModelPackage.REVISION_INFO__REBASEABLE:
+			return isRebaseable();
+		case ModelPackage.REVISION_INFO__CHERRYPICKABLE:
+			return isCherrypickable();
+		case ModelPackage.REVISION_INFO__DELETEABLE:
+			return isDeleteable();
+		case ModelPackage.REVISION_INFO__PUBLISHABLE:
+			return isPublishable();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -676,6 +803,16 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return reviewed != REVIEWED_EDEFAULT;
 		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
 			return commentsLoaded != COMMENTS_LOADED_EDEFAULT;
+		case ModelPackage.REVISION_INFO__SUBMITABLE:
+			return isSubmitable() != SUBMITABLE_EDEFAULT;
+		case ModelPackage.REVISION_INFO__REBASEABLE:
+			return isRebaseable() != REBASEABLE_EDEFAULT;
+		case ModelPackage.REVISION_INFO__CHERRYPICKABLE:
+			return isCherrypickable() != CHERRYPICKABLE_EDEFAULT;
+		case ModelPackage.REVISION_INFO__DELETEABLE:
+			return isDeleteable() != DELETEABLE_EDEFAULT;
+		case ModelPackage.REVISION_INFO__PUBLISHABLE:
+			return isPublishable() != PUBLISHABLE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
