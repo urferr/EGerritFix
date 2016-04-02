@@ -163,10 +163,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Text shortIdData;
 
-	private Button fReply;
-
-	private Button fDraftPublishDelete;
-
 	private Composite headerSection;
 
 	private ReactToChange changeListener;
@@ -567,13 +563,13 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			}
 		});
 
-		fReply = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
-		fReply.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fReply.setText(ActionConstants.REPLY.getLiteral());
+		Button replyButton = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
+		replyButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		replyButton.setText(ActionConstants.REPLY.getLiteral());
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			fReply.setEnabled(false);
+			replyButton.setEnabled(false);
 		}
-		fReply.addSelectionListener(new SelectionAdapter() {
+		replyButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -639,28 +635,28 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					});
 				}
 
-				Point loc = fReply.getLocation();
-				Rectangle rect = fReply.getBounds();
+				Point loc = replyButton.getLocation();
+				Rectangle rect = replyButton.getBounds();
 
 				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
 
-				menu.setLocation(shell.getDisplay().map(fReply.getParent(), null, mLoc));
+				menu.setLocation(shell.getDisplay().map(replyButton.getParent(), null, mLoc));
 
 				menu.setVisible(true);
 			}
 		});
 
-		fDraftPublishDelete = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
-		fDraftPublishDelete.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		fDraftPublishDelete.setText(ActionConstants.DRAFT.getLiteral());
+		Button draftButton = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
+		draftButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		draftButton.setText(ActionConstants.DRAFT.getLiteral());
 		IObservableValue observeDeleteable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__DELETEABLE)
 				.observe(fChangeInfo);
-		dbc.bindValue(WidgetProperties.enabled().observe(fDraftPublishDelete), observeDeleteable,
+		dbc.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-		fDraftPublishDelete.addSelectionListener(new SelectionAdapter() {
+		draftButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(fDraftPublishDelete.getShell(),
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(draftButton.getShell(),
 						SWT.POP_UP);
 
 				final MenuItem itemPublish = new MenuItem(menu, SWT.PUSH);
@@ -678,7 +674,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 							EGerritCorePlugin
 									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 						}
-
 					}
 
 					@Override
@@ -694,8 +689,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						super.widgetSelected(e);
-						if (!MessageDialog.openConfirm(fDraftPublishDelete.getParent().getShell(),
-								"Delete draft review", "Continue ?")) {
+						if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), "Delete draft review",
+								"Continue ?")) {
 							return;
 						}
 						DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
@@ -716,12 +711,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					}
 				});
 
-				Point loc = fDraftPublishDelete.getLocation();
-				Rectangle rect = fDraftPublishDelete.getBounds();
+				Point loc = draftButton.getLocation();
+				Rectangle rect = draftButton.getBounds();
 
 				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
 
-				menu.setLocation(fDraftPublishDelete.getDisplay().map(fDraftPublishDelete.getParent(), null, mLoc));
+				menu.setLocation(draftButton.getDisplay().map(draftButton.getParent(), null, mLoc));
 
 				menu.setVisible(true);
 			}
@@ -1036,8 +1031,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		String title = "Review previously checked-out";
 		String message = "Change \"" + fChangeInfo.getSubject() + "\"" + " has previously been checked out in branch "
 				+ "\"" + branchName + "\"" + ".\n\n" + "Do you want to switch to it or create a new branch?";
-		MessageDialogWithToggle dialog = new MessageDialogWithToggle(fDraftPublishDelete.getParent().getShell(), title,
-				null, message, MessageDialog.NONE, new String[] { "Cancel", "New Branch", "Switch" }, 0,
+		MessageDialogWithToggle dialog = new MessageDialogWithToggle(Display.getDefault().getActiveShell(), title, null,
+				message, MessageDialog.NONE, new String[] { "Cancel", "New Branch", "Switch" }, 0,
 				"Always perform this action", false);
 		dialog.open();
 		int result = dialog.getReturnCode();
@@ -1072,8 +1067,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			command.call();
 		} catch (Throwable t) {
 			CheckoutResult result = command.getResult();
-			new CheckoutConflictDialog(fDraftPublishDelete.getParent().getShell(), repo, result.getConflictList())
-					.open();
+			new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList()).open();
 		}
 	}
 
