@@ -21,6 +21,7 @@ import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
@@ -137,14 +138,28 @@ public class HistoryTabView {
 
 		//Hook the selection listener to display the details in the bottom section
 		IObservableValue selection = ViewersObservables.observeSingleSelection(tableHistoryViewer);
-		IObservableValue detailObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__MESSAGE)
-				.observeDetail(selection);
+
 		IObservableValue textViewerDocument = BeanProperties.value(msgTextData.getClass(), "document") //$NON-NLS-1$
 				.observe(Realm.getDefault(), msgTextData);
 		UpdateValueStrategy textToDocumentStrategy = new UpdateValueStrategy();
-		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(changeInfo, selection, gerritClient));
+		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(gerritClient));
+		new DataBindingContext().bindValue(textViewerDocument, selection, null, textToDocumentStrategy);
 
-		new DataBindingContext().bindValue(textViewerDocument, detailObservable, null, textToDocumentStrategy);
+		//Automatically update the user selected revision as the user changes the selection
+		IObservableValue settableUserRevision = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(changeInfo);
+		new DataBindingContext().bindValue(settableUserRevision, selection, null, new UpdateValueStrategy() {
+			@Override
+			public Object convert(Object value) {
+				if (value == null) {
+					return null;
+				}
+				//-> from the message info to the revision
+				ChangeMessageInfo message = ((ChangeMessageInfo) value);
+				ChangeInfo containingChange = (ChangeInfo) message.eContainer();
+				return containingChange.getRevisionByNumber(message.get_revision_number());
+			}
+		});
 
 	}
 }

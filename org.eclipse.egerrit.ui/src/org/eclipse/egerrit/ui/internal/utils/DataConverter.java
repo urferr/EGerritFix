@@ -14,15 +14,14 @@ package org.eclipse.egerrit.ui.internal.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -32,12 +31,9 @@ import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.MergeableInfo;
-import org.eclipse.egerrit.internal.model.ModifiedChangeInfoImpl;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.table.model.SubmitType;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.internal.databinding.viewers.ViewerObservableValueDecorator;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 
@@ -210,62 +206,40 @@ public class DataConverter {
 	/**
 	 * Convert a string to a Document
 	 *
+	 * @param gerritClient
+	 * @param selection
+	 * @param changeInfo
 	 * @param changeInfo
 	 * @param selection
 	 * @param gerritClient
 	 * @return IConverter
 	 */
-	public static IConverter fromStringToDocument(ChangeInfo changeInfo, IObservableValue<?> selection,
-			GerritClient gerritClient) {
+	public static IConverter fromStringToDocument(GerritClient gerritClient) {
 		return new Converter(String.class, IDocument.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
-				String fileComments = null;
-
-				RevisionInfo revInfo = null;
-				ChangeMessageInfo chmsgInfo = null;
-				if (selection instanceof ViewerObservableValueDecorator) {
-					ViewerObservableValueDecorator obsValue = (ViewerObservableValueDecorator) selection;
-					Object obj = obsValue.getValue();
-					if (obj instanceof ChangeMessageInfo) {
-						chmsgInfo = (ChangeMessageInfo) obj;
-						EObject eobj = ((ChangeMessageInfo) obj).eContainer();
-						ModifiedChangeInfoImpl modChange = (ModifiedChangeInfoImpl) eobj;
-
-						revInfo = modChange.getRevisionByNumber(chmsgInfo.get_revision_number());
-						if (!revInfo.equals(modChange.getUserSelectedRevision())) {
-							changeInfo.setUserSelectedRevision(revInfo);
-						}
-					}
-
-					if (UIUtils.hasComments((String) fromObject)) {
-						//Now we need to find the comment related to this history comment
-						//Now get the comments with QueryHelper.loadcomments if not loaded
-						if (revInfo != null) {
-							QueryHelpers.loadComments(gerritClient, revInfo);
-
-							if (chmsgInfo != null) {
-								fileComments = fillFilesWithMessages(chmsgInfo, revInfo);
-							}
-						}
-					}
-
-				}
-
 				if (fromObject == null) {
-					if (fileComments != null && !fileComments.isEmpty()) {
-						return new Document(fileComments);
-					}
-					return new Document();
+					return null;
 				}
-				if (fileComments != null && !fileComments.isEmpty()) {
-					return new Document((String) fromObject + fileComments);
-				}
-				return new Document((String) fromObject);
-			}
+				ChangeMessageInfo message = ((ChangeMessageInfo) fromObject);
 
+				//There is no comment
+				if (!UIUtils.hasComments(message.getMessage())) {
+					return new Document(message.getMessage());
+				}
+
+				//Get comments and format the message with those
+				ChangeInfo containingChange = (ChangeInfo) message.eContainer();
+				RevisionInfo selectedRevision = containingChange.getRevisionByNumber(message.get_revision_number());
+				if (selectedRevision != null) {
+					QueryHelpers.loadComments(gerritClient, selectedRevision);
+				}
+
+				return new Document(formatMessageWithComments(message, selectedRevision));
+			}
 		};
+
 	}
 
 	/**
@@ -275,12 +249,10 @@ public class DataConverter {
 	 * @param revInfo
 	 * @return String
 	 */
-	private static String fillFilesWithMessages(ChangeMessageInfo chmsgInfo, RevisionInfo revInfo) {
+	private static String formatMessageWithComments(ChangeMessageInfo chmsgInfo, RevisionInfo revInfo) {
 		StringBuilder sb = new StringBuilder();
-		Iterator<Entry<String, FileInfo>> iterator = revInfo.getFiles().entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, FileInfo> definedFiles = iterator.next();
-			FileInfo fileInfo = definedFiles.getValue();
+		Collection<FileInfo> files = revInfo.getFiles().values();
+		for (FileInfo fileInfo : files) {
 			if (!fileInfo.getComments().isEmpty()) {
 				sb.append("\n"); //$NON-NLS-1$
 				sb.append(fileInfo.getPath());
@@ -307,10 +279,8 @@ public class DataConverter {
 	 */
 	public static IConverter patchSetSelected(ChangeInfo changeInfo) {
 		return new Converter(String.class, String.class) {
-
 			@Override
 			public Object convert(Object fromObject) {
-
 				if (fromObject == null) {
 					return ""; //$NON-NLS-1$
 				}
