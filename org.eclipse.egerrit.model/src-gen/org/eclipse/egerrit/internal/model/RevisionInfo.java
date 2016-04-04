@@ -39,6 +39,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCherrypickable <em>Cherrypickable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isDeleteable <em>Deleteable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isPublishable <em>Publishable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isFilesLoaded <em>Files Loaded</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo()
@@ -358,6 +359,33 @@ public interface RevisionInfo extends EObject {
 	 * @generated
 	 */
 	boolean isPublishable();
+
+	/**
+	 * Returns the value of the '<em><b>Files Loaded</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Files Loaded</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Files Loaded</em>' attribute.
+	 * @see #setFilesLoaded(boolean)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_FilesLoaded()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isFilesLoaded();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isFilesLoaded <em>Files Loaded</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Files Loaded</em>' attribute.
+	 * @see #isFilesLoaded()
+	 * @generated
+	 */
+	void setFilesLoaded(boolean value);
 
 	/**
 	 * <!-- begin-user-doc -->

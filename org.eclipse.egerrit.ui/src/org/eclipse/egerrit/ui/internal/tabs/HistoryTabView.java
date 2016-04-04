@@ -55,11 +55,7 @@ public class HistoryTabView {
 
 	private GerritClient gerritClient;
 
-	private MessageTabView messageTab = null;
-
-	// ------------------------------------------------------------------------
-	// Constructor and life cycle
-	// ------------------------------------------------------------------------
+	private UIFilesTable tableUIFiles;
 
 	/**
 	 * The constructor.
@@ -92,8 +88,8 @@ public class HistoryTabView {
 		SashForm sashFormHorizon = new SashForm(sashForm, SWT.HORIZONTAL);
 
 		msgTextData = new TextViewerWithLinks(sashFormHorizon, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-		UIFilesTable tableUIFiles = new UIFilesTable();
-		tableUIFiles.createTableViewerSection(sashFormHorizon, gerritClient, changeInfo);
+		tableUIFiles = new UIFilesTable(gerritClient, changeInfo);
+		tableUIFiles.createTableViewerSection(sashFormHorizon);
 		//Set the % of display data.40% table and 60% for the comment message
 		sashFormHorizon.setWeights(new int[] { 40, 60 });
 
@@ -161,5 +157,9 @@ public class HistoryTabView {
 			}
 		});
 
+	}
+
+	public void dispose() {
+		tableUIFiles.dispose();
 	}
 }

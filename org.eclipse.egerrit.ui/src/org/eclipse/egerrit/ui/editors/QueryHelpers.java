@@ -14,6 +14,7 @@ package org.eclipse.egerrit.ui.editors;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,25 +23,33 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.ChangeOption;
+import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
+import org.eclipse.egerrit.core.command.GetFilesCommand;
+import org.eclipse.egerrit.core.command.GetIncludedInCommand;
+import org.eclipse.egerrit.core.command.GetMergeableCommand;
+import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
+import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
 import org.eclipse.egerrit.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.core.command.ListDraftsCommand;
+import org.eclipse.egerrit.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.IncludedInInfo;
+import org.eclipse.egerrit.internal.model.MergeableInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 
 /**
- * A helper class wrapping the common server queries.
+ * A helper class wrapping the common server queries. All calls in this class are expected to be synchronous.
  */
 public class QueryHelpers {
-	private final static String TITLE = "Gerrit Server "; //$NON-NLS-1$
-
 	private static final String EXECUTING_QUERY = "Executing query";
 
 	/**
@@ -124,14 +133,14 @@ public class QueryHelpers {
 	 * Load comments for the given revision
 	 */
 	public static void loadComments(GerritClient gerrit, RevisionInfo revision) {
-		ListCommentsCommand command = gerrit.getListComments(revision.getChangeInfo().getId(), revision.getId());
+		loadFiles(gerrit, revision);
 		if (revision.isCommentsLoaded()) {
 			return;
 		}
+		ListCommentsCommand command = gerrit.getListComments(revision.getChangeInfo().getId(), revision.getId());
 		Map<String, ArrayList<CommentInfo>> comments = null;
 		try {
 			comments = command.call();
-			revision.setCommentsLoaded(true);
 		} catch (EGerritException e) {
 			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			return;
@@ -145,12 +154,15 @@ public class QueryHelpers {
 				files.getComments().addAll(fileComment.getValue());
 			}
 		}
+		//We only set the comments as loaded once the values have been set
+		revision.setCommentsLoaded(true);
 	}
 
 	public static void loadDrafts(GerritClient gerrit, RevisionInfo revision) {
 		if (gerrit.getRepository().getServerInfo().isAnonymous()) {
 			return;
 		}
+		loadFiles(gerrit, revision);
 		ListDraftsCommand command = gerrit.listDraftsComments(revision.getChangeInfo().getId(), revision.getId());
 		Map<String, ArrayList<CommentInfo>> drafts = null;
 		try {
@@ -163,14 +175,16 @@ public class QueryHelpers {
 		//There is no more drafts, so we need to clear our data structure
 		if (drafts.entrySet().isEmpty()) {
 			Collection<FileInfo> files = revision.getFiles().values();
-			files.forEach(f -> f.getDraftComments().clear());
+			files.stream().filter(f -> f.getDraftComments().size() != 0).forEach(f -> f.getDraftComments().clear());
 			return;
 		}
 
 		for (Entry<String, ArrayList<CommentInfo>> draftComment : drafts.entrySet()) {
 			FileInfo files = revision.getFiles().get(draftComment.getKey());
 			if (files != null) {
-				files.getDraftComments().clear();
+				if (files.getDraftComments().size() != 0) {
+					files.getDraftComments().clear();
+				}
 				files.getDraftComments().addAll(draftComment.getValue());
 			}
 		}
@@ -211,8 +225,18 @@ public class QueryHelpers {
 		}
 	}
 
-	public static void reload(GerritClient gerrit, ChangeInfo toRefresh) {
-		ChangeInfo newChangeInfo = QueryHelpers.queryMessageTab(gerrit, toRefresh.getId());
+	private static boolean fullyLoaded(ChangeInfo toRefresh) {
+		if (toRefresh.getMessages().size() != 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private static void mergeNewInformation(ChangeInfo toRefresh, ChangeInfo newChangeInfo) {
+		if (toRefresh.getUpdated() != null && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())
+				&& fullyLoaded(toRefresh)) {
+			return;
+		}
 		toRefresh.set_number(newChangeInfo.get_number());
 		toRefresh.setChange_id(newChangeInfo.getChange_id());
 		toRefresh.setStatus(newChangeInfo.getStatus());
@@ -265,15 +289,18 @@ public class QueryHelpers {
 		toRefresh.getRevisions().putAll(newChangeInfo.getRevisions());
 	}
 
-	private static ChangeInfo queryMessageTab(GerritClient gerrit, String id) {
+	public static void loadBasicInformation(GerritClient gerrit, ChangeInfo toRefresh) {
+		ChangeInfo newChangeInfo = QueryHelpers.queryBasicInformation(gerrit, toRefresh.getId());
+		mergeNewInformation(toRefresh, newChangeInfo);
+	}
+
+	private static ChangeInfo queryBasicInformation(GerritClient gerrit, String id) {
 		GetChangeCommand command = gerrit.getChange(id);
-		command.addOption(ChangeOption.DETAILED_LABELS);
-		command.addOption(ChangeOption.ALL_FILES);
+		command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
 		command.addOption(ChangeOption.ALL_REVISIONS);
 		command.addOption(ChangeOption.ALL_COMMITS);
-		command.addOption(ChangeOption.REVIEWED);
 		command.addOption(ChangeOption.MESSAGES);
-		command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+		command.addOption(ChangeOption.DETAILED_LABELS); 
 		command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 		ChangeInfo res = null;
@@ -283,5 +310,147 @@ public class QueryHelpers {
 			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 		}
 		return res;
+	}
+
+	public static void loadRevisionDetails(GerritClient gerrit, RevisionInfo revision) {
+		loadFiles(gerrit, revision);
+		String[] reviewedFiles = loadReviewedFiles(gerrit, revision);
+		for (String reviewed : reviewedFiles) {
+			revision.getFiles().get(reviewed).setReviewed(true);
+		}
+		loadComments(gerrit, revision);
+		loadDrafts(gerrit, revision);
+	}
+
+	private static String[] loadReviewedFiles(GerritClient gerrit, RevisionInfo revision) {
+		GetReviewedFilesCommand command = gerrit.getReviewed(revision.getChangeInfo().getId(), revision.getId());
+		try {
+			return command.call();
+		} catch (EGerritException e) {
+			return null;
+		}
+	}
+
+	private static void loadFiles(GerritClient gerrit, RevisionInfo revision) {
+		if (!revision.isFilesLoaded()) {
+			GetFilesCommand command = gerrit.getFiles(revision.getChangeInfo().getId(), revision.getId());
+			try {
+				revision.getFiles().putAll(command.call());
+				revision.setFilesLoaded(true);
+			} catch (EGerritException e) {
+				return;
+			}
+		}
+	}
+
+	private static void loadSameTopic(GerritClient gerritClient, ChangeInfo element) {
+		ChangeInfo[] sameTopicChangeInfo = null;
+		if (element.getTopic() != null && element.getChange_id().compareTo(element.getChange_id()) != 0) {
+			try {
+				QueryChangesCommand command = gerritClient.queryChanges();
+				command.addTopic(element.getTopic());
+				sameTopicChangeInfo = command.call();
+				if (sameTopicChangeInfo != null) {
+					element.getSameTopic().clear();
+					for (ChangeInfo changeInfo : sameTopicChangeInfo) {
+						element.getSameTopic().add(changeInfo);
+					}
+				}
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getLocalizedMessage(),
+						e);
+			}
+		}
+	}
+
+	private static void setMergeable(GerritClient gerritClient, ChangeInfo element) {
+		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) { //$NON-NLS-1$ //$NON-NLS-2$
+			return;
+		}
+		try {
+			GetMergeableCommand command = gerritClient.getMergeable(element);
+			MergeableInfo mergeableInfo;
+			mergeableInfo = command.call();
+			element.setMergeableInfo(mergeableInfo);
+			element.setMergeable(mergeableInfo.isMergeable());
+		} catch (EGerritException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private static void setIncludedIn(GerritClient gerritClient, ChangeInfo element) {
+		try {
+			GetIncludedInCommand command = gerritClient.getIncludedIn(element.getId());
+			IncludedInInfo res = null;
+			res = command.call();
+			element.setIncludedIn(res);
+		} catch (EGerritException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private static void setReviewers(GerritClient gerritClient, ChangeInfo element) {
+		try {
+			ListReviewersCommand command = gerritClient.getReviewers(element.getId());
+			ReviewerInfo[] reviewers = command.call();
+			element.getReviewers().clear();
+			for (ReviewerInfo reviewerInfo : reviewers) {
+				element.getReviewers().add(reviewerInfo);
+			}
+			;
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+		}
+	}
+
+	private static void setRelatedChanges(GerritClient gerritClient, ChangeInfo fChangeInfo) {
+		if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
+			return;
+		}
+		try {
+			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(),
+					fChangeInfo.getCurrent_revision());
+			fChangeInfo.setRelatedChanges(command.call());
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+		}
+	}
+
+	private static void setConflictsWith(GerritClient gerritClient, ChangeInfo element) {
+		ChangeInfo[] conflictsWithChangeInfo = null;
+
+		if (!("MERGED".equals(element.getStatus())) && !("ABANDONED".equals(element.getStatus()))) {
+			try {
+				QueryChangesCommand command = gerritClient.queryChanges();
+				command.addConflicts(element.getChange_id()); //Here we keep the change_id because the conflicts call does not accept the full id
+				command.addMergeable();
+				command.addStatus(ChangeStatus.OPEN);
+				conflictsWithChangeInfo = command.call();
+
+				List<ChangeInfo> conflictsWithChangeInfolistNew = new ArrayList<ChangeInfo>();
+				if (conflictsWithChangeInfo != null) {
+					for (ChangeInfo conflictChangeInfo : conflictsWithChangeInfo) {
+						if (conflictChangeInfo.getChange_id().compareTo(element.getChange_id()) != 0) {
+							conflictsWithChangeInfolistNew.add(conflictChangeInfo);
+						}
+					}
+				}
+				element.getConflictsWith().clear();
+				element.getConflictsWith().addAll(conflictsWithChangeInfolistNew);
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+			}
+		}
+	}
+
+	public static void loadDetailedInformation(GerritClient gerritClient, ChangeInfo toLoad) {
+		loadSameTopic(gerritClient, toLoad);
+		setConflictsWith(gerritClient, toLoad);
+		setIncludedIn(gerritClient, toLoad);
+		setMergeable(gerritClient, toLoad);
+		setReviewers(gerritClient, toLoad);
+		setRelatedChanges(gerritClient, toLoad);
 	}
 }

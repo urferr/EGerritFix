@@ -105,10 +105,10 @@ public class EMFTypeAdapterFactory implements TypeAdapterFactory {
 				in.beginObject();
 				while (in.hasNext()) {
 					String name = in.nextName();
-					logger.debug("Deserializing " + name); //$NON-NLS-1$
+//					logger.debug("Deserializing " + name); //$NON-NLS-1$
 					EStructuralFeature feature = getAttributeWithName(instance.eClass(), name);
 					if (feature == null) {
-						logger.warn("Unknown attribute " + name); //$NON-NLS-1$
+//						logger.warn("Unknown attribute " + name); //$NON-NLS-1$
 						in.skipValue();
 						continue;
 					}

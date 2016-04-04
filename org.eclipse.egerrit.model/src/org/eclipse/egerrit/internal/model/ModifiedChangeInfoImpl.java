@@ -240,4 +240,26 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		// We can't use a constant here because EMF does not allow to have a constant for '/'
 		return isActionAllowed("/"); 
 	}
+	
+	@Override
+	public void setUserSelectedRevision(RevisionInfo newUserSelectedRevision) {
+		if (userSelectedRevision == null) {
+			super.setUserSelectedRevision(newUserSelectedRevision);
+			return;
+		} 
+		if (userSelectedRevision.get_number() != newUserSelectedRevision.get_number()) {
+			super.setUserSelectedRevision(newUserSelectedRevision);
+		}
+	}
+	
+	@Override
+	public void setUpdated(String newUpdated) {
+		if (updated == null) {
+			super.setUpdated(newUpdated);
+			return;
+		}
+		if(!updated.equals(newUpdated)) {
+			super.setUpdated(newUpdated);
+		}
+	}
 }

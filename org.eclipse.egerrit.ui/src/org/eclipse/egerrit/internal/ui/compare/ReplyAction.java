@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
-import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -61,7 +60,6 @@ public class ReplyAction extends Action {
 		}
 		RevisionInfo revisionInfo = compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide());
 		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, compareInput.gerritClient);
-		QueryHelpers.reload(compareInput.gerritClient, revisionInfo.getChangeInfo());
 		compareInput.fireInputChange();
 	}
 }

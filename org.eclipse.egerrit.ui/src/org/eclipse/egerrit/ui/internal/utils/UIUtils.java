@@ -13,6 +13,7 @@
 package org.eclipse.egerrit.ui.internal.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,7 @@ import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.ReplyDialog;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
@@ -165,14 +167,18 @@ public class UIUtils {
 					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 					// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
 					//Send the data
-					SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(), current);
-					reviewToEmit.setCommandInput(reviewInput);
 
-					try {
-						reviewToEmit.call();
-					} catch (EGerritException e1) {
-						EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
-					}
+					CompletableFuture.runAsync(() -> {
+						try {
+							SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(),
+									current);
+							reviewToEmit.setCommandInput(reviewInput);
+							reviewToEmit.call();
+						} catch (EGerritException e1) {
+							EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
+
+						}
+					}).thenRun(() -> ModelLoader.initialize(client, revisionInfo.getChangeInfo()));
 				}
 			}
 		});

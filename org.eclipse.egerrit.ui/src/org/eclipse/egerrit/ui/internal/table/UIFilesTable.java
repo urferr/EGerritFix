@@ -26,6 +26,7 @@ import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
+import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
@@ -90,21 +91,24 @@ public class UIFilesTable {
 
 	private ChangeInfo fChangeInfo;
 
+	private ModelLoader loader;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
-
-	public UIFilesTable() {
-	}
 
 	// ------------------------------------------------------------------------
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent, GerritClient gerritClient, ChangeInfo changeInfo) {
-
+	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo) {
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
+		this.loader = ModelLoader.initialize(gerritClient, changeInfo);
+		loader.loadCurrentRevision();
+	}
+
+	public TableViewer createTableViewerSection(Composite aParent) {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
 		buildAndLayoutTable();
@@ -461,6 +465,10 @@ public class UIFilesTable {
 		for (int i = 0; i < column.length; i++) {
 			column[i].setWidth(FilesTableModel.values()[i].getWidth());
 		}
+	}
+
+	public void dispose() {
+		loader.dispose();
 	}
 
 }

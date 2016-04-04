@@ -236,7 +236,8 @@ public class DataConverter {
 					QueryHelpers.loadComments(gerritClient, selectedRevision);
 				}
 
-				return new Document(formatMessageWithComments(message, selectedRevision));
+				return new Document(
+						message.getMessage() + "\n" + formatMessageWithComments(message, selectedRevision)); //$NON-NLS-1$
 			}
 		};
 

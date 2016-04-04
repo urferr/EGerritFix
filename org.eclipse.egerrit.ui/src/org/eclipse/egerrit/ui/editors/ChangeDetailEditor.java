@@ -14,8 +14,6 @@
 
 package org.eclipse.egerrit.ui.editors;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -26,9 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -80,8 +77,6 @@ import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
@@ -135,7 +130,7 @@ import org.osgi.service.prefs.Preferences;
 
 import com.ibm.icu.text.NumberFormat;
 
-public class ChangeDetailEditor<ObservableObject> extends EditorPart implements PropertyChangeListener, Observer {
+public class ChangeDetailEditor extends EditorPart {
 	private static final String VERIFIED = "Verified";
 
 	private static final String CODE_REVIEW = "Code-Review";
@@ -144,8 +139,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
-
-	private final static String TITLE = "Gerrit Server ";
 
 	public SummaryTabView summaryTab = null;
 
@@ -165,8 +158,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	private Composite headerSection;
 
-	private ReactToChange changeListener;
-
+	private ModelLoader loader;
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -180,6 +172,8 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void createPartControl(final Composite parent) {
+		loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
+		loader.loadBasicInformation();
 		parent.setLayout(new GridLayout(1, false));
 		parent.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
@@ -195,7 +189,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
-		messageTab.addObserver(this);
 
 		summaryTab = new SummaryTabView();
 		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
@@ -204,9 +197,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
-
-		//This query fill the current revision
-		QueryHelpers.reload(fGerritClient, fChangeInfo);
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -277,7 +267,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		refresh.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
 				refreshStatus();
 			}
 		});
@@ -520,7 +509,10 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 					}
 				}
-				refreshStatus();
+				//After a rebase, we reload and reset the user selected revision
+				//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
+				CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(fGerritClient, fChangeInfo))
+						.thenRun(() -> fChangeInfo.setUserSelectedRevision(fChangeInfo.getRevision()));
 			}
 		});
 
@@ -583,7 +575,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
-						QueryHelpers.reload(fGerritClient, fChangeInfo);
+						refreshStatus();
 					}
 
 					@Override
@@ -806,8 +798,6 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 			fChangeInfo.setDeletions(element.getDeletions());
 			fChangeInfo.setCurrent_revision(element.getCurrent_revision());
 		}
-		changeListener = new ReactToChange();
-		fChangeInfo.eAdapters().add(changeListener);
 	}
 
 	private int findMaxDefinedLabelValue(String label) {
@@ -849,7 +839,7 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 	 * Refreshes the ChangeEditor
 	 */
 	public void refreshStatus() {
-		QueryHelpers.reload(fGerritClient, fChangeInfo);
+		loader.reload();
 	}
 
 	protected DataBindingContext headerSectionDataBindings() {
@@ -1101,35 +1091,12 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 		return jgitRepo;
 	}
 
-	/**
-	 * @param Observable
-	 * @param Object
-	 */
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		if (arg0 instanceof MessageTabView) {
-			//in this case, we need to update the Subject. The following request do more
-			//but at least, less than the whole refresh
-			QueryHelpers.reload(fGerritClient, fChangeInfo);
-			setEditorTitle();
-		}
-	}
-
+	//We are keeping this for now because we know there is a bug about this
 	private void setEditorTitle() {
 		//Change the window title if needed
 		if (fChangeInfo != null) {
 			setPartName(fChangeInfo.getSubject());
 		}
-
-	}
-
-	/**
-	 * @param PropertyChangeEvent
-	 *            evt
-	 */
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		// ignore
 	}
 
 	public void invokeRefreshCommand() {
@@ -1186,27 +1153,9 @@ public class ChangeDetailEditor<ObservableObject> extends EditorPart implements 
 
 	@Override
 	public void dispose() {
-		if (changeListener != null) {
-			fChangeInfo.eAdapters().remove(changeListener);
-		}
-	}
-
-	private final class ReactToChange extends AdapterImpl {
-		@Override
-		public void notifyChanged(Notification msg) {
-			if (msg.getFeature() == null) {
-				return;
-			}
-			//Update the current revision field when revisions or the current revision id changes
-			if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)) {
-				//Queries to fill the Summary Review tab data
-				if (summaryTab != null) {
-					summaryTab.setTabs(fGerritClient, fChangeInfo);
-				}
-
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
+		historytab.dispose();
+		messageTab.dispose();
+		summaryTab.dispose();
+		loader.dispose();
 	}
 }

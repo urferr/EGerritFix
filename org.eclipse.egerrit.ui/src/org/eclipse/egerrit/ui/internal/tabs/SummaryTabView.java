@@ -32,19 +32,12 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AddReviewerCommand;
-import org.eclipse.egerrit.core.command.ChangeStatus;
 import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
-import org.eclipse.egerrit.core.command.GetIncludedInCommand;
-import org.eclipse.egerrit.core.command.GetMergeableCommand;
-import org.eclipse.egerrit.core.command.GetRelatedChangesCommand;
-import org.eclipse.egerrit.core.command.ListReviewersCommand;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.SetTopicCommand;
 import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
@@ -53,16 +46,14 @@ import org.eclipse.egerrit.core.rest.AddReviewerResult;
 import org.eclipse.egerrit.core.rest.TopicInput;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.IncludedInInfo;
-import org.eclipse.egerrit.internal.model.MergeableInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo;
-import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.eclipse.egerrit.internal.model.provider.ModelItemProviderAdapterFactory;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
+import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.table.UIConflictsWithTable;
@@ -175,6 +166,8 @@ public class SummaryTabView {
 
 	private Label lblStrategy;
 
+	private ModelLoader loader;
+
 	/**
 	 * Class that provides suggestion for completion for adding a reviwer.
 	 */
@@ -228,6 +221,8 @@ public class SummaryTabView {
 		fChangeInfo = changeInfo;
 		fGerritClient = gerritClient;
 		createContols(tabFolder);
+		loader = ModelLoader.initialize(gerritClient, changeInfo);
+		loader.loadDetailedInformation();
 	}
 
 	private void createContols(final TabFolder tabFolder) {
@@ -431,7 +426,7 @@ public class SummaryTabView {
 				}
 
 				// Query the Gerrit server for matching reviewers
-				SuggestReviewersCommand command = getGerritClient().suggestReviewers(fChangeInfo.getId());
+				SuggestReviewersCommand command = fGerritClient.suggestReviewers(fChangeInfo.getId());
 				command.setMaxNumberOfResults(10);
 				command.setQuery(userName.getText());
 
@@ -455,8 +450,7 @@ public class SummaryTabView {
 						reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
 					}
 				} catch (EGerritException e) {
-					EGerritCorePlugin
-							.logError(getGerritClient().getRepository().formatGerritVersion() + e.getMessage());
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
 				}
 			}
 
@@ -670,259 +664,6 @@ public class SummaryTabView {
 		}
 	}
 
-	/************************************************************* */
-	/*                                                             */
-	/* Section to SET the data structure                           */
-	/*                                                             */
-	/************************************************************* */
-
-	/**
-	 * @param gerritClient
-	 * @param element
-	 */
-	private void setMergeable(GerritClient gerritClient, ChangeInfo element) {
-		if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) { //$NON-NLS-1$ //$NON-NLS-2$
-			return;
-		}
-		MergeableInfo mergeableInfo = queryMergeable(gerritClient, element.getId(), "", //$NON-NLS-1$
-				new NullProgressMonitor());
-		fChangeInfo.setMergeableInfo(mergeableInfo);
-		fChangeInfo.setMergeable(mergeableInfo.isMergeable());
-	}
-
-	/**
-	 * @param gerritClient
-	 */
-	private void setIncludedIn(GerritClient gerritClient) {
-		try {
-			IncludedInInfo includedIn = queryIncludedIn(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
-			if (includedIn != null) {
-				fChangeInfo.setIncludedIn(includedIn);
-			}
-		} catch (MalformedURLException e) {
-			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-		}
-	}
-
-	/**
-	 * @param gerritClient
-	 */
-	private void setRelatedChanges(GerritClient gerritClient) {
-		RelatedChangesInfo relatedchangesinfo = queryRelatedChanges(gerritClient, fChangeInfo.getId(),
-				fChangeInfo.getUserSelectedRevision().getId(), new NullProgressMonitor());
-		fChangeInfo.setRelatedChanges(relatedchangesinfo);
-	}
-
-	/**
-	 * @param gerritClient
-	 */
-	private void setReviewers(GerritClient gerritClient) {
-		ReviewerInfo[] reviewers = queryReviewers(gerritClient, fChangeInfo.getId(), new NullProgressMonitor());
-		if (reviewers != null) {
-			fChangeInfo.getReviewers().clear();
-			for (ReviewerInfo reviewerInfo : reviewers) {
-				fChangeInfo.getReviewers().add(reviewerInfo);
-			}
-		}
-	}
-
-	/**
-	 * @param gerritClient
-	 * @param element
-	 */
-	private void setSameTopic(GerritClient gerritClient, ChangeInfo element) {
-		ChangeInfo[] sameTopicChangeInfo = null;
-		if (element.getTopic() != null && fChangeInfo.getChange_id().compareTo(element.getChange_id()) != 0) {
-			try {
-				sameTopicChangeInfo = querySameTopic(gerritClient, element.getTopic(), new NullProgressMonitor());
-			} catch (MalformedURLException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-			if (sameTopicChangeInfo != null) {
-				fChangeInfo.getSameTopic().clear();
-				for (ChangeInfo changeInfo : sameTopicChangeInfo) {
-					fChangeInfo.getSameTopic().add(changeInfo);
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param gerritClient
-	 * @param element
-	 */
-	private void setConflictsWith(GerritClient gerritClient, ChangeInfo element) {
-		ChangeInfo[] conflictsWithChangeInfo = null;
-
-		if (!("MERGED".equals(element.getStatus())) && !("ABANDONED".equals(element.getStatus()))) {
-			try {
-				conflictsWithChangeInfo = queryConflictsWith(gerritClient, element.getChange_id(), //Here we keep the change_id because the conflicts call does not accept the full id
-						new NullProgressMonitor());
-			} catch (MalformedURLException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-			List<ChangeInfo> conflictsWithChangeInfolistNew = new ArrayList<ChangeInfo>();
-			if (conflictsWithChangeInfo != null) {
-				for (ChangeInfo conflictChangeInfo : conflictsWithChangeInfo) {
-					if (conflictChangeInfo.getChange_id().compareTo(fChangeInfo.getChange_id()) != 0) {
-						conflictsWithChangeInfolistNew.add(conflictChangeInfo);
-					}
-				}
-			}
-
-			fChangeInfo.getConflictsWith().clear();
-			fChangeInfo.getConflictsWith().addAll(conflictsWithChangeInfolistNew);
-		}
-
-	}
-
-	/***************************************************************/
-	/*                                                             */
-	/* Section to QUERY the data structure                         */
-	/*                                                             */
-	/************************************************************* */
-
-	private MergeableInfo queryMergeable(GerritClient gerritClient, String change_id, String revision_id,
-			IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			// Create query
-			GetMergeableCommand command = gerritClient.getMergeable(fChangeInfo);
-
-			MergeableInfo res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	/**
-	 * @param gerritClient
-	 * @param change_id
-	 * @param monitor
-	 * @return
-	 * @throws MalformedURLException
-	 */
-	private IncludedInInfo queryIncludedIn(GerritClient gerritClient, String change_id, NullProgressMonitor monitor)
-			throws MalformedURLException {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			GetIncludedInCommand command = gerritClient.getIncludedIn(fChangeInfo.getId());
-			IncludedInInfo res = null;
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-			return res;
-		} finally {
-			monitor.done();
-		}
-	}
-
-	private RelatedChangesInfo queryRelatedChanges(GerritClient gerritClient, String change_id, String revision_id,
-			IProgressMonitor monitor) {
-		try {
-			if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
-				return null;
-			}
-
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-
-			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(), revision_id);
-
-			RelatedChangesInfo res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	private ReviewerInfo[] queryReviewers(GerritClient gerritClient, String change_id, IProgressMonitor monitor) {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-
-			ListReviewersCommand command = gerritClient.getReviewers(fChangeInfo.getId());
-
-			ReviewerInfo[] res = null;
-			try {
-				res = command.call();
-				return res;
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			}
-		} finally {
-			monitor.done();
-		}
-
-		return null;
-
-	}
-
-	private ChangeInfo[] querySameTopic(GerritClient gerritClient, String topic, IProgressMonitor monitor)
-			throws MalformedURLException {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			ChangeInfo[] res = null;
-			// Create query
-			QueryChangesCommand command = gerritClient.queryChanges();
-			command.addTopic(topic);
-
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getLocalizedMessage(),
-						e);
-			}
-			return res;
-		} finally {
-			monitor.done();
-		}
-	}
-
-	private ChangeInfo[] queryConflictsWith(GerritClient gerritClient, String change_id, IProgressMonitor monitor)
-			throws MalformedURLException {
-		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
-
-			ChangeInfo[] res = null;
-			// Create query
-			QueryChangesCommand command = gerritClient.queryChanges();
-			command.addConflicts(change_id);
-			command.addMergeable();
-			command.addStatus(ChangeStatus.OPEN);
-
-			try {
-				res = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getLocalizedMessage(),
-						e);
-			}
-			return res;
-		} finally {
-			monitor.done();
-		}
-	}
-
 	/**
 	 * This method is the listener to add a reviewer or a group of reviewers
 	 *
@@ -938,7 +679,7 @@ public class SummaryTabView {
 				String reviewer = textWidget.getText().trim();
 
 				if (!reviewer.isEmpty()) {
-					AddReviewerCommand addReviewerCmd = getGerritClient().addReviewer(fChangeInfo.getId());
+					AddReviewerCommand addReviewerCmd = fGerritClient.addReviewer(fChangeInfo.getId());
 					AddReviewerInput addReviewerInput = new AddReviewerInput();
 					addReviewerInput.setReviewer(reviewer);
 
@@ -956,7 +697,7 @@ public class SummaryTabView {
 						addReviewerInput.setConfirmed(true);
 						reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					}
-					setReviewers(fGerritClient);
+					loader.reload();
 					textWidget.setText("");
 				}
 			}
@@ -1016,8 +757,8 @@ public class SummaryTabView {
 								return;
 							}
 
-							DeleteReviewerCommand deleteReviewerCmd = getGerritClient()
-									.deleteReviewer(fChangeInfo.getId(), String.valueOf(reviewerInfo.get_account_id()));
+							DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(fChangeInfo.getId(),
+									String.valueOf(reviewerInfo.get_account_id()));
 
 							try {
 								deleteReviewerCmd.call();
@@ -1025,7 +766,7 @@ public class SummaryTabView {
 								EGerritCorePlugin.logError(
 										fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 							}
-							setReviewers(fGerritClient);
+							loader.reload();
 						}
 					}
 				}
@@ -1053,14 +794,13 @@ public class SummaryTabView {
 				parameters.put(EGerritConstants.PROJECT, UIUtils.getLinkText(genProjectData.getText()));
 
 				linkDash.invokeRefreshDashboardCommand(parameters);
-
 			}
 
 		};
 	}
 
 	private void setTopic(String topic) {
-		SetTopicCommand command = getGerritClient().setTopic(fChangeInfo.getChange_id());
+		SetTopicCommand command = fGerritClient.setTopic(fChangeInfo.getChange_id());
 		TopicInput topicInput = new TopicInput();
 		if (topic != null) {
 			topicInput.setTopic(topic);
@@ -1330,54 +1070,18 @@ public class SummaryTabView {
 	}
 
 	/**
-	 * This method set this tab view with the current revision;
-	 *
-	 * @param GerritClient
-	 *            gerritClient
-	 * @param ChangeInfo
-	 *            changeInfo
-	 */
-	public void setTabs(GerritClient gerritClient, ChangeInfo changeInfo) {
-		setGerritClient(gerritClient);
-		//Queries to fill the Review tab data
-		setSameTopic(gerritClient, changeInfo);
-
-		setMergeable(gerritClient, changeInfo);
-
-		setReviewers(gerritClient);
-		setIncludedIn(gerritClient);
-
-		//Need the current Revision set before setting the RelatedChanges
-		setRelatedChanges(gerritClient);
-
-		setConflictsWith(gerritClient, changeInfo);
-
-	}
-
-	/**
 	 * @return the project string
 	 */
 	public String getProject() {
 		return UIUtils.getLinkText(genProjectData.getText());
 	}
 
-	/**
-	 * @return the gerritClient
-	 */
-	private GerritClient getGerritClient() {
-		return fGerritClient;
-	}
-
-	/**
-	 * @param gerritClient
-	 *            the gerritClient to set
-	 */
-	private void setGerritClient(GerritClient gerritClient) {
-		this.fGerritClient = gerritClient;
-	}
-
 	private boolean isEditingAllowed() {
 		return !fGerritClient.getRepository().getServerInfo().isAnonymous();
+	}
+
+	public void dispose() {
+		loader.dispose();
 	}
 
 }

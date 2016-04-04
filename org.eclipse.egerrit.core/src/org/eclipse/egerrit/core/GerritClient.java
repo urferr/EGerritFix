@@ -26,6 +26,7 @@ import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.core.command.GetContentCommand;
 import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
+import org.eclipse.egerrit.core.command.GetFilesCommand;
 import org.eclipse.egerrit.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.core.command.GetMergeableCommand;
 import org.eclipse.egerrit.core.command.GetModifiedFilesCommand;
@@ -524,7 +525,18 @@ public abstract class GerritClient {
 		return new DeleteDraftRevisionCommand(fGerritRepository, change_id, commit_id);
 	}
 
+	/**
+	 * Return a command to get the list of modified files since a given revision
+	 * 
+	 */
 	public GetModifiedFilesCommand getFilesModifiedSince(String change_id, String revision_id, String compareAgainst) {
 		return new GetModifiedFilesCommand(fGerritRepository, change_id, revision_id, compareAgainst);
+	}
+
+	/**
+	 * Return a command to get the list of files
+	 */
+	public GetFilesCommand getFiles(String change_id, String revision_id) {
+		return new GetFilesCommand(fGerritRepository, change_id, revision_id);
 	}
 }

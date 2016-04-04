@@ -13,7 +13,6 @@ package org.eclipse.egerrit.ui.internal.tabs;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.Observable;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -61,7 +60,7 @@ import org.eclipse.swt.widgets.Text;
  *
  * @since 1.0
  */
-public class MessageTabView extends Observable {
+public class MessageTabView {
 
 	private Text msgTextData;
 
@@ -320,7 +319,6 @@ public class MessageTabView extends Observable {
 					}
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
-					notifyObservers();
 					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
 					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -419,15 +417,8 @@ public class MessageTabView extends Observable {
 		}
 		return bindingContext;
 	}
-
-	/**
-	 * Notify the registered observer
-	 */
-	@Override
-	//EMF this should go away since notification should be done at the EMF level
-	public void notifyObservers() {
-		setChanged();
-		super.notifyObservers();
+	
+	public void dispose() {
+		//Nothing to do
 	}
-
 }

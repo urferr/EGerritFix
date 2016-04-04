@@ -2493,13 +2493,22 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO__PUBLISHABLE = 14;
 
 	/**
+	 * The feature id for the '<em><b>Files Loaded</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__FILES_LOADED = 15;
+
+	/**
 	 * The number of structural features of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_FEATURE_COUNT = 15;
+	int REVISION_INFO_FEATURE_COUNT = 16;
 
 	/**
 	 * The operation id for the '<em>Is Action Allowed</em>' operation.
@@ -4921,6 +4930,17 @@ public interface ModelPackage extends EPackage {
 	EAttribute getRevisionInfo_Publishable();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isFilesLoaded <em>Files Loaded</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Files Loaded</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isFilesLoaded()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_FilesLoaded();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6780,6 +6800,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute REVISION_INFO__PUBLISHABLE = eINSTANCE.getRevisionInfo_Publishable();
+
+		/**
+		 * The meta object literal for the '<em><b>Files Loaded</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__FILES_LOADED = eINSTANCE.getRevisionInfo_FilesLoaded();
 
 		/**
 		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.

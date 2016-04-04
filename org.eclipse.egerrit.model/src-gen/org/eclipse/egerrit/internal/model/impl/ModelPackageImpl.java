@@ -2432,6 +2432,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getRevisionInfo_FilesLoaded() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EOperation getRevisionInfo__IsActionAllowed__String() {
 		return revisionInfoEClass.getEOperations().get(0);
 	}
@@ -2812,6 +2822,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(revisionInfoEClass, REVISION_INFO__CHERRYPICKABLE);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__DELETEABLE);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__PUBLISHABLE);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__FILES_LOADED);
 		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_ID);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_CHANGE_INFO);
@@ -3401,6 +3412,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getRevisionInfo_Publishable(), ecorePackage.getEBoolean(), "publishable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
 				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_FilesLoaded(), ecorePackage.getEBoolean(), "filesLoaded", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		op = initEOperation(getRevisionInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", //$NON-NLS-1$
 				0, 1, IS_UNIQUE, IS_ORDERED);
