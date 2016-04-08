@@ -178,7 +178,11 @@ public class UIUtils {
 							EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
 
 						}
-					}).thenRun(() -> ModelLoader.initialize(client, revisionInfo.getChangeInfo()));
+					}).thenRun(() -> {
+						ModelLoader loader = ModelLoader.initialize(client, revisionInfo.getChangeInfo());
+						loader.loadBasicInformation();
+						loader.dispose();
+					});
 				}
 			}
 		});
