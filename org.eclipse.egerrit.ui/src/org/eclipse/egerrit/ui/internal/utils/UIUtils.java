@@ -17,8 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
@@ -27,15 +25,12 @@ import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.ReplyDialog;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -53,42 +48,6 @@ import org.eclipse.ui.PlatformUI;
 public class UIUtils {
 
 	private static final Pattern COMMENT_PATTERN = Pattern.compile("(\\d+ comme[nt])(\\w+)"); //$NON-NLS-1$
-
-	/**
-	 * Method notInplementedDialog.
-	 *
-	 * @param String
-	 */
-	public static void notInplementedDialog(String aSt) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info,
-				NLS.bind(Messages.UIUtils_methodNotReady, aSt),
-				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, Messages.UIUtils_notImplemented, null),
-				IStatus.INFO);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				dialog.open();
-			}
-		});
-		// TODO later we will want to do this automatically
-	}
-
-	/**
-	 * Method showErrorDialog.
-	 *
-	 * @param String
-	 *            message
-	 * @param String
-	 *            reason
-	 */
-	public static void showErrorDialog(String aMsg, String aReason) {
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_Info, aMsg,
-				new Status(IStatus.INFO, EGerritUIPlugin.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				dialog.open();
-			}
-		});
-	}
 
 	/**
 	 * To display some information to the end-user
