@@ -21,13 +21,10 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
@@ -141,7 +138,7 @@ public class PatchSetHandlerProvider {
 		//Set a data structure with the RevisionInfo for this item
 		item.setData(revisionInfo);
 		StringBuilder sb = new StringBuilder();
-		boolean comments = hasComments(revisionInfo);
+		boolean comments = revisionInfo.isCommented();
 
 		if (comments) {
 			item.setSelection(true);
@@ -178,32 +175,6 @@ public class PatchSetHandlerProvider {
 				fChangeInfo.setUserSelectedRevision(revInfo);
 			}
 		};
-	}
-
-	/**
-	 * Check if there is some comments reported for each specific revision Read the information from the
-	 * ChangeMessageInfo data structure
-	 *
-	 * @param revisionInfo
-	 * @return boolean
-	 */
-	private boolean hasComments(RevisionInfo revisionInfo) {
-		boolean patchSetCommented = false;
-		ChangeInfo changeInfo = revisionInfo.getChangeInfo();
-		EList<ChangeMessageInfo> listChangeMessageInfo = changeInfo.getMessages();
-		Iterator<ChangeMessageInfo> iterator = listChangeMessageInfo.iterator();
-		while (iterator.hasNext()) {
-			ChangeMessageInfo changeMsgInfo = iterator.next();
-			if (changeMsgInfo.get_revision_number() == revisionInfo.get_number()) {
-				String msg = changeMsgInfo.getMessage();
-				patchSetCommented |= UIUtils.hasComments(msg);
-				if (patchSetCommented) {
-					//Found at least one comment, no need to loop anymore for that patch set
-					break;
-				}
-			}
-		}
-		return patchSetCommented;
 	}
 
 	/**

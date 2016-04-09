@@ -11,9 +11,6 @@
 
 package org.eclipse.egerrit.internal.ui.compare;
 
-import java.util.Collection;
-
-import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
@@ -39,7 +36,7 @@ public class SwitchPatchAction extends Action {
 		this.inputToSwitchTo = revision.getId();
 		this.labelToUpdate = labelToUpdate;
 		this.shortLabel = "Patch set " + revision.get_number();
-		boolean hasComments = hasComments(revision);
+		boolean hasComments = revision.isCommented();
 		setText(UIUtils.revisionToString(revision));
 		if (hasComments) {
 			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif"));
@@ -54,11 +51,6 @@ public class SwitchPatchAction extends Action {
 		this.inputToSwitchTo = target;
 		this.labelToUpdate = labelToUpdate;
 		this.shortLabel = target;
-	}
-
-	private boolean hasComments(RevisionInfo revisionInfo) {
-		Collection<FileInfo> files = revisionInfo.getFiles().values();
-		return files.stream().filter(f -> f.getCommentsCount() > 0).findFirst().isPresent();
 	}
 
 	@Override

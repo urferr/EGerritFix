@@ -40,6 +40,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isDeleteable <em>Deleteable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isPublishable <em>Publishable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isFilesLoaded <em>Files Loaded</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommented <em>Commented</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo()
@@ -386,6 +387,33 @@ public interface RevisionInfo extends EObject {
 	 * @generated
 	 */
 	void setFilesLoaded(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Commented</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Commented</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Commented</em>' attribute.
+	 * @see #setCommented(boolean)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Commented()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isCommented();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommented <em>Commented</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Commented</em>' attribute.
+	 * @see #isCommented()
+	 * @generated
+	 */
+	void setCommented(boolean value);
 
 	/**
 	 * <!-- begin-user-doc -->

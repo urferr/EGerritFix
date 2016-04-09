@@ -55,6 +55,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isDeleteable <em>Deleteable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isPublishable <em>Publishable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isFilesLoaded <em>Files Loaded</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl#isCommented <em>Commented</em>}</li>
  * </ul>
  *
  * @generated
@@ -289,6 +290,26 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @ordered
 	 */
 	protected boolean filesLoaded = FILES_LOADED_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isCommented() <em>Commented</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isCommented()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean COMMENTED_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isCommented() <em>Commented</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isCommented()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean commented = COMMENTED_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -634,6 +655,28 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isCommented() {
+		return commented;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setCommented(boolean newCommented) {
+		boolean oldCommented = commented;
+		commented = newCommented;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.REVISION_INFO__COMMENTED, oldCommented,
+					commented));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public String getId() {
 		// TODO: implement this method
@@ -734,6 +777,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return isPublishable();
 		case ModelPackage.REVISION_INFO__FILES_LOADED:
 			return isFilesLoaded();
+		case ModelPackage.REVISION_INFO__COMMENTED:
+			return isCommented();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -778,6 +823,9 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return;
 		case ModelPackage.REVISION_INFO__FILES_LOADED:
 			setFilesLoaded((Boolean) newValue);
+			return;
+		case ModelPackage.REVISION_INFO__COMMENTED:
+			setCommented((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -824,6 +872,9 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		case ModelPackage.REVISION_INFO__FILES_LOADED:
 			setFilesLoaded(FILES_LOADED_EDEFAULT);
 			return;
+		case ModelPackage.REVISION_INFO__COMMENTED:
+			setCommented(COMMENTED_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -868,6 +919,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return isPublishable() != PUBLISHABLE_EDEFAULT;
 		case ModelPackage.REVISION_INFO__FILES_LOADED:
 			return filesLoaded != FILES_LOADED_EDEFAULT;
+		case ModelPackage.REVISION_INFO__COMMENTED:
+			return commented != COMMENTED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -915,6 +968,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 		result.append(commentsLoaded);
 		result.append(", filesLoaded: "); //$NON-NLS-1$
 		result.append(filesLoaded);
+		result.append(", commented: "); //$NON-NLS-1$
+		result.append(commented);
 		result.append(')');
 		return result.toString();
 	}

@@ -2192,13 +2192,22 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_MESSAGE_INFO__REVISION_NUMBER = 4;
 
 	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_MESSAGE_INFO__COMMENT = 5;
+
+	/**
 	 * The number of structural features of the '<em>Change Message Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_MESSAGE_INFO_FEATURE_COUNT = 5;
+	int CHANGE_MESSAGE_INFO_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>Change Message Info</em>' class.
@@ -2502,13 +2511,22 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO__FILES_LOADED = 15;
 
 	/**
+	 * The feature id for the '<em><b>Commented</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO__COMMENTED = 16;
+
+	/**
 	 * The number of structural features of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_FEATURE_COUNT = 16;
+	int REVISION_INFO_FEATURE_COUNT = 17;
 
 	/**
 	 * The operation id for the '<em>Is Action Allowed</em>' operation.
@@ -4653,6 +4671,17 @@ public interface ModelPackage extends EPackage {
 	EAttribute getChangeMessageInfo__revision_number();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#isComment <em>Comment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Comment</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeMessageInfo#isComment()
+	 * @see #getChangeMessageInfo()
+	 * @generated
+	 */
+	EAttribute getChangeMessageInfo_Comment();
+
+	/**
 	 * Returns the meta object for class '{@link java.util.Map.Entry <em>String To Action Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4939,6 +4968,17 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getRevisionInfo_FilesLoaded();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isCommented <em>Commented</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Commented</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#isCommented()
+	 * @see #getRevisionInfo()
+	 * @generated
+	 */
+	EAttribute getRevisionInfo_Commented();
 
 	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#isActionAllowed(java.lang.String) <em>Is Action Allowed</em>}' operation.
@@ -6594,6 +6634,14 @@ public interface ModelPackage extends EPackage {
 		EAttribute CHANGE_MESSAGE_INFO__REVISION_NUMBER = eINSTANCE.getChangeMessageInfo__revision_number();
 
 		/**
+		 * The meta object literal for the '<em><b>Comment</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_MESSAGE_INFO__COMMENT = eINSTANCE.getChangeMessageInfo_Comment();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.StringToActionInfoImpl <em>String To Action Info</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -6808,6 +6856,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute REVISION_INFO__FILES_LOADED = eINSTANCE.getRevisionInfo_FilesLoaded();
+
+		/**
+		 * The meta object literal for the '<em><b>Commented</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVISION_INFO__COMMENTED = eINSTANCE.getRevisionInfo_Commented();
 
 		/**
 		 * The meta object literal for the '<em><b>Is Action Allowed</b></em>' operation.

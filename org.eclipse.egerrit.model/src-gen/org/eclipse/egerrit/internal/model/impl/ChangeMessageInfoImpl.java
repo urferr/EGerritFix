@@ -34,6 +34,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl#getDate <em>Date</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl#getMessage <em>Message</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl#get_revision_number <em>revision number</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl#isComment <em>Comment</em>}</li>
  * </ul>
  *
  * @generated
@@ -128,6 +129,26 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 	 * @ordered
 	 */
 	protected int _revision_number = _REVISION_NUMBER_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isComment() <em>Comment</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComment()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean COMMENT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isComment() <em>Comment</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isComment()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean comment = COMMENT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -301,6 +322,30 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 	 * @generated
 	 */
 	@Override
+	public boolean isComment() {
+		return comment;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setComment(boolean newComment) {
+		boolean oldComment = comment;
+		comment = newComment;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.CHANGE_MESSAGE_INFO__COMMENT, oldComment,
+					comment));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.CHANGE_MESSAGE_INFO__AUTHOR:
@@ -327,6 +372,8 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 			return getMessage();
 		case ModelPackage.CHANGE_MESSAGE_INFO__REVISION_NUMBER:
 			return get_revision_number();
+		case ModelPackage.CHANGE_MESSAGE_INFO__COMMENT:
+			return isComment();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -353,6 +400,9 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 			return;
 		case ModelPackage.CHANGE_MESSAGE_INFO__REVISION_NUMBER:
 			set_revision_number((Integer) newValue);
+			return;
+		case ModelPackage.CHANGE_MESSAGE_INFO__COMMENT:
+			setComment((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -381,6 +431,9 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 		case ModelPackage.CHANGE_MESSAGE_INFO__REVISION_NUMBER:
 			set_revision_number(_REVISION_NUMBER_EDEFAULT);
 			return;
+		case ModelPackage.CHANGE_MESSAGE_INFO__COMMENT:
+			setComment(COMMENT_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -403,6 +456,8 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 			return MESSAGE_EDEFAULT == null ? message != null : !MESSAGE_EDEFAULT.equals(message);
 		case ModelPackage.CHANGE_MESSAGE_INFO__REVISION_NUMBER:
 			return _revision_number != _REVISION_NUMBER_EDEFAULT;
+		case ModelPackage.CHANGE_MESSAGE_INFO__COMMENT:
+			return comment != COMMENT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -426,6 +481,8 @@ public class ChangeMessageInfoImpl extends MinimalEObjectImpl.Container implemen
 		result.append(message);
 		result.append(", _revision_number: "); //$NON-NLS-1$
 		result.append(_revision_number);
+		result.append(", comment: "); //$NON-NLS-1$
+		result.append(comment);
 		result.append(')');
 		return result.toString();
 	}

@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getDate <em>Date</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#getMessage <em>Message</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#get_revision_number <em>revision number</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#isComment <em>Comment</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeMessageInfo()
@@ -163,5 +164,32 @@ public interface ChangeMessageInfo extends EObject {
 	 * @generated
 	 */
 	void set_revision_number(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Comment</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Comment</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Comment</em>' attribute.
+	 * @see #setComment(boolean)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeMessageInfo_Comment()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isComment();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeMessageInfo#isComment <em>Comment</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Comment</em>' attribute.
+	 * @see #isComment()
+	 * @generated
+	 */
+	void setComment(boolean value);
 
 } // ChangeMessageInfo

@@ -114,7 +114,12 @@ public class ModelLoader {
 
 	//load and track the user selected revision
 	public void loadCurrentRevision() {
-		CompletableFuture.runAsync(() -> QueryHelpers.loadRevisionDetails(gerritClient, changeInfo.getRevision()));
+		loadRevision(changeInfo.getCurrent_revision());
+	}
+
+	private void loadRevision(String revision) {
+		CompletableFuture.runAsync(
+				() -> QueryHelpers.loadRevisionDetails(gerritClient, changeInfo.getRevisions().get(revision)));
 		initializeCurrentRevisionTracker();
 	}
 
@@ -142,7 +147,15 @@ public class ModelLoader {
 	public void dispose() {
 		refCount--;
 		if (refCount == 0) {
-			changeInfo.eAdapters().remove(currentRevisionTracker);
+			if (currentRevisionTracker != null) {
+				changeInfo.eAdapters().remove(currentRevisionTracker);
+			}
+			if (detailsTracker != null) {
+				changeInfo.eAdapters().remove(detailsTracker);
+			}
+			if (basicInfoTracker != null) {
+				changeInfo.eAdapters().remove(basicInfoTracker);
+			}
 		}
 	}
 

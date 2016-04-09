@@ -12,10 +12,13 @@ package org.eclipse.egerrit.internal.model;
  */
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToActionInfoImpl;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -36,17 +39,12 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 				if (msg.getFeature() == null)
 					return;
-				// Update the current revision field when revisions or the
-				// current revision id changes
-				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS)
-						|| msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)) {
-					InternalEObject modifiedChangeInfo = getModifiedChangeInfo(msg.getNotifier());
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS)) {
+					deriveCommentPresence();
+				}
 
-					if (eNotificationRequired()) {
-						eNotify(new ENotificationImpl(modifiedChangeInfo, Notification.SET,
-								ModelPackage.Literals.CHANGE_INFO__REVISION, null,
-								modifiedChangeInfo.eGet(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)));
-					}
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__MESSAGES)) {
+					deriveCommentPresence();
 				}
 
 				// Notify that the value of latest patch set could have changed
@@ -237,29 +235,54 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 	@Override
 	public boolean isDeleteable() {
-		// We can't use a constant here because EMF does not allow to have a constant for '/'
-		return isActionAllowed("/"); 
+		// We can't use a constant here because EMF does not allow to have a
+		// constant for '/'
+		return isActionAllowed("/");
 	}
-	
+
 	@Override
 	public void setUserSelectedRevision(RevisionInfo newUserSelectedRevision) {
 		if (userSelectedRevision == null) {
 			super.setUserSelectedRevision(newUserSelectedRevision);
 			return;
-		} 
+		}
 		if (userSelectedRevision.get_number() != newUserSelectedRevision.get_number()) {
 			super.setUserSelectedRevision(newUserSelectedRevision);
 		}
 	}
-	
+
 	@Override
 	public void setUpdated(String newUpdated) {
 		if (updated == null) {
 			super.setUpdated(newUpdated);
 			return;
 		}
-		if(!updated.equals(newUpdated)) {
+		if (!updated.equals(newUpdated)) {
 			super.setUpdated(newUpdated);
 		}
+	}
+
+	//Helper method setting if a comment is contained in a message
+	//Also update the comment flag on a revision
+	private void deriveCommentPresence() {
+		EList<ChangeMessageInfo> messages = getMessages();
+		for (ChangeMessageInfo m : messages) {
+			m.setComment(hasComments(m.getMessage()));
+			if (m.isComment()) {
+				RevisionInfo rev = ((ChangeInfo)m.eContainer()).getRevisionByNumber(m.get_revision_number());
+				if (rev != null)
+					rev.setCommented(m.isComment());
+			}
+		}
+	}
+
+	private static final Pattern COMMENT_PATTERN = Pattern.compile("(\\d+ comme[nt])(\\w+)"); // $NON-NLS-0$
+
+	private boolean hasComments(String msg) {
+		if (msg == null) {
+			return false;
+		}
+		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
+		return matcher.find(0);
 	}
 }

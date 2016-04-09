@@ -20,7 +20,6 @@ import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
-import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -127,7 +126,7 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 			ChangeMessageInfo changeMessageInfo = (ChangeMessageInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				boolean hasComments = UIUtils.hasComments(changeMessageInfo.getMessage());
+				boolean hasComments = changeMessageInfo.isComment();
 				if (hasComments) {
 					if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
 						return fImageRegistry.get(ANONYMOUS_COMMENT);

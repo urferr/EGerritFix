@@ -300,7 +300,7 @@ public class QueryHelpers {
 		command.addOption(ChangeOption.ALL_REVISIONS);
 		command.addOption(ChangeOption.ALL_COMMITS);
 		command.addOption(ChangeOption.MESSAGES);
-		command.addOption(ChangeOption.DETAILED_LABELS); 
+		command.addOption(ChangeOption.DETAILED_LABELS);
 		command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 		ChangeInfo res = null;
@@ -331,7 +331,7 @@ public class QueryHelpers {
 		}
 	}
 
-	private static void loadFiles(GerritClient gerrit, RevisionInfo revision) {
+	public static void loadFiles(GerritClient gerrit, RevisionInfo revision) {
 		if (!revision.isFilesLoaded()) {
 			GetFilesCommand command = gerrit.getFiles(revision.getChangeInfo().getId(), revision.getId());
 			try {

@@ -14,8 +14,6 @@ package org.eclipse.egerrit.ui.internal.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
@@ -46,8 +44,6 @@ import org.eclipse.ui.PlatformUI;
  */
 
 public class UIUtils {
-
-	private static final Pattern COMMENT_PATTERN = Pattern.compile("(\\d+ comme[nt])(\\w+)"); //$NON-NLS-1$
 
 	/**
 	 * To display some information to the end-user
@@ -88,20 +84,6 @@ public class UIUtils {
 		text = text.replaceFirst("<a>", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		text = text.replaceFirst("</a>", ""); //$NON-NLS-1$//$NON-NLS-2$
 		return text.trim();
-	}
-
-	/**
-	 * Test to see if the string has some kind of indication for comments
-	 *
-	 * @param msg
-	 * @return boolean
-	 */
-	public static boolean hasComments(String msg) {
-		if (msg == null) {
-			return false;
-		}
-		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
-		return matcher.find(0);
 	}
 
 	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, GerritClient client) {

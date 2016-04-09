@@ -2182,6 +2182,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getChangeMessageInfo_Comment() {
+		return (EAttribute) changeMessageInfoEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getStringToActionInfo() {
 		return stringToActionInfoEClass;
 	}
@@ -2434,6 +2444,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	@Override
 	public EAttribute getRevisionInfo_FilesLoaded() {
 		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRevisionInfo_Commented() {
+		return (EAttribute) revisionInfoEClass.getEStructuralFeatures().get(16);
 	}
 
 	/**
@@ -2793,6 +2813,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(changeMessageInfoEClass, CHANGE_MESSAGE_INFO__DATE);
 		createEAttribute(changeMessageInfoEClass, CHANGE_MESSAGE_INFO__MESSAGE);
 		createEAttribute(changeMessageInfoEClass, CHANGE_MESSAGE_INFO__REVISION_NUMBER);
+		createEAttribute(changeMessageInfoEClass, CHANGE_MESSAGE_INFO__COMMENT);
 
 		stringToActionInfoEClass = createEClass(STRING_TO_ACTION_INFO);
 		createEAttribute(stringToActionInfoEClass, STRING_TO_ACTION_INFO__KEY);
@@ -2823,6 +2844,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(revisionInfoEClass, REVISION_INFO__DELETEABLE);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__PUBLISHABLE);
 		createEAttribute(revisionInfoEClass, REVISION_INFO__FILES_LOADED);
+		createEAttribute(revisionInfoEClass, REVISION_INFO__COMMENTED);
 		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_ID);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_CHANGE_INFO);
@@ -3343,6 +3365,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getChangeMessageInfo__revision_number(), ecorePackage.getEInt(), "_revision_number", null, 0, 1, //$NON-NLS-1$
 				ChangeMessageInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeMessageInfo_Comment(), ecorePackage.getEBoolean(), "comment", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeMessageInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(stringToActionInfoEClass, Map.Entry.class, "StringToActionInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				!IS_GENERATED_INSTANCE_CLASS);
@@ -3413,6 +3438,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 				RevisionInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				IS_DERIVED, IS_ORDERED);
 		initEAttribute(getRevisionInfo_FilesLoaded(), ecorePackage.getEBoolean(), "filesLoaded", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRevisionInfo_Commented(), ecorePackage.getEBoolean(), "commented", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
 				RevisionInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 

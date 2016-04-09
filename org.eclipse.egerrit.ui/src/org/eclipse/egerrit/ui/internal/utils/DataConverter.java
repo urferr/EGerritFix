@@ -225,7 +225,7 @@ public class DataConverter {
 				ChangeMessageInfo message = ((ChangeMessageInfo) fromObject);
 
 				//There is no comment
-				if (!UIUtils.hasComments(message.getMessage())) {
+				if (!message.isComment()) {
 					return new Document(message.getMessage());
 				}
 
@@ -236,8 +236,7 @@ public class DataConverter {
 					QueryHelpers.loadComments(gerritClient, selectedRevision);
 				}
 
-				return new Document(
-						message.getMessage() + "\n" + formatMessageWithComments(message, selectedRevision)); //$NON-NLS-1$
+				return new Document(message.getMessage() + "\n" + formatMessageWithComments(message, selectedRevision)); //$NON-NLS-1$
 			}
 		};
 

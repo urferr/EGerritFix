@@ -41,6 +41,7 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
 import org.eclipse.jface.text.IDocument;
@@ -182,6 +183,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private void computeDifferencesBetweenRevisions(IProgressMonitor monitor) {
+		loadRevision(leftSide);
+		loadRevision(rightSide);
 		RevisionInfo leftRevision = changeInfo.getRevisions().get(leftSide);
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		EMap<String, FileInfo> leftFiles = leftRevision.getFiles();
@@ -236,12 +239,18 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private void computeDifferencesWithWorkspace(IProgressMonitor monitor) {
+		loadRevision(rightSide);
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
 			GerritDiffNode node = createWorkspaceRevisionNode(monitor, rightFile);
 			root.add(node);
 			setElementToReveal(node, rightFile);
 		}
+	}
+
+	private void loadRevision(String revision) {
+		//Load the files synchronously so we can start filling the UI and then load the rest in the background
+		QueryHelpers.loadFiles(gerritClient, changeInfo.getRevisions().get(revision));
 	}
 
 	private GerritDiffNode createWorkspaceRevisionNode(IProgressMonitor monitor, FileInfo rightFile) {
@@ -260,6 +269,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private void computeDifferencesWithBase(IProgressMonitor monitor) {
+		loadRevision(rightSide);
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
 			GerritDiffNode node = createBaseRevisionNode(monitor, rightFile);
@@ -524,6 +534,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		} else if (leftSide.equals("WORKSPACE")) {
 			newEntry = createWorkspaceRevisionNode(pm, savedElement.getFileInfo());
 		} else {
+			loadRevision(leftSide);
 			newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide).getFiles(),
 					savedElement.getFileInfo());
 		}
