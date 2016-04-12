@@ -12,4 +12,60 @@
             name="ChangeDetail Editor">
       </editor>
    </extension>
+   <extension
+         id="org.eclipse.egerrit.ui.commentMarker"
+         name="Gerrit comment"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.taskmarker"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="false" />
+      <attribute
+            name="commentInfo">
+      </attribute>
+      <attribute
+            name="fileInfo">
+      </attribute>
+      <attribute
+            name="isDraft">
+      </attribute>
+      <attribute
+            name="gerritClient">
+      </attribute>
+   </extension>
+
+       
+   <extension point="org.eclipse.ui.editors.annotationTypes">
+     <type
+        super="org.eclipse.ui.workbench.texteditor.warning"
+        markerType="org.eclipse.egerrit.ui.commentMarker"
+        name="org.eclipse.egerrit.ui.commentAnnotation"
+        markerSeverity="1"/>
+  </extension>
+
+  <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
+     <specification
+        annotationType="org.eclipse.egerrit.ui.commentAnnotation"
+        icon="icons/marker.png"
+        verticalRulerPreferenceKey="myMarkerIndicationInVerticalRuler"
+        verticalRulerPreferenceValue="true"/>
+  </extension>
+  
+  <extension point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+        markerType="org.eclipse.egerrit.ui.commentMarker"
+
+         class="org.eclipse.egerrit.ui.editors.QuickFixer"/>
+   </extension>
+   
+<extension point="org.eclipse.ui.menus">
+<menuContribution
+    class="org.eclipse.egerrit.ui.editors.MarkerContributionFactory"
+    locationURI="popup:#AbstractTextEditorRulerContext?after=additions">
+  <dynamic
+         class="org.eclipse.egerrit.ui.editors.MarkerMenuContribution"
+         id="org.eclipse.egerrit.ui.editors.MarkerMenuContribution">
+  </dynamic>
+</menuContribution>
+</extension>
 </plugin>

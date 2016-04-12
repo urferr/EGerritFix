@@ -17,11 +17,15 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.ReplyDialog;
@@ -140,6 +144,32 @@ public class UIUtils {
 			sb.append(" (draft)");
 		}
 		return sb.toString();
+	}
+
+	public static void postReply(GerritClient gerritClient, CommentInfo comment, String reply, String revisionId) {
+		CreateDraftCommand publishDraft = gerritClient.createDraftComments(getRevision(comment).getChangeInfo().getId(),
+				revisionId);
+
+		CommentInfo replyData = ModelFactory.eINSTANCE.createCommentInfo();
+		replyData.setMessage(reply);
+		replyData.setInReplyTo(comment.getId());
+		replyData.setLine(comment.getLine());
+		replyData.setSide(comment.getSide());
+		replyData.setPath(getFileInfo(comment).getPath());
+		publishDraft.setCommandInput(replyData);
+		try {
+			getFileInfo(comment).getDraftComments().add(publishDraft.call());
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+		}
+	}
+
+	public static RevisionInfo getRevision(CommentInfo comment) {
+		return getFileInfo(comment).getRevision();
+	}
+
+	private static FileInfo getFileInfo(CommentInfo comment) {
+		return (FileInfo) comment.eContainer();
 	}
 
 	private static void appendCommitTime(StringBuilder sb, RevisionInfo revisionInfo) {

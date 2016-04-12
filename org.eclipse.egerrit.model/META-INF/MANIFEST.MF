@@ -11,5 +11,6 @@ Export-Package: org.eclipse.egerrit.internal.model,
  org.eclipse.egerrit.internal.model.impl,
  org.eclipse.egerrit.internal.model.util
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.core.expressions;bundle-version="3.5.0"
 Bundle-ActivationPolicy: lazy

@@ -72,6 +72,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
+import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
@@ -127,10 +128,14 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.text.NumberFormat;
 
 public class ChangeDetailEditor extends EditorPart {
+	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
+
 	private static final String VERIFIED = "Verified";
 
 	private static final String CODE_REVIEW = "Code-Review";
@@ -240,6 +245,26 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void handleEvent(Event event) {
 				subjectData.getParent().layout();
+			}
+		});
+		Button activeReview = new Button(group_header, SWT.CHECK);
+		activeReview.setSelection(false);
+		activeReview.setText("Active Comments");
+		activeReview.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (activeReview.getSelection()) {
+					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
+							fChangeInfo.getUserSelectedRevision());
+				} else {
+					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// ignore
 			}
 		});
 
@@ -938,6 +963,8 @@ public class ChangeDetailEditor extends EditorPart {
 				// already on the branch, nothing to do
 				if (existingLocalBranchName != null
 						&& currentActiveBranchName.compareTo(existingLocalBranchName) == 0) {
+					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
+							fChangeInfo.getUserSelectedRevision());
 					return;
 				}
 				// the target branch exists
@@ -963,10 +990,10 @@ public class ChangeDetailEditor extends EditorPart {
 					} catch (Exception e) {
 					}
 				}
+				ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
+						fChangeInfo.getUserSelectedRevision());
 			}
-
 		};
-
 	}
 
 	private String getCurrentBranchName(Repository localRepo) {

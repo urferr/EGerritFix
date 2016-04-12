@@ -52,4 +52,6 @@ Import-Package: org.apache.commons.codec.binary;version="1.6.0",
  org.eclipse.compare.structuremergeviewer,
  org.eclipse.egerrit.dashboard,
  org.eclipse.egerrit.dashboard.core,
- org.eclipse.egerrit.dashboard.utils
+ org.eclipse.egerrit.dashboard.utils,
+ org.eclipse.egerrit.ui.editors,
+ org.eclipse.egerrit.ui.editors.model
