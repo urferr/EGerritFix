@@ -11,35 +11,26 @@
 
 package org.eclipse.egerrit.ui.tests;
 
-import static org.eclipse.egerrit.ui.tests.Expectations.expectations;
-import static org.eclipse.egerrit.ui.tests.InputData.inputData;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.jface.text.Position;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class UndoTest extends EditionLimiterTests {
-
-	@Parameters(name = "{index}, {0}")
-	public static List<Object[]> getInputs() {
-		List<Object[]> things = new ArrayList<Object[]>();
-		String initialDocument = "000000000\n111111111\n222222222\n333333333"; //$NON-NLS-1$
-		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "<UNDO>"), expectations(0, null) });
-		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "a", "<UNDO>"),
-				expectations(1, "a", 1, new Position(10, 1)) });
-		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "aaa", "<UNDO>"), expectations(0, null) });
-		return things;
-	}
-
-	@Test
-	public void testUndo() {
-		processKeys();
-		assertExpectations();
-	}
+//
+//	@Parameters(name = "{index}, {0}")
+//	public static List<Object[]> getInputs() {
+//		List<Object[]> things = new ArrayList<Object[]>();
+//		String initialDocument = "000000000\n111111111\n222222222\n333333333"; //$NON-NLS-1$
+//		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "<UNDO>"), expectations(0, null) });
+//		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "a", "a", "<UNDO>"),
+//				expectations(1, "a", 1, new Position(10, 1)) });
+//		things.add(new Object[] { inputData(initialDocument, null, 1, 0, "aaa", "<UNDO>"), expectations(0, null) });
+//		return things;
+//	}
+//
+//	@Test
+//	public void testUndo() {
+//		processKeys();
+//		assertExpectations();
+//	}
 }
