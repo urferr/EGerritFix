@@ -242,6 +242,8 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 	@Override
 	public void setUserSelectedRevision(RevisionInfo newUserSelectedRevision) {
+		if (newUserSelectedRevision == null)
+			return;
 		if (userSelectedRevision == null) {
 			super.setUserSelectedRevision(newUserSelectedRevision);
 			return;
