@@ -83,6 +83,9 @@ public class ActiveWorkspaceRevision {
 	 * Set a given revision as a context. This will cause markers to be created for the comments and drafts
 	 */
 	public void activateCurrentRevision(GerritClient gerrit, RevisionInfo revisionInfo) {
+		if (revisionInfo == null) {
+			throw new IllegalAccessError("Revision can't be null."); //$NON-NLS-1$
+		}
 		fGerritClient = gerrit;
 		fRevisionInContext = revisionInfo;
 		fChangeInfo = revisionInfo.getChangeInfo();

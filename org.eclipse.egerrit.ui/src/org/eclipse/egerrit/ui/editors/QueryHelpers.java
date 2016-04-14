@@ -313,6 +313,9 @@ public class QueryHelpers {
 	}
 
 	public static void loadRevisionDetails(GerritClient gerrit, RevisionInfo revision) {
+		if (revision == null) {
+			throw new IllegalAccessError("Revision can't be null."); //$NON-NLS-1$
+		}
 		loadFiles(gerrit, revision);
 		String[] reviewedFiles = loadReviewedFiles(gerrit, revision);
 		for (String reviewed : reviewedFiles) {

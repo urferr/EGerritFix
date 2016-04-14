@@ -257,7 +257,9 @@ public class ChangeDetailEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (activeReview.getSelection()) {
 					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
-							fChangeInfo.getUserSelectedRevision());
+							fChangeInfo.getUserSelectedRevision() != null
+									? fChangeInfo.getUserSelectedRevision()
+									: fChangeInfo.getRevision());
 				} else {
 					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();
 				}
