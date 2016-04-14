@@ -11,6 +11,7 @@
 
 package org.eclipse.egerrit.ui.internal.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -20,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -191,7 +193,10 @@ public class ActiveWorkspaceRevision {
 				try {
 					IMarker commentMarker = workspaceFile.createMarker(ORG_ECLIPSE_EGERRIT_UI_COMMENT_MARKER);
 					commentMarker.setAttribute(IMarker.LINE_NUMBER, element.getLine());
-					commentMarker.setAttribute(IMarker.MESSAGE, element.getMessage());
+					commentMarker.setAttribute(IMarker.MESSAGE,
+							element.getAuthor().getUsername() + " "
+									+ Utils.formatDate(element.getUpdated(), new SimpleDateFormat("yyyy-MM-dd")) + " "
+									+ element.getMessage());
 					commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 					commentMarker.setAttribute("commentInfo", element); //$NON-NLS-1$
 					commentMarker.setAttribute("fileInfo", fileInfo); //$NON-NLS-1$

@@ -249,7 +249,8 @@ public class ChangeDetailEditor extends EditorPart {
 		});
 		Button activeReview = new Button(group_header, SWT.CHECK);
 		activeReview.setSelection(false);
-		activeReview.setText("Active Comments");
+		activeReview.setText("Activate Comment Markers");
+		activeReview.setToolTipText("Select to mark comments in files of the selected revision");
 		activeReview.addSelectionListener(new SelectionListener() {
 
 			@Override

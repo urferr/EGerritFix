@@ -25,9 +25,15 @@ public class QuickFixer implements IMarkerResolutionGenerator {
 	public IMarkerResolution[] getResolutions(IMarker marker) {
 		try {
 			Object message = marker.getAttribute("message"); //$NON-NLS-1$
+			int messageWithOutUserDate = (new String(message.toString())).indexOf(' ',
+					(new String(message.toString())).indexOf(' ') + 1);
 			boolean isDraft = (boolean) marker.getAttribute("isDraft"); //$NON-NLS-1$
-			int length = Math.min(20, message.toString().length());
-			String truncatedMsg = new String(message.toString().substring(0, length));
+			String truncatedMsg = new String(message.toString());
+			if (messageWithOutUserDate > 0) {
+				int length = Math.min(20, message.toString().substring(messageWithOutUserDate).length());
+				truncatedMsg = message.toString().substring(messageWithOutUserDate, messageWithOutUserDate + length)
+						+ " ..."; //$NON-NLS-1$
+			}
 			if (isDraft) {
 				return new IMarkerResolution[] { new QuickFixReplyToComment("Reply to comment: " + truncatedMsg),
 						new QuickFixDeleteDraftComment("Delete draft comment: " + truncatedMsg) };
