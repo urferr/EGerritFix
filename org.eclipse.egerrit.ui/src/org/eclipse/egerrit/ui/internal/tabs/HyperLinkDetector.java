@@ -77,7 +77,9 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 			if (element instanceof ChangeMessageInfo) {
 				ChangeMessageInfo changeMessageInfo = (ChangeMessageInfo) element;
 				revInfo = changeInfo.getRevisionByNumber(changeMessageInfo.get_revision_number());
-				QueryHelpers.loadComments(gerritClient, revInfo);
+				if (revInfo != null) {
+					QueryHelpers.loadComments(gerritClient, revInfo);
+				}
 			}
 		}
 	}
