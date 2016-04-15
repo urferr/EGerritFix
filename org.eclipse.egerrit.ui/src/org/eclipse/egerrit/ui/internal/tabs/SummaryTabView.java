@@ -1069,13 +1069,6 @@ public class SummaryTabView {
 						EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT) });
 	}
 
-	/**
-	 * @return the project string
-	 */
-	public String getProject() {
-		return UIUtils.getLinkText(genProjectData.getText());
-	}
-
 	private boolean isEditingAllowed() {
 		return !fGerritClient.getRepository().getServerInfo().isAnonymous();
 	}

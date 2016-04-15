@@ -942,7 +942,7 @@ public class ChangeDetailEditor extends EditorPart {
 		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
-				Repository localRepo = findLocalRepo(fGerritClient, summaryTab.getProject());
+				Repository localRepo = findLocalRepo(fGerritClient, fChangeInfo.getProject());
 
 				if (localRepo == null) {
 					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repository found");
