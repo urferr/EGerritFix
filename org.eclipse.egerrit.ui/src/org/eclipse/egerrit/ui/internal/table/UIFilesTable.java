@@ -385,13 +385,13 @@ public class UIFilesTable {
 
 			@Override
 			public void menuAboutToShow(IMenuManager manager) {
-				menu.setVisible(true);
 				addMenuItem(menu);
 			}
 		});
+
 		// set the menu on the SWT widget
 		fViewer.getTable().setMenu(menu);
-
+		menuManager.update(true);
 	}
 
 	private void addMenuItem(Menu menu) {
@@ -414,7 +414,6 @@ public class UIFilesTable {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
-
 			//Add Menu item to select which column to be visible
 			addVisibleColumnSelection(menu);
 		}
@@ -443,9 +442,9 @@ public class UIFilesTable {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					MenuItem menuItem = (MenuItem) e.getSource();
-					FilesTableModel tablemodel = (FilesTableModel) menuItem.getData();
-					tablemodel.setColumnVisible(menuItem.getSelection());
+					MenuItem subMenuItem = (MenuItem) e.getSource();
+					FilesTableModel tablemodel = (FilesTableModel) subMenuItem.getData();
+					tablemodel.setColumnVisible(subMenuItem.getSelection());
 					fViewer.getTable().getColumn(tablemodel.ordinal()).setWidth(tablemodel.getWidth());
 				}
 
