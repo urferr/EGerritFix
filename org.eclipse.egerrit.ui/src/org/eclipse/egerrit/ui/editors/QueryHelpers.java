@@ -284,6 +284,9 @@ public class QueryHelpers {
 			if (newChangeInfo.getRevisions().get(revId) != null) {
 				rev.getActions().clear();
 				rev.getActions().putAll(newChangeInfo.getRevisions().get(revId).getActions());
+				rev.setCommit(newChangeInfo.getRevisions().get(revId).getCommit());
+				rev.setRef(newChangeInfo.getRevisions().get(revId).getRef());
+				rev.setDraft(newChangeInfo.getRevisions().get(revId).isDraft());
 			}
 		});
 
