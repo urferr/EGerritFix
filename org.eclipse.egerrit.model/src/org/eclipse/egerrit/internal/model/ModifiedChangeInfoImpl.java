@@ -22,6 +22,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
@@ -39,6 +40,11 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 				if (msg.getFeature() == null)
 					return;
+				
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)) {
+					InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
+					notifySet(modifiedChangeInfo, ModelPackage.Literals.CHANGE_INFO__REVISION);
+				}
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REVISIONS)) {
 					deriveCommentPresence();
 				}
@@ -130,13 +136,6 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 				}
 			}
 
-			private void notifySet(InternalEObject modifiedObject, EAttribute attr) {
-				if (eNotificationRequired()) {
-					modifiedObject.eNotify(new ENotificationImpl(modifiedObject, Notification.SET, attr, null,
-							modifiedObject.eGet(attr)));
-				}
-			}
-
 			private InternalEObject getModifiedChangeInfo(Object object) {
 				if (object instanceof ChangeInfo) {
 					return (InternalEObject) object;
@@ -145,6 +144,13 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			}
 
 		});
+	}
+
+	private void notifySet(InternalEObject modifiedObject, EStructuralFeature attr) {
+		if (eNotificationRequired()) {
+			modifiedObject.eNotify(new ENotificationImpl(modifiedObject, Notification.SET, attr, null,
+					modifiedObject.eGet(attr)));
+		}
 	}
 
 	@Override
