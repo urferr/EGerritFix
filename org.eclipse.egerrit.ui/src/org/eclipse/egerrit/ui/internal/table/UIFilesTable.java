@@ -93,14 +93,6 @@ public class UIFilesTable {
 
 	private ModelLoader loader;
 
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
-
 	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo) {
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
@@ -325,7 +317,6 @@ public class UIFilesTable {
 	}
 
 	protected void filesTabDataBindings() {
-
 		//Set the FilesViewer
 		if (fViewer != null) {
 			FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
