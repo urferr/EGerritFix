@@ -95,8 +95,8 @@ public class ShowUnchangedFilesAction extends Action {
 		//Disable the current filter
 		RevisionInfo revisionInfo = compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide());
 		String base = compareInput.getLeftSide();
-		if (base.equals("BASE") || base.equals("WORKSPACE")) {
-			setToolTipText("This option can't be used when comparing with the workspace");
+		if (base.equals("BASE") || base.equals("WORKSPACE") || compareInput.getRightSide().equals("WORKSPACE")) {
+			setToolTipText("This option can't be used when comparing with the base or workspace");
 			setEnabled(false);
 			if (filter != null) {
 				Display.getDefault().asyncExec(() -> {

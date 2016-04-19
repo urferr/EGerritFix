@@ -126,6 +126,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			viewer.setSelection(selection, true);
 
 			callFeed1(selection);
+		} else {
+			//When there is no file to reveal, we force the input to null to hide what was there 
+			callFeed1(null);
 		}
 	}
 
@@ -264,6 +267,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
 				fillMenuItemForChangeInfo(mgr, rightPatch, false);
+				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", rightPatch, false));
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
