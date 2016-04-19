@@ -46,15 +46,11 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A helper class wrapping the common server queries. All calls in this class are expected to be synchronous.
  */
 public class QueryHelpers {
-	private static Logger logger = LoggerFactory.getLogger(QueryHelpers.class);
-
 	private static final String EXECUTING_QUERY = "Executing query";
 
 	/**
@@ -226,7 +222,6 @@ public class QueryHelpers {
 
 	private static boolean fullyLoaded(ChangeInfo toRefresh) {
 		synchronized (toRefresh) {
-			logger.debug("fullyLoaded" + toRefresh.get_number() + " " + toRefresh.getMessages().size());
 			if (toRefresh.getMessages().size() != 0) {
 				return true;
 			}
@@ -236,7 +231,6 @@ public class QueryHelpers {
 
 	private static void mergeNewInformation(ChangeInfo toRefresh, ChangeInfo newChangeInfo) {
 		synchronized (toRefresh) {
-			logger.debug("mergeNewInformation" + toRefresh.get_number());
 			if (toRefresh.getUpdated() != null && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())
 					&& fullyLoaded(toRefresh)) {
 				return;
@@ -269,7 +263,6 @@ public class QueryHelpers {
 			toRefresh.getMessages().clear();
 			toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			toRefresh.setUpdated(newChangeInfo.getUpdated());
-			logger.debug("mergeNewInformation - done" + toRefresh.get_number());
 		}
 	}
 
@@ -299,7 +292,6 @@ public class QueryHelpers {
 	}
 
 	public static void loadBasicInformation(GerritClient gerrit, ChangeInfo toRefresh) {
-		logger.debug("loadBasicInformation" + toRefresh.get_number());
 		ChangeInfo newChangeInfo = QueryHelpers.queryBasicInformation(gerrit, toRefresh.getId());
 		mergeNewInformation(toRefresh, newChangeInfo);
 	}
