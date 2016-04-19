@@ -135,8 +135,8 @@ public class ModelLoader {
 					}
 
 					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)) {
-						CompletableFuture.runAsync(
-								() -> QueryHelpers.loadRevisionDetails(gerritClient, changeInfo.getRevision()));
+						CompletableFuture.runAsync(() -> QueryHelpers.loadRevisionDetails(gerritClient,
+								changeInfo.getUserSelectedRevision()));
 					}
 				}
 			};
