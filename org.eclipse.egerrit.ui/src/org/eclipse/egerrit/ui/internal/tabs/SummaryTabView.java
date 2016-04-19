@@ -697,6 +697,10 @@ public class SummaryTabView {
 						addReviewerInput.setConfirmed(true);
 						reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					}
+					//We need to update the list manually because the "updated" timestamp on the server is not refreshed and therefore the reload does nothing
+					if (reviewerCmdResult != null) {
+						fChangeInfo.getReviewers().addAll(reviewerCmdResult.getReviewers());
+					}
 					loader.reload();
 					textWidget.setText("");
 				}
@@ -762,6 +766,7 @@ public class SummaryTabView {
 
 							try {
 								deleteReviewerCmd.call();
+								fChangeInfo.getReviewers().remove(reviewerInfo);
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(
 										fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
