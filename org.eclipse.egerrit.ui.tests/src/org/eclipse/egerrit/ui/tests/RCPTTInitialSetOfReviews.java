@@ -75,7 +75,8 @@ public class RCPTTInitialSetOfReviews {
 	public void setupRepo() throws Exception {
 
 		gitAccess = new GitAccess();
-		gitAccess.setTestProject("egerrit/RCPTTtest");
+//		gitAccess.setTestProject("egerrit/RCPTTtest");
+		gitAccess.setTestProject("egerrit/test");
 		gitAccess.getGitProject();
 		for (int i = 0; i < 10; i++) {
 			gitAccess.addFile(A_PROJECT_A_JAVA, INITIAL_CONTENT_FILE_A);

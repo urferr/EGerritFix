@@ -90,7 +90,7 @@
 									<feature>org.eclipse.emf.feature.group</feature>
 								</features>
 							</injection>
-							<injection>
+ 							<injection>
 								<site>file:${project.build.directory}/dependency/org.eclipse.egerrit.updatesite-zip/</site>
 								<features>
 									<feature>org.eclipse.egerrit.feature.feature.group</feature>

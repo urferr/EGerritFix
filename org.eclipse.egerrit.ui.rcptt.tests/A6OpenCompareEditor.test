@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _6cf5NYFGQEeWvEPKyhn0BbA
 Runtime-Version: 2.0.2.201511100828
-Save-Time: 11/17/15 10:39 AM
+Save-Time: 4/19/16 9:36 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -16,38 +16,41 @@ Entry-Name: .content
 get-quick-access | set-text setupRCPTT | key-type Enter
 with [get-view "Gerrit Dashboard (EGerrit)"] {
 	get-table | get-column-header Updated | click | click
-	get-combo | set-value "message:\"Test commit message number 1\""
+//	get-combo | set-value "message:\"Test commit message number 1\""
+	get-combo | set-value "message:\"Test commit message\""
 	get-button -text Search | click
 	with [get-table] {
 		get-cell 0 2 | double-click
 	}
 }
 
-//Open the compare editor against base
-with [get-editor ".*Test commit message number 1"] {
-	get-tab-folder | get-tab-item Files | click
-	with [get-table ] {
-		get-cell 0 2 | double-click
-	}
-}
-try { get-window "EGerrit Tip" | get-button OK | click } -catch { } 
-wait -ms 2000
-//Add a comment
-with [get-editor "A.java" | get-text-viewer -after [get-label "Patch Set 1: A.java"] -index 1] {
-    set-caret-pos 1 26
-    key-type Enter
-    type-text abc
-    key-type "M1+s"
-}
-
-//Open the compare editor against the workspace
-with [get-editor ".*Test commit message number 1"] {
-	get-tab-folder | get-tab-item Files | click
-    get-combo -after [get-label "Diff against:"] | select Workspace
-    with [get-table] {
-        get-cell 0 2 | double-click
-    }
-}
-try { get-window "EGerrit Tip" | get-button OK | click } -catch { } 
+////Open the compare editor against base
+////with [get-editor ".*Test commit message number 1"] {
+////	get-tab-folder | get-tab-item Files | click
+//with [get-editor ".*Test commit message"] {
+//	get-tab-folder | get-tab-item History | click
+//	with [get-table ] {
+//		get-cell 0 2 | double-click
+//	}
+//}
+//try { get-window "EGerrit Tip" | get-button OK | click } -catch { } 
+//wait -ms 2000
+////Add a comment
+//with [get-editor "A.java" | get-text-viewer -after [get-label "Patch Set 1: A.java"] -index 1] {
+//    set-caret-pos 1 26
+//    key-type Enter
+//    type-text abc
+//    key-type "M1+s"
+//}
+//
+//////Open the compare editor against the workspace
+////with [get-editor ".*Test commit message number 1"] {
+////	get-tab-folder | get-tab-item Files | click
+////    get-combo -after [get-label "Diff against:"] | select Workspace
+////    with [get-table] {
+////        get-cell 0 2 | double-click
+////    }
+////}
+////try { get-window "EGerrit Tip" | get-button OK | click } -catch { } 
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

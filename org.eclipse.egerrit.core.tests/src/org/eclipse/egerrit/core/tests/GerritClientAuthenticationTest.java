@@ -117,10 +117,11 @@ public class GerritClientAuthenticationTest {
 	@Test
 	public void testGerritRepository_NoSSL_NoProxy_NoAuth() {
 		String CASE = "NoSSL_NoProxy_NoAuth";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
+
 		String USER = null;
 		String PASSWORD = null;
 		String PROXY_HOST = null;
@@ -142,7 +143,8 @@ public class GerritClientAuthenticationTest {
 		String PROTOCOL = "https";
 		String HOST = "gerrit.ericsson.se";
 		int PORT = 0;
-		String PATH = "";
+		String PATH = Common.PATH;
+
 		String USER = null;
 		String PASSWORD = null;
 		String PROXY_HOST = null;
@@ -184,13 +186,14 @@ public class GerritClientAuthenticationTest {
 	/**
 	 * OpenID
 	 */
-//	@Test
+	@Test
 	public void testGerritRepository_SSL_NoProxy_OpenID() {
 		String CASE = "NoSSL_NoProxy_OpenID";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
+
 		String USER = null;
 		String PASSWORD = "";
 		String PROXY_HOST = null;
@@ -206,13 +209,13 @@ public class GerritClientAuthenticationTest {
 	/**
 	 * HTTP
 	 */
-//	@Test
+	@Test
 	public void testGerritRepository_SSL_NoProxy_HTTP() {
 		String CASE = "NoSSL_NoProxy_HTTP";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
 		String USER = null;
 		String PASSWORD = "";
 		String PROXY_HOST = null;
@@ -273,10 +276,10 @@ public class GerritClientAuthenticationTest {
 	@Test
 	public void testGerritRepository_NoSSL_NoProxy_Dev1() {
 		String CASE = "NoSSL_NoProxy_Dev";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
 		String USER = "test1";
 		String PASSWORD = "egerritTest";
 		String PROXY_HOST = null;
@@ -295,11 +298,11 @@ public class GerritClientAuthenticationTest {
 	@Test
 	public void testGerritRepository_NoSSL_NoProxy_Dev2() {
 		String CASE = "NoSSL_NoProxy_Dev2";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
-		String USER = "test1@egerrit.eclipse.org";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
+		String USER = "test1@localhost.com";
 		String PASSWORD = "";
 		String PROXY_HOST = null;
 		int PROXY_PORT = 0;
@@ -317,10 +320,10 @@ public class GerritClientAuthenticationTest {
 	@Test
 	public void testGerritRepository_NoSSL_NoProxy_Dev3() {
 		String CASE = "NoSSL_NoProxy_Dev3";
-		String PROTOCOL = "http";
-		String HOST = "192.168.50.4";
-		int PORT = 28294;
-		String PATH = "/gerrit-2.9.4";
+		String PROTOCOL = Common.SCHEME;
+		String HOST = Common.HOST;
+		int PORT = Common.PORT;
+		String PATH = Common.PATH;
 		String USER = "1000001";
 		String PASSWORD = "";
 		String PROXY_HOST = null;

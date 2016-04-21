@@ -42,7 +42,7 @@ public class Common {
 
 	public static final String PASSWORD = "egerritTest";
 
-	public static final String EMAIL = "admin@egerrit.eclipse.org";
+	public static final String EMAIL = "admin@localhost";
 
 	public static final String GERRIT_VERSION = "2.11.5";
 
