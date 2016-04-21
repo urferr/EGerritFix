@@ -193,7 +193,7 @@ public class UIFilesTable {
 					String left = guessLeft(fGerritClient);
 					String right = left.equals("WORKSPACE")
 							? getLastRevisionCommentedByReviewer(fGerritClient)
-							: fChangeInfo.getRevision().getId();
+							: fChangeInfo.getUserSelectedRevision().getId();
 					compareEditor.compareFiles(left, right, selectedFile);
 				}
 			}
