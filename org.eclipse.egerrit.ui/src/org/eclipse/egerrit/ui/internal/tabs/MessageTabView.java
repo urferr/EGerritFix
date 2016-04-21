@@ -28,6 +28,7 @@ import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
@@ -319,6 +320,9 @@ public class MessageTabView {
 					}
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
+					ModelLoader loader = ModelLoader.initialize(fGerritClient, changeInfo);
+					loader.loadBasicInformation();
+					loader.dispose();
 					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
 					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -417,7 +421,7 @@ public class MessageTabView {
 		}
 		return bindingContext;
 	}
-	
+
 	public void dispose() {
 		//Nothing to do
 	}
