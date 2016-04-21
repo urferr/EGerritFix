@@ -80,8 +80,6 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	Label leftPatch, rightPatch;
 
-	protected ShowUnchangedFilesAction showUnchangedFiles;
-
 	public CompareUpperSection(Composite parent, int style, boolean visibility, CompareEditorInput cei) {
 		super(parent, style, visibility);
 		compareInput = (GerritMultipleInput) cei;
@@ -115,9 +113,6 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		super.setInput(input);
 		viewer.setInput(input);
 		revealFile();
-		if (showUnchangedFiles != null) {
-			showUnchangedFiles.refresh();
-		}
 	}
 
 	private void revealFile() {
@@ -127,7 +122,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 			callFeed1(selection);
 		} else {
-			//When there is no file to reveal, we force the input to null to hide what was there 
+			//When there is no file to reveal, we force the input to null to hide what was there
 			callFeed1(null);
 		}
 	}
@@ -157,9 +152,6 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 						compareInput));
 				toolbarManager.appendToGroup("modes", new ShowFilePathAction(() -> viewer)); //$NON-NLS-1$
 				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer)); //$NON-NLS-1$
-				showUnchangedFiles = new ShowUnchangedFilesAction(compareInput, () -> viewer);
-				toolbarManager.appendToGroup("modes", //$NON-NLS-1$
-						showUnchangedFiles);
 
 				toolbarManager.appendToGroup("merge", //$NON-NLS-1$
 						new ReplyAction(compareInput, () -> viewer));

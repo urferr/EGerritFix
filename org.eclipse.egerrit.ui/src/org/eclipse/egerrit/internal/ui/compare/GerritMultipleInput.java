@@ -15,6 +15,8 @@ import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareViewerPane;
@@ -34,6 +36,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -197,34 +200,64 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	private void computeDifferencesBetweenRevisions(IProgressMonitor monitor) {
 		loadRevision(leftSide);
 		loadRevision(rightSide);
+		Map<String, FileInfo> files = loadRevisionDiff();
 
-		RevisionInfo leftRevision = changeInfo.getRevisions().get(leftSide);
-		RevisionInfo rightRevision = changeInfo.getRevisions().get(rightSide);
-		EMap<String, FileInfo> leftFiles = leftRevision.getFiles();
-		for (FileInfo rightFile : rightRevision.getFiles().values()) {
-			GerritDiffNode node = createRevisionRevisionNode(monitor, leftFiles, rightFile);
-			root.add(node);
-			setElementToReveal(node, rightFile);
+		EMap<String, FileInfo> leftFiles = changeInfo.getRevisions().get(leftSide).getFiles();
+		EMap<String, FileInfo> rightFiles = changeInfo.getRevisions().get(rightSide).getFiles();
+		for (Entry<String, FileInfo> file : files.entrySet()) {
+			GerritDiffNode node = createRevisionRevisionNode(monitor, leftFiles, rightFiles, file.getValue(),
+					file.getKey());
+			if (node != null) {
+				root.add(node);
+				setElementToReveal(node, node.getFileInfo());
+			}
 		}
 	}
 
+	private Map<String, FileInfo> loadRevisionDiff() {
+		Map<String, FileInfo> files = null;
+		try {
+			files = gerritClient.getFilesModifiedSince(changeInfo.getId(), rightSide, leftSide).call();
+		} catch (EGerritException e) {
+			logger.debug(
+					"An exception occurred while getting the diff between revision " + leftSide + " and " + rightSide, //$NON-NLS-1$ //$NON-NLS-2$
+					e);
+		}
+		return files;
+	}
+
 	private GerritDiffNode createRevisionRevisionNode(IProgressMonitor monitor, EMap<String, FileInfo> leftFiles,
-			FileInfo rightFile) {
-		String fileName = rightFile.getPath();
-		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(rightFile));
-		node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName, changeInfo.getId(),
-				rightFile, monitor));
-		node.setFileInfo(rightFile);
-		FileInfo leftFile = getFileWithName(getOldPathOrPath(rightFile), leftFiles);
-		if (leftFile != null) {
+			EMap<String, FileInfo> rightFiles, FileInfo fileToShow, String filePathToShow) {
+		String fileName = filePathToShow;
+		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(fileToShow));
+		FileInfo referenceFile = null;
+		FileInfo matchForRight = rightFiles.get(fileName);
+		FileInfo matchForLeft = leftFiles.get(matchForRight != null ? getOldPathOrPath(matchForRight) : filePathToShow);
+		if (matchForRight == null && matchForLeft == null) {
+			logger.debug("File " + filePathToShow + " found in either revision " + leftSide + " or " + rightSide);
+			return null;
+		}
+		referenceFile = matchForRight != null ? matchForRight : matchForLeft;
+
+		if (matchForRight != null) {
+			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
+					changeInfo.getId(), matchForRight, monitor));
+			node.setFileInfo(matchForRight);
+		} else {
+			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+					getBaseCommitId(referenceFile), referenceFile, monitor));
+			node.setFileInfo(referenceFile);
+		}
+
+		if (matchForLeft != null) {
 			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), leftFile, monitor));
-		} else if (!rightFile.getStatus().equals("A")) { //$NON-NLS-1$
+					changeInfo.getId(), matchForLeft, monitor));
+		} else if (!fileToShow.getStatus().equals("A")) { //$NON-NLS-1$
 			//The file is not in the other revision, and it is not added, so compare against the base
 			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					getBaseCommitId(rightFile), rightFile, monitor));
+					getBaseCommitId(referenceFile), referenceFile, monitor));
 		} else {
-			node.setLeft(new EmptyTypedElement(rightFile.getPath()));
+			node.setLeft(new EmptyTypedElement(filePathToShow));
 		}
 		return node;
 	}
@@ -590,8 +623,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			newEntry = createWorkspaceRevisionNode(pm, savedElement.getFileInfo(), true);
 		} else {
 			loadRevision(leftSide);
+			loadRevision(rightSide);
 			newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide).getFiles(),
-					savedElement.getFileInfo());
+					changeInfo.getRevisions().get(rightSide).getFiles(), savedElement.getFileInfo(),
+					savedElement.getFileInfo().getPath());
 		}
 		savedElement.setRight(newEntry.getRight());
 		savedElement.setLeft(newEntry.getLeft());
