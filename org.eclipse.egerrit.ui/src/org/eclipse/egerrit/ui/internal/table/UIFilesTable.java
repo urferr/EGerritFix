@@ -17,6 +17,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -40,6 +41,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -62,10 +64,18 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the files table view.
@@ -73,6 +83,8 @@ import org.osgi.service.prefs.Preferences;
  * @since 1.0
  */
 public class UIFilesTable {
+
+	private static Logger logger = LoggerFactory.getLogger(UIFilesTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
@@ -387,9 +399,58 @@ public class UIFilesTable {
 
 	private void addMenuItem(Menu menu) {
 		if (menu.getItemCount() == 0) {
+
+			final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
+			openFile.setText("Open Workspace file");
+			final FileTableLabelProvider labelProvider = (FileTableLabelProvider) fViewer.getLabelProvider();
+			openFile.setSelection(labelProvider.getFileOrder());
+
+			openFile.addSelectionListener(new SelectionListener() {
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+
+					ISelection selection = fViewer.getSelection();
+					if (selection instanceof IStructuredSelection) {
+
+						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+
+						Object element = structuredSelection.getFirstElement();
+
+						if (element == null) {
+							return;
+						}
+						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
+						if (fileInfo != null) {
+							IFile workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
+									.getCorrespondingWorkspaceFile(fileInfo);
+
+							if (workspaceFile == null) {
+								Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+								MessageDialog.openError(shell, "File not found",
+										"File " + fileInfo.getPath() + " could not be found");
+								return;
+							}
+							IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+							IWorkbenchPage page = window.getActivePage();
+							try {
+								IDE.openEditor(page, workspaceFile);
+							} catch (PartInitException e1) {
+								logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
+
+							}
+						}
+
+					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+
 			final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
 			nameFirst.setText("Show File Names first");
-			final FileTableLabelProvider labelProvider = (FileTableLabelProvider) fViewer.getLabelProvider();
 			nameFirst.setSelection(labelProvider.getFileOrder());
 
 			nameFirst.addSelectionListener(new SelectionListener() {

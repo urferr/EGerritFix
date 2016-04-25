@@ -44,4 +44,5 @@ Export-Package: org.eclipse.egerrit.internal.ui.compare,
 Import-Package: org.apache.commons.codec.binary,
  org.apache.http.client.utils;version="4.3.6",
  org.eclipse.ui,
+ org.eclipse.ui.ide,
  org.eclipse.ui.part
