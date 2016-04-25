@@ -122,8 +122,8 @@ public abstract class CommentableCompareItem extends Document
 		for (CommentInfo newComment : extractor.getAddedComments()) {
 			CreateDraftCommand publishDraft = gerrit.createDraftComments(getChangeId(), fileInfo.getRevision().getId());
 			newComment.setSide(commentSide);
-			publishDraft.setCommandInput(newComment);
 			newComment.setPath(fileInfo.getPath());
+			publishDraft.setCommandInput(newComment);
 			try {
 				logger.debug("Adding comment: " + newComment); //$NON-NLS-1$
 				fileInfo.getDraftComments().add(publishDraft.call());
