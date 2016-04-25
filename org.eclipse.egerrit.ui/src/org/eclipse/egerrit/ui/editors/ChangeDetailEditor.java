@@ -78,9 +78,11 @@ import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -167,6 +169,8 @@ public class ChangeDetailEditor extends EditorPart {
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
+
+	private EContentAdapter subjectListener;
 
 	/**
 	 * The constructor.
@@ -874,18 +878,19 @@ public class ChangeDetailEditor extends EditorPart {
 		DataBindingContext bindingContext = new DataBindingContext();
 
 		//Show id
-		IObservableValue idFChangeInfoObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER)
+		IObservableValue idObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER)
 				.observe(fChangeInfo);
 		NumberFormat numberFormat = NumberFormat.getInstance();
 		numberFormat.setGroupingUsed(false);
-		bindingContext.bindValue(WidgetProperties.text().observe(shortIdData), idFChangeInfoObserveValue, null,
+		bindingContext.bindValue(WidgetProperties.text().observe(shortIdData), idObservable, null,
 				new UpdateValueStrategy().setConverter(NumberToStringConverter.fromInteger(numberFormat, true)));
 
 		//Show subject
-		IObservableValue changeIdFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT).observe(fChangeInfo);
-		bindingContext.bindValue(WidgetProperties.text().observe(subjectData), changeIdFChangeInfoObserveValue, null,
-				null);
+		IObservableValue subjectObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT)
+				.observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(subjectData), subjectObservable, null, null);
+
+		fChangeInfo.eAdapters().add(getSubjectListener());
 
 		//Show status
 		IObservableValue statusObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
@@ -893,6 +898,21 @@ public class ChangeDetailEditor extends EditorPart {
 		bindingContext.bindValue(WidgetProperties.text().observe(statusData), statusObserveValue, null, null);
 
 		return bindingContext;
+	}
+
+	private EContentAdapter getSubjectListener() {
+		subjectListener = new EContentAdapter() {
+			@Override
+			public void notifyChanged(Notification msg) {
+				if (msg.getFeature() == null) {
+					return;
+				}
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__SUBJECT)) {
+					Display.getDefault().asyncExec(() -> setPartName(fChangeInfo.getSubject()));
+				}
+			}
+		};
+		return subjectListener;
 	}
 
 	@Override
@@ -1121,14 +1141,6 @@ public class ChangeDetailEditor extends EditorPart {
 		return jgitRepo;
 	}
 
-	//We are keeping this for now because we know there is a bug about this
-	private void setEditorTitle() {
-		//Change the window title if needed
-		if (fChangeInfo != null) {
-			setPartName(fChangeInfo.getSubject());
-		}
-	}
-
 	public void invokeRefreshCommand() {
 		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
 		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
@@ -1183,6 +1195,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 	@Override
 	public void dispose() {
+		fChangeInfo.eAdapters().remove(subjectListener);
 		historytab.dispose();
 		messageTab.dispose();
 		summaryTab.dispose();
