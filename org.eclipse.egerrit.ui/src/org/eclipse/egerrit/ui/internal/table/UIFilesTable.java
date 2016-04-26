@@ -55,8 +55,6 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -149,17 +147,6 @@ public class UIFilesTable {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-
-		//Add a paint listener, so the change in column layout
-		//will take effect on all files table in any editor.
-		fViewer.getTable().addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				// ignore
-				setLayoutRefresh();
-			}
-		});
 
 		addPulldownMenu();
 	}
@@ -504,17 +491,6 @@ public class UIFilesTable {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
-		}
-	}
-
-	/**
-	 * Reset the column layout when showing the table in any editor
-	 */
-	private void setLayoutRefresh() {
-		Table table = fViewer.getTable();
-		TableColumn[] column = table.getColumns();
-		for (int i = 0; i < column.length; i++) {
-			column[i].setWidth(FilesTableModel.values()[i].getWidth());
 		}
 	}
 
