@@ -254,16 +254,26 @@ public class ChangeDetailEditor extends EditorPart {
 		Button activeReview = new Button(group_header, SWT.CHECK);
 		activeReview.setSelection(false);
 		activeReview.setText("Activate Comment Markers");
-		activeReview.setToolTipText("Select to mark comments in files of the selected revision");
+		activeReview.setToolTipText("Select to mark comments in files of the current revision");
 		activeReview.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (activeReview.getSelection()) {
+
 					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
 							fChangeInfo.getUserSelectedRevision() != null
 									? fChangeInfo.getUserSelectedRevision()
 									: fChangeInfo.getRevision());
+					try {
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
+								"org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
+
+					} catch (PartInitException e1) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+
 				} else {
 					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();
 				}
@@ -285,6 +295,7 @@ public class ChangeDetailEditor extends EditorPart {
 		//Set the binding for this section
 		headerSectionDataBindings();
 		return group_header;
+
 	}
 
 	private Composite buttonSection(final Composite parent) {
