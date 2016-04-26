@@ -242,7 +242,7 @@ public class GerritRepository {
 	 */
 	public GerritHttpClient getHttpClient() {
 		if (fHttpClient == null) {
-			GerritHttpClient client = new GerritHttpClient(this, fAcceptSelfSignedCerts, fCredentials);
+			GerritHttpClient client = new GerritHttpClient(this, fCredentials);
 			if (client.authenticate()) {
 				fHttpClient = client;
 			}
@@ -436,7 +436,7 @@ public class GerritRepository {
 
 	/*
 	 * return the error code of the http connection
-	
+
 	 * @return
 	 */
 	public int getStatus() {

@@ -18,8 +18,6 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +42,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -101,12 +100,10 @@ public class GerritHttpClient {
 	/**
 	 * @param repository
 	 *            The gerrit repository
-	 * @param acceptSSC
-	 *            Indicates if self-signed certificates should be accepted
 	 * @param creds
 	 *            The user credentials
 	 */
-	public GerritHttpClient(GerritRepository repository, boolean acceptSSC, GerritCredentials creds) {
+	public GerritHttpClient(GerritRepository repository, GerritCredentials creds) {
 		fRepository = repository;
 		try {
 			// Basic builder
@@ -119,15 +116,13 @@ public class GerritHttpClient {
 			if (proxy != null) {
 				builder.setProxy(proxy);
 			}
+
 			// Handle self-signed certificates (SSC)
-			if (acceptSSC) {
-				builder.setSslcontext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-					@Override
-					public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-						return true;
-					}
-				}).build());
-			}
+			SSLContextBuilder sslContext = new SSLContextBuilder().loadTrustMaterial(null,
+					new TrustSelfSignedStrategy());
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext.build());
+			builder.setSSLSocketFactory(sslsf);
+
 			// Handle user credentials
 			if (creds != null && creds.getUsername() != null && !creds.getUsername().isEmpty()) {
 				fCredentials = creds;
@@ -137,11 +132,7 @@ public class GerritHttpClient {
 			}
 			// Build the client
 			fHttpClient = builder.build();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (KeyStoreException e) {
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			e.printStackTrace();
 		}
 	}
