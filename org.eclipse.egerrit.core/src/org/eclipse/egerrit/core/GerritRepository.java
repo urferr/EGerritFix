@@ -298,6 +298,10 @@ public class GerritRepository {
 
 	private static final String JSON_NON_EXECUTABLE_PREFIX = ")]}'\n"; //$NON-NLS-1$
 
+	public static final int SSL_PROBLEM = -1;
+
+	public static final int SSL_INVALID_ROOT_CERTIFICATE = -2;
+
 	public Version queryVersion() {
 		Version version = null;
 		try {
@@ -357,6 +361,10 @@ public class GerritRepository {
 				}
 			}
 		} catch (SSLHandshakeException e) {
+			fStatus = SSL_PROBLEM;
+			if (e.getCause().getClass().getName().equals("sun.security.validator.ValidatorException")) {
+				fStatus = SSL_INVALID_ROOT_CERTIFICATE;
+			}
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 		} catch (IOException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);

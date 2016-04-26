@@ -313,23 +313,34 @@ public class GerritServerDialog extends Dialog {
 	private boolean validConnection() throws EGerritException {
 		// Initialize
 		GerritRepository repo;
-		boolean b = false;
+		boolean connexionSuccesfull = false;
 		try {
 			repo = new GerritRepository(workingCopy.getServerURI());
 			// Run test connection
 
 			if (!repo.getHostname().isEmpty()) {
-				b = repo.connect();
+				connexionSuccesfull = repo.connect();
 			}
 		} catch (EGerritException e) {
 			return false;
 		}
-		Version version = repo.getVersion();
+		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_PROBLEM) {
+			throw new EGerritException("A problem occurred establishing the SSL connection with "
+					+ workingCopy.getServerURI() + ". Please see log file for more details.");
+		}
+		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_INVALID_ROOT_CERTIFICATE) {
+			throw new EGerritException("A problem occurred establishing the SSL connection with "
+					+ workingCopy.getServerURI()
+					+ ". The trust chain of the provided certificate could not be verified. Please see log file for more details.");
+		}
+
+		if (!connexionSuccesfull) {
+			throw new EGerritException("Server " + workingCopy.getServerURI() + " : " + INVALID_MESSAGE);
+		}
 
 		//Test the Version if it is a valid Gerrit Server
-		if (version == null) {
-			throw new EGerritException("Server " + workingCopy.getServerURI() + " : " + INVALID_MESSAGE);
-		} else if (version.equals(GerritRepository.NO_VERSION)) {
+		Version version = repo.getVersion();
+		if (version.equals(GerritRepository.NO_VERSION)) {
 			throw new EGerritException(
 					"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
 							+ GerritFactory.MINIMAL_VERSION + ".");
@@ -352,13 +363,13 @@ public class GerritServerDialog extends Dialog {
 		// Run test connection with a user if provided
 
 		if (!repo.getHostname().isEmpty()) {
-			b = repo.connect();
-			if (!b) {
+			connexionSuccesfull = repo.connect();
+			if (!connexionSuccesfull) {
 				//Test self signed automatically if needed
 				boolean bo = true;
 				workingCopy.setSelfSigned(bo);
 				repo.acceptSelfSignedCerts(bo);
-				b = repo.connect();
+				connexionSuccesfull = repo.connect();
 			}
 		}
 		if (repo.getHttpClient() == null) {
@@ -366,7 +377,7 @@ public class GerritServerDialog extends Dialog {
 					"Server [ " + workingCopy.getServerURI() + " ] has an invalid User and/or password ");
 		}
 
-		return b;
+		return connexionSuccesfull;
 	}
 
 	private Boolean validateURL() throws URISyntaxException {
