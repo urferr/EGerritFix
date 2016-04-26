@@ -52,7 +52,7 @@
 		<!-- Sonar -->
 		<sonar.language>java</sonar.language>
 		<sonar.java.source>1.8</sonar.java.source>
-		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.exclusions>**/tests/**,**/test/**,**/Messages*,**/stubs/**</sonar.exclusions>
                 <sonar.junit.reportsPath>target/test-reports,target/surefire-reports</sonar.junit.reportsPath>
 		<base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
