@@ -11,8 +11,6 @@
  ******************************************************************************/
 package org.eclipse.egerrit.ui.internal.table;
 
-import java.util.Optional;
-
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -21,11 +19,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
@@ -85,10 +80,6 @@ public class UIFilesTable {
 	private static Logger logger = LoggerFactory.getLogger(UIFilesTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
-
-	private static final String BASE = "Base"; //$NON-NLS-1$
-
-	private static final String WORKSPACE = "Workspace"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -189,10 +180,8 @@ public class UIFilesTable {
 					}
 					compareEditor = new OpenCompareEditor(fGerritClient, fChangeInfo);
 
-					String left = guessLeft(fGerritClient);
-					String right = left.equals("WORKSPACE")
-							? getLastRevisionCommentedByReviewer(fGerritClient)
-							: fChangeInfo.getUserSelectedRevision().getId();
+					String left = "BASE"; //$NON-NLS-1$
+					String right = fChangeInfo.getUserSelectedRevision().getId();
 					compareEditor.compareFiles(left, right, selectedFile);
 				}
 			}
@@ -205,63 +194,6 @@ public class UIFilesTable {
 
 		//Set the binding for this section
 		filesTabDataBindings();
-	}
-
-	private String getLastRevisionCommentedByReviewer(GerritClient gerritClient) {
-		GitPersonInfo author = fChangeInfo.getRevision().getCommit().getAuthor();
-		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
-				.stream()
-				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-				.filter(message -> message.getAuthor() != null)
-				.filter(message -> !author.equals(message.getAuthor().getEmail()))
-				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
-				.findFirst();
-		if (match.isPresent()) {
-			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
-		} else {
-			return fChangeInfo.getRevision().getId();
-		}
-	}
-
-	private String guessLeft(GerritClient gerritClient) {
-		if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
-			return "BASE";
-		}
-
-		if (fChangeInfo.getRevisions().size() == 1) {
-			return "BASE";
-		}
-		String currentUser = gerritClient.getRepository().getCredentials().getUsername();
-		//If I'm an author
-		GitPersonInfo author = fChangeInfo.getRevision().getCommit().getAuthor();
-		if (author != null && (currentUser.equals(author.getEmail()) || currentUser.equals(author.getName()))) {
-			//TODO Ideally we should first check if we are on the workspace
-			Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
-					.stream()
-					.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-					.filter(message -> message.getAuthor() != null)
-					.filter(message -> author.getEmail().equals(message.getAuthor().getEmail()))
-					.filter(message -> message.get_revision_number() != fChangeInfo.getRevision().get_number())
-					.findFirst();
-			if (match.isPresent()) {
-				return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
-			}
-			return "WORKSPACE";
-		}
-
-		//I'm a reviewer, so find the last revision that I commented on
-		Optional<ChangeMessageInfo> match = fChangeInfo.getMessages()
-				.stream()
-				.sorted((message1, message2) -> message2.get_revision_number() - message1.get_revision_number())
-				.filter(message -> message.getAuthor() != null)
-				.filter(message -> currentUser.equals(message.getAuthor().getEmail()))
-				.filter(message -> message.getMessage().contains("comment")) //$NON-NLS-1$
-				.findFirst();
-		if (match.isPresent()) {
-			return getRevisionInfoByNumber(match.get().get_revision_number()).getId();
-		} else {
-			return "BASE";
-		}
 	}
 
 	/**
@@ -340,15 +272,12 @@ public class UIFilesTable {
 		}
 	}
 
-	private RevisionInfo getRevisionInfoByNumber(int number) {
-		return fChangeInfo.getRevisionByNumber(number);
-	}
-
 	private void showEditorTip() {
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
+		final String KEY = "editortip"; //$NON-NLS-1$
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs"); //$NON-NLS-1$
 
-		Preferences editorPrefs = prefs.node("editor");
-		boolean choice = editorPrefs.getBoolean("editortip", false);
+		Preferences editorPrefs = prefs.node("editor"); //$NON-NLS-1$
+		boolean choice = editorPrefs.getBoolean(KEY, false);
 
 		if (choice) {
 			return;
@@ -358,7 +287,7 @@ public class UIFilesTable {
 				Messages.FileTabView_EGerriTipShowAgain, false, null, null);
 
 		if (dialog.getToggleState()) {
-			editorPrefs.putBoolean("editortip", true);
+			editorPrefs.putBoolean(KEY, true);
 			try {
 				editorPrefs.flush();
 			} catch (BackingStoreException e) {
