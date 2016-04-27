@@ -33,6 +33,8 @@ import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,5 +233,20 @@ public class ActiveWorkspaceRevision {
 	public void deactiveCurrentRevision() {
 		deleteCommentMarkers();
 		fRevisionInContext.eAdapters().remove(listener);
+
+		if (hasDrafts()) {
+			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
+		}
+	}
+
+	private boolean hasDrafts() {
+		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
+		for (FileInfo fileInfo : files) {
+			if (fileInfo.getDraftsCount() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
