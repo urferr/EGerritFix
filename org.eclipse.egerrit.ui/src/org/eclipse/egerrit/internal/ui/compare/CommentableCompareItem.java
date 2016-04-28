@@ -29,6 +29,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.CommentInput;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.text.BadLocationException;
@@ -236,7 +237,8 @@ public abstract class CommentableCompareItem extends Document
 			return;
 		}
 
-		EList<CommentInfo> sortedComments = sortComments(filterComments(fileInfo.getAllComments()));
+		EList<CommentInfo> sortedComments = ModelHelpers.sortComments(filterComments(fileInfo.getAllComments()));
+		Collections.reverse(sortedComments);
 
 		for (CommentInfo commentInfo : sortedComments) {
 			IRegion lineInfo;
@@ -272,21 +274,6 @@ public abstract class CommentableCompareItem extends Document
 	}
 
 	protected abstract EList<CommentInfo> filterComments(EList<CommentInfo> eList);
-
-	private static EList<CommentInfo> sortComments(EList<CommentInfo> comments) {
-		Collections.sort(comments, (CommentInfo o1, CommentInfo o2) -> {
-			if (o1.getLine() == o2.getLine()) {
-				return o1.getUpdated().compareTo(o2.getUpdated());
-			}
-			if (o1.getLine() < o2.getLine()) {
-				return -1;
-			}
-			return 1;
-		});
-		Collections.reverse(comments);
-		return comments;
-
-	}
 
 	public void reset() {
 		dataLoaded = false;

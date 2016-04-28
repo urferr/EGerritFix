@@ -11,15 +11,9 @@
 
 package org.eclipse.egerrit.ui.editors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -34,13 +28,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
- * This class manages the marker menu contribution
+ * This class shows a menu to let the user enter a gerrit comment when the user clicks in the vertical ruler
  *
  * @since 1.0
  */
@@ -49,71 +43,30 @@ public class MarkerMenuContribution extends ContributionItem {
 
 	private ITextEditor editor;
 
-	private IVerticalRulerInfo rulerInfo;
-
-	private List<IMarker> markers;
-
-	private static int fCurrentLine = -1;
+	private int fCurrentLine = -1;
 
 	public MarkerMenuContribution(ITextEditor editor) {
 		this.editor = editor;
-		this.rulerInfo = getRulerInfo();
-		this.markers = getMarkers();
-
 	}
 
 	private IVerticalRulerInfo getRulerInfo() {
 		return editor.getAdapter(IVerticalRulerInfo.class);
 	}
 
-	private List<IMarker> getMarkers() {
-		List<IMarker> clickedOnMarkers = new ArrayList<IMarker>();
-		for (IMarker marker : getAllMarkers()) {
-			if (markerHasBeenClicked(marker)) {
-				clickedOnMarkers.add(marker);
-			}
-		}
-
-		return clickedOnMarkers;
-	}
-
-	//Determine whether the marker has been clicked using the ruler's mouse listener
-	private boolean markerHasBeenClicked(IMarker marker) {
-		return (marker.getAttribute(IMarker.LINE_NUMBER, 0)) == (rulerInfo.getLineOfLastMouseButtonActivity() + 1);
-	}
-
-	//Get all My Markers for this source file
-	private IMarker[] getAllMarkers() {
-		try {
-			return ((FileEditorInput) editor.getEditorInput()).getFile()
-					.findMarkers("org.eclipse.egerrit.ui.commentMarker", true, IResource.DEPTH_ZERO);
-		} catch (CoreException e) {
-			EGerritCorePlugin.logError(e.getMessage());
-		}
-		return null;
-	}
-
-	//Create a menu item for each marker on the line clicked on
 	@Override
 	public void fill(Menu menu, int index) {
 		fCurrentLine = getRulerInfo().getLineOfLastMouseButtonActivity() + 1;
 
-		boolean isClickedInsideMarker = false;
-
-		if (ActiveWorkspaceRevision.getInstance()
-				.isFilePartOfReview(((IFileEditorInput) editor.getEditorInput()).getFile().getFullPath().toString())) {
-			for (final IMarker marker : markers) {
-				if (fCurrentLine == marker.getAttribute(IMarker.LINE_NUMBER, 0)) {
-					isClickedInsideMarker = true;
-				}
-			}
-			if (!isClickedInsideMarker) {
-				MenuItem menuItem = new MenuItem(menu, SWT.CHECK, index);
-				menuItem.setText("Add comment");
-				menuItem.addSelectionListener(createDynamicSelectionListener());
-			}
+		IEditorInput editorInput = editor.getEditorInput();
+		if (!(editorInput instanceof IFileEditorInput)) {
+			return;
 		}
-
+		if (ActiveWorkspaceRevision.getInstance()
+				.isFilePartOfReview(((IFileEditorInput) editorInput).getFile().getFullPath().toString())) {
+			MenuItem menuItem = new MenuItem(menu, SWT.CHECK, index);
+			menuItem.setText("Add Gerrit comment");
+			menuItem.addSelectionListener(createDynamicSelectionListener());
+		}
 	}
 
 	//Action to be performed when clicking on the menu item is defined here
@@ -122,8 +75,11 @@ public class MarkerMenuContribution extends ContributionItem {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-
-				final InputDialog replyDialog = new InputDialog(shell, "Add a comment", "", "", null) {
+				RevisionInfo revision = ActiveWorkspaceRevision.getInstance().getActiveRevision();
+				final InputDialog replyDialog = new InputDialog(shell, "Add a comment",
+						"Enter the comment for patchset " + revision.get_number() + "/"
+								+ revision.getChangeInfo().getRevisions().size(),
+						"", null) {
 					@Override
 					protected int getInputTextStyle() {
 						return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;

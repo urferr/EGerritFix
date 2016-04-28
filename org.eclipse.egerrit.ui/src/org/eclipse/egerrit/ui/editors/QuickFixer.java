@@ -13,37 +13,44 @@ package org.eclipse.egerrit.ui.editors;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.ui.IMarkerResolution;
-import org.eclipse.ui.IMarkerResolutionGenerator;
+import org.eclipse.ui.IMarkerResolutionGenerator2;
 
 /**
  * This class is the entry point for the markers customization/generation
  *
  * @since 1.0
  */
-public class QuickFixer implements IMarkerResolutionGenerator {
+public class QuickFixer implements IMarkerResolutionGenerator2 {
+	//Draft -> modify or delete
+	//Comment -> reply, reply done (if it is not done),
 	public IMarkerResolution[] getResolutions(IMarker marker) {
 		try {
-			Object message = marker.getAttribute("message"); //$NON-NLS-1$
-			int messageWithOutUserDate = (new String(message.toString())).indexOf(' ',
-					(new String(message.toString())).indexOf(' ') + 1);
-			boolean isDraft = (boolean) marker.getAttribute("isDraft"); //$NON-NLS-1$
-			String truncatedMsg = new String(message.toString());
-			if (messageWithOutUserDate > 0) {
-				int length = Math.min(20, message.toString().substring(messageWithOutUserDate).length());
-				truncatedMsg = message.toString().substring(messageWithOutUserDate, messageWithOutUserDate + length)
-						+ " ..."; //$NON-NLS-1$
-			}
+			boolean isDraft = (boolean) marker.getAttribute(EGerritCommentMarkers.ATTR_IS_DRAFT);
+			CommentInfo element = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
+			String truncatedMsg = UIUtils.formatMessageForQuickFix(element);
+			String fullMessage = UIUtils.formatMessageForMarkerView(element);
 			if (isDraft) {
-				return new IMarkerResolution[] { new QuickFixReplyToComment("Reply to comment: " + truncatedMsg),
-						new QuickFixDeleteDraftComment("Delete draft comment: " + truncatedMsg) };
+				return new IMarkerResolution[] { new QuickFixModifyDraft("Modify draft: " + truncatedMsg, fullMessage),
+						new QuickFixDeleteDraftComment("Delete draft: " + truncatedMsg, fullMessage) };
 			} else {
-				return new IMarkerResolution[] { new QuickFixReplyToComment("Reply to comment: " + truncatedMsg),
-						new QuickFixReplyDoneToComment("Reply done to: " + truncatedMsg) };
+				if (element.getMessage().equalsIgnoreCase("done")) {
+					return new IMarkerResolution[] {
+							new QuickFixReplyToComment("Reply to: " + truncatedMsg, fullMessage) };
+				}
+				return new IMarkerResolution[] { new QuickFixReplyToComment("Reply to: " + truncatedMsg, fullMessage),
+						new QuickFixReplyDoneToComment("Reply done to: " + truncatedMsg, fullMessage) };
 			}
 
 		} catch (CoreException e) {
 			return new IMarkerResolution[0];
 		}
+	}
+
+	@Override
+	public boolean hasResolutions(IMarker marker) {
+		return true;
 	}
 }

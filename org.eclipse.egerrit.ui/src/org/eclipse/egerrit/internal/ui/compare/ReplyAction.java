@@ -59,7 +59,7 @@ public class ReplyAction extends Action {
 			return;
 		}
 		RevisionInfo revisionInfo = compareInput.getChangeInfo().getRevisions().get(compareInput.getRightSide());
-		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, compareInput.gerritClient);
+		UIUtils.replyToChange(viewer.get().getControl().getShell(), revisionInfo, null, compareInput.gerritClient);
 		compareInput.fireInputChange();
 	}
 }

@@ -16,10 +16,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -28,31 +30,33 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixReplyDoneToComment implements IMarkerResolution {
-	String label;
+public class QuickFixReplyDoneToComment extends EGerritQuickFix {
 
-	QuickFixReplyDoneToComment(String label) {
-		this.label = label;
-	}
-
-	public String getLabel() {
-		return label;
+	QuickFixReplyDoneToComment(String label, String completeMessage) {
+		super(label, completeMessage);
 	}
 
 	public void run(IMarker marker) {
 		final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		try {
-			String message = (String) marker.getAttribute("message");
-			GerritClient gerritClient = (GerritClient) marker.getAttribute("gerritClient");
-			CommentInfo existingComment = (CommentInfo) marker.getAttribute("commentInfo");
+			String message = (String) marker.getAttribute(EGerritCommentMarkers.ATTR_MESSAGE);
+			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
+			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			if (MessageDialog.openConfirm(shell, "Reply done to comment", message + "\n\nContinue ?")) {
-				UIUtils.postReply(gerritClient, existingComment, "Done", UIUtils.getRevision(existingComment).getId());
+			if (MessageDialog.openConfirm(shell, "Reply done to comment",
+					"Do you want to reply 'Done' to\n\n" + message)) {
+				UIUtils.postReply(gerritClient, existingComment, "Done",
+						ModelHelpers.getRevision(existingComment).getId());
 			}
 		} catch (CoreException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 			return;
 		}
+	}
+
+	@Override
+	public Image getImage() {
+		return EGerritImages.get(EGerritImages.DONE_QUICKFIX);
 	}
 
 }

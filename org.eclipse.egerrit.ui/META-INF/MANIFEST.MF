@@ -32,7 +32,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.egerrit.model.edit;bundle-version="0.3.0",
  org.eclipse.emf.edit.ui;bundle-version="2.11.0",
  org.eclipse.core.contenttype,
- org.eclipse.core.expressions;bundle-version="3.5.0"
+ org.eclipse.core.expressions;bundle-version="3.5.0",
+ org.eclipse.ui.ide
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

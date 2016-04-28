@@ -34,6 +34,7 @@ import org.eclipse.core.commands.NotHandledException;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,6 +66,7 @@ import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.ui.internal.table.provider.DeleteDraftRevisionProvider;
@@ -253,12 +255,48 @@ public class ChangeDetailEditor extends EditorPart {
 				subjectData.getParent().layout();
 			}
 		});
+
+		final String ACTIVATION_MESSAGE = "Activate Comment Markers";
 		Button activeReview = new Button(group_header, SWT.CHECK);
 		activeReview.setSelection(false);
-		activeReview.setText("Activate Comment Markers");
-		activeReview.setToolTipText("Select to mark comments in files of the current revision");
-		activeReview.addSelectionListener(new SelectionListener() {
+		activeReview.setText(ACTIVATION_MESSAGE);
+		activeReview.setToolTipText("Toggle to create markers for each comment in the currently selected revision");
 
+		IObservableValue observeActiveRevisionStateForButtonText = BeanProperties.value("activeRevision")
+				.observe(ActiveWorkspaceRevision.getInstance());
+		new DataBindingContext().bindValue(WidgetProperties.text().observe(activeReview),
+				observeActiveRevisionStateForButtonText, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
+				new UpdateValueStrategy() {
+					@Override
+					public Object convert(Object value) {
+						if (value == null) {
+							return ACTIVATION_MESSAGE;
+						}
+						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
+							return "Markers for patchset " + (((RevisionInfo) value)).get_number();
+						}
+						return ACTIVATION_MESSAGE;
+					}
+				});
+
+		IObservableValue observeActiveRevisionStateForButtonEnablement = BeanProperties.value("activeRevision")
+				.observe(ActiveWorkspaceRevision.getInstance());
+		new DataBindingContext().bindValue(WidgetProperties.selection().observe(activeReview),
+				observeActiveRevisionStateForButtonEnablement,
+				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
+					@Override
+					public Object convert(Object value) {
+						if (value == null) {
+							return false;
+						}
+						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
+							return true;
+						}
+						return false;
+					}
+				});
+
+		activeReview.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (activeReview.getSelection()) {
@@ -297,7 +335,6 @@ public class ChangeDetailEditor extends EditorPart {
 		//Set the binding for this section
 		headerSectionDataBindings();
 		return group_header;
-
 	}
 
 	private Composite buttonSection(final Composite parent) {
@@ -641,7 +678,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
+						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), null, fGerritClient);
 						refreshStatus();
 					}
 

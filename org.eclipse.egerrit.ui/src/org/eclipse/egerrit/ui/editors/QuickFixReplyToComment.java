@@ -16,15 +16,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -33,25 +35,20 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixReplyToComment implements IMarkerResolution {
-	String label;
-
-	QuickFixReplyToComment(String label) {
-		this.label = label;
-	}
-
-	public String getLabel() {
-		return label;
+public class QuickFixReplyToComment extends EGerritQuickFix {
+	QuickFixReplyToComment(String label, String completeMessage) {
+		super(label, completeMessage);
 	}
 
 	public void run(IMarker marker) {
 		final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		try {
-			String message = (String) marker.getAttribute("message");
-			GerritClient gerritClient = (GerritClient) marker.getAttribute("gerritClient");
-			CommentInfo existingComment = (CommentInfo) marker.getAttribute("commentInfo");
+			String message = (String) marker.getAttribute(EGerritCommentMarkers.ATTR_MESSAGE);
+			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
+			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			final InputDialog replyDialog = new InputDialog(shell, "Reply to comment", message.toString(), "", null) {
+			final InputDialog replyDialog = new InputDialog(shell, "Reply to comment ",
+					"You are replying to \n\n" + message.toString(), "", null) {
 				@Override
 				protected int getInputTextStyle() {
 					return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
@@ -67,7 +64,7 @@ public class QuickFixReplyToComment implements IMarkerResolution {
 			replyDialog.open();
 			if (replyDialog.getReturnCode() == IDialogConstants.OK_ID) {
 				UIUtils.postReply(gerritClient, existingComment, replyDialog.getValue(),
-						UIUtils.getRevision(existingComment).getId());
+						ModelHelpers.getRevision(existingComment).getId());
 			}
 		} catch (CoreException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -75,4 +72,8 @@ public class QuickFixReplyToComment implements IMarkerResolution {
 		}
 	}
 
+	@Override
+	public Image getImage() {
+		return EGerritImages.get(EGerritImages.REPLY_QUICKFIX);
+	}
 }

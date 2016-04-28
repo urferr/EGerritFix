@@ -24,6 +24,7 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.ChangeStatus;
+import org.eclipse.egerrit.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.core.command.GetChangeCommand;
 import org.eclipse.egerrit.core.command.GetFilesCommand;
@@ -42,6 +43,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.IncludedInInfo;
 import org.eclipse.egerrit.internal.model.MergeableInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
@@ -120,20 +122,20 @@ public class QueryHelpers {
 	 */
 	public static void loadComments(GerritClient gerrit, RevisionInfo revision) {
 		loadFiles(gerrit, revision);
+		if (revision.isCommentsLoaded()) {
+			return;
+		}
+
+		ListCommentsCommand command = gerrit.getListComments(revision.getChangeInfo().getId(), revision.getId());
+		Map<String, ArrayList<CommentInfo>> comments = null;
+		try {
+			comments = command.call();
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
+			return;
+		}
+
 		synchronized (revision.getChangeInfo()) {
-			if (revision.isCommentsLoaded()) {
-				return;
-			}
-
-			ListCommentsCommand command = gerrit.getListComments(revision.getChangeInfo().getId(), revision.getId());
-			Map<String, ArrayList<CommentInfo>> comments = null;
-			try {
-				comments = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
-				return;
-			}
-
 			//Load the comments and set them in the fileInfo object
 			for (Entry<String, ArrayList<CommentInfo>> fileComment : comments.entrySet()) {
 				FileInfo files = revision.getFiles().get(fileComment.getKey());
@@ -152,16 +154,16 @@ public class QueryHelpers {
 			return;
 		}
 		loadFiles(gerrit, revision);
-		synchronized (revision.getChangeInfo()) {
-			ListDraftsCommand command = gerrit.listDraftsComments(revision.getChangeInfo().getId(), revision.getId());
-			Map<String, ArrayList<CommentInfo>> drafts = null;
-			try {
-				drafts = command.call();
-			} catch (EGerritException e) {
-				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
-				return;
-			}
+		ListDraftsCommand command = gerrit.listDraftsComments(revision.getChangeInfo().getId(), revision.getId());
+		Map<String, ArrayList<CommentInfo>> drafts = null;
+		try {
+			drafts = command.call();
+		} catch (EGerritException e) {
+			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
+			return;
+		}
 
+		synchronized (revision.getChangeInfo()) {
 			//There is no more drafts, so we need to clear our data structure
 			if (drafts.entrySet().isEmpty()) {
 				Collection<FileInfo> files = revision.getFiles().values();
@@ -319,22 +321,25 @@ public class QueryHelpers {
 			throw new IllegalAccessError("Revision can't be null."); //$NON-NLS-1$
 		}
 		loadFiles(gerrit, revision);
-		String[] reviewedFiles = loadReviewedFiles(gerrit, revision);
-		for (String reviewed : reviewedFiles) {
-			revision.getFiles().get(reviewed).setReviewed(true);
-		}
+		loadReviewedFiles(gerrit, revision);
 		loadComments(gerrit, revision);
 		loadDrafts(gerrit, revision);
 	}
 
-	private static String[] loadReviewedFiles(GerritClient gerrit, RevisionInfo revision) {
-		synchronized (revision.getChangeInfo()) {
-			GetReviewedFilesCommand command = gerrit.getReviewed(revision.getChangeInfo().getId(), revision.getId());
-			try {
-				return command.call();
-			} catch (EGerritException e) {
-				return null;
+	private static void loadReviewedFiles(GerritClient gerrit, RevisionInfo revision) {
+		if (gerrit.getRepository().getServerInfo().isAnonymous()) {
+			return;
+		}
+		GetReviewedFilesCommand command = gerrit.getReviewed(revision.getChangeInfo().getId(), revision.getId());
+		try {
+			String[] reviewedFiles = command.call();
+			synchronized (revision.getChangeInfo()) {
+				for (String reviewed : reviewedFiles) {
+					revision.getFiles().get(reviewed).setReviewed(true);
+				}
 			}
+		} catch (EGerritException e) {
+			return;
 		}
 	}
 
@@ -483,4 +488,17 @@ public class QueryHelpers {
 		loadReviewers(gerritClient, toLoad);
 		loadRelatedChanges(gerritClient, toLoad);
 	}
+
+	public static void deleteDraft(GerritClient gerritClient, CommentInfo toDelete) {
+		RevisionInfo revision = ModelHelpers.getRevision(toDelete);
+		DeleteDraftCommand deleteDraft = gerritClient.deleteDraft(revision.getChangeInfo().getId(), revision.getId(),
+				toDelete.getId());
+		try {
+			deleteDraft.call();
+			ModelHelpers.getFileInfo(toDelete).getDraftComments().remove(toDelete);
+		} catch (EGerritException e) {
+			//Nothing to do
+		}
+	}
+
 }

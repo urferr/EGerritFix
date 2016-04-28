@@ -30,9 +30,9 @@ public class MarkerContributionFactory extends ExtensionContributionFactory {
 	public void createContributionItems(IServiceLocator serviceLocator, IContributionRoot additions) {
 		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 
-		MarkerMenuContribution markerMenuContribution = new MarkerMenuContribution((ITextEditor) editor);
-		additions.addContributionItem(markerMenuContribution, null);
-
+		if (editor instanceof ITextEditor) {
+			MarkerMenuContribution markerMenuContribution = new MarkerMenuContribution((ITextEditor) editor);
+			additions.addContributionItem(markerMenuContribution, null);
+		}
 	}
-
 }

@@ -11,27 +11,34 @@
 
 package org.eclipse.egerrit.ui.internal.utils;
 
-import java.text.SimpleDateFormat;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.compare.CommentableCompareItem;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
+import org.eclipse.egerrit.ui.editors.EGerritCommentMarkers;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -47,8 +54,6 @@ import org.slf4j.LoggerFactory;
 public class ActiveWorkspaceRevision {
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
-	private static final String ORG_ECLIPSE_EGERRIT_UI_COMMENT_MARKER = "org.eclipse.egerrit.ui.commentMarker"; //$NON-NLS-1$
-
 	private static final ActiveWorkspaceRevision INSTANCE = new ActiveWorkspaceRevision();
 
 	private GerritClient fGerritClient = null;
@@ -59,6 +64,8 @@ public class ActiveWorkspaceRevision {
 
 	private CommentAndDraftListener listener;
 
+	private Map<String, IMarker> markersManaged = new HashMap<>();
+
 	private final class CommentAndDraftListener extends EContentAdapter {
 		@Override
 		public void notifyChanged(Notification msg) {
@@ -68,7 +75,12 @@ public class ActiveWorkspaceRevision {
 			}
 			if (msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__COMMENTS)
 					|| msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS)) {
-				createMarkers();
+				if (msg.getEventType() == Notification.ADD) {
+					addMarker((CommentInfo) msg.getNewValue(), null);
+				}
+				if (msg.getEventType() == Notification.REMOVE) {
+					deleteMarker((CommentInfo) msg.getOldValue());
+				}
 			}
 		}
 	}
@@ -88,12 +100,18 @@ public class ActiveWorkspaceRevision {
 		if (revisionInfo == null) {
 			throw new IllegalAccessError("Revision can't be null."); //$NON-NLS-1$
 		}
+
+		//Force deactivation if another review is already tracked
+		if (fRevisionInContext != null) {
+			deactiveCurrentRevision();
+		}
 		fGerritClient = gerrit;
 		fRevisionInContext = revisionInfo;
 		fChangeInfo = revisionInfo.getChangeInfo();
 		forceLoadRevision();
 		createMarkers();
 		hookListeners();
+		firePropertyChange("activeRevision", null, fRevisionInContext);
 	}
 
 	private void forceLoadRevision() {
@@ -157,25 +175,16 @@ public class ActiveWorkspaceRevision {
 	/**
 	 * Helper method to delete markers associated with each comments and drafts from the active review
 	 */
-	private void deleteCommentMarkers() {
-		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
-		for (FileInfo fileInfo : files) {
-			IFile workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
-					.getCorrespondingWorkspaceFile(fileInfo);
-			if (workspaceFile == null) {
-				continue;
-			}
-			IMarker[] currentCommentMarkers = null;
-			try {
-				currentCommentMarkers = workspaceFile.findMarkers(ORG_ECLIPSE_EGERRIT_UI_COMMENT_MARKER, false,
-						IResource.DEPTH_ZERO);
-				if (currentCommentMarkers != null) {
-					for (IMarker m : currentCommentMarkers) {
-						m.delete();
-					}
+	private void deleteAllMarkers() {
+		Set<String> allMarkers = new HashSet(markersManaged.keySet()); //We need to take a copy or we get a concurrent modification exception
+		for (String entry : allMarkers) {
+			IMarker m = markersManaged.remove(entry);
+			if (m != null) {
+				try {
+					m.delete();
+				} catch (CoreException e) {
+					logger.debug("Failed to delete marker", e); //$NON-NLS-1$
 				}
-			} catch (CoreException e1) {
-				logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
 			}
 		}
 	}
@@ -185,44 +194,16 @@ public class ActiveWorkspaceRevision {
 	 */
 	private void createMarkers() {
 		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
-		deleteCommentMarkers();
+		deleteAllMarkers();
 		for (FileInfo fileInfo : files) {
-			IFile workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
+			IResource workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
 					.getCorrespondingWorkspaceFile(fileInfo);
-
 			if (workspaceFile == null) {
-				logger.debug("Could not find workspace file matching " + fileInfo.getPath()); //$NON-NLS-1$
-				continue;
+				workspaceFile = ResourcesPlugin.getWorkspace().getRoot();
 			}
-			for (CommentInfo element : fileInfo.getComments()) {
-				try {
-					IMarker commentMarker = workspaceFile.createMarker(ORG_ECLIPSE_EGERRIT_UI_COMMENT_MARKER);
-					commentMarker.setAttribute(IMarker.LINE_NUMBER, element.getLine());
-					commentMarker.setAttribute(IMarker.MESSAGE,
-							element.getAuthor().getUsername() + " "
-									+ Utils.formatDate(element.getUpdated(), new SimpleDateFormat("yyyy-MM-dd")) + " "
-									+ element.getMessage());
-					commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
-					commentMarker.setAttribute("commentInfo", element); //$NON-NLS-1$
-					commentMarker.setAttribute("fileInfo", fileInfo); //$NON-NLS-1$
-					commentMarker.setAttribute("gerritClient", fGerritClient); //$NON-NLS-1$
-					commentMarker.setAttribute("isDraft", false); //$NON-NLS-1$
-				} catch (CoreException e) {
-					logger.debug("Failed to create marker", e); //$NON-NLS-1$
-				}
-			}
-			for (CommentInfo element : fileInfo.getDraftComments()) {
-				try {
-					IMarker draftMarker = workspaceFile.createMarker(ORG_ECLIPSE_EGERRIT_UI_COMMENT_MARKER);
-					draftMarker.setAttribute(IMarker.LINE_NUMBER, element.getLine());
-					draftMarker.setAttribute(IMarker.MESSAGE, element.getMessage());
-					draftMarker.setAttribute("commentInfo", element); //$NON-NLS-1$
-					draftMarker.setAttribute("fileInfo", fileInfo); //$NON-NLS-1$
-					draftMarker.setAttribute("gerritClient", fGerritClient); //$NON-NLS-1$
-					draftMarker.setAttribute("isDraft", true); //$NON-NLS-1$
-				} catch (CoreException e) {
-					logger.debug("Failed to create marker", e); //$NON-NLS-1$
-				}
+			EList<CommentInfo> sortedComments = ModelHelpers.sortComments(fileInfo.getAllComments());
+			for (CommentInfo commentInfo : sortedComments) {
+				addMarker(commentInfo, workspaceFile);
 			}
 		}
 	}
@@ -231,13 +212,19 @@ public class ActiveWorkspaceRevision {
 	 * Remove the current revision
 	 */
 	public void deactiveCurrentRevision() {
-		deleteCommentMarkers();
+		if (fRevisionInContext == null) {
+			return;
+		}
 		fRevisionInContext.eAdapters().remove(listener);
+		deleteAllMarkers();
 
 		if (hasDrafts()) {
 			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), fGerritClient);
+			UIUtils.replyToChange(shell, fRevisionInContext, "There are unpublished drafts in review \""
+					+ fRevisionInContext.getChangeInfo().getSubject() + "\"\n\n", fGerritClient);
 		}
+		fRevisionInContext = null;
+		firePropertyChange("activeRevision", null, null);
 	}
 
 	private boolean hasDrafts() {
@@ -248,5 +235,70 @@ public class ActiveWorkspaceRevision {
 			}
 		}
 		return false;
+	}
+
+	private void deleteMarker(CommentInfo commentToDelete) {
+		IMarker marker = markersManaged.remove(commentToDelete.getId());
+		if (marker != null) {
+			try {
+				marker.delete();
+			} catch (CoreException e) {
+				logger.debug("Failed to delete marker", e); //$NON-NLS-1$
+			}
+		}
+	}
+
+	//Add a marker for the specified comment.
+	//The workspacefile is optional. If it is not specified the associated file will be derived the comment
+	private void addMarker(CommentInfo newComment, IResource workspaceFile) {
+		if (workspaceFile == null) {
+			workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
+					.getCorrespondingWorkspaceFile(ModelHelpers.getFileInfo(newComment));
+		}
+		if (workspaceFile == null) {
+			workspaceFile = ResourcesPlugin.getWorkspace().getRoot();
+		}
+		try {
+			IMarker commentMarker = workspaceFile.createMarker(EGerritCommentMarkers.COMMENT_MARKER_ID);
+			commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine());
+			if (workspaceFile == ResourcesPlugin.getWorkspace().getRoot()) {
+				commentMarker.setAttribute(IMarker.MESSAGE,
+						resourceMissingMessage(newComment) + UIUtils.formatMessageForMarkerView(newComment));
+			} else {
+				commentMarker.setAttribute(IMarker.MESSAGE, UIUtils.formatMessageForMarkerView(newComment));
+			}
+			commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
+			commentMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
+			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO, newComment);
+			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_FILE_INFO, newComment);
+			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT, fGerritClient);
+			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_IS_DRAFT, newComment.getAuthor() == null);
+			markersManaged.put(newComment.getId(), commentMarker);
+		} catch (CoreException e) {
+			logger.debug("Failed to create marker", e); //$NON-NLS-1$
+		}
+	}
+
+	private String resourceMissingMessage(CommentInfo comment) {
+		return "(File " + ModelHelpers.getFileInfo(comment).getPath() + " not found in workspace) ";
+	}
+
+	public RevisionInfo getActiveRevision() {
+		return fRevisionInContext;
+	}
+
+	//The following code is used to enable the databinding
+	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
+
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
 }

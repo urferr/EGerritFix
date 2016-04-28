@@ -353,8 +353,8 @@ public abstract class GerritClient {
 	 * @param draftId
 	 * @return DeleteDraftCommand.
 	 */
-	public DeleteDraftCommand deleteDraft(String change_id, String accountId, String draftId) {
-		return new DeleteDraftCommand(fGerritRepository, change_id, accountId, draftId);
+	public DeleteDraftCommand deleteDraft(String change_id, String revisionId, String draftId) {
+		return new DeleteDraftCommand(fGerritRepository, change_id, revisionId, draftId);
 	}
 
 	/**

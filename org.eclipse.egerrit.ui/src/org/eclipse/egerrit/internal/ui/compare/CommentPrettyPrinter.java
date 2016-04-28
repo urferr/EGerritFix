@@ -24,7 +24,7 @@ public class CommentPrettyPrinter {
 		return CommentPrettyPrinter.printName(comment) + '\t' + comment.getMessage() + '\t' + printDate(comment);
 	}
 
-	static String printDate(CommentInfo comment) {
+	public static String printDate(CommentInfo comment) {
 		return Utils.formatDate(comment.getUpdated(), CommentPrettyPrinter.formatTimeOut);
 	}
 

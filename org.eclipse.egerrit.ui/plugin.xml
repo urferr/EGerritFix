@@ -34,30 +34,52 @@
       </attribute>
    </extension>
 
-       
-   <extension point="org.eclipse.ui.editors.annotationTypes">
-     <type
-        super="org.eclipse.ui.workbench.texteditor.warning"
-        markerType="org.eclipse.egerrit.ui.commentMarker"
-        name="org.eclipse.egerrit.ui.commentAnnotation"
-        markerSeverity="1"/>
+   <extension
+        point="org.eclipse.ui.editors.annotationTypes">
+        <type
+            name="org.eclipse.egerrit.ui.commentAnnotation"
+            markerType="org.eclipse.egerrit.ui.commentMarker"
+            />
+    </extension>
+
+    <extension
+        point="org.eclipse.ui.editors.markerAnnotationSpecification">
+        <specification
+              symbolicIcon="warning"
+              quickFixIcon="icons/showAnonymousComments.gif"
+        	  icon="icons/showAnonymousComments.gif"
+              annotationType="org.eclipse.egerrit.ui.commentAnnotation"
+              colorPreferenceKey="org.egerrit.ui.comment.color"
+              colorPreferenceValue="30,144,255"
+              contributesToHeader="true"
+              highlightPreferenceKey="org.egerrit.ui.comment.highlight"
+              highlightPreferenceValue="false"
+              includeOnPreferencePage="true"
+              isGoToNextNavigationTarget="true"
+              isGoToNextNavigationTargetKey="org.egerrit.ui.comment.next"
+              isGoToPreviousNavigationTarget="true"
+              isGoToPreviousNavigationTargetKey="org.egerrit.ui.comment.previous"
+              label="%egerrit.marker.specification.label"
+              overviewRulerPreferenceKey="org.egerrit.ui.comment.overviewruler"
+              overviewRulerPreferenceValue="true"
+              presentationLayer="4"
+              showInNextPrevDropdownToolbarAction="true"
+              showInNextPrevDropdownToolbarActionKey="org.egerrit.ui.comment.dropdown"
+              textPreferenceKey="org.egerrit.ui.comment.error.text"
+              textPreferenceValue="true"
+              textStylePreferenceKey="org.egerrit.ui.comment.text.style"
+              textStylePreferenceValue="BOX"
+              verticalRulerPreferenceKey="org.egerrit.ui.comment.verticalruler"
+              verticalRulerPreferenceValue="true"/>
   </extension>
 
-  <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
-     <specification
-        annotationType="org.eclipse.egerrit.ui.commentAnnotation"
-        icon="icons/marker.png"
-        verticalRulerPreferenceKey="myMarkerIndicationInVerticalRuler"
-        verticalRulerPreferenceValue="true"/>
-  </extension>
   
   <extension point="org.eclipse.ui.ide.markerResolution">
-      <markerResolutionGenerator
-        markerType="org.eclipse.egerrit.ui.commentMarker"
-
-         class="org.eclipse.egerrit.ui.editors.QuickFixer"/>
+	<markerResolutionGenerator
+       markerType="org.eclipse.egerrit.ui.commentMarker"
+       class="org.eclipse.egerrit.ui.editors.QuickFixer"/>
    </extension>
-   
+
 <extension point="org.eclipse.ui.menus">
 <menuContribution
     class="org.eclipse.egerrit.ui.editors.MarkerContributionFactory"
@@ -68,4 +90,5 @@
   </dynamic>
 </menuContribution>
 </extension>
+
 </plugin>

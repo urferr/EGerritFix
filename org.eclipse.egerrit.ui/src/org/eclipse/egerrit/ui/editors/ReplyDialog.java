@@ -19,14 +19,13 @@ import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,19 +36,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class is used in the editor to handle the Reply button
  *
  * @since 1.0
  */
-public class ReplyDialog extends Dialog {
-
-	final static Logger logger = LoggerFactory.getLogger(ReplyDialog.class);
+public class ReplyDialog extends InputDialog {
 
 	// The labels of the change as a map that maps the label names to LabelInfo
 	// entries. Only set if 'labels' or 'detailed labels' are requested.
@@ -60,53 +54,46 @@ public class ReplyDialog extends Dialog {
 	// requested.
 	private EMap<String, EList<String>> permitted_labels;
 
-	private Text msgTextData;
-
 	private Composite keyComposite;
 
 	private Composite radioButtonComposite;
 
 	private Composite detailTextComposite;
 
-	private Composite buttonComposite;
-
 	private final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
 
-	private Button post;
-
-	private Button cancel;
-
 	private LinkedHashMap<String, String> radioMap = new LinkedHashMap<String, String>();
-
-	private String message = ""; //$NON-NLS-1$
-
-	private boolean eMailSet = true;
-	// ------------------------------------------------------------------------
-	// Constructor and life cycle
-	// ------------------------------------------------------------------------
 
 	/**
 	 * The constructor.
 	 */
-	public ReplyDialog(Composite parent, EMap<String, EList<String>> permitted_labels,
-			EMap<String, LabelInfo> labelsInfo) {
-		super(parent.getShell());
+	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo) {
+		super(shell, "Reply to comment", buildMessage(reason, revisionToReplyTo), null, null);
 
-		logger.debug("Open the Reply dialogue."); //$NON-NLS-1$
-		this.permitted_labels = permitted_labels;
-		this.labelsInfo = labelsInfo;
+		permitted_labels = revisionToReplyTo.getChangeInfo().getPermitted_labels();
+		labelsInfo = revisionToReplyTo.getChangeInfo().getLabels();
 
+		boolean isVoteAllowed = revisionToReplyTo.getId()
+				.equals(revisionToReplyTo.getChangeInfo().getCurrent_revision());
+		if (!isVoteAllowed) {
+			labelsInfo = null;
+		}
 	}
 
-	/**
-	 * This method allows us to set a title to the dialog
-	 *
-	 * @param Shell
-	 */
+	private static String buildMessage(String reason, RevisionInfo revisionToReplyTo) {
+		if (reason == null) {
+			return buildDefaultMessage(revisionToReplyTo);
+		}
+		return reason + buildDefaultMessage(revisionToReplyTo);
+	}
+
+	private static String buildDefaultMessage(RevisionInfo revisionToReplyTo) {
+		return "Enter the reply to patchset " + UIUtils.getPatchSetString(revisionToReplyTo);
+	}
+
 	@Override
-	protected void configureShell(Shell newShell) {
-		super.configureShell(newShell);
-		newShell.setText("Reply dialog");
+	protected int getInputTextStyle() {
+		return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
 	}
 
 	@Override
@@ -121,28 +108,16 @@ public class ReplyDialog extends Dialog {
 	 *            Composite
 	 */
 	@Override
-	protected Control createContents(Composite parent) {
-		parent.setLayout(new GridLayout(1, false));
-
-		Point fontSize = UIUtils.computeFontSize(parent);
-		ScrolledComposite sc_msgtxt = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		sc_msgtxt.setExpandHorizontal(true);
-		sc_msgtxt.setExpandVertical(true);
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true);
-		grid.minimumHeight = fontSize.y * 6; //minimum 6 lines
-		grid.minimumWidth = fontSize.x * 60;
-		sc_msgtxt.setLayoutData(grid);
-
-		msgTextData = new Text(sc_msgtxt, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
-		sc_msgtxt.setContent(msgTextData);
+	protected Control createDialogArea(Composite parent) {
+		Composite composite = (Composite) super.createDialogArea(parent);
+		((GridData) this.getText().getLayoutData()).heightHint = 100;
 
 		//Create the section handling the radio buttons
 		if (labelsInfo != null) {
-			createMiddleRadioSection(parent);
+			createMiddleRadioSection(composite);
 		}
 
 		//Create the bottom section for the buttons
-		createBottomButtons(parent);
 		parent.getShell().setMinimumSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return parent;
 	}
@@ -173,32 +148,6 @@ public class ReplyDialog extends Dialog {
 		createRadioButtonSelection();
 	}
 
-	/**
-	 * @param parent
-	 */
-	private void createBottomButtons(Composite parent) {
-		Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
-		GridData sepGrid = new GridData(GridData.FILL_HORIZONTAL);
-		sepGrid.grabExcessHorizontalSpace = true;
-		separator.setLayoutData(sepGrid);
-
-		buttonComposite = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(4, false);
-		buttonComposite.setLayout(gridLayout);
-
-		GridData gd_button = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		gd_button.grabExcessHorizontalSpace = true;
-		buttonComposite.setLayoutData(gd_button);
-
-		//Callback handle by the okPressed()
-		post = createButton(buttonComposite, IDialogConstants.OK_ID, "Post", false);
-
-		cancel = createButton(buttonComposite, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
-		GridData gd_cancel = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		gd_cancel.grabExcessHorizontalSpace = true;
-		cancel.setLayoutData(gd_cancel);
-	}
-
 	private Composite createComposite(Composite parent, int horizontalSwt, int numColumn) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(numColumn, true);
@@ -208,7 +157,6 @@ public class ReplyDialog extends Dialog {
 		gd_composite.minimumHeight = 117;
 		composite.setLayoutData(gd_composite);
 		return composite;
-
 	}
 
 	/**
@@ -243,17 +191,6 @@ public class ReplyDialog extends Dialog {
 		Point fontSize = UIUtils.computeFontSize(detailTextComposite);
 		//Set into the variable the last setting of the radio
 		getLastLabelSet();
-		//EMF why do we need the sorting
-//
-//		//Sort the Labels in chronological order
-//		EMap<String, String[]> sortedMap = new BasicEMap<String, String[]>(new Comparator<String>() {
-//
-//			@Override
-//			public int compare(String key1, String key2) {
-//				return key1.compareTo(key2);
-//			}
-//		});
-//		sortedMap.putAll(permitted_labels);
 
 		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
 		while (iterator.hasNext()) {
@@ -459,35 +396,11 @@ public class ReplyDialog extends Dialog {
 	}
 
 	/**
-	 * When the user select the "POST" button, process the data
-	 */
-	@Override
-	protected void okPressed() {
-		//Fill the data structure
-		setMessage();
-
-		super.okPressed();
-	}
-
-	private void setMessage() {
-		message = msgTextData.getText();
-	}
-
-	/**
-	 * This method return the message text.
-	 *
-	 * @return String
-	 */
-	public String getMessage() {
-		return message;
-	}
-
-	/**
 	 * This method return the hashMap of the selected radio buttons
 	 *
 	 * @return LinkedHashMap<String, String>
 	 */
-	public LinkedHashMap<String, String> getRadiosSelection() {
+	public Map<String, String> getRadiosSelection() {
 		return radioMap;
 	}
 }

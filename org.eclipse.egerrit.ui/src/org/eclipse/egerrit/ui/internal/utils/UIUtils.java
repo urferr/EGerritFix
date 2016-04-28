@@ -23,14 +23,12 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.CommentInfo;
-import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.compare.CommentPrettyPrinter;
 import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.editors.ReplyDialog;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.FontMetrics;
@@ -90,28 +88,18 @@ public class UIUtils {
 		return text.trim();
 	}
 
-	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, GerritClient client) {
-		EMap<String, EList<String>> permittedLabels = revisionInfo.getChangeInfo().getPermitted_labels();
-		EMap<String, LabelInfo> labels = revisionInfo.getChangeInfo().getLabels();
-
-		String current = revisionInfo.getChangeInfo().getUserSelectedRevision().getId();
-		String latest = revisionInfo.getChangeInfo().getLatestPatchSet().getId();
-		boolean isVoteAllowed = current.compareTo(latest) == 0 ? true : false;
-		if (!isVoteAllowed) {
-			labels = null;
-		}
-		final ReplyDialog replyDialog = new ReplyDialog(shell, permittedLabels, labels);
+	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client) {
+		String current = revisionInfo.getId();
+		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				int ret = replyDialog.open();
 				if (ret == IDialogConstants.OK_ID) {
 					//Fill the data structure for the reply
 					ReviewInput reviewInput = new ReviewInput();
-					reviewInput.setMessage(replyDialog.getMessage());
+					reviewInput.setMessage(replyDialog.getValue());
 					reviewInput.setLabels(replyDialog.getRadiosSelection());
 					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-					// JB which field e-mail	reviewInput.setNotify(replyDialog.getEmail());
-					//Send the data
 
 					CompletableFuture.runAsync(() -> {
 						try {
@@ -147,29 +135,24 @@ public class UIUtils {
 	}
 
 	public static void postReply(GerritClient gerritClient, CommentInfo comment, String reply, String revisionId) {
-		CreateDraftCommand publishDraft = gerritClient.createDraftComments(getRevision(comment).getChangeInfo().getId(),
-				revisionId);
+		if (reply.trim().length() == 0) {
+			return;
+		}
+		CreateDraftCommand publishDraft = gerritClient
+				.createDraftComments(ModelHelpers.getRevision(comment).getChangeInfo().getId(), revisionId);
 
 		CommentInfo replyData = ModelFactory.eINSTANCE.createCommentInfo();
 		replyData.setMessage(reply);
 		replyData.setInReplyTo(comment.getId());
 		replyData.setLine(comment.getLine());
 		replyData.setSide(comment.getSide());
-		replyData.setPath(getFileInfo(comment).getPath());
+		replyData.setPath(ModelHelpers.getFileInfo(comment).getPath());
 		publishDraft.setCommandInput(replyData);
 		try {
-			getFileInfo(comment).getDraftComments().add(publishDraft.call());
+			ModelHelpers.getFileInfo(comment).getDraftComments().add(publishDraft.call());
 		} catch (EGerritException e) {
 			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 		}
-	}
-
-	public static RevisionInfo getRevision(CommentInfo comment) {
-		return getFileInfo(comment).getRevision();
-	}
-
-	private static FileInfo getFileInfo(CommentInfo comment) {
-		return (FileInfo) comment.eContainer();
 	}
 
 	private static void appendCommitTime(StringBuilder sb, RevisionInfo revisionInfo) {
@@ -194,5 +177,34 @@ public class UIUtils {
 				sb.append(revisionInfo.getCommit().getCommitter().getName());
 			}
 		}
+	}
+
+	public static String formatMessageForMarkerView(CommentInfo commentInfo) {
+		String patchSet = ModelHelpers.getRevision(commentInfo).get_number() + "/" //$NON-NLS-1$
+				+ ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().size();
+		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : "Me";
+		return commentInfo.getMessage() + "\n\nWritten by " + author + " at "
+				+ CommentPrettyPrinter.printDate(commentInfo) + " for patchset " + patchSet + ".";
+	}
+
+	public static String formatMessageForQuickFix(CommentInfo commentInfo) {
+		String message = commentInfo.getMessage();
+		if (message.length() < 20) {
+			return message;
+		}
+		int nextSpace = message.indexOf(' ', 20);
+		if (nextSpace == -1) {
+			return message;
+		}
+		return message.substring(0, nextSpace) + " ..."; //$NON-NLS-1$
+	}
+
+	public static String getPatchSetString(CommentInfo comment) {
+		return getPatchSetString(ModelHelpers.getRevision(comment));
+	}
+
+	public static String getPatchSetString(RevisionInfo revision) {
+		return revision.get_number() + "/" //$NON-NLS-1$
+				+ revision.getChangeInfo().getRevisions().size();
 	}
 }

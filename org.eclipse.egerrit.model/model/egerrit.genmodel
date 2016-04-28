@@ -5,7 +5,7 @@
     editorDirectory="org.eclipse.egerrit.model.editor/src-gen" modelPluginID="org.eclipse.egerrit.model"
     modelName="Egerrit" nonNLSMarkers="true" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     codeFormatting="true" testsDirectory="/org.eclipse.egerrit.model.tests/src-gen"
-    importerID="org.eclipse.emf.importer.ecore" complianceLevel="7.0" copyrightFields="false"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
     tableProviders="true" colorProviders="true" language="en" interfaceNamePattern=""
     operationReflection="true" importOrganizing="true" cleanup="true">
   <foreignModel>egerrit.ecore</foreignModel>
@@ -215,7 +215,6 @@
       <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/revision"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/latestPatchSet"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//ChangeInfo/userSelectedRevision"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/repository"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/revertable"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/abandonable"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeInfo/restoreable"/>
@@ -238,6 +237,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeMessageInfo/date"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeMessageInfo/message"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeMessageInfo/_revision_number"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//ChangeMessageInfo/comment"/>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//StringToActionInfo">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//StringToActionInfo/key"/>
@@ -267,6 +267,8 @@
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/cherrypickable"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/deleteable"/>
       <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/publishable"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/filesLoaded"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//RevisionInfo/commented"/>
       <genOperations ecoreOperation="egerrit.ecore#//RevisionInfo/isActionAllowed">
         <genParameters ecoreParameter="egerrit.ecore#//RevisionInfo/isActionAllowed/action"/>
       </genOperations>
