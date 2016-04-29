@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -30,7 +31,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,36 +177,28 @@ public class UIReviewTable {
 			logger.debug("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
 			switch (aEvent.type) {
 			case SWT.MouseDown:
-				// Left Click
+				// Left Click, Selection over the STAR column only will activate the request to modify it
 				if (aEvent.button == 1) {
-
-					// Process the Item table handling
-					processItemSelection();
-
-				}
-				// For now, use button 2 to modify the starred value column 1
-				if (aEvent.button == 2) {
-					// Select the new item in the table
-					Table table = fViewer.getTable();
-					table.deselectAll();
 					Point p = new Point(aEvent.x, aEvent.y);
-					TableItem tbi = fViewer.getTable().getItem(p);
-					if (tbi != null) {
-						table.setSelection(tbi);
-					}
+					ViewerCell viewerCell = fViewer.getCell(p);
+					if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
 
-					// Execute the command to adjust the column: ID with the
-					// starred information
-					AdjustMyStarredHandler handler = new AdjustMyStarredHandler();
-					try {
-						handler.execute(new ExecutionEvent());
-					} catch (ExecutionException excutionException) {
-//						StatusHandler.log(new Status(IStatus.ERROR, GerritCorePlugin.PLUGIN_ID,
-//								excutionException.getMessage(), excutionException));
-						logger.error(excutionException.getMessage());
-
+						// Execute the command to adjust the column: ID with the
+						// starred information
+						AdjustMyStarredHandler handler = new AdjustMyStarredHandler();
+						try {
+							handler.execute(new ExecutionEvent());
+						} catch (ExecutionException excutionException) {
+							logger.error(excutionException.getMessage());
+						}
 					}
 				}
+
+				// For now, button 2 not used
+				if (aEvent.button == 2) {
+
+				}
+
 				// Right Click
 				if (aEvent.button == 3) {
 					// Process the Item table handling

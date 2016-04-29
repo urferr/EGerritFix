@@ -47,8 +47,10 @@ import org.eclipse.egerrit.core.command.RevertCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.core.command.SetTopicCommand;
+import org.eclipse.egerrit.core.command.StarChangeCommand;
 import org.eclipse.egerrit.core.command.SubmitCommand;
 import org.eclipse.egerrit.core.command.SuggestReviewersCommand;
+import org.eclipse.egerrit.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -527,7 +529,6 @@ public abstract class GerritClient {
 
 	/**
 	 * Return a command to get the list of modified files since a given revision
-	 * 
 	 */
 	public GetModifiedFilesCommand getFilesModifiedSince(String change_id, String revision_id, String compareAgainst) {
 		return new GetModifiedFilesCommand(fGerritRepository, change_id, revision_id, compareAgainst);
@@ -539,4 +540,25 @@ public abstract class GerritClient {
 	public GetFilesCommand getFiles(String change_id, String revision_id) {
 		return new GetFilesCommand(fGerritRepository, change_id, revision_id);
 	}
+
+	/**
+	 * Return a command to star a change
+	 *
+	 * @param change_id
+	 * @return StarChangeCommand
+	 */
+	public StarChangeCommand starChange(int numericChangeId) {
+		return new StarChangeCommand(fGerritRepository, numericChangeId);
+	}
+
+	/**
+	 * Return a command to unstar a change
+	 *
+	 * @param change_id
+	 * @return UnstarChangeCommand
+	 */
+	public UnstarChangeCommand unstarChange(int numericChangeId) {
+		return new UnstarChangeCommand(fGerritRepository, numericChangeId);
+	}
+
 }

@@ -39,6 +39,8 @@ import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.egerrit.core.command.ChangeOption;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.core.command.StarChangeCommand;
+import org.eclipse.egerrit.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
@@ -787,9 +789,28 @@ public class GerritTableView extends ViewPart {
 	 * @return void
 	 * @throws CoreException
 	 */
-	public void setStarred(String taskID, boolean starred, IProgressMonitor progressMonitor) throws CoreException {
+	public void setStarred(ChangeInfo changeInfo, boolean starred, IProgressMonitor progressMonitor)
+			throws CoreException {
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
+		} else {
+			if (starred) {
+				StarChangeCommand starChangeCmd = gerritClient.starChange(changeInfo.get_number());
+				try {
+					starChangeCmd.call();
+				} catch (EGerritException e1) {
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+				}
+
+			} else {
+				UnstarChangeCommand unstarChangeCmd = gerritClient.unstarChange(changeInfo.get_number());
+				try {
+					unstarChangeCmd.call();
+				} catch (EGerritException e1) {
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+				}
+
+			}
 		}
 	}
 
