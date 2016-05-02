@@ -47,7 +47,7 @@ import org.eclipse.egerrit.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.core.command.DeleteDraftChangeCommand;
 import org.eclipse.egerrit.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
-import org.eclipse.egerrit.core.command.RebaseCommand;
+import org.eclipse.egerrit.core.command.RebaseRevisionCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.RevertCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
@@ -533,10 +533,10 @@ public class ChangeDetailEditor extends EditorPart {
 				if (inputDialog.open() != Window.OK) {
 					return;
 				}
-
-				RebaseCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId());
+				RebaseRevisionCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId(),
+						fChangeInfo.getUserSelectedRevision().getId());
 				RebaseInput rebaseInput = new RebaseInput();
-				rebaseInput.setBase(inputDialog.getValue());
+				rebaseInput.setBase(inputDialog.getValue().trim().length() == 0 ? null : inputDialog.getValue().trim());
 
 				rebaseCmd.setCommandInput(rebaseInput);
 

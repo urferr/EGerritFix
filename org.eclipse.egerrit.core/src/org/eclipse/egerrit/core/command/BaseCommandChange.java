@@ -19,10 +19,19 @@ import org.eclipse.egerrit.core.GerritRepository;
 abstract class BaseCommandChange<T> extends BaseCommand<T> {
 	private static final String CHANGE_ID = "{change-id}"; //$NON-NLS-1$
 
+	private static final String REVISION_ID = "{revision-id}"; //$NON-NLS-1$
+
 	protected BaseCommandChange(GerritRepository gerritRepository, AuthentificationRequired authRequired,
 			Class<? extends HttpRequestBase> operationType, Type returnType, String changeId) {
 		super(gerritRepository, authRequired, operationType, returnType);
 		setSegment(CHANGE_ID, changeId);
+	}
+
+	protected BaseCommandChange(GerritRepository gerritRepository, AuthentificationRequired authRequired,
+			Class<? extends HttpRequestBase> operationType, Type returnType, String changeId, String revisionId) {
+		super(gerritRepository, authRequired, operationType, returnType);
+		setSegment(CHANGE_ID, changeId);
+		setSegment(REVISION_ID, revisionId);
 	}
 
 	@Override

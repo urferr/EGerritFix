@@ -23,6 +23,11 @@ abstract class BaseCommandChangeWithInput<ReturnType, InputType> extends BaseCom
 		super(gerritRepository, authRequired, operationType, returnType, changeId);
 	}
 
+	protected BaseCommandChangeWithInput(GerritRepository gerritRepository, AuthentificationRequired authRequired,
+			Class<? extends HttpRequestBase> operationType, Type returnType, String changeId, String revisionId) {
+		super(gerritRepository, authRequired, operationType, returnType, changeId, revisionId);
+	}
+
 	public void setCommandInput(InputType commandInput) {
 		setInput(commandInput);
 	}

@@ -42,6 +42,7 @@ import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
 import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.core.command.RebaseCommand;
+import org.eclipse.egerrit.core.command.RebaseRevisionCommand;
 import org.eclipse.egerrit.core.command.RestoreCommand;
 import org.eclipse.egerrit.core.command.RevertCommand;
 import org.eclipse.egerrit.core.command.SetReviewCommand;
@@ -559,6 +560,17 @@ public abstract class GerritClient {
 	 */
 	public UnstarChangeCommand unstarChange(int numericChangeId) {
 		return new UnstarChangeCommand(fGerritRepository, numericChangeId);
+	}
+
+	/**
+	 * Return a command to rebase a revision of a change
+	 *
+	 * @param change_id
+	 * @param revision_id
+	 * @return RebaseRevisionCommand
+	 */
+	public RebaseRevisionCommand rebase(String change_id, String revision_id) {
+		return new RebaseRevisionCommand(fGerritRepository, change_id, revision_id);
 	}
 
 }
