@@ -32,8 +32,7 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 				//Checking if the action is defined. If so, then just return true, 
 				//Not checking the value "isEnabled()", sometimes, 
 				//it return false even if the action is defined
-				//return actionInfo.isEnabled();
-				return true;
+				return actionInfo.isEnabled();
 			}
 		}
 		return false;

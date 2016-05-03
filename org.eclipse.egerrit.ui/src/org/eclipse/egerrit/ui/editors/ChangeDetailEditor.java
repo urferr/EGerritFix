@@ -99,6 +99,8 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -517,19 +519,39 @@ public class ChangeDetailEditor extends EditorPart {
 		Button rebaseButton = new Button(c, SWT.PUSH);
 		rebaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rebaseButton.setText(ActionConstants.REBASE.getLiteral());
-		IObservableValue observeRebaseable = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
-				.value(ModelPackage.Literals.REVISION_INFO__REBASEABLE)
-				.observe(fChangeInfo);
-		dbc.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebaseable, null, null);
-
 		rebaseButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				InputDialog inputDialog = new InputDialog(rebaseButton.getParent().getShell(),
 						"Code Review - Rebase Change",
-						"Change parent revision (leave empty to rebase on targeted branch)", "", null);
+						"Change parent revision (leave empty to rebase on targeted branch)", "", null) {
+
+					public void enableOk(boolean isEnable) {
+						getOkButton().setEnabled(isEnable);
+					}
+
+					@Override
+					protected void createButtonsForButtonBar(Composite parent) {
+						super.createButtonsForButtonBar(parent);
+						getText().addModifyListener(new ModifyListener() {
+							@Override
+							public void modifyText(ModifyEvent e) {
+								if (!fChangeInfo.getUserSelectedRevision().isRebaseable()) {
+									if (!getText().getText().isEmpty()) {
+										getOkButton().setEnabled(true);
+									} else {
+										getOkButton().setEnabled(false);
+									}
+								}
+							}
+						});
+						getOkButton().setEnabled(fChangeInfo.getUserSelectedRevision().isRebaseable());
+						return;
+					}
+
+				};
+
 				if (inputDialog.open() != Window.OK) {
 					return;
 				}
@@ -562,7 +584,9 @@ public class ChangeDetailEditor extends EditorPart {
 		Button checkout = new Button(c, SWT.PUSH);
 		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		checkout.setText(ActionConstants.CHECKOUT.getLiteral());
-		checkout.addSelectionListener(checkoutButtonListener(parent));
+		checkout.addSelectionListener(
+
+		checkoutButtonListener(parent));
 
 		Button cherryPick = new Button(c, SWT.PUSH);
 		cherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
