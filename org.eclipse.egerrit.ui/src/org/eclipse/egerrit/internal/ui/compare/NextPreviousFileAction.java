@@ -47,12 +47,18 @@ public class NextPreviousFileAction extends Action {
 	//Helper method to return the top left pane
 	private Object getTopPane() {
 		Object topPane = ((CompareEditorInputNavigator) compareInput.getNavigator()).getPanes()[0];
-		return Utilities.getAdapter(topPane, INavigatable.class);
+		if (topPane != null) {
+			return Utilities.getAdapter(topPane, INavigatable.class);
+		}
+		return null;
 	}
 
 	@Override
 	public void run() {
 		Object topPane = getTopPane();
+		if (topPane == null) {
+			return;
+		}
 		if (topPane instanceof INavigatable) {
 			((INavigatable) topPane).selectChange(direction);
 		}
