@@ -13,6 +13,7 @@ package org.eclipse.egerrit.dashboard.ui.internal.model;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,12 +26,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.ToolTip;
+import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,6 +154,38 @@ public class UIReviewTable {
 			}
 		});
 
+		String os = org.eclipse.core.runtime.Platform.getOS();
+		// nothing to do on windows
+		if (!Platform.OS_WIN32.equals(os)) {
+			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+			final ToolTip tip = new ToolTip(shell, SWT.ICON_INFORMATION);
+
+			table.addListener(SWT.MouseMove, new Listener() {
+
+				@Override
+				public void handleEvent(Event event) {
+					tip.setVisible(false);
+
+				}
+			});
+
+			table.addListener(SWT.MouseHover, new Listener() {
+				public void handleEvent(Event event) {
+					Point pt = new Point(event.x, event.y);
+					ViewerCell viewerCell = fViewer.getCell(pt);
+					int columnSubjectIndex = ReviewTableDefinition.SUBJECT.ordinal();
+					if (viewerCell != null && viewerCell.getColumnIndex() == columnSubjectIndex) {
+						TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
+						Rectangle rect = item.getBounds(columnSubjectIndex);
+						if (rect.contains(pt)) {
+							tip.setMessage(item.getText(columnSubjectIndex));
+							tip.setLocation(rect.x, rect.y);
+							tip.setVisible(true);
+						}
+					}
+				}
+			});
+		}
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -169,7 +207,6 @@ public class UIReviewTable {
 		column.setResizable(aTableInfo.getResize());
 		column.setMoveable(aTableInfo.getMoveable());
 		return viewerColumn;
-
 	}
 
 	private final Listener mouseButtonListener = new Listener() {
@@ -181,7 +218,7 @@ public class UIReviewTable {
 				if (aEvent.button == 1) {
 					Point p = new Point(aEvent.x, aEvent.y);
 					ViewerCell viewerCell = fViewer.getCell(p);
-					if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
+					if (viewerCell != null && viewerCell.getColumnIndex() == ReviewTableDefinition.STARRED.ordinal()) {
 
 						// Execute the command to adjust the column: ID with the
 						// starred information
