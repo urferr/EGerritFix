@@ -15,9 +15,10 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
-import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.egerrit.internal.model.Reviews;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -41,31 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements the review table view.
- *
- * @since 1.0
+ * This class handles the creation of the table widget shown in the dashboard.
  */
 public class UIReviewTable {
 	private static Logger logger = LoggerFactory.getLogger(UIReviewTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
-	// ------------------------------------------------------------------------
-	// Variables
-	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
-
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
-
-	public UIReviewTable() {
-
-	}
-
-	// --------------------ReviewTableContentProvider----------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
 
 	public Composite createTableViewerSection(Composite aParent) {
 		Composite viewerForm = new Composite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
@@ -75,12 +59,11 @@ public class UIReviewTable {
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
-		// Set the content provider and the Label provider and the sorter
-		fViewer.setContentProvider(new ReviewTableContentProvider());
+		ComposedAdapterFactory adapterFactory = new ComposedAdapterFactory();
+		adapterFactory.addAdapterFactory(new ModifiedModelItemProviderAdapterFactory());
 
-		// Set the viewer for the provider
-		ReviewTableLabelProvider tableProvider = new ReviewTableLabelProvider();
-		fViewer.setLabelProvider(tableProvider);
+		fViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
+		fViewer.setLabelProvider(new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null));
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
 
@@ -248,27 +231,6 @@ public class UIReviewTable {
 		}
 
 	};
-
-	/**
-	 * Process the selected data from the item table
-	 */
-	private void processItemSelection() {
-		ISelection tableSelection = fViewer.getSelection();
-		if (!tableSelection.isEmpty()) {
-			if (tableSelection instanceof IStructuredSelection) {
-				Object obj = ((IStructuredSelection) tableSelection).getFirstElement();
-				if (obj instanceof ChangeInfo) {
-//					IAttributeContainer item = (IAttributeContainer) obj;
-					logger.debug("Selected table OBJECT selection ID: " //$NON-NLS-1$
-							+ ((ChangeInfo) obj).getId() + "\t subject: " //$NON-NLS-1$
-							+ ((ChangeInfo) obj).getSubject());
-//
-//							+ item.getAttribute(GerritTask.SHORT_CHANGE_ID) + "\t subject: " //$NON-NLS-1$
-//							+ item.getAttribute(GerritTask.SUBJECT));
-				}
-			}
-		}
-	}
 
 	public TableViewer getViewer() {
 		return fViewer;

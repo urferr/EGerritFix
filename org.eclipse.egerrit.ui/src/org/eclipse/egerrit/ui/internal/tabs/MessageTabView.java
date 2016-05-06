@@ -323,8 +323,6 @@ public class MessageTabView {
 					ModelLoader loader = ModelLoader.initialize(fGerritClient, changeInfo);
 					loader.loadBasicInformation();
 					loader.dispose();
-					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			});
 		}

@@ -284,7 +284,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerrit.ecore#//GroupBaseInfo/id"/>
     </genClasses>
     <genClasses ecoreClass="egerrit.ecore#//Reviews">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerrit.ecore#//Reviews/allReviews"/>
+      <genFeatures children="true" createChild="false" propertySortChoices="true"
+          ecoreFeature="ecore:EReference egerrit.ecore#//Reviews/allReviews"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

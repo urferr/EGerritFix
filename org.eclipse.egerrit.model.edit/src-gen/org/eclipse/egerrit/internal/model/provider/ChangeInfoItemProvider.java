@@ -779,11 +779,4 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 	public ResourceLocator getResourceLocator() {
 		return EgerritEditPlugin.INSTANCE;
 	}
-
-	@Override
-	public String getColumnText(Object object, int columnIndex) {
-		System.out.println("blabla");
-		// TODO Auto-generated method stub
-		return super.getColumnText(object, columnIndex);
-	}
 }

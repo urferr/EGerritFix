@@ -19,7 +19,6 @@ import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -75,8 +74,6 @@ public class DeleteDraftRevisionProvider {
 						IEditorPart editor = activePage.getActiveEditor();
 						activePage.closeEditor(editor, false);
 					}
-					LinkDashboard linkDash = new LinkDashboard(gerritClient);
-					linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				} catch (EGerritException e1) {
 					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 				}

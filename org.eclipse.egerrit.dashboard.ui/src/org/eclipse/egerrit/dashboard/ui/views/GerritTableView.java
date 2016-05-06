@@ -45,13 +45,14 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
-import org.eclipse.egerrit.dashboard.ui.internal.model.ReviewTableData;
 import org.eclipse.egerrit.dashboard.ui.internal.model.UIReviewTable;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.SelectionDialog;
 import org.eclipse.egerrit.dashboard.ui.internal.utils.UIUtils;
 import org.eclipse.egerrit.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.Reviews;
 import org.eclipse.egerrit.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
@@ -181,8 +182,6 @@ public class GerritTableView extends ViewPart {
 
 	private TableViewer fViewer;
 
-	private ReviewTableData fReviewTable = new ReviewTableData();
-
 	private GerritServerUtility fServerUtil = GerritServerUtility.getInstance();
 
 	private List<GerritServerInformation> fMapRepoServer = null;
@@ -211,10 +210,6 @@ public class GerritTableView extends ViewPart {
 		rtv = this;
 	}
 
-	public void setReviewTableData(ReviewTableData ReviewTable) {
-		fReviewTable = ReviewTable;
-	}
-
 	public void setGerritServerUtility(GerritServerUtility ServerUtil) {
 		fServerUtil = ServerUtil;
 
@@ -240,16 +235,15 @@ public class GerritTableView extends ViewPart {
 	}
 
 	/**
-	 * Refresh the view content
+	 * Refresh the table and other fields that show information related to what is in the table
 	 */
-	private void refresh() {
-		Display.getDefault().syncExec(new Runnable() {
+	private void refresh(Reviews reviews) {
+		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				fViewer.setInput(fReviewTable.getReviews());
+				fViewer.setInput(reviews);
 				//Refresh the counter
-				setReviewsTotalResultLabel(Integer.toString(fReviewTable.getReviews().length));
-				fViewer.refresh(false, false);
+				setReviewsTotalResultLabel(Integer.toString(reviews.getAllReviews().size()));
 				searchSection.layout(true);
 			}
 		});
@@ -883,7 +877,6 @@ public class GerritTableView extends ViewPart {
 				// If there is only have one Gerrit server, we can proceed as if it was already used before
 				IStatus status = null;
 				try {
-					fReviewTable.createReviewItem(aQueryType, server);
 					status = getReviews(server, aQueryType);
 					if (status.isOK()) {
 						Display.getDefault().syncExec(new Runnable() {
@@ -1055,13 +1048,16 @@ public class GerritTableView extends ViewPart {
 
 			gerritClient = gerritRepository.instantiateGerrit();
 		}
-		ChangeInfo[] reviews = null;
+		Reviews shownReviews = ModelFactory.eINSTANCE.createReviews();
 		if (gerritClient != null) {
 			// Fetch the list of reviews and pre-populate the table
-			reviews = getReviewList(repository, queryString);
+			ChangeInfo[] loadedReviews = getReviewList(repository, queryString);
+			for (ChangeInfo changeInfo : loadedReviews) {
+				shownReviews.getAllReviews().add(changeInfo);
+			}
 		} else {
 			//Reset the list to prevent bad request
-			reviews = new ChangeInfo[0];
+			shownReviews.getAllReviews().clear();
 			fServerUtil.resetLastGerritServer();
 
 			Display.getDefault().syncExec(new Runnable() {
@@ -1072,17 +1068,12 @@ public class GerritTableView extends ViewPart {
 			});
 
 		}
-		fReviewTable.init(reviews);
-		refresh();
-
+		refresh(shownReviews);
 		return Status.OK_STATUS;
-
 	}
 
 	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {
-
 		ChangeInfo[] reviews = null;
-
 		try {
 			reviews = performQuery(aQuery, new NullProgressMonitor());
 		} catch (MalformedURLException e) {
@@ -1091,7 +1082,6 @@ public class GerritTableView extends ViewPart {
 					: e.getMessage());
 
 		}
-
 		return reviews;
 	}
 

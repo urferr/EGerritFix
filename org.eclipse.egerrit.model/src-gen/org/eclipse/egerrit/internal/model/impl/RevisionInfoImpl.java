@@ -655,6 +655,7 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isCommented() {
 		return commented;
 	}
@@ -664,6 +665,7 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setCommented(boolean newCommented) {
 		boolean oldCommented = commented;
 		commented = newCommented;

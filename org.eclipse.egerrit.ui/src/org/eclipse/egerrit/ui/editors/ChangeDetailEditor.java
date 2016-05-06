@@ -76,7 +76,6 @@ import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
-import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
@@ -623,7 +622,7 @@ public class ChangeDetailEditor extends EditorPart {
 		checkout.setText(ActionConstants.CHECKOUT.getLiteral());
 		checkout.addSelectionListener(
 
-		checkoutButtonListener(parent));
+				checkoutButtonListener(parent));
 
 		Button cherryPick = new Button(c, SWT.PUSH);
 		cherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -798,8 +797,10 @@ public class ChangeDetailEditor extends EditorPart {
 
 							IEditorPart editor = activePage.getActiveEditor();
 							activePage.closeEditor(editor, false);
-							LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-							linkDash.invokeRefreshDashboardCommand("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+							ModelLoader loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
+							loader.loadBasicInformation();
+							loader.dispose();
 						} catch (EGerritException e1) {
 							EGerritCorePlugin
 									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());

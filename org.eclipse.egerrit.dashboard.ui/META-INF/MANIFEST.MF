@@ -5,31 +5,15 @@ Bundle-SymbolicName: org.eclipse.egerrit.dashboard.ui;singleton:=true
 Bundle-Version: 0.3.0.qualifier
 Bundle-Activator: org.eclipse.egerrit.dashboard.ui.GerritUi
 Bundle-Localization: OSGI-INF/l10n/bundle
-Require-Bundle: org.eclipse.ui,
- org.eclipse.ui.forms,
+Require-Bundle: org.eclipse.ui.forms,
  org.eclipse.core.runtime,
- org.eclipse.egit.core,
- org.eclipse.jgit,
- org.eclipse.equinox.security.ui;bundle-version="1.1.100",
- org.eclipse.equinox.security;bundle-version="1.1.100",
- org.apache.httpcomponents.httpclient;bundle-version="4.3.6",
- org.eclipse.egerrit.core;bundle-version="0.1.0",
- org.eclipse.core.resources;bundle-version="3.8.1",
- org.eclipse.swt,
- org.eclipse.core.databinding,
- org.eclipse.core.databinding.beans,
- org.eclipse.core.databinding.observable,
- org.eclipse.core.databinding.property,
- org.eclipse.jface.databinding,
- com.ibm.icu,
- org.eclipse.jface.text,
- org.eclipse.ui.editors,
- org.eclipse.ui.ide,
- org.eclipse.egerrit.ui,
+ org.eclipse.egerrit.core;bundle-version="0.3.0",
+ org.eclipse.egerrit.model.edit;bundle-version="0.3.0",
+ org.eclipse.egerrit.ui;bundle-version="0.3.0",
  org.slf4j.api;bundle-version="1.7.2",
- org.eclipse.egerrit.model;bundle-version="0.3.0"
+ org.eclipse.emf.edit.ui
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
 Export-Package: org.eclipse.egerrit.dashboard.ui;x-internal:=true;
   uses:="org.eclipse.jface.resource,
@@ -47,11 +31,7 @@ Export-Package: org.eclipse.egerrit.dashboard.ui;x-internal:=true;
    org.osgi.framework,
    org.eclipse.ui.part,
    org.eclipse.swt.widgets"
-Import-Package: org.apache.commons.codec.binary;version="1.6.0",
- org.eclipse.compare,
- org.eclipse.compare.structuremergeviewer,
- org.eclipse.egerrit.dashboard,
- org.eclipse.egerrit.dashboard.core,
+Import-Package: org.eclipse.egerrit.dashboard.core,
  org.eclipse.egerrit.dashboard.utils,
  org.eclipse.egerrit.ui.editors,
  org.eclipse.egerrit.ui.editors.model

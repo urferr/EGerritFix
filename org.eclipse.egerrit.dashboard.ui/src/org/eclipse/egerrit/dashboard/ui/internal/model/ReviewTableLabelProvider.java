@@ -19,11 +19,9 @@ import java.text.SimpleDateFormat;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.ModifiedChangeInfoImpl;
+import org.eclipse.egerrit.internal.model.provider.ChangeInfoItemProvider;
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -34,7 +32,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @since 1.0
  */
-public class ReviewTableLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider {
+public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -117,15 +115,9 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 		fImageRegistry.put(STAR_OPEN, GerritUi.getImageDescriptor(iconPath + STAR_OPEN));
 	}
 
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
-	public ReviewTableLabelProvider() {
+	public ReviewTableLabelProvider(AdapterFactory adapterFactory) {
+		super(adapterFactory);
 	}
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Return an image representing the state of the object
@@ -201,9 +193,10 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *            column index
 	 * @return String text associated to the column
 	 */
+	@Override
 	public String getColumnText(Object aObj, int aIndex) {
-		if (aObj instanceof ModifiedChangeInfoImpl) {
-			ChangeInfo reviewSummary = (ModifiedChangeInfoImpl) aObj;
+		if (aObj instanceof ChangeInfo) {
+			ChangeInfo reviewSummary = (ChangeInfo) aObj;
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
@@ -254,11 +247,12 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *            column index
 	 * @return Image Image according to the selected column
 	 */
+	@Override
 	public Image getColumnImage(Object aObj, int aIndex) {
 		Image image = null;
 		String value = null;
-		if (aObj instanceof ModifiedChangeInfoImpl) {
-			ChangeInfo reviewSummary = (ModifiedChangeInfoImpl) aObj;
+		if (aObj instanceof ChangeInfo) {
+			ChangeInfo reviewSummary = (ChangeInfo) aObj;
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
@@ -302,8 +296,8 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	 *            columnIndex
 	 */
 	@Override
-	public Color getForeground(Object aElement, int aColumnIndex) {
-		if (aElement instanceof ModifiedChangeInfoImpl) {
+	public Object getForeground(Object aElement, int aColumnIndex) {
+		if (aElement instanceof ChangeInfo) {
 			switch (aColumnIndex) {
 			case 1:
 			case 2:
@@ -312,7 +306,7 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 			case 5:
 			case 6:
 			case 7:
-				ChangeInfo changeInfo = (ModifiedChangeInfoImpl) aElement;
+				ChangeInfo changeInfo = (ChangeInfo) aElement;
 				if (changeInfo.isReviewed()) {
 					return DEFAULT_FOREGROUND_COLOR;
 				} else {
@@ -325,12 +319,12 @@ public class ReviewTableLabelProvider extends LabelProvider implements ITableLab
 	}
 
 	@Override
-	public Color getBackground(Object aElement, int aColumnIndex) {
+	public Object getBackground(Object aElement, int aColumnIndex) {
 		// logger.debug("getBackground column : " +
 		// aColumnIndex +
 		// " ]: "+ aElement );
-		if (aElement instanceof ModifiedChangeInfoImpl) {
-			ChangeInfo item = (ModifiedChangeInfoImpl) aElement;
+		if (aElement instanceof ChangeInfo) {
+			ChangeInfo item = (ChangeInfo) aElement;
 			//
 			// To modify when we can verify the review state
 			String state = new Boolean(item.isStarred()).toString();
