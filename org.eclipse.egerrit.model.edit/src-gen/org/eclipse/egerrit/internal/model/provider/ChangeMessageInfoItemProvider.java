@@ -73,6 +73,7 @@ public class ChangeMessageInfoItemProvider extends ItemProviderAdapter
 			addDatePropertyDescriptor(object);
 			addMessagePropertyDescriptor(object);
 			add_revision_numberPropertyDescriptor(object);
+			addCommentPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -139,6 +140,22 @@ public class ChangeMessageInfoItemProvider extends ItemProviderAdapter
 								"_UI_ChangeMessageInfo__revision_number_feature", "_UI_ChangeMessageInfo_type"), //$NON-NLS-1$ //$NON-NLS-2$
 						ModelPackage.Literals.CHANGE_MESSAGE_INFO__REVISION_NUMBER, true, false, false,
 						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Comment feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addCommentPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeMessageInfo_comment_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeMessageInfo_comment_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeMessageInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_MESSAGE_INFO__COMMENT, true, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -211,6 +228,7 @@ public class ChangeMessageInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.CHANGE_MESSAGE_INFO__DATE:
 		case ModelPackage.CHANGE_MESSAGE_INFO__MESSAGE:
 		case ModelPackage.CHANGE_MESSAGE_INFO__REVISION_NUMBER:
+		case ModelPackage.CHANGE_MESSAGE_INFO__COMMENT:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.CHANGE_MESSAGE_INFO__AUTHOR:

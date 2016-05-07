@@ -22,8 +22,6 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc -->
  * A test case for the model object '<em><b>String To List Of String</b></em>'.
@@ -38,7 +36,7 @@ public class StringToListOfStringTest extends TestCase {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Map.Entry<String, EList<EObject>> fixture = null;
+	protected Map.Entry<String, EList<String>> fixture = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -65,7 +63,7 @@ public class StringToListOfStringTest extends TestCase {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void setFixture(Map.Entry<String, EList<EObject>> fixture) {
+	protected void setFixture(Map.Entry<String, EList<String>> fixture) {
 		this.fixture = fixture;
 	}
 
@@ -75,7 +73,7 @@ public class StringToListOfStringTest extends TestCase {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected Map.Entry<String, EList<EObject>> getFixture() {
+	protected Map.Entry<String, EList<String>> getFixture() {
 		return fixture;
 	}
 
@@ -88,7 +86,7 @@ public class StringToListOfStringTest extends TestCase {
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void setUp() throws Exception {
-		setFixture((Map.Entry<String, EList<EObject>>) ModelFactory.eINSTANCE
+		setFixture((Map.Entry<String, EList<String>>) ModelFactory.eINSTANCE
 				.create(ModelPackage.Literals.STRING_TO_LIST_OF_STRING));
 	}
 
