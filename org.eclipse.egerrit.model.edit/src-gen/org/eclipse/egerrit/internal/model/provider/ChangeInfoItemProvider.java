@@ -94,6 +94,11 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 			addConflictsWithPropertyDescriptor(object);
 			addRevisionPropertyDescriptor(object);
 			addLatestPatchSetPropertyDescriptor(object);
+			addUserSelectedRevisionPropertyDescriptor(object);
+			addRevertablePropertyDescriptor(object);
+			addAbandonablePropertyDescriptor(object);
+			addRestoreablePropertyDescriptor(object);
+			addDeleteablePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -495,6 +500,85 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
+	 * This adds a property descriptor for the User Selected Revision feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addUserSelectedRevisionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+				getString("_UI_ChangeInfo_userSelectedRevision_feature"), //$NON-NLS-1$
+				getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_userSelectedRevision_feature", //$NON-NLS-1$//$NON-NLS-2$
+						"_UI_ChangeInfo_type"), //$NON-NLS-1$
+				ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION, true, false, true, null, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Revertable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addRevertablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_revertable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_revertable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__REVERTABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Abandonable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addAbandonablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_abandonable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_abandonable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__ABANDONABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Restoreable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addRestoreablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_restoreable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_restoreable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__RESTOREABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Deleteable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addDeleteablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_deleteable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_deleteable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__DELETEABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -592,6 +676,10 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.CHANGE_INFO__MORE_CHANGES:
 		case ModelPackage.CHANGE_INFO__BASE_CHANGE:
 		case ModelPackage.CHANGE_INFO__HASHTAGS:
+		case ModelPackage.CHANGE_INFO__REVERTABLE:
+		case ModelPackage.CHANGE_INFO__ABANDONABLE:
+		case ModelPackage.CHANGE_INFO__RESTOREABLE:
+		case ModelPackage.CHANGE_INFO__DELETEABLE:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.CHANGE_INFO__OWNER:

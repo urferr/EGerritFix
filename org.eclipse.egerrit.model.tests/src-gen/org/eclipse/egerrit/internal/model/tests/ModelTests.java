@@ -40,6 +40,9 @@ public class ModelTests extends TestSuite {
 	 */
 	public static Test suite() {
 		TestSuite suite = new ModelTests("model Tests"); //$NON-NLS-1$
+		suite.addTestSuite(FileInfoTest.class);
+		suite.addTestSuite(ChangeInfoTest.class);
+		suite.addTestSuite(RevisionInfoTest.class);
 		return suite;
 	}
 

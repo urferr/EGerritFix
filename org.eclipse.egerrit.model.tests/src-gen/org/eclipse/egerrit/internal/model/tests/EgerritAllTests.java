@@ -40,6 +40,7 @@ public class EgerritAllTests extends TestSuite {
 	 */
 	public static Test suite() {
 		TestSuite suite = new EgerritAllTests("Egerrit Tests"); //$NON-NLS-1$
+		suite.addTest(ModelTests.suite());
 		return suite;
 	}
 

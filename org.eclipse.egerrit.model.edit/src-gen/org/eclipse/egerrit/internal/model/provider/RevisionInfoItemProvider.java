@@ -75,6 +75,13 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 			addRefPropertyDescriptor(object);
 			addReviewedPropertyDescriptor(object);
 			addCommentsLoadedPropertyDescriptor(object);
+			addSubmitablePropertyDescriptor(object);
+			addRebaseablePropertyDescriptor(object);
+			addCherrypickablePropertyDescriptor(object);
+			addDeleteablePropertyDescriptor(object);
+			addPublishablePropertyDescriptor(object);
+			addFilesLoadedPropertyDescriptor(object);
+			addCommentedPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -176,6 +183,118 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
+	 * This adds a property descriptor for the Submitable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addSubmitablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_submitable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_submitable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__SUBMITABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Rebaseable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addRebaseablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_rebaseable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_rebaseable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__REBASEABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Cherrypickable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addCherrypickablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_cherrypickable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_cherrypickable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Deleteable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addDeleteablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_deleteable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_deleteable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__DELETEABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Publishable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addPublishablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_publishable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_publishable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__PUBLISHABLE, false, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Files Loaded feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addFilesLoadedPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_filesLoaded_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_filesLoaded_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__FILES_LOADED, true, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Commented feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addCommentedPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_RevisionInfo_commented_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_RevisionInfo_commented_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_RevisionInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVISION_INFO__COMMENTED, true, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -249,6 +368,13 @@ public class RevisionInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.REVISION_INFO__REF:
 		case ModelPackage.REVISION_INFO__REVIEWED:
 		case ModelPackage.REVISION_INFO__COMMENTS_LOADED:
+		case ModelPackage.REVISION_INFO__SUBMITABLE:
+		case ModelPackage.REVISION_INFO__REBASEABLE:
+		case ModelPackage.REVISION_INFO__CHERRYPICKABLE:
+		case ModelPackage.REVISION_INFO__DELETEABLE:
+		case ModelPackage.REVISION_INFO__PUBLISHABLE:
+		case ModelPackage.REVISION_INFO__FILES_LOADED:
+		case ModelPackage.REVISION_INFO__COMMENTED:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.REVISION_INFO__FETCH:
