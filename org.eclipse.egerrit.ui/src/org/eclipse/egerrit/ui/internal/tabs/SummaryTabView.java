@@ -873,13 +873,13 @@ public class SummaryTabView {
 				if ("MERGED".equals(value) //$NON-NLS-1$
 						|| "ABANDONED".equals(value)) { //$NON-NLS-1$
 					visible = Boolean.FALSE;
+					Widget w = ((ISWTObservable) observableValue).getWidget();
+					if (!w.isDisposed() && w instanceof Control) {
+						((GridData) ((Control) w).getLayoutData()).exclude = !((Control) w).isVisible();
+						((Control) w).getParent().pack(true);
+					}
 				}
 				IStatus status = super.doSet(observableValue, visible);
-				Widget w = ((ISWTObservable) observableValue).getWidget();
-				if (!w.isDisposed() && w instanceof Control) {
-					((GridData) ((Control) w).getLayoutData()).exclude = !((Control) w).isVisible();
-					((Control) w).getParent().pack(true);
-				}
 				return status;
 			}
 		};
