@@ -117,7 +117,10 @@ with [get-window "Restore message"] {
 //}
 
 //Test the Check-out button
-get-editor "" | get-button Checkout | click
+with [get-editor "" | get-button "Download"] {
+    click
+    get-menu "Checkout..." | click
+}
 get-window Error | get-button OK | click
 get-editor "" | get-button "Cherry-Pick" | click
 get-window "Code Review - Cherry Pick Change to Another Branch" | get-button Cancel | click

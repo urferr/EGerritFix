@@ -14,33 +14,21 @@
 
 package org.eclipse.egerrit.ui.editors;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
-import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.AbandonCommand;
@@ -75,30 +63,18 @@ import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
-import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
-import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
-import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.jgit.api.CheckoutCommand;
-import org.eclipse.jgit.api.CheckoutResult;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -128,11 +104,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.part.EditorPart;
-import org.eclipse.ui.services.IServiceLocator;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -617,22 +589,20 @@ public class ChangeDetailEditor extends EditorPart {
 			}
 		});
 
-		Button checkout = new Button(c, SWT.PUSH);
-		checkout.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		checkout.setText(ActionConstants.CHECKOUT.getLiteral());
-		checkout.addSelectionListener(
+		Button download = new Button(c, SWT.PUSH);
+		download.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		download.setText("Download");
+		download.addSelectionListener(downloadButtonListener(parent));//checkoutButtonListener(parent));
 
-				checkoutButtonListener(parent));
-
-		Button cherryPick = new Button(c, SWT.PUSH);
-		cherryPick.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		cherryPick.setText(ActionConstants.CHERRYPICK.getLiteral());
+		Button cherryPickToRemoteBranch = new Button(c, SWT.PUSH);
+		cherryPickToRemoteBranch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		cherryPickToRemoteBranch.setText(ActionConstants.CHERRYPICK.getLiteral());
 		IObservableValue cherryPickAble = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
 				.value(ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE)
 				.observe(fChangeInfo);
-		dbc.bindValue(WidgetProperties.enabled().observe(cherryPick), cherryPickAble, null, null);
+		dbc.bindValue(WidgetProperties.enabled().observe(cherryPickToRemoteBranch), cherryPickAble, null, null);
 
-		cherryPick.addSelectionListener(new SelectionAdapter() {
+		cherryPickToRemoteBranch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				BranchInfo[] listBranchesCmdResult = listBranches();
@@ -643,7 +613,7 @@ public class ChangeDetailEditor extends EditorPart {
 					listBranchesRef.add(it.next().getRef());
 				}
 
-				final CherryPickDialog cherryPickDialog = new CherryPickDialog(cherryPick.getParent().getShell(),
+				final CherryPickDialog cherryPickDialog = new CherryPickDialog(cherryPickToRemoteBranch.getParent().getShell(),
 						listBranchesRef, fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
@@ -821,6 +791,23 @@ public class ChangeDetailEditor extends EditorPart {
 
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
+	}
+
+	private SelectionListener downloadButtonListener(Composite parent) {
+		return new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MenuManager mgr = new MenuManager();
+				mgr.add(new CherryPickRevision(fChangeInfo.getUserSelectedRevision(), fGerritClient));
+				mgr.add(new CheckoutRevision(fChangeInfo.getUserSelectedRevision(), fGerritClient));
+				mgr.createContextMenu(parent).setVisible(true);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//Nothing to do
+			}
+		};
 	}
 
 	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
@@ -1025,217 +1012,6 @@ public class ChangeDetailEditor extends EditorPart {
 /*       Buttons Listener                    */
 /*                                           */
 	/*********************************************/
-
-	/**
-	 * @param Compopsite
-	 *            parent
-	 * @return the listener when the Checkout button is triggered
-	 */
-	private SelectionAdapter checkoutButtonListener(final Composite parent) {
-		return new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent event) {
-				Repository localRepo = findLocalRepo(fGerritClient, fChangeInfo.getProject());
-
-				if (localRepo == null) {
-					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repository found");
-					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
-					return;
-				}
-
-				String psSelected = fChangeInfo.getUserSelectedRevision().getRef();
-				if ((psSelected == null) || psSelected.isEmpty()) {
-					Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No patchset selected");
-					ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
-				}
-
-				//Find the current selected Patch set reference in the table
-				FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
-				WizardDialog w = new WizardDialog(parent.getShell(), var);
-				String currentActiveBranchName = getCurrentBranchName(localRepo);
-				w.create();
-				String dialogErrorMsg = w.getErrorMessage();
-				String existingLocalBranchName = getTargetBranchName(parent, localRepo);
-				// already on the branch, nothing to do
-				if (existingLocalBranchName != null
-						&& currentActiveBranchName.compareTo(existingLocalBranchName) == 0) {
-					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
-							fChangeInfo.getUserSelectedRevision());
-					return;
-				}
-				// the target branch exists
-				if (dialogErrorMsg != null && dialogErrorMsg.contains("already exists")) { // branch already exists,
-
-					int result = checkOutOrNot(existingLocalBranchName);
-					if (result == 256) {
-						w.open();
-						return;
-					} else if (result == Window.CANCEL) { // cancel
-						return;
-					}
-
-					try {
-						checkoutBranch(existingLocalBranchName, localRepo);
-					} catch (Exception e) {
-					}
-				} else {
-					// no branch yet, go through wizard
-					try {
-						w.open();
-
-					} catch (Exception e) {
-					}
-				}
-				ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
-						fChangeInfo.getUserSelectedRevision());
-			}
-		};
-	}
-
-	private String getCurrentBranchName(Repository localRepo) {
-		String head = null;
-		try {
-			head = localRepo.getFullBranch();
-		} catch (IOException e1) {
-
-		}
-		if (head.startsWith("refs/heads/")) { // Print branch name with "refs/heads/" stripped.
-			try {
-				return localRepo.getBranch();
-			} catch (IOException e) {
-			}
-
-		}
-		return head;
-	}
-
-	private String getTargetBranchName(final Composite parent, Repository localRepo) {
-		Set<String> branches = null;
-		try {
-			branches = getShortLocalBranchNames(new Git(localRepo));
-		} catch (GitAPIException e1) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No branches found");
-			ErrorDialog.openError(parent.getShell(), "Error", "Operation could not be performed", status);
-			return "";
-		}
-		String shortName = fChangeInfo.get_number() + "/" + fChangeInfo.getUserSelectedRevision().get_number();
-		Iterator<String> iterator = branches.iterator();
-		String branchName = null;
-		while (iterator.hasNext()) {
-			String setElement = iterator.next();
-			if (setElement.contains(shortName)) {
-				branchName = setElement;
-				break;
-			}
-		}
-		return branchName;
-	}
-
-	private int checkOutOrNot(String branchName) {
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
-
-		Preferences editorPrefs = prefs.node("checkout");
-
-		int choice = editorPrefs.getInt("doCheckout", 0);
-
-		if (choice != 0) {
-			return choice;
-		}
-		String title = "Review previously checked-out";
-		String message = "Change \"" + fChangeInfo.getSubject() + "\"" + " has previously been checked out in branch "
-				+ "\"" + branchName + "\"" + ".\n\n" + "Do you want to switch to it or create a new branch?";
-		MessageDialogWithToggle dialog = new MessageDialogWithToggle(Display.getDefault().getActiveShell(), title, null,
-				message, MessageDialog.NONE, new String[] { "Cancel", "New Branch", "Switch" }, 0,
-				"Always perform this action", false);
-		dialog.open();
-		int result = dialog.getReturnCode();
-
-		if (result != Window.CANCEL && dialog.getToggleState()) {
-			editorPrefs.putInt("doCheckout", result);
-			try {
-				editorPrefs.flush();
-			} catch (BackingStoreException e) {
-				//There is not much we can do
-			}
-		}
-		return result;
-	}
-
-	private static Set<String> getShortLocalBranchNames(Git git) throws GitAPIException {
-		Set<String> branches = new HashSet<String>();
-		Iterator<Ref> iter = git.branchList().call().iterator();
-		while (iter.hasNext()) {
-			branches.add(Repository.shortenRefName(iter.next().getName()));
-		}
-		return branches;
-	}
-
-	private void checkoutBranch(String branchName, Repository repo) throws Exception {
-		CheckoutCommand command = null;
-		try {
-			command = new Git(repo).checkout();
-			command.setCreateBranch(false);
-			command.setName(branchName);
-			command.setForce(false);
-			command.call();
-		} catch (Throwable t) {
-			CheckoutResult result = command.getResult();
-			new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList()).open();
-		}
-	}
-
-	/*********************************************/
-/*                                           */
-/*       Utility                             */
-/*                                           */
-	/*********************************************/
-
-	/**
-	 * @param GerritClient
-	 *            gerritClient
-	 * @param String
-	 *            projectName
-	 * @return Repository The local repository associated to the current project and Gerrit Repository
-	 */
-	private Repository findLocalRepo(GerritClient gerrit, String projectName) {
-		GerritToGitMapping gerritToGitMap = null;
-		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
-					projectName);
-		} catch (URISyntaxException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-		}
-		Repository jgitRepo = null;
-		try {
-			jgitRepo = gerritToGitMap.find();
-		} catch (IOException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-		}
-		return jgitRepo;
-	}
-
-	public void invokeRefreshCommand() {
-		// Obtain IServiceLocator implementer, e.g. from PlatformUI.getWorkbench():
-		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-		// or a site from within a editor or view:
-		// IServiceLocator serviceLocator = getSite();
-
-		ICommandService commandService = serviceLocator.getService(ICommandService.class);
-
-		try {
-			// Lookup command with its ID
-			Command command = commandService.getCommand("org.eclipse.egerrit.dashboard.refresh");
-
-			// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
-			command.executeWithChecks(new ExecutionEvent());
-
-		} catch (NotDefinedException | NotEnabledException | NotHandledException
-				| org.eclipse.core.commands.ExecutionException e) {
-
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
-
-		}
-	}
 
 	/**
 	 * Open another editor after a revert action with the newest changeInfo

@@ -258,7 +258,7 @@ public class CommentExtractor {
 		if (comment == null) {
 			return false;
 		}
-		return comment.getComment().getMessage().equalsIgnoreCase("done");
+		return comment.getComment().getMessage().equalsIgnoreCase("done"); //$NON-NLS-1$
 	}
 
 	//Create a comment as a reply of a given one
