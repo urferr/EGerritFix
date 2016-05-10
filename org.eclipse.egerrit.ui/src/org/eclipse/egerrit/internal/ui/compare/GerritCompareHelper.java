@@ -20,7 +20,7 @@ class GerritCompareHelper {
 
 	//Given a commit id, returns a shortened commit id (the first 10 characters)
 	static String shortenCommitId(String commitId) {
-		return commitId.substring(0, 10);
+		return commitId != null ? commitId.substring(0, 10) : commitId;
 	}
 
 	//Given a filePath, returns the filename
