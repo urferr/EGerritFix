@@ -28,7 +28,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -395,19 +394,16 @@ public class GerritHttpClient {
 	private volatile boolean gotKey;
 
 	private void extractGerritAuthKey(HttpResponse response) {
+		gotKey = false;
+		getAuthKeyForGerrit212(response);
+		if (gotKey) {
+			return;
+		}
+		getAuthKeyPreviousTo212(response);
+	}
+
+	private void getAuthKeyPreviousTo212(HttpResponse response) {
 		try {
-			gotKey = false;
-			Header header = response.getFirstHeader("Set-Cookie"); //$NON-NLS-1$
-			if (header != null) {
-				HeaderElement[] elements = header.getElements();
-				for (HeaderElement headerElement : elements) {
-					if (headerElement.getName().equals("XSRF_TOKEN")) { //$NON-NLS-1$
-						fKey = headerElement.getValue();
-						gotKey = true;
-						return;
-					}
-				}
-			}
 			String contents = EntityUtils.toString(response.getEntity());
 			int loc = contents.indexOf(GERRIT_KEY_TAG);
 			if (loc >= 0) {
@@ -416,14 +412,23 @@ public class GerritHttpClient {
 				fKey = contents.substring(beginIndex, endIndex);
 				gotKey = true;
 			}
-		} catch (ParseException | IOException e) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			logger.debug("Problem reading auth key ", e); //$NON-NLS-1$
 		}
-		// Note: there are many more things to extract from entity - in short it
-		// contains pretty much all the Web UI config information for this user:
-		// - host page data and download information
-		// - user account information and preferences
-		// - diff preferences
+	}
+
+	private void getAuthKeyForGerrit212(HttpResponse response) {
+		gotKey = false;
+		Header header = response.getFirstHeader("Set-Cookie"); //$NON-NLS-1$
+		if (header != null) {
+			HeaderElement[] elements = header.getElements();
+			for (HeaderElement headerElement : elements) {
+				if (headerElement.getName().equals("XSRF_TOKEN")) { //$NON-NLS-1$
+					fKey = headerElement.getValue();
+					gotKey = true;
+				}
+			}
+		}
 	}
 
 	/*
