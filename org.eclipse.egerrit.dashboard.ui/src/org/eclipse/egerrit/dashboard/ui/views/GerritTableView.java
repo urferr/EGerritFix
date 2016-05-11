@@ -1096,8 +1096,12 @@ public class GerritTableView extends ViewPart {
 		if (gerritClient != null) {
 			// Fetch the list of reviews and pre-populate the table
 			ChangeInfo[] loadedReviews = getReviewList(repository, queryString);
-			for (ChangeInfo changeInfo : loadedReviews) {
-				shownReviews.getAllReviews().add(changeInfo);
+			if (loadedReviews != null) {
+				for (ChangeInfo changeInfo : loadedReviews) {
+					shownReviews.getAllReviews().add(changeInfo);
+				}
+			} else {
+				shownReviews.getAllReviews().clear();
 			}
 		} else {
 			//Reset the list to prevent bad request
