@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -374,7 +375,7 @@ public class GerritHttpClient {
 			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 			status = statusLine.getStatusCode();
 			if (status == HttpStatus.SC_OK) {
-				extractGerritAuthKey(response.getEntity());
+				extractGerritAuthKey(response);
 			}
 			EntityUtils.consume(response.getEntity());
 		} catch (ClientProtocolException e) {
@@ -393,10 +394,21 @@ public class GerritHttpClient {
 
 	private volatile boolean gotKey;
 
-	private void extractGerritAuthKey(HttpEntity entity) {
+	private void extractGerritAuthKey(HttpResponse response) {
 		try {
 			gotKey = false;
-			String contents = EntityUtils.toString(entity);
+			Header header = response.getFirstHeader("Set-Cookie"); //$NON-NLS-1$
+			if (header != null) {
+				HeaderElement[] elements = header.getElements();
+				for (HeaderElement headerElement : elements) {
+					if (headerElement.getName().equals("XSRF_TOKEN")) { //$NON-NLS-1$
+						fKey = headerElement.getValue();
+						gotKey = true;
+						return;
+					}
+				}
+			}
+			String contents = EntityUtils.toString(response.getEntity());
 			int loc = contents.indexOf(GERRIT_KEY_TAG);
 			if (loc >= 0) {
 				int beginIndex = loc + GERRIT_KEY_TAG.length() + 1;
@@ -416,7 +428,7 @@ public class GerritHttpClient {
 
 	/*
 	 * return the error code of the http connection
-	
+
 	 * @return
 	 */
 	public int getStatus() {

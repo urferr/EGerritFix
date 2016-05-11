@@ -28,7 +28,7 @@ public class Common {
 
 	public static final String HOST = "localhost";
 
-	public static final int PORT = 28112;
+	public static final int PORT = 28212;
 
 	public static final String PATH = "";
 
@@ -44,7 +44,7 @@ public class Common {
 
 	public static final String EMAIL = "admin@localhost";
 
-	public static final String GERRIT_VERSION = "2.11.5";
+	public static final String GERRIT_VERSION = "2.12.2";
 
 	public static final String CHANGES_PATH = PATH + "/changes/";
 }
