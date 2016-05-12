@@ -26,6 +26,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -182,6 +184,8 @@ public class GerritServerDialog extends Dialog {
 		txtPassword.setText(workingCopy == null ? "" : (workingCopy.isPasswordProvided() ? "********" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		txtPassword.addModifyListener(passwdListener());
 
+		//Listener to validate settings when enter key is pressed
+		composite.addTraverseListener(keyTraversedListener());
 	}
 
 	private void isServerInfoReady() {
@@ -262,6 +266,17 @@ public class GerritServerDialog extends Dialog {
 		};
 	}
 
+	private TraverseListener keyTraversedListener() {
+		return new TraverseListener() {
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					validateSettings();
+				}
+			}
+		};
+	}
+
 	@Override
 	protected void createButtonsForButtonBar(Composite aParent) {
 		ok = createButton(aParent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
@@ -274,32 +289,7 @@ public class GerritServerDialog extends Dialog {
 	protected void buttonPressed(int aButtonId) {
 		// Ok button selected
 		if (aButtonId == IDialogConstants.OK_ID) {
-			try {
-				if (validateURL()) {
-					if (validConnection()) {
-						super.setReturnCode(IDialogConstants.OK_ID);
-						super.okPressed();
-					} else {
-						//Either off line or Invalid data provided
-						if (getServerInfo().getHostId().isEmpty()) {
-							Utils.displayInformation(null, TITLE, INVALID_MESSAGE);
-						} else {
-							boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
-							if (bool) {
-								super.setReturnCode(IDialogConstants.OK_ID);
-								super.okPressed();
-							}
-						}
-					}
-				} else {
-					Utils.displayInformation(null, DIALOG_TITLE, INVALID_MESSAGE);
-				}
-			} catch (URISyntaxException e) {
-				Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
-			} catch (EGerritException e) {
-				Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
-			}
-
+			validateSettings();
 		}
 
 		// Cancel Button selected
@@ -307,6 +297,37 @@ public class GerritServerDialog extends Dialog {
 			workingCopy = original;
 			super.setReturnCode(IDialogConstants.CANCEL_ID);
 			super.close();
+		}
+	}
+
+	/**
+	 * Validate the settings entered by the user. Display an invalid message if the url is not valid.
+	 */
+	private void validateSettings() {
+		try {
+			if (validateURL()) {
+				if (validConnection()) {
+					super.setReturnCode(IDialogConstants.OK_ID);
+					super.okPressed();
+				} else {
+					//Either off line or Invalid data provided
+					if (getServerInfo().getHostId().isEmpty()) {
+						Utils.displayInformation(null, TITLE, INVALID_MESSAGE);
+					} else {
+						boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
+						if (bool) {
+							super.setReturnCode(IDialogConstants.OK_ID);
+							super.okPressed();
+						}
+					}
+				}
+			} else {
+				Utils.displayInformation(null, DIALOG_TITLE, INVALID_MESSAGE);
+			}
+		} catch (URISyntaxException e) {
+			Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
+		} catch (EGerritException e) {
+			Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
 		}
 	}
 
