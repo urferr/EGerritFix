@@ -22,7 +22,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.dashboard.ui.internal.utils.messages"; //$NON-NLS-1$
 
-	public static String SelectionDialog_question;
+	public static String SelectionDialog_shellText;
 
 	public static String SelectionDialog_selectTitle;
 

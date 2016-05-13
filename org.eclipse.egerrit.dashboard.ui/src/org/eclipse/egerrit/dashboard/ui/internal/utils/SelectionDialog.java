@@ -45,7 +45,7 @@ public class SelectionDialog extends FormDialog {
 	@Override
 	protected void createFormContent(final IManagedForm mform) {
 		mform.getForm().setText(Messages.SelectionDialog_selectTitle);
-		mform.getForm().getShell().setText(Messages.SelectionDialog_question);
+		mform.getForm().getShell().setText(Messages.SelectionDialog_shellText);
 
 		final ScrolledForm sform = mform.getForm();
 		sform.setExpandHorizontal(true);
