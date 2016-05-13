@@ -21,18 +21,14 @@ import java.util.regex.Pattern;
 
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
-import org.eclipse.egerrit.ui.editors.QueryHelpers;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -41,53 +37,24 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class HyperLinkDetector implements IHyperlinkDetector {
 
-	final static String regex = "(http|https|ftp|file)://[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9 /]*.[ a-zA-Z0-9]*.[a-zA-Z0-9]*"; //$NON-NLS-1$
+	final static String regex = "(http|https|ftp|file)://[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9 /]*.[ a-zA-Z0-9]*.[a-zA-Z0-9-/]*"; //$NON-NLS-1$
 
 	final static Pattern pattern = Pattern.compile(regex);
 
-	private static TableViewer tableViewer;
+	private GerritClient gerritClient;
 
-	private static GerritClient gerritClient;
-
-	private static ChangeInfo changeInfo;
-
-	private static RevisionInfo revInfo = null;
+	private ChangeInfo changeInfo;
 
 	public HyperLinkDetector(TableViewer tableHistoryViewer, GerritClient gerritClient, ChangeInfo changeInfo) {
-		tableViewer = tableHistoryViewer;
-		HyperLinkDetector.gerritClient = gerritClient;
-		HyperLinkDetector.changeInfo = changeInfo;
-
-		//look for the revision info and load comments associated to it if not already available
-		adjustCommentForRevision(tableHistoryViewer, gerritClient, changeInfo);
-	}
-
-	/**
-	 * @param tableHistoryViewer
-	 * @param gerritClient
-	 * @param changeInfo
-	 */
-	private void adjustCommentForRevision(TableViewer tableHistoryViewer, GerritClient gerritClient,
-			ChangeInfo changeInfo) {
-		ISelection selection = tableHistoryViewer.getSelection();
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-			Object element = structuredSelection.getFirstElement();
-
-			if (element instanceof ChangeMessageInfo) {
-				ChangeMessageInfo changeMessageInfo = (ChangeMessageInfo) element;
-				revInfo = changeInfo.getRevisionByNumber(changeMessageInfo.get_revision_number());
-				if (revInfo != null) {
-					QueryHelpers.loadComments(gerritClient, revInfo);
-				}
-			}
-		}
+		this.gerritClient = gerritClient;
+		this.changeInfo = changeInfo;
 	}
 
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-
-		//Set the hyperlink which should open a web browser
+		if (textViewer.getDocument() == null) {
+			return new IHyperlink[0];
+		}
 		Matcher matcher = pattern.matcher(textViewer.getDocument().get());
 		ArrayList<IHyperlink> results = new ArrayList<>();
 		while (matcher.find()) {
@@ -96,7 +63,7 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 		}
 
 		//Set Hyperlink for files having some comments
-		setFilesHyperlink(textViewer, results);
+		detectHyperlinksForFiles(textViewer, results);
 
 		if (results.size() == 0) {
 			return null;
@@ -110,7 +77,8 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 	 * @param textViewer
 	 * @param results
 	 */
-	private void setFilesHyperlink(ITextViewer textViewer, ArrayList<IHyperlink> results) {
+	private void detectHyperlinksForFiles(ITextViewer textViewer, ArrayList<IHyperlink> results) {
+		RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
 		Matcher matcher;
 		if (revInfo != null) {
 			Iterator<Entry<String, FileInfo>> iterator = revInfo.getFiles().entrySet().iterator();
@@ -132,7 +100,7 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 	/**
 	 * This class allows to open the compare editor for the link associated to the hyperlink
 	 */
-	final static class CompareEditorLink implements IHyperlink {
+	private class CompareEditorLink implements IHyperlink {
 		private FileInfo fileInfo;
 
 		private IRegion region;
@@ -146,12 +114,8 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 		 * Open a compare editor against the BASE version of the file
 		 */
 		public void open() {
-			OpenCompareEditor compareEditor = new OpenCompareEditor(getGerritClient(), getChangeInfo());
+			OpenCompareEditor compareEditor = new OpenCompareEditor(gerritClient, getChangeInfo());
 			compareEditor.compareFiles("BASE", fileInfo.getRevision().getId(), fileInfo);
-		}
-
-		private GerritClient getGerritClient() {
-			return gerritClient;
 		}
 
 		private ChangeInfo getChangeInfo() {
@@ -222,5 +186,4 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 			}
 		}
 	}
-
 }

@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
@@ -106,6 +108,11 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 		Assert.isNotNull(textViewer);
 		Assert.isNotNull(hyperlinkPresenter);
 		fTextViewer = textViewer;
+		//Create a document
+		if (fTextViewer.getDocument() == null) {
+			IDocument document = new Document(fTextViewer.getTextWidget().getText());
+			fTextViewer.setDocument(document);
+		}
 		fHyperlinkPresenter = hyperlinkPresenter;
 		fTextViewer.addTextListener(this);
 
@@ -123,6 +130,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 */
 	@Override
 	public void setHyperlinkDetectors(IHyperlinkDetector[] hyperlinkDetectors) {
+		super.setHyperlinkDetectors(hyperlinkDetectors);
 		Assert.isTrue(hyperlinkDetectors != null && hyperlinkDetectors.length > 0);
 		if (fHyperlinkDetectors == null) {
 			fHyperlinkDetectors = hyperlinkDetectors;
@@ -231,7 +239,6 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 */
 	@Override
 	public void mouseDown(MouseEvent event) {
-
 		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension2 && fActiveHyperlinks != null) {
 
 			((IHyperlinkPresenterExtension2) fHyperlinkPresenter).showHyperlinks(fActiveHyperlinks, fActive);
@@ -359,6 +366,9 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 		//Set all hyperlinks visible
 		if (fActiveHyperlinks == null) {
 			if (fTextViewer != null && !fTextViewer.getTextWidget().getText().isEmpty()) {
+				if (fTextViewer.getDocument() == null) {
+					return;
+				}
 				IRegion region = new Region(0, ((TextViewer) fTextViewer).getBottomIndexEndOffset());
 				fActiveHyperlinks = findHyperlinks(region);
 				if (fActiveHyperlinks != null && fActiveHyperlinks.length > 1) {
