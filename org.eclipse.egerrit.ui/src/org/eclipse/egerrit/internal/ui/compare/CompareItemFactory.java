@@ -30,10 +30,13 @@ public class CompareItemFactory {
 
 	public PatchSetCompareItem createCompareItemFromRevision(String filename, String change_id, FileInfo fileInfo,
 			IProgressMonitor monitor) {
-		newCompareItem.setGerritConnection(gerrit);
 		if (fileInfo == null) {
 			throw new IllegalArgumentException();
 		}
+		if ("/COMMIT_MSG".equals(fileInfo.getPath())) {
+			newCompareItem = new CommitMsgCompareItem();
+		}
+		newCompareItem.setGerritConnection(gerrit);
 		newCompareItem.setFile(fileInfo);
 		return newCompareItem;
 	}
@@ -43,7 +46,6 @@ public class CompareItemFactory {
 	 */
 	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
 			IProgressMonitor monitor) {
-
 		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo);
 	}
 }
