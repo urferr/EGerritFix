@@ -20,6 +20,8 @@ import org.eclipse.egerrit.core.ServersStore;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
@@ -125,6 +127,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 		labelProvider.createColumns(serverInfoViewer);
 		serverInfoViewer.setContentProvider(contentProvider);
 		serverInfoViewer.setLabelProvider(labelProvider);
+		serverInfoViewer.addDoubleClickListener(doubleClickListener());
 
 		TableLayout tableLayout = new TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(150, 50, true));
@@ -253,6 +256,26 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 			}
 		};
 		return removeListener;
+	}
+
+	private IDoubleClickListener doubleClickListener() {
+		return new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) serverInfoViewer.getSelection();
+				if (selection.isEmpty()) {
+					return;
+				} else {
+					Object obj = selection.getFirstElement();
+					int selectedIndex = serverInfoViewer.getTable().getSelectionIndex();
+
+					if (obj instanceof GerritServerInformation) {
+						processDialogueInfo((GerritServerInformation) obj, selectedIndex);
+					}
+				}
+			}
+		};
 	}
 
 	private void processDialogueInfo(GerritServerInformation serverInfo, int selectedIndex) {
