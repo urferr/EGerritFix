@@ -134,7 +134,8 @@ public class ModelLoader {
 						return;
 					}
 
-					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)) {
+					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)
+							|| msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)) {
 						CompletableFuture.runAsync(() -> QueryHelpers.loadRevisionDetails(gerritClient,
 								changeInfo.getUserSelectedRevision()));
 					}
