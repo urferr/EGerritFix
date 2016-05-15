@@ -225,6 +225,9 @@ public class GerritTableView extends ViewPart {
 
 	@Override
 	public void saveState(IMemento memento) {
+		if (fViewer == null) {
+			return;
+		}
 		int[] columnOrder = fViewer.getTable().getColumnOrder();
 		StringBuilder order = new StringBuilder();
 		for (int element : columnOrder) {
@@ -301,7 +304,9 @@ public class GerritTableView extends ViewPart {
 				for (int i = 0; i < colPos.length; i++) {
 					intArray[i] = Integer.parseInt(colPos[i]);
 				}
-				fViewer.getTable().setColumnOrder(intArray);
+				if (fViewer != null) {
+					fViewer.getTable().setColumnOrder(intArray);
+				}
 			}
 		}
 	}
