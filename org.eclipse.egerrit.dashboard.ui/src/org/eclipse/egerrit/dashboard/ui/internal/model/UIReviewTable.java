@@ -165,12 +165,12 @@ public class UIReviewTable {
 				public void handleEvent(Event event) {
 					Point pt = new Point(event.x, event.y);
 					ViewerCell viewerCell = fViewer.getCell(pt);
-					int columnSubjectIndex = ReviewTableDefinition.SUBJECT.ordinal();
-					if (viewerCell != null && viewerCell.getColumnIndex() == columnSubjectIndex) {
+					if (viewerCell != null) {
+						int columnIndex = viewerCell.getColumnIndex();
 						TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
-						Rectangle rect = item.getBounds(columnSubjectIndex);
+						Rectangle rect = item.getBounds(columnIndex);
 						if (rect.contains(pt)) {
-							tip.setMessage(item.getText(columnSubjectIndex));
+							tip.setMessage(item.getText(columnIndex));
 							tip.setLocation(rect.x, rect.y);
 							tip.setVisible(true);
 						}
