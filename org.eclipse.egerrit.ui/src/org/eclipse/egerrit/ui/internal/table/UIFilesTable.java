@@ -109,7 +109,7 @@ public class UIFilesTable {
 
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
-
+		fViewer.setComparator(new ReviewTableSorter(2));
 		return fViewer;
 
 	}
