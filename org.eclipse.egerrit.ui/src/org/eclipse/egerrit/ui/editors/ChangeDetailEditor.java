@@ -61,6 +61,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.DeleteDraftRevisionProvide
 import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
+import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
@@ -147,6 +148,18 @@ public class ChangeDetailEditor extends EditorPart {
 
 	private EContentAdapter subjectListener;
 
+	private DataBindingContext bindingContext = new DataBindingContext();
+
+	private DeleteDraftRevisionProvider deleteDraftRevision = null;
+
+	private PatchSetHandlerProvider patchSetSelector;
+
+	private HideControlObservable hidableRevertButton;
+
+	private HideControlObservable hidableSubmitButton;
+
+	private ObservableCollector observableCollector;
+
 	/**
 	 * The constructor.
 	 */
@@ -181,6 +194,7 @@ public class ChangeDetailEditor extends EditorPart {
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
+		observableCollector = new ObservableCollector(bindingContext);
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -235,9 +249,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 		IObservableValue observeActiveRevisionStateForButtonText = BeanProperties.value("activeRevision")
 				.observe(ActiveWorkspaceRevision.getInstance());
-		new DataBindingContext().bindValue(WidgetProperties.text().observe(activeReview),
-				observeActiveRevisionStateForButtonText, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-				new UpdateValueStrategy() {
+		bindingContext.bindValue(WidgetProperties.text().observe(activeReview), observeActiveRevisionStateForButtonText,
+				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 					@Override
 					public Object convert(Object value) {
 						if (value == null) {
@@ -252,7 +265,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 		IObservableValue observeActiveRevisionStateForButtonEnablement = BeanProperties.value("activeRevision")
 				.observe(ActiveWorkspaceRevision.getInstance());
-		new DataBindingContext().bindValue(WidgetProperties.selection().observe(activeReview),
+		bindingContext.bindValue(WidgetProperties.selection().observe(activeReview),
 				observeActiveRevisionStateForButtonEnablement,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 					@Override
@@ -297,11 +310,12 @@ public class ChangeDetailEditor extends EditorPart {
 		});
 
 		//Add Delete revision button for DRAFT patchset
-		DeleteDraftRevisionProvider deleteDraftRevision = new DeleteDraftRevisionProvider();
+		deleteDraftRevision = new DeleteDraftRevisionProvider();
 		deleteDraftRevision.create(group_header, fGerritClient, fChangeInfo);
 
 		//Create the PatchSetButton
-		new PatchSetHandlerProvider().create(group_header, fChangeInfo);
+		patchSetSelector = new PatchSetHandlerProvider();
+		patchSetSelector.create(group_header, fChangeInfo);
 
 		//Set the binding for this section
 		headerSectionDataBindings();
@@ -324,8 +338,6 @@ public class ChangeDetailEditor extends EditorPart {
 			}
 		});
 
-		DataBindingContext dbc = new DataBindingContext();
-
 		Button submitButton = new Button(c, SWT.PUSH);
 		submitButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		submitButton.setText(ActionConstants.SUBMIT.getLiteral());
@@ -342,9 +354,9 @@ public class ChangeDetailEditor extends EditorPart {
 					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
 					.value(ModelPackage.Literals.REVISION_INFO__SUBMITABLE)
 					.observe(fChangeInfo);
-			dbc.bindValue(WidgetProperties.enabled().observe(submitButton), observeSubmitable,
+			bindingContext.bindValue(WidgetProperties.enabled().observe(submitButton), observeSubmitable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			dbc.bindValue(WidgetProperties.visible().observe(submitButton), observeSubmitable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeSubmitable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 						@Override
 						public Object convert(Object value) {
@@ -364,19 +376,21 @@ public class ChangeDetailEditor extends EditorPart {
 		{
 			IObservableValue observeRevertable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__REVERTABLE)
 					.observe(fChangeInfo);
-			dbc.bindValue(WidgetProperties.enabled().observe(revertButton), observeRevertable,
+			bindingContext.bindValue(WidgetProperties.enabled().observe(revertButton), observeRevertable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			dbc.bindValue(WidgetProperties.visible().observe(revertButton), observeRevertable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(revertButton), observeRevertable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
 
 			//When the revert is not enable, we need to force the submit button to be visible
-			dbc.bindValue(WidgetProperties.visible().observe(submitButton), observeRevertable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeRevertable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
 
 			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
-			dbc.bindValue(new HideControlObservable(submitButton), observeRevertable,
+			hidableSubmitButton = new HideControlObservable(submitButton);
+			bindingContext.bindValue(hidableSubmitButton, observeRevertable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
-			dbc.bindValue(new HideControlObservable(revertButton), observeRevertable, null, null);
+			hidableRevertButton = new HideControlObservable(revertButton);
+			bindingContext.bindValue(new HideControlObservable(revertButton), observeRevertable, null, null);
 		}
 
 		submitButton.addSelectionListener(new SelectionAdapter() {
@@ -435,11 +449,11 @@ public class ChangeDetailEditor extends EditorPart {
 		{
 			IObservableValue observeAbandonable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__ABANDONABLE)
 					.observe(fChangeInfo);
-			dbc.bindValue(WidgetProperties.enabled().observe(fAbandon), observeAbandonable,
+			bindingContext.bindValue(WidgetProperties.enabled().observe(fAbandon), observeAbandonable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 						@Override
 						public Object convert(Object value) {
@@ -459,19 +473,19 @@ public class ChangeDetailEditor extends EditorPart {
 		{
 			IObservableValue observeRestorable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__RESTOREABLE)
 					.observe(fChangeInfo);
-			dbc.bindValue(WidgetProperties.enabled().observe(fRestore), observeRestorable,
+			bindingContext.bindValue(WidgetProperties.enabled().observe(fRestore), observeRestorable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			dbc.bindValue(WidgetProperties.visible().observe(fRestore), observeRestorable, null,
+			bindingContext.bindValue(WidgetProperties.visible().observe(fRestore), observeRestorable, null,
 					new NegateBooleanConverter());
 
 			//When restore is not enable, we need to force the abandon button to be visible
-			dbc.bindValue(WidgetProperties.visible().observe(fAbandon), observeRestorable,
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeRestorable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
 
 			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
-			dbc.bindValue(new HideControlObservable(fAbandon), observeRestorable,
+			bindingContext.bindValue(new HideControlObservable(fAbandon), observeRestorable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
-			dbc.bindValue(new HideControlObservable(fRestore), observeRestorable, null, null);
+			bindingContext.bindValue(new HideControlObservable(fRestore), observeRestorable, null, null);
 		}
 
 		fAbandon.addSelectionListener(new SelectionAdapter() {
@@ -600,7 +614,8 @@ public class ChangeDetailEditor extends EditorPart {
 		IObservableValue cherryPickAble = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
 				.value(ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE)
 				.observe(fChangeInfo);
-		dbc.bindValue(WidgetProperties.enabled().observe(cherryPickToRemoteBranch), cherryPickAble, null, null);
+		bindingContext.bindValue(WidgetProperties.enabled().observe(cherryPickToRemoteBranch), cherryPickAble, null,
+				null);
 
 		cherryPickToRemoteBranch.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -613,8 +628,9 @@ public class ChangeDetailEditor extends EditorPart {
 					listBranchesRef.add(it.next().getRef());
 				}
 
-				final CherryPickDialog cherryPickDialog = new CherryPickDialog(cherryPickToRemoteBranch.getParent().getShell(),
-						listBranchesRef, fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
+				final CherryPickDialog cherryPickDialog = new CherryPickDialog(
+						cherryPickToRemoteBranch.getParent().getShell(), listBranchesRef,
+						fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
 				Display.getDefault().syncExec(new Runnable() {
 					public void run() {
 						int ret = cherryPickDialog.open();
@@ -716,7 +732,7 @@ public class ChangeDetailEditor extends EditorPart {
 		draftButton.setText(ActionConstants.DRAFT.getLiteral());
 		IObservableValue observeDeleteable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__DELETEABLE)
 				.observe(fChangeInfo);
-		dbc.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
+		bindingContext.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
 		draftButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -934,9 +950,7 @@ public class ChangeDetailEditor extends EditorPart {
 		loader.reload();
 	}
 
-	protected DataBindingContext headerSectionDataBindings() {
-		DataBindingContext bindingContext = new DataBindingContext();
-
+	protected void headerSectionDataBindings() {
 		//Show id
 		IObservableValue idObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER)
 				.observe(fChangeInfo);
@@ -956,8 +970,6 @@ public class ChangeDetailEditor extends EditorPart {
 		IObservableValue statusObserveValue = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
 				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(statusData), statusObserveValue, null, null);
-
-		return bindingContext;
 	}
 
 	private EContentAdapter getSubjectListener() {
@@ -1044,10 +1056,16 @@ public class ChangeDetailEditor extends EditorPart {
 
 	@Override
 	public void dispose() {
+		loader.dispose();
 		fChangeInfo.eAdapters().remove(subjectListener);
+		observableCollector.dispose();
+		bindingContext.dispose();
+		deleteDraftRevision.dispose();
+		patchSetSelector.dispose();
+		hidableRevertButton.dispose();
+		hidableSubmitButton.dispose();
 		historytab.dispose();
 		messageTab.dispose();
 		summaryTab.dispose();
-		loader.dispose();
 	}
 }

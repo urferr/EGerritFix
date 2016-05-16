@@ -19,6 +19,7 @@ import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -41,8 +42,11 @@ public class DeleteDraftRevisionProvider {
 
 	private Button fDeleteDraftRevisionButton;
 
-	public void create(Composite parent, GerritClient gerritClient, ChangeInfo changeInfo) {
+	private DataBindingContext bindingContext = new DataBindingContext();
 
+	private ObservableCollector observableCollector;
+
+	public void create(Composite parent, GerritClient gerritClient, ChangeInfo changeInfo) {
 		fDeleteDraftRevisionButton = new Button(parent, SWT.BORDER);
 		fDeleteDraftRevisionButton.setText(Messages.DeleteDraft_Text);
 		GridData gd_deleteDraft = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
@@ -53,9 +57,8 @@ public class DeleteDraftRevisionProvider {
 				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
 				.value(ModelPackage.Literals.REVISION_INFO__DELETEABLE)
 				.observe(changeInfo);
-		DataBindingContext dbc = new DataBindingContext();
-		dbc.bindValue(WidgetProperties.enabled().observe(fDeleteDraftRevisionButton), revisionInfoObserveValue, null,
-				null);
+		bindingContext.bindValue(WidgetProperties.enabled().observe(fDeleteDraftRevisionButton),
+				revisionInfoObserveValue, null, null);
 
 		fDeleteDraftRevisionButton.addSelectionListener(new SelectionListener() {
 			@Override
@@ -86,6 +89,11 @@ public class DeleteDraftRevisionProvider {
 				// ignore
 			}
 		});
-//		addBinding(changeInfo);
+		observableCollector = new ObservableCollector(bindingContext);
+	}
+
+	public void dispose() {
+		observableCollector.dispose();
+		bindingContext.dispose();
 	}
 }

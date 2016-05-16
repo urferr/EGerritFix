@@ -57,6 +57,10 @@ public class HistoryTabView {
 
 	private UIFilesTable tableUIFiles;
 
+	private DataBindingContext dataBindingContext = new DataBindingContext();
+
+	private ObservableCollector observableCollector = null;
+
 	/**
 	 * The constructor.
 	 */
@@ -134,17 +138,16 @@ public class HistoryTabView {
 
 		//Hook the selection listener to display the details in the bottom section
 		IObservableValue selection = ViewersObservables.observeSingleSelection(tableHistoryViewer);
-
 		IObservableValue textViewerDocument = BeanProperties.value(msgTextData.getClass(), "document") //$NON-NLS-1$
 				.observe(Realm.getDefault(), msgTextData);
 		UpdateValueStrategy textToDocumentStrategy = new UpdateValueStrategy();
 		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(gerritClient));
-		new DataBindingContext().bindValue(textViewerDocument, selection, null, textToDocumentStrategy);
+		dataBindingContext.bindValue(textViewerDocument, selection, null, textToDocumentStrategy);
 
 		//Automatically update the user selected revision as the user changes the selection
 		IObservableValue settableUserRevision = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(changeInfo);
-		new DataBindingContext().bindValue(settableUserRevision, selection, null, new UpdateValueStrategy() {
+		dataBindingContext.bindValue(settableUserRevision, selection, null, new UpdateValueStrategy() {
 			@Override
 			public Object convert(Object value) {
 				if (value == null) {
@@ -156,10 +159,12 @@ public class HistoryTabView {
 				return containingChange.getRevisionByNumber(message.get_revision_number());
 			}
 		});
-
+		observableCollector = new ObservableCollector(dataBindingContext);
 	}
 
 	public void dispose() {
+		observableCollector.dispose();
+		dataBindingContext.dispose();
 		tableUIFiles.dispose();
 	}
 }

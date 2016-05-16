@@ -168,6 +168,10 @@ public class SummaryTabView {
 
 	private ModelLoader loader;
 
+	private DataBindingContext bindingContext = new DataBindingContext();
+
+	private ObservableCollector observableCollector;
+
 	/**
 	 * Class that provides suggestion for completion for adding a reviwer.
 	 */
@@ -374,6 +378,7 @@ public class SummaryTabView {
 
 		//Set the binding for this section
 		sumGenDataBindings();
+		observableCollector = new ObservableCollector(bindingContext);
 		return composite;
 	}
 
@@ -828,8 +833,6 @@ public class SummaryTabView {
 	/*                                                             */
 	/************************************************************* */
 	protected DataBindingContext sumGenDataBindings() {
-		final DataBindingContext bindingContext = new DataBindingContext();
-
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
@@ -973,7 +976,7 @@ public class SummaryTabView {
 		};
 
 		ISWTObservableValue o = WidgetProperties.text().observe(genVoteData);
-		new DataBindingContext().bindValue(o, cv, null, null);
+		bindingContext.bindValue(o, cv, null, null);
 	}
 
 	protected void sumIncludedDataBindings() {
@@ -1006,7 +1009,7 @@ public class SummaryTabView {
 
 		};
 		ISWTObservableValue o = WidgetProperties.text().observe(includedInTagsData);
-		new DataBindingContext().bindValue(o, cv, null, null);
+		bindingContext.bindValue(o, cv, null, null);
 
 	}
 
@@ -1035,7 +1038,7 @@ public class SummaryTabView {
 
 		};
 		ISWTObservableValue o = WidgetProperties.text().observe(incBranchesData);
-		new DataBindingContext().bindValue(o, cv, null, null);
+		bindingContext.bindValue(o, cv, null, null);
 	}
 
 	protected void sumSameTopicDataBindings() {
@@ -1079,6 +1082,8 @@ public class SummaryTabView {
 	}
 
 	public void dispose() {
+		observableCollector.dispose();
+		bindingContext.dispose();
 		loader.dispose();
 	}
 

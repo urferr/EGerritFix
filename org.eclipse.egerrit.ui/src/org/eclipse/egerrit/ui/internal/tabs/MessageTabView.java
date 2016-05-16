@@ -87,6 +87,10 @@ public class MessageTabView {
 
 	private Boolean fShowExtraInfo = true;
 
+	private DataBindingContext bindingContext = new DataBindingContext();
+
+	private ObservableCollector observableCollector;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -335,9 +339,7 @@ public class MessageTabView {
 		msgTabDataBindings(changeInfo);
 	}
 
-	protected DataBindingContext msgTabDataBindings(ChangeInfo changeInfo) {
-		DataBindingContext bindingContext = new DataBindingContext();
-
+	protected void msgTabDataBindings(ChangeInfo changeInfo) {
 		{
 			//the commit message
 			final FeaturePath commitMessage = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
@@ -346,7 +348,8 @@ public class MessageTabView {
 			bindingContext.bindValue(WidgetProperties.text().observe(msgTextData), msgTextDataValue, null, null);
 		}
 		if (!fShowExtraInfo) {
-			return bindingContext;// Do not bind any other functionality when not shown
+			observableCollector = new ObservableCollector(bindingContext);
+			return;// Do not bind any other functionality when not shown
 		}
 
 		{
@@ -417,10 +420,11 @@ public class MessageTabView {
 			bindingContext.bindValue(WidgetProperties.text().observe(msgChangeIdData), msgChangeIdDataValue, null,
 					new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		}
-		return bindingContext;
+		observableCollector = new ObservableCollector(bindingContext);
 	}
 
 	public void dispose() {
-		//Nothing to do
+		observableCollector.dispose();
+		bindingContext.dispose();
 	}
 }

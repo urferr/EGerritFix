@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
@@ -42,6 +43,10 @@ public class PatchSetHandlerProvider {
 	private Button fButtonPatchSet;
 
 	private Label patchsetlabel;
+
+	private DataBindingContext bindingContext = new DataBindingContext();
+
+	private ObservableCollector observableCollector;
 
 	/**
 	 * Create a button and add all handling for this patchset selection button
@@ -77,8 +82,6 @@ public class PatchSetHandlerProvider {
 	 * Add binding to this patch set button
 	 */
 	private void patchsetSelectionBinding() {
-		final DataBindingContext bindingContext = new DataBindingContext();
-
 		FeaturePath selectRevision = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION);
 		IObservableValue observerValue = EMFProperties.value(selectRevision).observe(fChangeInfo);
 
@@ -91,5 +94,11 @@ public class PatchSetHandlerProvider {
 
 		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerRevisionsValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));
+		observableCollector = new ObservableCollector(bindingContext);
+	}
+
+	public void dispose() {
+		observableCollector.dispose();
+		bindingContext.dispose();
 	}
 }

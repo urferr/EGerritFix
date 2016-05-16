@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Control;
  * </p>
  */
 public class HideControlObservable extends WritableValue implements IValueChangeListener {
-	private final DataBindingContext dbc = new DataBindingContext();
+	private final DataBindingContext bindingContext = new DataBindingContext();
 
 	private final ISWTObservableValue sizeObservable;
 
@@ -51,7 +51,7 @@ public class HideControlObservable extends WritableValue implements IValueChange
 		this.control = control;
 
 		UpdateValueStrategy never = new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER);
-		dbc.bindValue(SWTObservables.observeVisible(control), this, never, null);
+		bindingContext.bindValue(SWTObservables.observeVisible(control), this, never, null);
 
 		sizeObservable = SWTObservables.observeSize(control);
 		sizeObservable.addValueChangeListener(this);
@@ -94,6 +94,7 @@ public class HideControlObservable extends WritableValue implements IValueChange
 
 	@Override
 	public synchronized void dispose() {
+		bindingContext.dispose();
 		sizeObservable.dispose();
 		super.dispose();
 	}
