@@ -15,10 +15,10 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
-import org.eclipse.egerrit.internal.model.Reviews;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider.ColorProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -51,6 +51,12 @@ public class UIReviewTable {
 
 	private TableViewer fViewer;
 
+	private ComposedAdapterFactory adapterFactory;
+
+	private ColorProvider labelProvider;
+
+	private AdapterFactoryContentProvider contentProvider;
+
 	public Composite createTableViewerSection(Composite aParent) {
 		Composite viewerForm = new Composite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
 		viewerForm.setLayout(new FillLayout());
@@ -59,11 +65,14 @@ public class UIReviewTable {
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
-		ComposedAdapterFactory adapterFactory = new ComposedAdapterFactory();
+		adapterFactory = new ComposedAdapterFactory();
 		adapterFactory.addAdapterFactory(new ModifiedModelItemProviderAdapterFactory());
 
-		fViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-		fViewer.setLabelProvider(new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null));
+		contentProvider = new AdapterFactoryContentProvider(adapterFactory);
+		fViewer.setContentProvider(contentProvider);
+
+		labelProvider = new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null);
+		fViewer.setLabelProvider(labelProvider);
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
 
@@ -234,5 +243,18 @@ public class UIReviewTable {
 
 	public TableViewer getViewer() {
 		return fViewer;
+	}
+
+	public void dispose() {
+		if (labelProvider != null) {
+			labelProvider.dispose();
+		}
+		if (contentProvider != null) {
+			contentProvider.dispose();
+		}
+		if (adapterFactory != null) {
+			adapterFactory.dispose();
+		}
+
 	}
 }

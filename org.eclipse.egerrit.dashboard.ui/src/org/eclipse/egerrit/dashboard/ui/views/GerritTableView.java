@@ -206,6 +206,8 @@ public class GerritTableView extends ViewPart {
 
 	private IMemento fMemento;
 
+	private UIReviewTable reviewTable;
+
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -245,6 +247,9 @@ public class GerritTableView extends ViewPart {
 	@Override
 	public void dispose() {
 		cleanJobs();
+		if (reviewTable != null) {
+			reviewTable.dispose();
+		}
 		rtv = null;
 	}
 
@@ -356,12 +361,12 @@ public class GerritTableView extends ViewPart {
 
 		searchSection = createSearchSection(topComposite);
 		searchSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		UIReviewTable reviewTable = new UIReviewTable();
+		reviewTable = new UIReviewTable();
 		reviewTable.createTableViewerSection(topComposite).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		fViewer = reviewTable.getViewer();
 
 		makeActions();
-		hookContextMenu();
+//		hookContextMenu();
 		hookDoubleClickAction();
 
 		listShown = true;
