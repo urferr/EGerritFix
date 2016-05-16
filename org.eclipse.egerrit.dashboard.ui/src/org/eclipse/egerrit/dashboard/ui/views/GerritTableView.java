@@ -97,7 +97,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -124,11 +123,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class GerritTableView extends ViewPart {
-
-	private static final String REVIEW_TABLE = "egerritReviewTable";
-
-	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder";
-
 	private static Logger logger = LoggerFactory.getLogger(GerritTableView.class);
 
 	// ------------------------------------------------------------------------
@@ -204,8 +198,6 @@ public class GerritTableView extends ViewPart {
 
 	private Composite searchSection;
 
-	private IMemento fMemento;
-
 	private UIReviewTable reviewTable;
 
 	// ------------------------------------------------------------------------
@@ -225,22 +217,6 @@ public class GerritTableView extends ViewPart {
 
 	}
 
-	@Override
-	public void saveState(IMemento memento) {
-		if (fViewer == null) {
-			return;
-		}
-		int[] columnOrder = fViewer.getTable().getColumnOrder();
-		StringBuilder order = new StringBuilder();
-		for (int element : columnOrder) {
-			order.append(element);
-			order.append(","); //$NON-NLS-1$
-		}
-		IMemento viewMemento = memento.createChild(REVIEW_TABLE);
-		viewMemento.putString(VIEW_COLUMN_ORDER, order.toString());
-		super.saveState(memento);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
@@ -251,6 +227,11 @@ public class GerritTableView extends ViewPart {
 			reviewTable.dispose();
 		}
 		rtv = null;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		System.err.println("error");
 	}
 
 	private void cleanJobs() {
@@ -278,41 +259,16 @@ public class GerritTableView extends ViewPart {
 		});
 	}
 
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		super.init(site);
-		this.fMemento = memento;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite aParent) {
-
 		parentComposite = aParent;
 		if (fServerUtil.getLastSavedGerritServer() == null) {
 			createEmptyPage(ServersStore.getAllServers().size() == 0);
 		} else {
 			createReviewList();
-		}
-
-		if (fMemento == null) {
-			return;
-		}
-		IMemento subMemento = fMemento.getChild(REVIEW_TABLE);
-		if (subMemento != null) {
-			String colPosList = subMemento.getString(VIEW_COLUMN_ORDER);
-			if (!colPosList.isEmpty()) {
-				String[] colPos = colPosList.split(","); //$NON-NLS-1$
-				int[] intArray = new int[colPos.length];
-				for (int i = 0; i < colPos.length; i++) {
-					intArray[i] = Integer.parseInt(colPos[i]);
-				}
-				if (fViewer != null) {
-					fViewer.getTable().setColumnOrder(intArray);
-				}
-			}
 		}
 	}
 
@@ -1251,5 +1207,4 @@ public class GerritTableView extends ViewPart {
 	public void update(String query) {
 		rtv.processCommands(query);
 	}
-
 }

@@ -11,14 +11,18 @@
  ******************************************************************************/
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
+import java.util.Arrays;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider.ColorProvider;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -45,6 +49,10 @@ import org.slf4j.LoggerFactory;
  * This class handles the creation of the table widget shown in the dashboard.
  */
 public class UIReviewTable {
+	private static final String EGERRIT_DASHBOARD = "egerrit.dashboard"; //$NON-NLS-1$
+
+	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
+
 	private static Logger logger = LoggerFactory.getLogger(UIReviewTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -64,7 +72,9 @@ public class UIReviewTable {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
-
+		fViewer.getTable().addDisposeListener(e -> {
+			storeColumnsSettings();
+		});
 		adapterFactory = new ComposedAdapterFactory();
 		adapterFactory.addAdapterFactory(new ModifiedModelItemProviderAdapterFactory());
 
@@ -181,6 +191,7 @@ public class UIReviewTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
+		restoreColumnsSettings();
 		return aViewer;
 	}
 
@@ -255,6 +266,35 @@ public class UIReviewTable {
 		if (adapterFactory != null) {
 			adapterFactory.dispose();
 		}
+	}
 
+	private void storeColumnsSettings() {
+		if (fViewer == null) {
+			return;
+		}
+		int[] columnOrder = fViewer.getTable().getColumnOrder();
+		getDialogSettings().put(VIEW_COLUMN_ORDER,
+				Arrays.stream(columnOrder).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
+	}
+
+	private void restoreColumnsSettings() {
+		if (fViewer == null) {
+			return;
+		}
+		String[] backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_ORDER);
+		if (backedUpValue == null) {
+			return;
+		}
+		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		fViewer.getTable().setColumnOrder(columnOrder);
+	}
+
+	private IDialogSettings getDialogSettings() {
+		IDialogSettings settings = GerritUi.getDefault().getDialogSettings();
+		IDialogSettings section = settings.getSection(EGERRIT_DASHBOARD);
+		if (section == null) {
+			section = settings.addNewSection(EGERRIT_DASHBOARD);
+		}
+		return section;
 	}
 }
