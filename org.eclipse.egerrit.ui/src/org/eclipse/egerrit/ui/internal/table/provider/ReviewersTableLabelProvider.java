@@ -55,12 +55,12 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 			case 2:
 				return super.getColumnText(aObj, aIndex);
 			case 3:
-				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Code-Review")) {
-					return reviewerInfo.getApprovals().get("Code-Review");
+				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Code-Review")) { //$NON-NLS-1$
+					return reviewerInfo.getApprovals().get("Code-Review"); //$NON-NLS-1$
 				}
 			case 4:
-				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Verified")) {
-					return reviewerInfo.getApprovals().get("Verified");
+				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Verified")) { //$NON-NLS-1$
+					return reviewerInfo.getApprovals().get("Verified"); //$NON-NLS-1$
 				}
 			default:
 				return EMPTY_STRING;

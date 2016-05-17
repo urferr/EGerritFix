@@ -29,7 +29,7 @@ public class SwitchCurrentPathsetAction extends Action {
 		boolean hasComments = revision.isCommented();
 		setText(UIUtils.revisionToString(revision));
 		if (hasComments) {
-			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif"));
+			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif")); //$NON-NLS-1$
 		}
 	}
 

@@ -43,10 +43,10 @@ public class DeleteDraftRevisionProvider {
 	public void create(Composite parent, GerritClient gerritClient, ChangeInfo changeInfo) {
 
 		fDeleteDraftRevisionButton = new Button(parent, SWT.BORDER);
-		fDeleteDraftRevisionButton.setText("Delete Revision");
+		fDeleteDraftRevisionButton.setText(Messages.DeleteDraft_Text);
 		GridData gd_deleteDraft = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
 		fDeleteDraftRevisionButton.setLayoutData(gd_deleteDraft);
-		fDeleteDraftRevisionButton.setToolTipText("Delete Draft Revision");
+		fDeleteDraftRevisionButton.setToolTipText(Messages.DeleteDraft_Tip);
 
 		IObservableValue revisionInfoObserveValue = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
@@ -60,7 +60,7 @@ public class DeleteDraftRevisionProvider {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (!MessageDialog.openConfirm(fDeleteDraftRevisionButton.getParent().getShell(),
-						"Delete draft revision", "Continue ?")) {
+						Messages.DeleteDraft_Dialogue_Title, Messages.DeleteDraft_Dialogue_Message)) {
 					return;
 				}
 				DeleteDraftRevisionCommand deleteDraftChangeCmd = gerritClient.deleteDraftRevision(changeInfo.getId(),
