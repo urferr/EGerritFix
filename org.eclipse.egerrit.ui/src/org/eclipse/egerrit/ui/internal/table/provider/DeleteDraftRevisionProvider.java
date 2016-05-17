@@ -22,6 +22,7 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -60,7 +61,8 @@ public class DeleteDraftRevisionProvider {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (!MessageDialog.openConfirm(fDeleteDraftRevisionButton.getParent().getShell(),
-						Messages.DeleteDraft_Dialogue_Title, Messages.DeleteDraft_Dialogue_Message)) {
+						Messages.DeleteDraft_Dialogue_Title, NLS.bind(Messages.DeleteDraft_Dialogue_Message,
+								changeInfo.getUserSelectedRevision().get_number()))) {
 					return;
 				}
 				DeleteDraftRevisionCommand deleteDraftChangeCmd = gerritClient.deleteDraftRevision(changeInfo.getId(),
