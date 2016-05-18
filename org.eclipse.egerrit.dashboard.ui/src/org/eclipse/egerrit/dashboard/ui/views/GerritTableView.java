@@ -95,7 +95,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -227,11 +226,6 @@ public class GerritTableView extends ViewPart {
 			reviewTable.dispose();
 		}
 		rtv = null;
-	}
-
-	@Override
-	public void saveState(IMemento memento) {
-		System.err.println("error");
 	}
 
 	private void cleanJobs() {
