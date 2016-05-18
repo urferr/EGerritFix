@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <bundle id="org.eclipse.egerrit.core.tests" version="0.3.0.qualifier">
+   <bundle id="org.eclipse.egerrit.core.tests" version="1.0.0.qualifier">
       <category name="org.eclipse.egerrit.tests"/>
    </bundle>
-   <bundle id="org.eclipse.egerrit.ui.tests" version="0.3.0.qualifier">
+   <bundle id="org.eclipse.egerrit.ui.tests" version="1.0.0.qualifier">
       <category name="org.eclipse.egerrit.tests"/>
    </bundle>
    <category-def name="org.eclipse.egerrit.tests" label="EGerrit Tests"/>
