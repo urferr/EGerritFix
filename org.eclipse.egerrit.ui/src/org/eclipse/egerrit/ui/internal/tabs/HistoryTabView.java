@@ -105,13 +105,13 @@ public class HistoryTabView {
 
 			@Override
 			public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-				return new IHyperlinkDetector[] { new HyperLinkDetector(tableHistoryViewer, gerritClient, changeInfo) };
+				return new IHyperlinkDetector[] { new HyperLinkDetector(gerritClient, changeInfo) };
 			}
 
 			@Override
 			public IHyperlinkPresenter getHyperlinkPresenter(final ISourceViewer sourceViewer) {
-				HyperLinkPresenter presenter = new HyperLinkPresenter(new RGB(0, 0, 255), sourceViewer,
-						tableHistoryViewer, gerritClient, changeInfo);
+				HyperLinkPresenter presenter = new HyperLinkPresenter(new RGB(0, 0, 255), sourceViewer, gerritClient,
+						changeInfo);
 
 				return presenter;
 			};

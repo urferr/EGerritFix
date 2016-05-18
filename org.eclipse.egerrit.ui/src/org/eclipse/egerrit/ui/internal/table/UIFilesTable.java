@@ -15,7 +15,6 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -30,13 +29,13 @@ import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.tabs.Messages;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -57,14 +56,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
@@ -337,26 +330,8 @@ public class UIFilesTable {
 							return;
 						}
 						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-						if (fileInfo != null) {
-							IFile workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
-									.getCorrespondingWorkspaceFile(fileInfo);
-
-							if (workspaceFile == null) {
-								Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-								MessageDialog.openError(shell, "File not found",
-										"File " + fileInfo.getPath() + " could not be found");
-								return;
-							}
-							IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-							IWorkbenchPage page = window.getActivePage();
-							try {
-								IDE.openEditor(page, workspaceFile);
-							} catch (PartInitException e1) {
-								logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
-
-							}
-						}
-
+						UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), fGerritClient,
+								fileInfo.getRevision(), 0);
 					}
 				}
 

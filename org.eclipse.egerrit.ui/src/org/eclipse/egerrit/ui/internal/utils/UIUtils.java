@@ -15,6 +15,7 @@ package org.eclipse.egerrit.ui.internal.utils;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.command.CreateDraftCommand;
@@ -22,12 +23,15 @@ import org.eclipse.egerrit.core.command.SetReviewCommand;
 import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.core.rest.ReviewInput;
 import org.eclipse.egerrit.core.utils.Utils;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.compare.CommentPrettyPrinter;
 import org.eclipse.egerrit.ui.editors.ModelLoader;
+import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.ReplyDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,7 +41,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Gerrit UI utility.
@@ -46,6 +56,8 @@ import org.eclipse.ui.PlatformUI;
  */
 
 public class UIUtils {
+
+	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
 
 	/**
 	 * To display some information to the end-user
@@ -90,7 +102,7 @@ public class UIUtils {
 
 	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client) {
 		String current = revisionInfo.getId();
-		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo);
+		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				int ret = replyDialog.open();
@@ -206,5 +218,47 @@ public class UIUtils {
 	public static String getPatchSetString(RevisionInfo revision) {
 		return revision.get_number() + "/" //$NON-NLS-1$
 				+ revision.getChangeInfo().getRevisions().size();
+	}
+
+	/**
+	 * Open a compare editor against the another version of the file
+	 *
+	 * @param key
+	 * @param gerritClient
+	 * @param fileInfo
+	 * @param changeInfo
+	 * @param leftSide
+	 */
+	public static void open(GerritClient gerritClient, FileInfo fileInfo, ChangeInfo changeInfo, String leftSide) {
+		OpenCompareEditor compareEditor = new OpenCompareEditor(gerritClient, changeInfo);
+		compareEditor.compareFiles(leftSide, fileInfo.getRevision().getId(), fileInfo);
+	}
+
+	/**
+	 * Open a file in a single editor
+	 *
+	 * @param key
+	 * @param revInfo
+	 * @param line
+	 */
+	public static void openSingleFile(Object key, GerritClient gerritClient, RevisionInfo revInfo, int line) {
+		FileInfo fileInfo = revInfo.getFiles().get(key);
+		if (fileInfo != null) {
+			IFile workspaceFile = new OpenCompareEditor(gerritClient, revInfo.getChangeInfo())
+					.getCorrespondingWorkspaceFile(fileInfo);
+
+			if (workspaceFile == null) {
+				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				MessageDialog.openError(shell, "File not found", "File " + fileInfo.getPath() + " could not be found");
+				return;
+			}
+			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			IWorkbenchPage page = window.getActivePage();
+			try {
+				IDE.openEditor(page, workspaceFile);
+			} catch (PartInitException e1) {
+				logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
+			}
+		}
 	}
 }

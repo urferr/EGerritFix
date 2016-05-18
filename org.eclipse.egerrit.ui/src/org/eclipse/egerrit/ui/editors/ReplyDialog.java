@@ -11,13 +11,17 @@
 
 package org.eclipse.egerrit.ui.editors;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
+import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
@@ -26,6 +30,9 @@ import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,6 +41,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
@@ -64,12 +72,17 @@ public class ReplyDialog extends InputDialog {
 
 	private LinkedHashMap<String, String> radioMap = new LinkedHashMap<String, String>();
 
+	private RevisionInfo fRevisionInfo;
+
+	private GerritClient fGerritClient;
+
 	/**
 	 * The constructor.
 	 */
-	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo) {
+	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo, GerritClient gerritClient) {
 		super(shell, "Reply to comment", buildMessage(reason, revisionToReplyTo), null, null);
-
+		fRevisionInfo = revisionToReplyTo;
+		fGerritClient = gerritClient;
 		permitted_labels = revisionToReplyTo.getChangeInfo().getPermitted_labels();
 		labelsInfo = revisionToReplyTo.getChangeInfo().getLabels();
 
@@ -112,6 +125,9 @@ public class ReplyDialog extends InputDialog {
 		Composite composite = (Composite) super.createDialogArea(parent);
 		((GridData) this.getText().getLayoutData()).heightHint = 100;
 
+		//Create area to display the draft comments
+		createMessageArea(composite);
+
 		//Create the section handling the radio buttons
 		if (labelsInfo != null) {
 			createMiddleRadioSection(composite);
@@ -123,23 +139,108 @@ public class ReplyDialog extends InputDialog {
 	}
 
 	/**
+	 * Test if there are any DRAFTS comments in this revision
+	 *
+	 * @param revInfo
+	 * @return boolean
+	 */
+	private boolean hasDrafts(RevisionInfo revInfo) {
+		Collection<FileInfo> files = revInfo.getFiles().values();
+		for (FileInfo fileInfo : files) {
+			if (!fileInfo.getDraftComments().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void createMessageArea(Composite parent) {
+		// create message
+		if (hasDrafts(fRevisionInfo)) {
+
+			// Create the title area which will contain
+			// a title, message, and image.
+			ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+			GridData grid = new GridData(GridData.FILL_BOTH);
+			grid.heightHint = 100;
+			scrolledComposite.setLayoutData(grid);
+			Composite composite = new Composite(scrolledComposite, SWT.NONE);
+
+			GridLayout gl_composite = new GridLayout(1, false);
+			gl_composite.marginTop = 0;
+			gl_composite.marginHeight = 0;
+			composite.setLayout(gl_composite);
+			GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+			gd_composite.heightHint = 150;
+			composite.setLayoutData(gd_composite);
+
+			createLink(composite);
+
+			scrolledComposite.setContent(composite);
+			Point p = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+			scrolledComposite.setMinHeight(p.y);
+			scrolledComposite.setMinWidth(p.x);
+
+			scrolledComposite.setExpandHorizontal(true);
+			scrolledComposite.setExpandVertical(true);
+		}
+	}
+
+	private void createLink(Composite composite) {
+		Collection<FileInfo> files = fRevisionInfo.getFiles().values();
+		for (FileInfo fileInfo : files) {
+			if (!fileInfo.getDraftComments().isEmpty()) {
+				Link linkFile = new Link(composite, SWT.NONE);
+				linkFile.setToolTipText(
+						"Selecting this link will bring you to the compare file and close the reply dialog");
+				linkFile.setText("<a>" + fileInfo.getPath() + "</a>"); //$NON-NLS-1$//$NON-NLS-2$
+				linkFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+				linkFile.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						FileInfo fileInfo = fRevisionInfo.getFiles().get(e.text);
+						UIUtils.open(fGerritClient, fileInfo, fRevisionInfo.getChangeInfo(), "BASE"); //$NON-NLS-1$
+						cancelPressed();
+					}
+				});
+
+				Iterator<CommentInfo> commentsIter = fileInfo.getDraftComments().iterator();
+				StringBuilder sb = new StringBuilder();
+				while (commentsIter.hasNext()) {
+					//List the drafts
+					CommentInfo comment = commentsIter.next();
+					sb.append("\t " + comment.getLine() + "\t "); //$NON-NLS-1$ //$NON-NLS-2$
+					sb.append(comment.getMessage() + "\n"); //$NON-NLS-1$
+				}
+				Label commentLabel = new Label(composite, SWT.NONE);
+				commentLabel.setText(sb.toString());
+				commentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+			}
+		}
+	}
+
+	/**
 	 * @param parent
 	 */
 	private void createMiddleRadioSection(Composite parent) {
-		// Create a horizontal separator
-		Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
-		GridData sepGrid = new GridData(GridData.FILL_HORIZONTAL);
-		sepGrid.grabExcessHorizontalSpace = true;
-		separator.setLayoutData(sepGrid);
+		if (hasDrafts(fRevisionInfo)) {
+			// Create a horizontal separator
+			Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+			GridData sepGrid = new GridData(GridData.FILL_HORIZONTAL);
+			sepGrid.grabExcessHorizontalSpace = true;
+			separator.setLayoutData(sepGrid);
+		}
 
 		Composite composite = new Composite(parent, SWT.NONE);
+
 		GridLayout gl_composite = new GridLayout(3, false);
 		gl_composite.marginTop = 3;
 		composite.setLayout(gl_composite);
 		GridData gd_composite = new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1);
-		gd_composite.minimumHeight = 117;
+		int height = 75 + (30 * (permitted_labels.size() - 1));//Increase by 30  for each line to add after
+		gd_composite.minimumHeight = height;
+		gd_composite.heightHint = height;
 		composite.setLayoutData(gd_composite);
-
 		keyComposite = createComposite(composite, SWT.LEFT, 1);
 		radioButtonComposite = createComposite(composite, SWT.CENTER, 1);
 		detailTextComposite = createComposite(composite, SWT.LEFT, 1);
@@ -173,6 +274,7 @@ public class ReplyDialog extends InputDialog {
 		gridLayout.marginHeight = 0;
 		gridLayout.verticalSpacing = 0;
 		gridLayout.horizontalSpacing = 0;
+		gridLayout.marginTop = 0;
 		radioComposite.setLayout(gridLayout);
 		return radioComposite;
 	}

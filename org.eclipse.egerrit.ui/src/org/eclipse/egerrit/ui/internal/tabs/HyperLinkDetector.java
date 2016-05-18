@@ -23,13 +23,12 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
@@ -45,7 +44,7 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 
 	private ChangeInfo changeInfo;
 
-	public HyperLinkDetector(TableViewer tableHistoryViewer, GerritClient gerritClient, ChangeInfo changeInfo) {
+	public HyperLinkDetector(GerritClient gerritClient, ChangeInfo changeInfo) {
 		this.gerritClient = gerritClient;
 		this.changeInfo = changeInfo;
 	}
@@ -114,8 +113,7 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 		 * Open a compare editor against the BASE version of the file
 		 */
 		public void open() {
-			OpenCompareEditor compareEditor = new OpenCompareEditor(gerritClient, getChangeInfo());
-			compareEditor.compareFiles("BASE", fileInfo.getRevision().getId(), fileInfo);
+			UIUtils.open(gerritClient, fileInfo, getChangeInfo(), "BASE"); //$NON-NLS-1$
 		}
 
 		private ChangeInfo getChangeInfo() {

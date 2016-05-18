@@ -36,7 +36,6 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkPresenterExtension2;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -61,8 +60,6 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	private EGerritHyperlinkManager fManager;
 
 	private ISourceViewer fSourceViewer;
-
-	private TableViewer fTableViewer;
 
 	private GerritClient fGerritClient;
 
@@ -150,12 +147,10 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 * @param gerritClient
 	 * @param changeInfo
 	 */
-	public HyperLinkPresenter(RGB rgb, ISourceViewer sourceViewer, TableViewer tableViewer, GerritClient gerritClient,
-			ChangeInfo changeInfo) {
+	public HyperLinkPresenter(RGB rgb, ISourceViewer sourceViewer, GerritClient gerritClient, ChangeInfo changeInfo) {
 		fRGB = rgb;
 		fDisposeColor = true;
 		fSourceViewer = sourceViewer;
-		fTableViewer = tableViewer;
 		fGerritClient = gerritClient;
 		fChangeInfo = changeInfo;
 
@@ -383,8 +378,7 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 
 		IHyperlink[] links = null;
 		if (fSourceViewer != null) {
-			links = new HyperLinkDetector(fTableViewer, fGerritClient, fChangeInfo).detectHyperlinks(fSourceViewer,
-					null, true);
+			links = new HyperLinkDetector(fGerritClient, fChangeInfo).detectHyperlinks(fSourceViewer, null, true);
 		}
 		if (links != null) {
 			showHyperlinks(links);
