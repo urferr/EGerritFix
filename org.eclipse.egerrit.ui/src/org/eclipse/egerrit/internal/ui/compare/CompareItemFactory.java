@@ -20,6 +20,8 @@ import org.eclipse.egerrit.internal.model.FileInfo;
  */
 public class CompareItemFactory {
 
+	private static final String COMMIT_MSG = "/COMMIT_MSG"; //$NON-NLS-1$
+
 	private GerritClient gerrit;
 
 	private PatchSetCompareItem newCompareItem = new PatchSetCompareItem();
@@ -33,7 +35,7 @@ public class CompareItemFactory {
 		if (fileInfo == null) {
 			throw new IllegalArgumentException();
 		}
-		if ("/COMMIT_MSG".equals(fileInfo.getPath())) {
+		if (COMMIT_MSG.equals(fileInfo.getPath())) {
 			newCompareItem = new CommitMsgCompareItem();
 		}
 		newCompareItem.setGerritConnection(gerrit);
