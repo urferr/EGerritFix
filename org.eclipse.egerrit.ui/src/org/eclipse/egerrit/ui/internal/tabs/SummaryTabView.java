@@ -298,6 +298,15 @@ public class SummaryTabView {
 			}
 		};
 		scrolledComposite.addListener(SWT.Resize, l);
+
+		Listener focusInListener = new Listener() {
+			public void handleEvent(Event e) {
+				tabFolder.layout(true);
+				tabFolder.redraw();
+			}
+		};
+		tabFolder.addListener(SWT.FocusIn, focusInListener);
+
 	}
 
 	private Composite summaryGeneral(Composite parent) {
