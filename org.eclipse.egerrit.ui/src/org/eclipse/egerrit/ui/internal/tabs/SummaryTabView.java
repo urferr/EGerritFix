@@ -298,8 +298,6 @@ public class SummaryTabView {
 			}
 		};
 		scrolledComposite.addListener(SWT.Resize, l);
-		tabFolder.layout(true);
-		tabFolder.update();
 	}
 
 	private Composite summaryGeneral(Composite parent) {
