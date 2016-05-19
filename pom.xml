@@ -370,7 +370,7 @@
 		<module>org.eclipse.egerrit.feature</module>
 		<module>org.eclipse.egerrit.updatesite</module>
 		<module>org.eclipse.egerrit.updatesite.tests</module>
-		<module>org.eclipse.egerrit.ui.rcptt.tests</module>
+<!--		<module>org.eclipse.egerrit.ui.rcptt.tests</module> -->
 	</modules>
 
 </project>
