@@ -53,6 +53,8 @@ public class UIReviewTable {
 
 	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
 
+	private static final String VIEW_COLUMN_WIDTH = "egerritViewColumnWidth"; //$NON-NLS-1$
+
 	private static Logger logger = LoggerFactory.getLogger(UIReviewTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -142,10 +144,11 @@ public class UIReviewTable {
 					newSubjectWidth = mimimumSubjectWidth + value; // 2/3 of the extra
 					newProjectWidth = minProjectWidth + computeExtraWidth - value; // 1/3 of the extra
 				}
+
 				//Subject column
-				table.getColumn(2).setWidth(newSubjectWidth);
+				table.getColumn(ReviewTableDefinition.SUBJECT.ordinal()).setWidth(newSubjectWidth);
 				//Project column
-				table.getColumn(5).setWidth(newProjectWidth);
+				table.getColumn(ReviewTableDefinition.PROJECT.ordinal()).setWidth(newProjectWidth);
 
 				table.setRedraw(true);
 			}
@@ -273,8 +276,16 @@ public class UIReviewTable {
 			return;
 		}
 		int[] columnOrder = fViewer.getTable().getColumnOrder();
+
+		int[] columnWidth = new int[10];
+		for (int i = 0; i < 10; i++) {
+			columnWidth[i] = fViewer.getTable().getColumn(i).getWidth();
+		}
+
 		getDialogSettings().put(VIEW_COLUMN_ORDER,
 				Arrays.stream(columnOrder).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
+		getDialogSettings().put(VIEW_COLUMN_WIDTH,
+				Arrays.stream(columnWidth).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
 	}
 
 	private void restoreColumnsSettings() {
@@ -287,6 +298,15 @@ public class UIReviewTable {
 		}
 		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
 		fViewer.getTable().setColumnOrder(columnOrder);
+
+		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
+		if (backedUpValue == null) {
+			return;
+		}
+		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		for (int i = 0; i < 10; i++) {
+			fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
+		}
 	}
 
 	private IDialogSettings getDialogSettings() {
