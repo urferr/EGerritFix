@@ -57,8 +57,6 @@ import org.eclipse.swt.graphics.RGB;
 public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresenterExtension2,
 		ITextPresentationListener, ITextInputListener, IDocumentListener, IPropertyChangeListener {
 
-	private EGerritHyperlinkManager fManager;
-
 	private ISourceViewer fSourceViewer;
 
 	private GerritClient fGerritClient;

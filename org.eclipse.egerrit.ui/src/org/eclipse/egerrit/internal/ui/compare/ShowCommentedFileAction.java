@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 import java.util.function.Supplier;
 
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 
@@ -32,8 +33,8 @@ public class ShowCommentedFileAction extends Action {
 	public ShowCommentedFileAction(Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
 		this.filter = new CommentedFilesFilter();
-		setDescription("Show/hide the files without comments and drafts");
-		setToolTipText("Show/hide the files without comments and drafts");
+		setDescription(Messages.ShowCommentedFileAction_0);
+		setToolTipText(Messages.ShowCommentedFileAction_1);
 		setChecked(filterOn);
 		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(COMMENT_FILTER));
 	}

@@ -24,6 +24,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
@@ -80,7 +81,7 @@ public class ReplyDialog extends InputDialog {
 	 * The constructor.
 	 */
 	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo, GerritClient gerritClient) {
-		super(shell, "Reply to comment", buildMessage(reason, revisionToReplyTo), null, null);
+		super(shell, Messages.ReplyDialog_0, buildMessage(reason, revisionToReplyTo), null, null);
 		fRevisionInfo = revisionToReplyTo;
 		fGerritClient = gerritClient;
 		permitted_labels = revisionToReplyTo.getChangeInfo().getPermitted_labels();
@@ -101,7 +102,7 @@ public class ReplyDialog extends InputDialog {
 	}
 
 	private static String buildDefaultMessage(RevisionInfo revisionToReplyTo) {
-		return "Enter the reply to patchset " + UIUtils.getPatchSetString(revisionToReplyTo);
+		return Messages.ReplyDialog_1 + UIUtils.getPatchSetString(revisionToReplyTo);
 	}
 
 	@Override
@@ -192,7 +193,7 @@ public class ReplyDialog extends InputDialog {
 			if (!fileInfo.getDraftComments().isEmpty()) {
 				Link linkFile = new Link(composite, SWT.NONE);
 				linkFile.setToolTipText(
-						"Selecting this link will bring you to the compare file and close the reply dialog");
+						Messages.ReplyDialog_2);
 				linkFile.setText("<a>" + fileInfo.getPath() + "</a>"); //$NON-NLS-1$//$NON-NLS-2$
 				linkFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 				linkFile.addSelectionListener(new SelectionAdapter() {

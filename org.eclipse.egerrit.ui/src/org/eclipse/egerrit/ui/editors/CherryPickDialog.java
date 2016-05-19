@@ -13,6 +13,7 @@ package org.eclipse.egerrit.ui.editors;
 
 import java.util.List;
 
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -54,17 +55,13 @@ public class CherryPickDialog extends Dialog {
 
 	private String fMessageText;
 
-	// ------------------------------------------------------------------------
-	// Constructor and life cycle
-	// ------------------------------------------------------------------------
-
 	/**
 	 * The constructor.
 	 */
 	public CherryPickDialog(Composite parent, List<String> listBranchesRef, String message) {
 		super(parent.getShell());
 		setShellStyle(getShellStyle() | SWT.RESIZE);
-		logger.debug("Open the Reply dialogue.");
+		logger.debug("Open the Reply dialog."); //$NON-NLS-1$
 		this.branchesRef = new String[listBranchesRef.size()];
 		this.branchesRef = listBranchesRef.toArray(new String[listBranchesRef.size()]);
 		this.commitMessage = message;
@@ -79,7 +76,7 @@ public class CherryPickDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Code Review - Cherry Pick Change to Another Branch");
+		newShell.setText(Messages.CherryPickDialog_0);
 	}
 
 	/**
@@ -99,13 +96,13 @@ public class CherryPickDialog extends Dialog {
 		GridData gd_combo = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
 		gd_combo.verticalIndent = 5;
 		gd_combo.grabExcessVerticalSpace = false;
-		lblBranch.setText("Cherry Pick to Branch:");
+		lblBranch.setText(Messages.CherryPickDialog_1);
 		lblBranch.setLayoutData(gd_combo);
 		fBranch.setLayoutData(gd_combo);
 		fBranch.setItems(branchesRef);
 
 		Label lblMessage = new Label(parent, SWT.LEFT);
-		lblMessage.setText("Cherry Pick to Commit Message:");
+		lblMessage.setText(Messages.CherryPickDialog_2);
 		GridData gridlbl = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
 		gridlbl.verticalIndent = 20;
 		lblMessage.setLayoutData(gridlbl);
@@ -146,7 +143,7 @@ public class CherryPickDialog extends Dialog {
 		buttonComposite.setLayoutData(gd_button);
 
 		//Callback handle by the okPressed()
-		createButton(buttonComposite, IDialogConstants.OK_ID, "Cherry Pick Change", false);
+		createButton(buttonComposite, IDialogConstants.OK_ID, Messages.CherryPickDialog_3, false);
 
 		cancel = createButton(buttonComposite, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
 		GridData gd_cancel = new GridData(SWT.RIGHT, SWT.CENTER, false, false);

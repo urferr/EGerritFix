@@ -16,10 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the Gerrit Dashboard UI utility.
@@ -28,26 +25,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class UIUtils {
-
-	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
-
-	/**
-	 * Method notInplementedDialog.
-	 *
-	 * @param String
-	 */
-	public static void notInplementedDialog(String aSt) {
-		logger.warn(Messages.UIUtils_notImplemented);
-		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInformation,
-				NLS.bind(Messages.UIUtils_methodNotReady, aSt),
-				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, 0, Messages.UIUtils_notImplemented, null), IStatus.INFO);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				dialog.open();
-			}
-		});
-		// TODO later we will want to do this automatically
-	}
 
 	/**
 	 * Method showErrorDialog.

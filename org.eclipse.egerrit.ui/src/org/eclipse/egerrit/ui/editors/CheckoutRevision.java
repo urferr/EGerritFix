@@ -26,6 +26,7 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
@@ -58,7 +59,7 @@ public class CheckoutRevision extends Action {
 		this.revision = revision;
 		this.gerritClient = gerritClient;
 		this.changeInfo = this.revision.getChangeInfo();
-		setText("Checkout...");
+		setText(Messages.CheckoutRevision_0);
 	}
 
 	@Override
@@ -66,15 +67,15 @@ public class CheckoutRevision extends Action {
 		Repository localRepo = findLocalRepo(gerritClient, changeInfo.getProject());
 
 		if (localRepo == null) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repository found");
-			ErrorDialog.openError(getShell(), "Error", "Operation could not be performed", status);
+			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_1);
+			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_3, status);
 			return;
 		}
 
 		String psSelected = revision.getRef();
 		if ((psSelected == null) || psSelected.isEmpty()) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No patchset selected");
-			ErrorDialog.openError(getShell(), "Error", "Operation could not be performed", status);
+			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_4);
+			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_3, status);
 		}
 
 		//Find the current selected Patch set reference in the table
@@ -123,7 +124,7 @@ public class CheckoutRevision extends Action {
 		} catch (IOException e1) {
 
 		}
-		if (head.startsWith("refs/heads/")) { // Print branch name with "refs/heads/" stripped.
+		if (head.startsWith(Messages.CheckoutRevision_7)) { // Print branch name with "refs/heads/" stripped.
 			try {
 				return localRepo.getBranch();
 			} catch (IOException e) {
@@ -134,26 +135,28 @@ public class CheckoutRevision extends Action {
 	}
 
 	private int checkOutOrNot(String branchName) {
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs");
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs"); //$NON-NLS-1$
 
-		Preferences editorPrefs = prefs.node("checkout");
+		Preferences editorPrefs = prefs.node("checkout"); //$NON-NLS-1$
 
-		int choice = editorPrefs.getInt("doCheckout", 0);
+		int choice = editorPrefs.getInt("doCheckout", 0); //$NON-NLS-1$
 
 		if (choice != 0) {
 			return choice;
 		}
-		String title = "Review previously checked-out";
-		String message = "Change \"" + changeInfo.getSubject() + "\"" + " has previously been checked out in branch "
-				+ "\"" + branchName + "\"" + ".\n\n" + "Do you want to switch to it or create a new branch?";
-		MessageDialogWithToggle dialog = new MessageDialogWithToggle(Display.getDefault().getActiveShell(), title, null,
-				message, MessageDialog.NONE, new String[] { "Cancel", "New Branch", "Switch" }, 0,
-				"Always perform this action", false);
+		String title = Messages.CheckoutRevision_11;
+		String message = Messages.CheckoutRevision_12 + changeInfo.getSubject() + Messages.CheckoutRevision_13
+				+ Messages.CheckoutRevision_14 + Messages.CheckoutRevision_15 + branchName
+				+ Messages.CheckoutRevision_16 + Messages.CheckoutRevision_17 + Messages.CheckoutRevision_18;
+		MessageDialogWithToggle dialog = new MessageDialogWithToggle(Display.getDefault().getActiveShell(), title,
+				null, message, MessageDialog.NONE, new String[] { Messages.CheckoutRevision_19,
+						Messages.CheckoutRevision_20, Messages.CheckoutRevision_21 },
+				0, Messages.CheckoutRevision_22, false);
 		dialog.open();
 		int result = dialog.getReturnCode();
 
 		if (result != IDialogConstants.CANCEL_ID && dialog.getToggleState()) {
-			editorPrefs.putInt("doCheckout", result);
+			editorPrefs.putInt("doCheckout", result); //$NON-NLS-1$
 			try {
 				editorPrefs.flush();
 			} catch (BackingStoreException e) {
@@ -165,8 +168,8 @@ public class CheckoutRevision extends Action {
 
 	private void checkoutBranch(String branchName, Repository repo) throws Exception {
 		CheckoutCommand command = null;
-		try {
-			command = new Git(repo).checkout();
+		try (Git gitRepo = new Git(repo)) {
+			command = gitRepo.checkout();
 			command.setCreateBranch(false);
 			command.setName(branchName);
 			command.setForce(false);
@@ -182,11 +185,11 @@ public class CheckoutRevision extends Action {
 		try {
 			branches = getShortLocalBranchNames(new Git(localRepo));
 		} catch (GitAPIException e1) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No branches found");
-			ErrorDialog.openError(getShell(), "Error", "Operation could not be performed", status);
-			return "";
+			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_24);
+			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_26, status);
+			return Messages.CheckoutRevision_27;
 		}
-		String shortName = changeInfo.get_number() + "/" + changeInfo.getUserSelectedRevision().get_number();
+		String shortName = changeInfo.get_number() + "/" + changeInfo.getUserSelectedRevision().get_number(); //$NON-NLS-1$
 		Iterator<String> iterator = branches.iterator();
 		String branchName = null;
 		while (iterator.hasNext()) {

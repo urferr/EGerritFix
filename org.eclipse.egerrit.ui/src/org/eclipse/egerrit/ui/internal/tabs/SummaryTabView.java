@@ -64,6 +64,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.ReviewersTableLabelProvide
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFObservables;
@@ -128,7 +129,7 @@ import org.eclipse.ui.PartInitException;
  */
 public class SummaryTabView {
 
-	private final String TITLE = "Gerrit Server ";
+	private final String TITLE = Messages.SummaryTabView_0;
 
 	private static Color RED;
 
@@ -237,7 +238,7 @@ public class SummaryTabView {
 		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
 
 		TabItem tabSummary = new TabItem(tabFolder, SWT.NONE);
-		tabSummary.setText("Details");
+		tabSummary.setText(Messages.SummaryTabView_1);
 
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(false);
@@ -301,13 +302,13 @@ public class SummaryTabView {
 
 	private Composite summaryGeneral(Composite parent) {
 		Group composite = new Group(parent, SWT.NONE);
-		composite.setText("General");
+		composite.setText(Messages.SummaryTabView_2);
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(SWT.FILL));
 
 		//Project line
 		Label lblProject = new Label(composite, SWT.NONE);
-		lblProject.setText("Project:");
+		lblProject.setText(Messages.SummaryTabView_3);
 		lblProject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		genProjectData = new Link(composite, SWT.NONE);
@@ -322,7 +323,7 @@ public class SummaryTabView {
 
 		//Branch line
 		Label lblBranch = new Label(composite, SWT.NONE);
-		lblBranch.setText("Branch:");
+		lblBranch.setText(Messages.SummaryTabView_4);
 		lblBranch.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		genBranchData = new Link(composite, SWT.NONE);
@@ -340,7 +341,7 @@ public class SummaryTabView {
 		});
 		//Topic line
 		Label lblTopic = new Label(composite, SWT.NONE);
-		lblTopic.setText("Topic:");
+		lblTopic.setText(Messages.SummaryTabView_5);
 		lblTopic.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		genTopicData = new Text(composite, SWT.BORDER);
@@ -348,14 +349,14 @@ public class SummaryTabView {
 		genTopicData.setEnabled(isEditingAllowed());
 
 		Button btnSave = new Button(composite, SWT.NONE);
-		btnSave.setText("Save");
+		btnSave.setText(Messages.SummaryTabView_6);
 		btnSave.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		btnSave.addSelectionListener(buttonSaveListener(genTopicData));
 		btnSave.setEnabled(isEditingAllowed());
 
 		//Strategy line
 		lblStrategy = new Label(composite, SWT.NONE);
-		lblStrategy.setText("Strategy:");
+		lblStrategy.setText(Messages.SummaryTabView_7);
 		GridData lblStrategyGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		lblStrategy.setLayoutData(lblStrategyGridData);
 
@@ -370,7 +371,7 @@ public class SummaryTabView {
 
 		//Updated line
 		Label lblUpdated = new Label(composite, SWT.NONE);
-		lblUpdated.setText("Updated:");
+		lblUpdated.setText(Messages.SummaryTabView_8);
 		lblUpdated.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		genUpdatedData = new Label(composite, SWT.NONE);
@@ -384,13 +385,13 @@ public class SummaryTabView {
 
 	private Composite summaryReviewers(Composite group) {
 		Group grpReviewers = new Group(group, SWT.NONE);
-		grpReviewers.setText("Reviewers");
+		grpReviewers.setText(Messages.SummaryTabView_9);
 		grpReviewers.setLayout(new GridLayout(3, false));
 
 		//Vote summary line
 		Label lblVoteSummary = new Label(grpReviewers, SWT.NONE);
 		lblVoteSummary.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		lblVoteSummary.setText("Vote Summary:");
+		lblVoteSummary.setText(Messages.SummaryTabView_10);
 
 		genVoteData = new Label(grpReviewers, SWT.LEFT);
 		genVoteData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
@@ -407,14 +408,14 @@ public class SummaryTabView {
 
 		//Add
 		Label lblUserName = new Label(grpReviewers, SWT.NONE);
-		lblUserName.setText("Reviewer:");
+		lblUserName.setText(Messages.SummaryTabView_11);
 		lblUserName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		final Text userName = new Text(grpReviewers, SWT.BORDER);
 		final AddReviewerContentProposal reviewerProposal = new AddReviewerContentProposal(userName);
 
 		userName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		userName.setToolTipText("Enter the email of the reviewer to add.");
+		userName.setToolTipText(Messages.SummaryTabView_12);
 		userName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent event) {
@@ -525,12 +526,12 @@ public class SummaryTabView {
 
 	private Composite summaryIncluded(Composite group) {
 		Group grpIncludedIn = new Group(group, SWT.NONE);
-		grpIncludedIn.setText("Included In");
+		grpIncludedIn.setText(Messages.SummaryTabView_13);
 		grpIncludedIn.setLayout(new GridLayout(2, false));
 
 		//Branches line
 		Label lblBranches = new Label(grpIncludedIn, SWT.RIGHT);
-		lblBranches.setText("Branches:");
+		lblBranches.setText(Messages.SummaryTabView_14);
 		lblBranches.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		incBranchesData = new Text(grpIncludedIn, SWT.BORDER);
@@ -538,7 +539,7 @@ public class SummaryTabView {
 
 		//Tags line
 		Label lblTags = new Label(grpIncludedIn, SWT.RIGHT);
-		lblTags.setText("Tags:");
+		lblTags.setText(Messages.SummaryTabView_15);
 		lblTags.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 		includedInTagsData = new Text(grpIncludedIn, SWT.BORDER);
@@ -551,7 +552,7 @@ public class SummaryTabView {
 
 	private Composite summarySameTopic(Composite group) {
 		Group grpSameTopic = new Group(group, SWT.NONE);
-		grpSameTopic.setText("Same Topic");
+		grpSameTopic.setText(Messages.SummaryTabView_16);
 		grpSameTopic.setLayout(new FillLayout());
 
 		UISameTopicTable tableUISameTopic = new UISameTopicTable();
@@ -567,7 +568,7 @@ public class SummaryTabView {
 
 	private Composite summaryRelatedChanges(Composite group) {
 		Group grpRelatedChanges = new Group(group, SWT.NONE);
-		grpRelatedChanges.setText("Related Changes");
+		grpRelatedChanges.setText(Messages.SummaryTabView_17);
 		grpRelatedChanges.setLayout(new FillLayout());
 
 		UIRelatedChangesTable tableUIRelatedChanges = new UIRelatedChangesTable();
@@ -583,7 +584,7 @@ public class SummaryTabView {
 
 	private Composite summaryConflicts(Composite group) {
 		Group grpConflictsWith = new Group(group, SWT.NONE);
-		grpConflictsWith.setText("Conflicts With");
+		grpConflictsWith.setText(Messages.SummaryTabView_18);
 		grpConflictsWith.setLayout(new FillLayout());
 
 		UIConflictsWithTable tableUIConflictsWith = new UIConflictsWithTable();
@@ -694,8 +695,8 @@ public class SummaryTabView {
 					reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					if (reviewerCmdResult != null && reviewerCmdResult.getConfirm()) {
 						//There is an error, just need to know if we should re-send or not
-						if (!MessageDialog.openConfirm(buttonPlus.getParent().getShell(),
-								"Process the list of reviewers", reviewerCmdResult.getError())) {
+						if (!MessageDialog.openConfirm(buttonPlus.getParent().getShell(), Messages.SummaryTabView_19,
+								reviewerCmdResult.getError())) {
 							return;
 						}
 						//Call again but with the flag confirm
@@ -707,7 +708,7 @@ public class SummaryTabView {
 						fChangeInfo.getReviewers().addAll(reviewerCmdResult.getReviewers());
 					}
 					loader.reload();
-					textWidget.setText("");
+					textWidget.setText(""); //$NON-NLS-1$
 				}
 			}
 
@@ -722,7 +723,7 @@ public class SummaryTabView {
 					reviewerCmdResult = addReviewerCmd.call();
 				} catch (EGerritException e3) {
 					if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-						String message = input.getReviewer() + " does not identify a registered user or group";
+						String message = input.getReviewer() + Messages.SummaryTabView_21;
 						UIUtils.displayInformation(null, TITLE, message);
 					} else {
 						EGerritCorePlugin
@@ -761,8 +762,8 @@ public class SummaryTabView {
 							//Add a safety dialog to confirm the deletion
 
 							if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
-									"Delete reviewer",
-									"Are you sure you want to delete reviewer " + reviewerInfo.getName() + "?")) {
+									Messages.SummaryTabView_22,
+									Messages.SummaryTabView_23 + reviewerInfo.getName() + Messages.SummaryTabView_24)) {
 								return;
 							}
 
@@ -815,7 +816,7 @@ public class SummaryTabView {
 		if (topic != null) {
 			topicInput.setTopic(topic);
 		} else {
-			topicInput.setTopic("");
+			topicInput.setTopic(""); //$NON-NLS-1$
 		}
 
 		command.setCommandInput(topicInput);

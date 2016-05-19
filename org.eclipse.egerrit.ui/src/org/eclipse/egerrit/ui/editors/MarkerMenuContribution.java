@@ -15,6 +15,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -64,7 +65,7 @@ public class MarkerMenuContribution extends ContributionItem {
 		if (ActiveWorkspaceRevision.getInstance()
 				.isFilePartOfReview(((IFileEditorInput) editorInput).getFile().getFullPath().toString())) {
 			MenuItem menuItem = new MenuItem(menu, SWT.CHECK, index);
-			menuItem.setText("Add Gerrit comment");
+			menuItem.setText(Messages.MarkerMenuContribution_0);
 			menuItem.addSelectionListener(createDynamicSelectionListener());
 		}
 	}
@@ -76,10 +77,10 @@ public class MarkerMenuContribution extends ContributionItem {
 			public void widgetSelected(SelectionEvent e) {
 				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				RevisionInfo revision = ActiveWorkspaceRevision.getInstance().getActiveRevision();
-				final InputDialog replyDialog = new InputDialog(shell, "Add a comment",
-						"Enter the comment for patchset " + revision.get_number() + "/"
+				final InputDialog replyDialog = new InputDialog(shell, Messages.MarkerMenuContribution_1,
+						Messages.MarkerMenuContribution_2 + revision.get_number() + "/" //$NON-NLS-2$
 								+ revision.getChangeInfo().getRevisions().size(),
-						"", null) {
+						"", null) { //$NON-NLS-1$
 					@Override
 					protected int getInputTextStyle() {
 						return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;

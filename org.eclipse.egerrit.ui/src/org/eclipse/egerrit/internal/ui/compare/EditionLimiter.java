@@ -256,7 +256,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		for (IPositionUpdater updater : updaters) {
 			if (updater instanceof DefaultPositionUpdater) {
 				try {
-					Method getCategory = DefaultPositionUpdater.class.getDeclaredMethod("getCategory", new Class[0]);
+					Method getCategory = DefaultPositionUpdater.class.getDeclaredMethod("getCategory", new Class[0]); //$NON-NLS-1$
 					getCategory.setAccessible(true);
 					if (IDocument.DEFAULT_CATEGORY.equals(getCategory.invoke(updater, new Object[0]))) {
 						document.removePositionUpdater(updater);

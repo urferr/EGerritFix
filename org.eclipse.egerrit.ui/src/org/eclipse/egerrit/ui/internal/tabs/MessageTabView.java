@@ -32,6 +32,7 @@ import org.eclipse.egerrit.ui.editors.ModelLoader;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
 import org.eclipse.egerrit.ui.internal.utils.EGerritConstants;
 import org.eclipse.egerrit.ui.internal.utils.LinkDashboard;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.databinding.EMFProperties;
@@ -81,8 +82,6 @@ public class MessageTabView {
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
 
-	private final String TITLE = "Gerrit Server ";
-
 	private GerritClient fGerritClient;
 
 	private Boolean fShowExtraInfo = true;
@@ -123,7 +122,7 @@ public class MessageTabView {
 	 */
 	private Composite createAsTabfolder(Composite tabFolder) {
 		final TabItem tabMessages = new TabItem((TabFolder) tabFolder, SWT.NONE);
-		tabMessages.setText("Messages");
+		tabMessages.setText(Messages.MessageTabView_1);
 
 		final Composite messagesComposite = new Composite(tabFolder, SWT.NONE);
 		tabMessages.setControl(messagesComposite);
@@ -181,13 +180,13 @@ public class MessageTabView {
 		final Button btnCancel = new Button(messagesComposite, SWT.NONE);
 		GridData gd_btnCancel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		btnCancel.setLayoutData(gd_btnCancel);
-		btnCancel.setText("Cancel");
+		btnCancel.setText(Messages.MessageTabView_2);
 		btnCancel.setEnabled(false);
 
 		final Button fBtnSave = new Button(messagesComposite, SWT.NONE);
 		GridData gd_btnSave_1 = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
 		fBtnSave.setLayoutData(gd_btnSave_1);
-		fBtnSave.setText("Save");
+		fBtnSave.setText(Messages.MessageTabView_3);
 		fBtnSave.setEnabled(false);
 
 		if (isEditingAllowed()) {
@@ -222,7 +221,7 @@ public class MessageTabView {
 		if (fShowExtraInfo) {
 			//LINE 1 - Author: <authorname> date
 			Label lblAuthor = new Label(messagesComposite, SWT.NONE);
-			lblAuthor.setText("Author:");
+			lblAuthor.setText(Messages.MessageTabView_4);
 			lblAuthor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgAuthorData = new Link(messagesComposite, SWT.NONE);
@@ -242,7 +241,7 @@ public class MessageTabView {
 
 			//LINE 2 - Committer: <committername> date
 			Label lblCommitter = new Label(messagesComposite, SWT.NONE);
-			lblCommitter.setText("Committer:");
+			lblCommitter.setText(Messages.MessageTabView_5);
 			lblCommitter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgCommitterData = new Link(messagesComposite, SWT.NONE);
@@ -263,7 +262,7 @@ public class MessageTabView {
 
 			//LINE 3 - Commit: <commitId>
 			Label lblCommit = new Label(messagesComposite, SWT.NONE);
-			lblCommit.setText("Commit:");
+			lblCommit.setText(Messages.MessageTabView_6);
 			lblCommit.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgCommitidData = new Link(messagesComposite, SWT.NONE);
@@ -271,7 +270,7 @@ public class MessageTabView {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-					linkDash.invokeRefreshDashboardCommand("", e.text);
+					linkDash.invokeRefreshDashboardCommand("", e.text); //$NON-NLS-1$
 				}
 			});
 
@@ -279,7 +278,7 @@ public class MessageTabView {
 
 			//LINE 4 - Parents: <parentId>
 			Label lblParents = new Label(messagesComposite, SWT.NONE);
-			lblParents.setText("Parent(s):");
+			lblParents.setText(Messages.MessageTabView_8);
 			lblParents.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgParentIdData = new Label(messagesComposite, SWT.NONE);
@@ -287,7 +286,7 @@ public class MessageTabView {
 
 			//LINE 5 - ChangeId: <id>
 			Label lblChangeid = new Label(messagesComposite, SWT.NONE);
-			lblChangeid.setText("Change-Id:");
+			lblChangeid.setText(Messages.MessageTabView_9);
 			lblChangeid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgChangeIdData = new Link(messagesComposite, SWT.NONE);
@@ -296,7 +295,7 @@ public class MessageTabView {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-					linkDash.invokeRefreshDashboardCommand("", e.text);
+					linkDash.invokeRefreshDashboardCommand("", e.text); //$NON-NLS-1$
 				}
 			});
 		}

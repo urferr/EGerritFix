@@ -36,6 +36,7 @@ import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.internal.utils.GerritToGitMapping;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egit.ui.JobFamilies;
 import org.eclipse.egit.ui.internal.CommonUtils;
 import org.eclipse.egit.ui.internal.commit.RepositoryCommit;
@@ -76,27 +77,27 @@ public class CherryPickRevision extends Action {
 	public CherryPickRevision(RevisionInfo gerritRevision, GerritClient gerritClient) {
 		this.gerritClient = gerritClient;
 		this.revision = gerritRevision;
-		this.setText("Cherry-pick...");
+		this.setText(Messages.CherryPickRevision_0);
 	}
 
 	@Override
 	public void run() {
 		repo = findLocalRepo(gerritClient, revision.getChangeInfo().getProject());
 		if (repo == null) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "No repository found");
-			ErrorDialog.openError(Display.getDefault().getActiveShell(), "Error", "Operation could not be performed",
-					status);
+			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CherryPickRevision_1);
+			ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.CherryPickRevision_2,
+					Messages.CherryPickRevision_3, status);
 			return;
 		}
 		URIish remoteURI = getRemoteURI();
-		Job job = new WorkspaceJob("Fetching from " + remoteURI.toPrivateString()) {
+		Job job = new WorkspaceJob(Messages.CherryPickRevision_4 + remoteURI.toPrivateString()) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) {
 				try {
 					fetchChange(monitor);
 				} catch (CoreException | URISyntaxException | IOException e) {
 					return new Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
-							"A problem occurred checking out the repository " + remoteURI.toPrivateString(), e);
+							Messages.CherryPickRevision_5 + remoteURI.toPrivateString(), e);
 				}
 				return Status.OK_STATUS;
 			}
@@ -122,22 +123,19 @@ public class CherryPickRevision extends Action {
 			}
 			initializeCommitFromRevision();
 			if (commit == null) {
-				Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
-						"The commit to cherry-pick could not be found.");
-				ErrorDialog.openError(Display.getDefault().getActiveShell(), "Error",
-						"Operation could not be performed", status);
+				Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CherryPickRevision_6);
+				ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.CherryPickRevision_2,
+						Messages.CherryPickRevision_3, status);
 			}
 			if (!invokeEGitCherryPickCommand()) {
-				Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
-						"A problem occurred cherry-picking this revision.");
-				ErrorDialog.openError(Display.getDefault().getActiveShell(), "Error",
-						"Operation could not be performed", status);
+				Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CherryPickRevision_9);
+				ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.CherryPickRevision_2,
+						Messages.CherryPickRevision_3, status);
 			}
 		} catch (CoreException | IOException e) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID,
-					"A problem occurred cherry-picking this revision.");
-			ErrorDialog.openError(Display.getDefault().getActiveShell(), "Error", "Operation could not be performed",
-					status);
+			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CherryPickRevision_12);
+			ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.CherryPickRevision_2,
+					Messages.CherryPickRevision_3, status);
 		}
 	}
 
@@ -209,7 +207,7 @@ public class CherryPickRevision extends Action {
 
 	private URIish getRemoteURI() {
 		try {
-			return new URIish(gerritClient.getRepository().getURIBuilder(false).toString() + "/"
+			return new URIish(gerritClient.getRepository().getURIBuilder(false).toString() + "/" //$NON-NLS-1$
 					+ revision.getChangeInfo().getProject());
 		} catch (URISyntaxException e) {
 			return null;

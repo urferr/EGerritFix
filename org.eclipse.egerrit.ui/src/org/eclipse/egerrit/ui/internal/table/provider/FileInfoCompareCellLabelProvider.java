@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.observable.map.MapChangeEvent;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
@@ -29,11 +30,11 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 
 	final String EMPTY_STRING = ""; //$NON-NLS-1$
 
-	private static final String NEW = "new :";
+	private static final String NEW = Messages.FileInfoCompareCellLabelProvider_0;
 
-	private static final String COMMENTS = "comments : ";
+	private static final String COMMENTS = Messages.FileInfoCompareCellLabelProvider_1;
 
-	private static final String DRAFTS = "drafts : ";
+	private static final String DRAFTS = Messages.FileInfoCompareCellLabelProvider_2;
 
 	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
 
@@ -86,7 +87,7 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		case 2:
 			String previousName = ""; //$NON-NLS-1$
 			if (fileInfo.getOld_path() != null) {
-				previousName = " (was " + fileInfo.getOld_path() + ")";
+				previousName = Messages.FileInfoCompareCellLabelProvider_3 + fileInfo.getOld_path() + Messages.FileInfoCompareCellLabelProvider_4;
 			}
 			String path = null;
 			if (nameFirst) {

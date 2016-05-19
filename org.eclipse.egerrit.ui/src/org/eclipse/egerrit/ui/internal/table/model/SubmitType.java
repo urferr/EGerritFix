@@ -11,6 +11,8 @@
 
 package org.eclipse.egerrit.ui.internal.table.model;
 
+import org.eclipse.egerrit.ui.internal.utils.Messages;
+
 /**
  * This class implement the different values Gerrit return for the Submit Type. The Submit type used for this change,
  * can be MERGE_IF_NECESSARY, FAST_FORWARD_ONLY, REBASE_IF_NECESSARY, MERGE_ALWAYS or CHERRY_PICK. It allows to

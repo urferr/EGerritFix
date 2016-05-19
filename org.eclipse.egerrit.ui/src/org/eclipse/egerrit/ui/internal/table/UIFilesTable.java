@@ -28,7 +28,7 @@ import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.provider.FileTableLabelProvider;
-import org.eclipse.egerrit.ui.internal.tabs.Messages;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
@@ -60,8 +60,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the files table view.
@@ -69,8 +67,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public class UIFilesTable {
-
-	private static Logger logger = LoggerFactory.getLogger(UIFilesTable.class);
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
@@ -310,7 +306,7 @@ public class UIFilesTable {
 		if (menu.getItemCount() == 0) {
 
 			final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
-			openFile.setText("Open Workspace file");
+			openFile.setText(Messages.UIFilesTable_0);
 			final FileTableLabelProvider labelProvider = (FileTableLabelProvider) fViewer.getLabelProvider();
 			openFile.setSelection(labelProvider.getFileOrder());
 
@@ -341,7 +337,7 @@ public class UIFilesTable {
 			});
 
 			final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
-			nameFirst.setText("Show File Names first");
+			nameFirst.setText(Messages.UIFilesTable_1);
 			nameFirst.setSelection(labelProvider.getFileOrder());
 
 			nameFirst.addSelectionListener(new SelectionListener() {

@@ -18,6 +18,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.ui.EGerritImages;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -47,8 +48,8 @@ public class QuickFixReplyToComment extends EGerritQuickFix {
 			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
 			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			final InputDialog replyDialog = new InputDialog(shell, "Reply to comment ",
-					"You are replying to \n\n" + message.toString(), "", null) {
+			final InputDialog replyDialog = new InputDialog(shell, Messages.QuickFixReplyToComment_0,
+					Messages.QuickFixReplyToComment_1 + message.toString(), "", null) { //$NON-NLS-1$
 				@Override
 				protected int getInputTextStyle() {
 					return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;

@@ -136,12 +136,12 @@ public class UIUtils {
 	public static String revisionToString(RevisionInfo revisionInfo) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Integer.toString(revisionInfo.get_number())); //
-		sb.append("   ");
+		sb.append("   "); //$NON-NLS-1$
 		appendCommitTime(sb, revisionInfo);
-		sb.append("   ");
+		sb.append("   "); //$NON-NLS-1$
 		appendUserCommiter(sb, revisionInfo);
 		if (revisionInfo.isDraft()) {
-			sb.append(" (draft)");
+			sb.append(Messages.UIUtils_0);
 		}
 		return sb.toString();
 	}
@@ -194,9 +194,9 @@ public class UIUtils {
 	public static String formatMessageForMarkerView(CommentInfo commentInfo) {
 		String patchSet = ModelHelpers.getRevision(commentInfo).get_number() + "/" //$NON-NLS-1$
 				+ ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().size();
-		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : "Me";
-		return commentInfo.getMessage() + "\n\nWritten by " + author + " at "
-				+ CommentPrettyPrinter.printDate(commentInfo) + " for patchset " + patchSet + ".";
+		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : Messages.UIUtils_1;
+		return commentInfo.getMessage() + Messages.UIUtils_2 + author + Messages.UIUtils_3
+				+ CommentPrettyPrinter.printDate(commentInfo) + Messages.UIUtils_4 + patchSet + Messages.UIUtils_5;
 	}
 
 	public static String formatMessageForQuickFix(CommentInfo commentInfo) {
@@ -249,7 +249,8 @@ public class UIUtils {
 
 			if (workspaceFile == null) {
 				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				MessageDialog.openError(shell, "File not found", "File " + fileInfo.getPath() + " could not be found");
+				MessageDialog.openError(shell, Messages.UIUtils_6,
+						Messages.UIUtils_7 + fileInfo.getPath() + Messages.UIUtils_8);
 				return;
 			}
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

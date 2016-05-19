@@ -20,6 +20,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
@@ -35,11 +36,11 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private static final String NEW = "new :";
+	private static final String NEW = Messages.FileTableLabelProvider_0;
 
-	private static final String COMMENTS = "comments : ";
+	private static final String COMMENTS = Messages.FileTableLabelProvider_1;
 
-	private static final String DRAFTS = "drafts : ";
+	private static final String DRAFTS = Messages.FileTableLabelProvider_2;
 
 	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
 
@@ -105,7 +106,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					path = fileInfo.getPath();
 				}
 				if (fileInfo.getOld_path() != null) {
-					path += " (was " + fileInfo.getOld_path() + ")";
+					path += Messages.FileTableLabelProvider_3 + fileInfo.getOld_path() + Messages.FileTableLabelProvider_4;
 				}
 				return path;
 			case 3:
@@ -118,7 +119,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					Iterator<CommentInfo> iterator = fileInfo.getComments().iterator();
 					String currentUpdate = EMPTY_STRING;
 					//EMF to fix
-					String currentUser = "";//fileInfo.getCurrentUser();
+					String currentUser = "";//fileInfo.getCurrentUser(); //$NON-NLS-1$
 					while (iterator.hasNext()) {
 						CommentInfo aComment = iterator.next();
 						String authorName = aComment.getAuthor().getUsername();

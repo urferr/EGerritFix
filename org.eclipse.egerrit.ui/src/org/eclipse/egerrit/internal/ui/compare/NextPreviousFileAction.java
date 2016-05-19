@@ -15,6 +15,7 @@ import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.internal.CompareEditorInputNavigator;
 import org.eclipse.compare.internal.Utilities;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.Action;
 
 @SuppressWarnings("restriction")
@@ -31,14 +32,14 @@ public class NextPreviousFileAction extends Action {
 		this.direction = direction;
 		this.compareInput = compareInput;
 		if (direction == INavigatable.NEXT_CHANGE) {
-			setAccelerator(Action.convertAccelerator("]"));
-			setDescription("Go the next file in the review");
-			setToolTipText("Go the next file in the review");
+			setAccelerator(Action.convertAccelerator("]")); //$NON-NLS-1$
+			setDescription(Messages.NextPreviousFileAction_1);
+			setToolTipText(Messages.NextPreviousFileAction_2);
 			setImageDescriptor(EGerritUIPlugin.getImageDescriptor(DOWN_ARROW));
 		} else {
-			setAccelerator(Action.convertAccelerator("["));
-			setDescription("Go the previous file in the review");
-			setToolTipText("Go the previous file in the review");
+			setAccelerator(Action.convertAccelerator("[")); //$NON-NLS-1$
+			setDescription(Messages.NextPreviousFileAction_4);
+			setToolTipText(Messages.NextPreviousFileAction_5);
 			setImageDescriptor(EGerritUIPlugin.getImageDescriptor(UP_ARROW));
 		}
 		setEnabled(true);

@@ -20,6 +20,7 @@ import org.eclipse.egerrit.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.MessageDialog;

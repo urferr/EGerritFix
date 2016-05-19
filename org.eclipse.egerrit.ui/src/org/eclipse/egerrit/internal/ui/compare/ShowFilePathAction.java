@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.provider.FileInfoCompareCellLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -27,8 +28,8 @@ public class ShowFilePathAction extends Action {
 
 	public ShowFilePathAction(Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
-		setDescription("Toggle the File path layout");
-		setToolTipText("Toggle the File path layout");
+		setDescription(Messages.ShowFilePathAction_0);
+		setToolTipText(Messages.ShowFilePathAction_1);
 		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(TOGGLE_FILEPATH));
 
 	}

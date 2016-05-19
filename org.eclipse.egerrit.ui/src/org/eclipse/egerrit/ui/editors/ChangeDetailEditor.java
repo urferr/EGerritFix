@@ -64,6 +64,7 @@ import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
 import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
@@ -114,9 +115,7 @@ import com.ibm.icu.text.NumberFormat;
 public class ChangeDetailEditor extends EditorPart {
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
-	private static final String VERIFIED = "Verified";
-
-	private static final String CODE_REVIEW = "Code-Review";
+	private static final String CODE_REVIEW = Messages.ChangeDetailEditor_1;
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -203,7 +202,7 @@ public class ChangeDetailEditor extends EditorPart {
 		group_header.setBackground(parent.getBackground());
 
 		Label lblId = new Label(group_header, SWT.NONE);
-		lblId.setText("ID:");
+		lblId.setText(Messages.ChangeDetailEditor_2);
 
 		shortIdData = new Text(group_header, SWT.NONE);
 		shortIdData.setEditable(false);
@@ -223,7 +222,7 @@ public class ChangeDetailEditor extends EditorPart {
 		});
 
 		Label lblSubject = new Label(group_header, SWT.NONE);
-		lblSubject.setText("Subject:");
+		lblSubject.setText(Messages.ChangeDetailEditor_3);
 		GridData gd_Subject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_Subject.horizontalIndent = 10;
 		lblSubject.setLayoutData(gd_Subject);
@@ -241,13 +240,13 @@ public class ChangeDetailEditor extends EditorPart {
 			}
 		});
 
-		final String ACTIVATION_MESSAGE = "Activate Comment Markers";
+		final String ACTIVATION_MESSAGE = Messages.ChangeDetailEditor_4;
 		Button activeReview = new Button(group_header, SWT.CHECK);
 		activeReview.setSelection(false);
 		activeReview.setText(ACTIVATION_MESSAGE);
-		activeReview.setToolTipText("Toggle to create markers for each comment in the currently selected revision");
+		activeReview.setToolTipText(Messages.ChangeDetailEditor_5);
 
-		IObservableValue observeActiveRevisionStateForButtonText = BeanProperties.value("activeRevision")
+		IObservableValue observeActiveRevisionStateForButtonText = BeanProperties.value("activeRevision") //$NON-NLS-1$
 				.observe(ActiveWorkspaceRevision.getInstance());
 		bindingContext.bindValue(WidgetProperties.text().observe(activeReview), observeActiveRevisionStateForButtonText,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
@@ -257,13 +256,13 @@ public class ChangeDetailEditor extends EditorPart {
 							return ACTIVATION_MESSAGE;
 						}
 						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
-							return "Markers for patchset " + (((RevisionInfo) value)).get_number();
+							return Messages.ChangeDetailEditor_7 + (((RevisionInfo) value)).get_number();
 						}
 						return ACTIVATION_MESSAGE;
 					}
 				});
 
-		IObservableValue observeActiveRevisionStateForButtonEnablement = BeanProperties.value("activeRevision")
+		IObservableValue observeActiveRevisionStateForButtonEnablement = BeanProperties.value("activeRevision") //$NON-NLS-1$
 				.observe(ActiveWorkspaceRevision.getInstance());
 		bindingContext.bindValue(WidgetProperties.selection().observe(activeReview),
 				observeActiveRevisionStateForButtonEnablement,
@@ -330,7 +329,7 @@ public class ChangeDetailEditor extends EditorPart {
 		Button refresh = new Button(c, SWT.PUSH);
 		refresh.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		refresh.setText(ActionConstants.REFRESH.getLiteral());
-		refresh.setToolTipText("Reload this change from the server.");
+		refresh.setToolTipText(Messages.ChangeDetailEditor_9);
 		refresh.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -417,9 +416,9 @@ public class ChangeDetailEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 
-				String revertMsg = "Revert \"" + fChangeInfo.getSubject() + "\"\n\n" + "This reverts commit " //$NON-NLS-1$
-						+ fChangeInfo.getCurrent_revision() + "\nReview number: " + fChangeInfo.get_number() //$NON-NLS-1$
-						+ ".";
+				String revertMsg = Messages.ChangeDetailEditor_0 + fChangeInfo.getSubject() + "\n\n" + Messages.ChangeDetailEditor_11 //$NON-NLS-1$
+						+ fChangeInfo.getCurrent_revision() + Messages.ChangeDetailEditor_6
+						+ fChangeInfo.get_number() + '.';
 				RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
 				RevertInput revertInput = new RevertInput();
 				revertInput.setMessage(revertMsg);
@@ -492,8 +491,8 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Abandon message",
-						"Enter the abandon message", "", null);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
+						Messages.ChangeDetailEditor_13, Messages.ChangeDetailEditor_14, "", null); //$NON-NLS-1$
 				if (inputDialog.open() != Window.OK) {
 					return;
 				}
@@ -517,8 +516,8 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(), "Restore message",
-						"Enter the restore message", "", null);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
+						Messages.ChangeDetailEditor_16, Messages.ChangeDetailEditor_17, "", null); //$NON-NLS-1$
 				if (inputDialog.open() != Window.OK) {
 					return;
 				}
@@ -546,8 +545,7 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				InputDialog inputDialog = new InputDialog(rebaseButton.getParent().getShell(),
-						"Code Review - Rebase Change",
-						"Change parent revision (leave empty to rebase on targeted branch)", "", null) {
+						Messages.ChangeDetailEditor_19, Messages.ChangeDetailEditor_20, "", null) { //$NON-NLS-1$
 
 					public void enableOk(boolean isEnable) {
 						getOkButton().setEnabled(isEnable);
@@ -588,9 +586,8 @@ public class ChangeDetailEditor extends EditorPart {
 					rebaseCmd.call();
 				} catch (EGerritException e1) {
 					if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-						MessageDialog.open(MessageDialog.INFORMATION, null, "Rebase failed",
-								"Gerrit could not perform the rebase automatically. You need to perform the rebase locally.",
-								SWT.NONE);
+						MessageDialog.open(MessageDialog.INFORMATION, null, Messages.ChangeDetailEditor_22,
+								Messages.ChangeDetailEditor_23, SWT.NONE);
 					} else {
 						EGerritCorePlugin
 								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
@@ -605,7 +602,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 		Button download = new Button(c, SWT.PUSH);
 		download.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		download.setText("Download");
+		download.setText(Messages.ChangeDetailEditor_24);
 		download.addSelectionListener(downloadButtonListener(parent));//checkoutButtonListener(parent));
 
 		Button cherryPickToRemoteBranch = new Button(c, SWT.PUSH);
@@ -674,7 +671,7 @@ public class ChangeDetailEditor extends EditorPart {
 				});
 
 				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
-				itemCRPlus2.setText("Code-Review+2");
+				itemCRPlus2.setText(Messages.ChangeDetailEditor_25);
 
 				//Test if we should allow the +2 button or not
 				//Condition:
@@ -708,7 +705,7 @@ public class ChangeDetailEditor extends EditorPart {
 							ReviewInput reviewInput = new ReviewInput();
 							reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 							Map<String, String> obj = new HashMap<String, String>();
-							obj.put(CODE_REVIEW, "2");
+							obj.put(CODE_REVIEW, Messages.ChangeDetailEditor_26);
 
 							reviewInput.setLabels(obj);
 							postReply(reviewInput);
@@ -764,14 +761,14 @@ public class ChangeDetailEditor extends EditorPart {
 				});
 
 				MenuItem itemDeleteDraftChange = new MenuItem(menu, SWT.PUSH);
-				itemDeleteDraftChange.setText("Delete");
+				itemDeleteDraftChange.setText(Messages.ChangeDetailEditor_27);
 
 				itemDeleteDraftChange.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						super.widgetSelected(e);
-						if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), "Delete draft review",
-								"Continue ?")) {
+						if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
+								Messages.ChangeDetailEditor_28, Messages.ChangeDetailEditor_29)) {
 							return;
 						}
 						DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
@@ -1000,7 +997,7 @@ public class ChangeDetailEditor extends EditorPart {
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		if (!(input instanceof ChangeDetailEditorInput)) {
-			System.err.println("Input is not a ChangeDetailEditorInput");
+			logger.debug("Input is not a ChangeDetailEditorInput"); //$NON-NLS-1$
 		}
 		setSite(site);
 		setInput(input);

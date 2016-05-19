@@ -14,6 +14,7 @@ package org.eclipse.egerrit.ui.editors;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
@@ -33,15 +34,17 @@ public class QuickFixer implements IMarkerResolutionGenerator2 {
 			String truncatedMsg = UIUtils.formatMessageForQuickFix(element);
 			String fullMessage = UIUtils.formatMessageForMarkerView(element);
 			if (isDraft) {
-				return new IMarkerResolution[] { new QuickFixModifyDraft("Modify draft: " + truncatedMsg, fullMessage),
-						new QuickFixDeleteDraftComment("Delete draft: " + truncatedMsg, fullMessage) };
+				return new IMarkerResolution[] {
+						new QuickFixModifyDraft(Messages.QuickFixer_0 + truncatedMsg, fullMessage),
+						new QuickFixDeleteDraftComment(Messages.QuickFixer_1 + truncatedMsg, fullMessage) };
 			} else {
-				if (element.getMessage().equalsIgnoreCase("done")) {
+				if (element.getMessage().equalsIgnoreCase("done")) { //$NON-NLS-1$
 					return new IMarkerResolution[] {
-							new QuickFixReplyToComment("Reply to: " + truncatedMsg, fullMessage) };
+							new QuickFixReplyToComment(Messages.QuickFixer_3 + truncatedMsg, fullMessage) };
 				}
-				return new IMarkerResolution[] { new QuickFixReplyToComment("Reply to: " + truncatedMsg, fullMessage),
-						new QuickFixReplyDoneToComment("Reply done to: " + truncatedMsg, fullMessage) };
+				return new IMarkerResolution[] {
+						new QuickFixReplyToComment(Messages.QuickFixer_3 + truncatedMsg, fullMessage),
+						new QuickFixReplyDoneToComment(Messages.QuickFixer_5 + truncatedMsg, fullMessage) };
 			}
 
 		} catch (CoreException e) {

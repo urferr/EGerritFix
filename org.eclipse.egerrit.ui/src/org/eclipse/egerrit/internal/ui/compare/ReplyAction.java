@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -36,17 +37,17 @@ public class ReplyAction extends Action {
 		this.viewer = viewerRef;
 		this.compareInput = input;
 
-		setText("Reply to the review");
-		setDescription("Reply to the review");
+		setText(Messages.ReplyAction_0);
+		setDescription(Messages.ReplyAction_1);
 		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(ICONS_REPLY));
 
-		String anonymousUserToolTip = "This button is disabled because you are connected anonymously to "
-				+ input.gerritClient.getRepository().getServerInfo().getServerURI() + ".";
+		String anonymousUserToolTip = Messages.ReplyAction_2
+				+ input.gerritClient.getRepository().getServerInfo().getServerURI() + Messages.ReplyAction_3;
 		if (input.gerritClient.getRepository().getServerInfo().isAnonymous()) {
 			setToolTipText(anonymousUserToolTip);
 			setEnabled(false);
 		} else {
-			setToolTipText("Reply to the review");
+			setToolTipText(Messages.ReplyAction_4);
 		}
 
 	}

@@ -135,7 +135,7 @@ public class DataConverter {
 			public Object convert(Object fromObject) {
 
 				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
-					return new Boolean((boolean) fromObject).booleanValue() ? "" : "CANNOT MERGE"; //$NON-NLS-1$
+					return new Boolean((boolean) fromObject).booleanValue() ? "" : Messages.DataConverter_0; //$NON-NLS-1$
 				} else {
 					return null;
 				}
@@ -196,9 +196,9 @@ public class DataConverter {
 			@Override
 			public Object convert(Object fromObject) {
 				if (fromObject == null) {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
-				return new StringBuilder().append("<a>").append(fromObject).append("</a>").toString();
+				return new StringBuilder().append("<a>").append(fromObject).append("</a>").toString(); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		};
 	}
@@ -261,7 +261,7 @@ public class DataConverter {
 					//List the comments
 					CommentInfo comment = commentsIter.next();
 					if (comment.getUpdated().equals(chmsgInfo.getDate())) {
-						sb.append("\n\t Comment: ");
+						sb.append(Messages.DataConverter_4);
 						sb.append(comment.getMessage());
 					}
 				}
@@ -284,7 +284,7 @@ public class DataConverter {
 				if (fromObject == null) {
 					return ""; //$NON-NLS-1$
 				}
-				final String PATCHSET = "Patch Sets ";
+				final String PATCHSET = Messages.DataConverter_5;
 				final String SEPARATOR = "/"; //$NON-NLS-1$
 				RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
 				StringBuilder sb = new StringBuilder();

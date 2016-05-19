@@ -111,7 +111,7 @@ public class ActiveWorkspaceRevision {
 		forceLoadRevision();
 		createMarkers();
 		hookListeners();
-		firePropertyChange("activeRevision", null, fRevisionInContext);
+		firePropertyChange("activeRevision", null, fRevisionInContext); //$NON-NLS-1$
 	}
 
 	private void forceLoadRevision() {
@@ -142,7 +142,7 @@ public class ActiveWorkspaceRevision {
 
 		CreateDraftCommand publishDraft = fGerritClient.createDraftComments(fChangeInfo.getId(),
 				fRevisionInContext.getId());
-		newComment.setSide("right");
+		newComment.setSide("right"); //$NON-NLS-1$
 		publishDraft.setCommandInput(newComment);
 		newComment.setPath(fileInfo.getPath());
 		try {
@@ -157,7 +157,7 @@ public class ActiveWorkspaceRevision {
 	private FileInfo getFileInfoInRevision(String path) {
 		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
 		for (FileInfo aFile : files) {
-			if (aFile.getPath() != null && ("/" + aFile.getPath()).compareTo(path) == 0) {
+			if (aFile.getPath() != null && ("/" + aFile.getPath()).compareTo(path) == 0) { //$NON-NLS-1$
 				return aFile;
 			}
 		}
@@ -176,7 +176,7 @@ public class ActiveWorkspaceRevision {
 	 * Helper method to delete markers associated with each comments and drafts from the active review
 	 */
 	private void deleteAllMarkers() {
-		Set<String> allMarkers = new HashSet(markersManaged.keySet()); //We need to take a copy or we get a concurrent modification exception
+		Set<String> allMarkers = new HashSet<>(markersManaged.keySet()); //We need to take a copy or we get a concurrent modification exception
 		for (String entry : allMarkers) {
 			IMarker m = markersManaged.remove(entry);
 			if (m != null) {
@@ -220,11 +220,12 @@ public class ActiveWorkspaceRevision {
 
 		if (hasDrafts()) {
 			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-			UIUtils.replyToChange(shell, fRevisionInContext, "There are unpublished drafts in review \""
-					+ fRevisionInContext.getChangeInfo().getSubject() + "\"\n\n", fGerritClient);
+			UIUtils.replyToChange(shell, fRevisionInContext,
+					Messages.ActiveWorkspaceRevision_0 + fRevisionInContext.getChangeInfo().getSubject() + "\"\n\n", //$NON-NLS-1$
+					fGerritClient);
 		}
 		fRevisionInContext = null;
-		firePropertyChange("activeRevision", null, null);
+		firePropertyChange("activeRevision", null, null); //$NON-NLS-1$
 	}
 
 	private boolean hasDrafts() {
@@ -280,7 +281,8 @@ public class ActiveWorkspaceRevision {
 	}
 
 	private String resourceMissingMessage(CommentInfo comment) {
-		return "(File " + ModelHelpers.getFileInfo(comment).getPath() + " not found in workspace) ";
+		return Messages.ActiveWorkspaceRevision_1 + ModelHelpers.getFileInfo(comment).getPath()
+				+ Messages.ActiveWorkspaceRevision_2;
 	}
 
 	public RevisionInfo getActiveRevision() {

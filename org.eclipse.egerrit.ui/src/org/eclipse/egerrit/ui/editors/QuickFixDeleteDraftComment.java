@@ -17,6 +17,7 @@ import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.ui.EGerritImages;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
@@ -40,8 +41,8 @@ public class QuickFixDeleteDraftComment extends EGerritQuickFix {
 			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
 			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			if (MessageDialog.openConfirm(shell, "Delete draft comment",
-					"Are you sure that you want to delete this draft\n\n" + message)) {
+			if (MessageDialog.openConfirm(shell, Messages.QuickFixDeleteDraftComment_0,
+					Messages.QuickFixDeleteDraftComment_1 + message)) {
 				QueryHelpers.deleteDraft(gerritClient, existingComment);
 			}
 		} catch (CoreException e) {

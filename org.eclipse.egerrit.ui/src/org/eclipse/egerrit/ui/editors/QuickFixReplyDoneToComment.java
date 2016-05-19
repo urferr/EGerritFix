@@ -18,6 +18,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.ui.EGerritImages;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Image;
@@ -43,9 +44,9 @@ public class QuickFixReplyDoneToComment extends EGerritQuickFix {
 			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
 			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			if (MessageDialog.openConfirm(shell, "Reply done to comment",
-					"Do you want to reply 'Done' to\n\n" + message)) {
-				UIUtils.postReply(gerritClient, existingComment, "Done",
+			if (MessageDialog.openConfirm(shell, Messages.QuickFixReplyDoneToComment_0,
+					Messages.QuickFixReplyDoneToComment_1 + message)) {
+				UIUtils.postReply(gerritClient, existingComment, Messages.QuickFixReplyDoneToComment_2,
 						ModelHelpers.getRevision(existingComment).getId());
 			}
 		} catch (CoreException e) {

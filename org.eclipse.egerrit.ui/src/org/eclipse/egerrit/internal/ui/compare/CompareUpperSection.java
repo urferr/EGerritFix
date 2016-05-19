@@ -36,6 +36,7 @@ import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ITableModel;
 import org.eclipse.egerrit.ui.internal.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.ui.internal.table.provider.FileInfoCompareCellLabelProvider;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -92,7 +93,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	private String resolveShortName(String toResolve) {
 		RevisionInfo match = compareInput.getChangeInfo().getRevisions().get(toResolve);
 		if (match != null) {
-			return "Patch set " + match.get_number();
+			return Messages.CompareUpperSection_PatchSet + match.get_number();
 		}
 		return toResolve;
 	}
@@ -142,7 +143,6 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private void createViewer(Composite parent) {
 		viewer = new DiffTreeViewer(new Tree(parent, SWT.FULL_SELECTION), getCompareConfiguration()) {
-			@SuppressWarnings("restriction")
 			@Override
 			protected void createToolItems(ToolBarManager toolbarManager) {
 				// ignore
@@ -229,8 +229,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
 				fillMenuItemForChangeInfo(mgr, leftPatch, true);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", leftPatch, true));
-				mgr.add(new SwitchPatchAction(compareInput, "BASE", leftPatch, true));
+				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", leftPatch, true)); //$NON-NLS-1$
+				mgr.add(new SwitchPatchAction(compareInput, "BASE", leftPatch, true)); //$NON-NLS-1$
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
@@ -241,7 +241,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		});
 
 		Label separator = new Label(composite, SWT.CENTER);
-		separator.setText("  /  ");
+		separator.setText("  /  "); //$NON-NLS-1$
 
 		//Setup the text and button to select the right revision
 		rightPatch = new Label(composite, SWT.NONE);
@@ -259,7 +259,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
 				fillMenuItemForChangeInfo(mgr, rightPatch, false);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", rightPatch, false));
+				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", rightPatch, false)); //$NON-NLS-1$
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
@@ -343,7 +343,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private static class TreeFactoryImpl implements IObservableFactory {
 		public IObservableList createObservable(final Object target) {
-			return BeanProperties.list("children").observe(target);
+			return BeanProperties.list("children").observe(target); //$NON-NLS-1$
 		}
 	}
 

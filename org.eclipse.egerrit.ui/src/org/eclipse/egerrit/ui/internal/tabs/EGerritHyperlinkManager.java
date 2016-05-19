@@ -175,7 +175,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 * @since 3.7
 	 */
 	private IHyperlink[] findHyperlinks(IRegion region) {
-		List allHyperlinks = new ArrayList(fHyperlinkDetectors.length * 2);
+		List<IHyperlink> allHyperlinks = new ArrayList<>(fHyperlinkDetectors.length * 2);
 		synchronized (fHyperlinkDetectors) {
 			for (IHyperlinkDetector detector : fHyperlinkDetectors) {
 				if (detector == null) {
@@ -217,9 +217,9 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 
 		if (fDetectionStrategy != ALL) {
 			int maxLength = computeLongestHyperlinkLength(allHyperlinks);
-			Iterator iter = new ArrayList(allHyperlinks).iterator();
+			Iterator<IHyperlink> iter = new ArrayList<>(allHyperlinks).iterator();
 			while (iter.hasNext()) {
-				IHyperlink hyperlink = (IHyperlink) iter.next();
+				IHyperlink hyperlink = iter.next();
 				if (hyperlink.getHyperlinkRegion().getLength() < maxLength) {
 					allHyperlinks.remove(hyperlink);
 				}
@@ -227,10 +227,10 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 		}
 
 		if (fDetectionStrategy == LONGEST_REGION_FIRST) {
-			return new IHyperlink[] { (IHyperlink) allHyperlinks.get(0) };
+			return new IHyperlink[] { allHyperlinks.get(0) };
 		}
 
-		return (IHyperlink[]) allHyperlinks.toArray(new IHyperlink[allHyperlinks.size()]);
+		return allHyperlinks.toArray(new IHyperlink[allHyperlinks.size()]);
 
 	}
 

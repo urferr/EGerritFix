@@ -18,6 +18,7 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.ui.EGerritImages;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -46,8 +47,8 @@ public class QuickFixModifyDraft extends EGerritQuickFix {
 			GerritClient gerritClient = (GerritClient) marker.getAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT);
 			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
-			final InputDialog replyDialog = new InputDialog(shell, "Modify draft ",
-					"Type below to modify the draft on patchset " + UIUtils.getPatchSetString(existingComment),
+			final InputDialog replyDialog = new InputDialog(shell, Messages.QuickFixModifyDraft_0,
+					Messages.QuickFixModifyDraft_1 + UIUtils.getPatchSetString(existingComment),
 					existingComment.getMessage(), null) {
 				@Override
 				protected int getInputTextStyle() {

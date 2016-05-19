@@ -45,6 +45,7 @@ import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
 import org.eclipse.jface.text.IDocument;
@@ -114,13 +115,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			}
 
 			@Override
-			@SuppressWarnings("unused")
 			public void addPropertyChangeListener(PropertyChangeListener listener) {
 				//Do nothing. This is just here to make sure databinding is not throwing exception
 			}
 
 			@Override
-			@SuppressWarnings("unused")
 			public void removePropertyChangeListener(PropertyChangeListener listener) {
 				//Do nothing. This is just here to make sure databinding is not throwing exception
 			}
@@ -148,11 +147,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			return root;
 		}
 
-		if (leftSide.equals("BASE")) {
+		if (leftSide.equals("BASE")) { //$NON-NLS-1$
 			computeDifferencesWithBase(monitor);
-		} else if (leftSide.equals("WORKSPACE")) {
+		} else if (leftSide.equals("WORKSPACE")) { //$NON-NLS-1$
 			computeDifferencesWithWorkspace(monitor, false);
-		} else if (rightSide.equals("WORKSPACE")) {
+		} else if (rightSide.equals("WORKSPACE")) { //$NON-NLS-1$
 			computeDifferencesWithWorkspace(monitor, true);
 		} else {
 			computeDifferencesBetweenRevisions(monitor);
@@ -186,7 +185,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			prepareInput(new NullProgressMonitor());
 			upperSection.setInput(root);
 		} catch (InvocationTargetException | InterruptedException e) {
-			logger.error("Problem while switching input to " + left + " " + right, e);
+			logger.error("Problem while switching input to " + left + " " + right, e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -234,7 +233,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		FileInfo matchForRight = rightFiles.get(fileName);
 		FileInfo matchForLeft = leftFiles.get(matchForRight != null ? getOldPathOrPath(matchForRight) : filePathToShow);
 		if (matchForRight == null && matchForLeft == null) {
-			logger.debug("File " + filePathToShow + " found in either revision " + leftSide + " or " + rightSide);
+			logger.debug("File " + filePathToShow + " found in either revision " + leftSide + " or " + rightSide); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 			return null;
 		}
 		referenceFile = matchForRight != null ? matchForRight : matchForLeft;
@@ -314,7 +313,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				changeInfo.getId(), file, monitor);
 		IFile workspaceFile = new OpenCompareEditor(gerritClient, changeInfo).getCorrespondingWorkspaceFile(file);
 		if (workspaceFile == null) {
-			workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName));
+			workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName)); //$NON-NLS-1$
 		}
 		ITypedElement workspaceNode = createFileElement(workspaceFile);
 		if (workspaceOnRight) {
@@ -328,12 +327,12 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private void computeDifferencesWithBase(IProgressMonitor monitor) {
-		String actualRightSide = rightSide.equals("WORKSPACE") ? changeInfo.getRevision().getId() : rightSide;
+		String actualRightSide = rightSide.equals("WORKSPACE") ? changeInfo.getRevision().getId() : rightSide; //$NON-NLS-1$
 		loadRevision(actualRightSide);
 		RevisionInfo rightRevision = changeInfo.getRevisions().get(actualRightSide);
 		for (FileInfo rightFile : rightRevision.getFiles().values()) {
 			GerritDiffNode node = null;
-			if (rightSide.equals("WORKSPACE")) {
+			if (rightSide.equals("WORKSPACE")) { //$NON-NLS-1$
 				node = createBaseWorkspaceNode(monitor, rightFile);
 			} else {
 				node = createBaseRevisionNode(monitor, rightFile);
@@ -350,7 +349,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		//create the node for the workspace file
 		IFile workspaceFile = new OpenCompareEditor(gerritClient, changeInfo).getCorrespondingWorkspaceFile(rightFile);
 		if (workspaceFile == null) {
-			workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName));
+			workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("missing/" + fileName)); //$NON-NLS-1$
 		}
 		node.setRight(createFileElement(workspaceFile));
 		node.setFileInfo(rightFile);
@@ -414,20 +413,21 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	@Override
 	public String getTitle() {
-		return "Compare " + changeInfo.get_number() + " - " + changeInfo.getSubject() + " -- " + getComparisonTitle();
+		return Messages.GerritMultipleInput_1 + changeInfo.get_number() + " - " + changeInfo.getSubject() + " -- " //$NON-NLS-1$//$NON-NLS-2$
+				+ getComparisonTitle();
 	}
 
 	private String getComparisonTitle() {
-		String result = "";
-		if (leftSide.equals("BASE") || leftSide.equals("WORKSPACE")) {
+		String result = ""; //$NON-NLS-1$
+		if (leftSide.equals("BASE") || leftSide.equals("WORKSPACE")) { //$NON-NLS-1$ //$NON-NLS-2$
 			result += leftSide;
 		} else {
-			result += "Revision " + changeInfo.getRevisions().get(leftSide).get_number();
+			result += Messages.GerritMultipleInput_7 + changeInfo.getRevisions().get(leftSide).get_number();
 		}
-		if (rightSide.equals("WORKSPACE")) {
-			result += " / Workspace";
+		if (rightSide.equals("WORKSPACE")) { //$NON-NLS-1$
+			result += Messages.GerritMultipleInput_9;
 		} else {
-			result += " / Revision " + changeInfo.getRevisions().get(rightSide).get_number();
+			result += Messages.GerritMultipleInput_10 + changeInfo.getRevisions().get(rightSide).get_number();
 		}
 		return result;
 	}
@@ -438,21 +438,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			return null;
 		}
 		return parents.get(0).getCommit();
-	}
-
-	private FileInfo getFileWithName(String fileName, EMap<String, FileInfo> files) {
-		FileInfo result = files.get(fileName);
-		if (result != null) {
-			return result;
-		}
-
-		//Look for the file with the old name
-		for (FileInfo file : files.values()) {
-			if (fileName.equals(file.getOld_path())) {
-				return file;
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -574,7 +559,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 					setRightDirty(true);
 				}
 				throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
-						"A problem occurred while sending the changes to the gerrit server"));
+						Messages.GerritMultipleInput_11));
 			} else {
 				//When it is not our exception we just pass it on.
 				throw ex;
@@ -620,7 +605,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		if (fileToReveal != null) {
 			return ((StringToFileInfoImpl) fileToReveal.eContainer()).getKey();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	@Override
@@ -637,15 +622,15 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		GerritDiffNode savedElement = (GerritDiffNode) getSelectedEdition();
 		IProgressMonitor pm = new NullProgressMonitor();
 
-		boolean workspaceOnRight = rightSide.equals("WORKSPACE");
+		boolean workspaceOnRight = rightSide.equals("WORKSPACE"); //$NON-NLS-1$
 
 		//Here we just refresh the content of the node that has just been saved.
 		GerritDiffNode newEntry = null;
 		//Deals with the cases 1, 3, 6
 		if (!workspaceOnRight) {
-			if (leftSide.equals("BASE")) {
+			if (leftSide.equals("BASE")) { //$NON-NLS-1$
 				newEntry = createBaseRevisionNode(pm, savedElement.getFileInfo());
-			} else if (leftSide.equals("WORKSPACE")) {
+			} else if (leftSide.equals("WORKSPACE")) { //$NON-NLS-1$
 				newEntry = createWorkspaceRevisionNode(pm, savedElement.getFileInfo(), false);
 			} else {
 				loadRevision(leftSide);
@@ -658,9 +643,9 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 		//Deals with 2, 4 (no-op), 5
 		if (workspaceOnRight) {
-			if (leftSide.equals("BASE")) {
+			if (leftSide.equals("BASE")) { //$NON-NLS-1$
 				newEntry = createBaseWorkspaceNode(pm, savedElement.getFileInfo());
-			} else if (leftSide.equals("WORKSPACE")) {
+			} else if (leftSide.equals("WORKSPACE")) { //$NON-NLS-1$
 				newEntry = null;
 			} else {
 				newEntry = createWorkspaceRevisionNode(pm, savedElement.getFileInfo(), true);

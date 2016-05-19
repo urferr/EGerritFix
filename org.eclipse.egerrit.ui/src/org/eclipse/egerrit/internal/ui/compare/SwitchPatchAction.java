@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Label;
@@ -35,11 +36,11 @@ public class SwitchPatchAction extends Action {
 		this.leftSide = left;
 		this.inputToSwitchTo = revision.getId();
 		this.labelToUpdate = labelToUpdate;
-		this.shortLabel = "Patch set " + revision.get_number();
+		this.shortLabel = Messages.SwitchPatchAction_0 + revision.get_number();
 		boolean hasComments = revision.isCommented();
 		setText(UIUtils.revisionToString(revision));
 		if (hasComments) {
-			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif"));
+			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif")); //$NON-NLS-1$
 		}
 	}
 

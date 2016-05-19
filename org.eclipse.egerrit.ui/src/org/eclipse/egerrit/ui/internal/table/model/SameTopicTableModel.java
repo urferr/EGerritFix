@@ -17,6 +17,7 @@ package org.eclipse.egerrit.ui.internal.table.model;
 
 import java.util.ArrayList;
 
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.swt.SWT;
 
 /**

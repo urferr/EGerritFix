@@ -27,6 +27,7 @@ import org.eclipse.egerrit.ui.internal.table.UIFilesTable;
 import org.eclipse.egerrit.ui.internal.table.UIHistoryTable;
 import org.eclipse.egerrit.ui.internal.table.provider.HistoryTableLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.DataConverter;
+import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -80,7 +81,7 @@ public class HistoryTabView {
 
 	private void createControls(TabFolder tabFolder, ChangeInfo changeInfo) {
 		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
-		tbtmHistory.setText("History");
+		tbtmHistory.setText(Messages.HistoryTabView_0);
 
 		SashForm sashForm = new SashForm(tabFolder, SWT.VERTICAL);
 		tbtmHistory.setControl(sashForm);
