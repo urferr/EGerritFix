@@ -24,19 +24,10 @@ import org.osgi.framework.BundleContext;
 
 public class EGerritUIPlugin extends AbstractUIPlugin {
 
-	// ------------------------------------------------------------------------
-	// Attributes
-	// ------------------------------------------------------------------------
-
 	/** The plug-in ID */
 	public static final String PLUGIN_ID = "org.eclipse.egerrit.ui"; //$NON-NLS-1$
 
-	// The shared instance
 	private static EGerritUIPlugin fPlugin;
-
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
 
 	/**
 	 * The constructor
@@ -44,10 +35,6 @@ public class EGerritUIPlugin extends AbstractUIPlugin {
 	public EGerritUIPlugin() {
 		setDefault(this);
 	}
-
-	// ------------------------------------------------------------------------
-	// Accessors
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns the shared instance
@@ -63,30 +50,12 @@ public class EGerritUIPlugin extends AbstractUIPlugin {
 		fPlugin = plugin;
 	}
 
-	// ------------------------------------------------------------------------
-	// Plugin
-	// ------------------------------------------------------------------------
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-	 * )
-	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setDefault(this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-	 * )
-	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		fPlugin = null;
