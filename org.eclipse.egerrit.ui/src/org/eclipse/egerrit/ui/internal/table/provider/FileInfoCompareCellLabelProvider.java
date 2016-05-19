@@ -18,9 +18,8 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.MapChangeEvent;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -38,23 +37,8 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 
 	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
 
-	// For the images
-	private static final ImageRegistry fImageRegistry = new ImageRegistry();
-
 	//Layout selection for the file path. Also as a default value
 	private boolean nameFirst = true;
-
-	/**
-	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them the
-	 * SWT Display is disposed.
-	 */
-	static {
-
-		String iconPath = "icons/"; //$NON-NLS-1$
-
-		fImageRegistry.put(CHECKED_IMAGE, EGerritUIPlugin.getImageDescriptor(iconPath + CHECKED_IMAGE));
-
-	}
 
 	private IMapChangeListener mapChangeListener = new IMapChangeListener() {
 		public void handleMapChange(MapChangeEvent event) {
@@ -87,7 +71,8 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		case 2:
 			String previousName = ""; //$NON-NLS-1$
 			if (fileInfo.getOld_path() != null) {
-				previousName = Messages.FileInfoCompareCellLabelProvider_3 + fileInfo.getOld_path() + Messages.FileInfoCompareCellLabelProvider_4;
+				previousName = Messages.FileInfoCompareCellLabelProvider_3 + fileInfo.getOld_path()
+						+ Messages.FileInfoCompareCellLabelProvider_4;
 			}
 			String path = null;
 			if (nameFirst) {
@@ -159,7 +144,7 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 	 */
 	private Image getReviewedStateImage(boolean aState) {
 		if (aState == true) {
-			return fImageRegistry.get(CHECKED_IMAGE);
+			return EGerritImages.get(EGerritImages.CHECKED_IMAGE);
 		} else {
 			return null;
 		}

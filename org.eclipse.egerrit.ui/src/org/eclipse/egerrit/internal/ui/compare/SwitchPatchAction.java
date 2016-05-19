@@ -12,7 +12,7 @@
 package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.action.Action;
@@ -40,7 +40,7 @@ public class SwitchPatchAction extends Action {
 		boolean hasComments = revision.isCommented();
 		setText(UIUtils.revisionToString(revision));
 		if (hasComments) {
-			setImageDescriptor(EGerritUIPlugin.getImageDescriptor("icons/showComments.gif")); //$NON-NLS-1$
+			setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER));
 		}
 	}
 

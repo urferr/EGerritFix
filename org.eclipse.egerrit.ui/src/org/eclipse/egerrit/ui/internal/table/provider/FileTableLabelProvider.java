@@ -19,7 +19,7 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -42,25 +42,11 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 
 	private static final String DRAFTS = Messages.FileTableLabelProvider_2;
 
-	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
-
 	// For the images
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
 
 	//Layout selection for the file path. Also as a default value
 	private boolean nameFirst = true;
-
-	/**
-	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them the
-	 * SWT Display is disposed.
-	 */
-	static {
-
-		String iconPath = "icons/"; //$NON-NLS-1$
-
-		fImageRegistry.put(CHECKED_IMAGE, EGerritUIPlugin.getImageDescriptor(iconPath + CHECKED_IMAGE));
-
-	}
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -106,7 +92,8 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 					path = fileInfo.getPath();
 				}
 				if (fileInfo.getOld_path() != null) {
-					path += Messages.FileTableLabelProvider_3 + fileInfo.getOld_path() + Messages.FileTableLabelProvider_4;
+					path += Messages.FileTableLabelProvider_3 + fileInfo.getOld_path()
+							+ Messages.FileTableLabelProvider_4;
 				}
 				return path;
 			case 3:
@@ -180,7 +167,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	 */
 	private Image getReviewedStateImage(boolean aState) {
 		if (aState == true) {
-			return fImageRegistry.get(CHECKED_IMAGE);
+			return EGerritImages.get(EGerritImages.CHECKED_IMAGE);
 		} else {
 			return null;
 		}

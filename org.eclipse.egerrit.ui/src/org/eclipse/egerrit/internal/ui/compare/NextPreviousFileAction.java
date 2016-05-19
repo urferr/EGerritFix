@@ -14,16 +14,12 @@ package org.eclipse.egerrit.internal.ui.compare;
 import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.internal.CompareEditorInputNavigator;
 import org.eclipse.compare.internal.Utilities;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.Action;
 
 @SuppressWarnings("restriction")
 public class NextPreviousFileAction extends Action {
-	private static String DOWN_ARROW = "icons/compare_next_file.gif"; //$NON-NLS-1$
-
-	private static String UP_ARROW = "icons/compare_previous_file.gif"; //$NON-NLS-1$
-
 	private int direction;
 
 	private GerritMultipleInput compareInput;
@@ -35,12 +31,12 @@ public class NextPreviousFileAction extends Action {
 			setAccelerator(Action.convertAccelerator("]")); //$NON-NLS-1$
 			setDescription(Messages.NextPreviousFileAction_1);
 			setToolTipText(Messages.NextPreviousFileAction_2);
-			setImageDescriptor(EGerritUIPlugin.getImageDescriptor(DOWN_ARROW));
+			setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.DOWN_ARROW));
 		} else {
 			setAccelerator(Action.convertAccelerator("[")); //$NON-NLS-1$
 			setDescription(Messages.NextPreviousFileAction_4);
 			setToolTipText(Messages.NextPreviousFileAction_5);
-			setImageDescriptor(EGerritUIPlugin.getImageDescriptor(UP_ARROW));
+			setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.UP_ARROW));
 		}
 		setEnabled(true);
 	}

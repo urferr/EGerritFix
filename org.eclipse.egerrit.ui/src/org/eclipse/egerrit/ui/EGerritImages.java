@@ -26,24 +26,33 @@ public class EGerritImages {
 
 	public static final String ANONYMOUS_COMMENT = "icons/showAnonymousComments.gif"; //$NON-NLS-1$
 
-	public static final String OTHER_COMMENT = "icons/showAnonymousComments.gif"; //$NON-NLS-1$
+	public static final String DELETE_QUICKFIX = "icons/delete.gif"; //$NON-NLS-1$
 
-	public static final String DELETE_QUICKFIX = "icons/ovr16/delete.gif"; //$NON-NLS-1$
+	public static final String EDIT_QUICKFIX = "icons/edit.gif"; //$NON-NLS-1$
 
-	public static final String DONE_QUICKFIX = "icons/ovr16/done.png"; //$NON-NLS-1$
+	public static final String DOWN_ARROW = "icons/compare_next_file.gif"; //$NON-NLS-1$
 
-	public static final String EDIT_QUICKFIX = "icons/ovr16/edit.gif"; //$NON-NLS-1$
+	public static final String UP_ARROW = "icons/compare_previous_file.gif"; //$NON-NLS-1$
 
-	public static final String REPLY_QUICKFIX = "icons/ovr16/reply.png"; //$NON-NLS-1$
+	public static final String REPLY = "icons/reply.png"; //$NON-NLS-1$
+
+	public static final String COMMENT_FILTER = "icons/showComments.gif"; //$NON-NLS-1$
+
+	public static final String TOGGLE_FILEPATH = "icons/toggleFilePathpane.gif"; //$NON-NLS-1$
+
+	public static final String CHECKED_IMAGE = "icons/greenCheck.png"; //$NON-NLS-1$
 
 	static {
 		fgImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(AUTHOR_COMMENT));
 		fgImageRegistry.put(ANONYMOUS_COMMENT, EGerritUIPlugin.getImageDescriptor(ANONYMOUS_COMMENT));
-		fgImageRegistry.put(OTHER_COMMENT, EGerritUIPlugin.getImageDescriptor(OTHER_COMMENT));
 		fgImageRegistry.put(DELETE_QUICKFIX, EGerritUIPlugin.getImageDescriptor(DELETE_QUICKFIX));
-		fgImageRegistry.put(DONE_QUICKFIX, EGerritUIPlugin.getImageDescriptor(DONE_QUICKFIX));
 		fgImageRegistry.put(EDIT_QUICKFIX, EGerritUIPlugin.getImageDescriptor(EDIT_QUICKFIX));
-		fgImageRegistry.put(REPLY_QUICKFIX, EGerritUIPlugin.getImageDescriptor(REPLY_QUICKFIX));
+		fgImageRegistry.put(REPLY, EGerritUIPlugin.getImageDescriptor(REPLY));
+		fgImageRegistry.put(DOWN_ARROW, EGerritUIPlugin.getImageDescriptor(DOWN_ARROW));
+		fgImageRegistry.put(UP_ARROW, EGerritUIPlugin.getImageDescriptor(UP_ARROW));
+		fgImageRegistry.put(COMMENT_FILTER, EGerritUIPlugin.getImageDescriptor(COMMENT_FILTER));
+		fgImageRegistry.put(TOGGLE_FILEPATH, EGerritUIPlugin.getImageDescriptor(TOGGLE_FILEPATH));
+		fgImageRegistry.put(CHECKED_IMAGE, EGerritUIPlugin.getImageDescriptor(CHECKED_IMAGE));
 	}
 
 	/**

@@ -57,7 +57,7 @@ public class QuickFixReplyDoneToComment extends EGerritQuickFix {
 
 	@Override
 	public Image getImage() {
-		return EGerritImages.get(EGerritImages.DONE_QUICKFIX);
+		return EGerritImages.get(EGerritImages.CHECKED_IMAGE);
 	}
 
 }

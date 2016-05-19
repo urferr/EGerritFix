@@ -19,9 +19,8 @@ import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -31,50 +30,16 @@ import org.eclipse.swt.graphics.Image;
  * @since 1.0
  */
 public class HistoryTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider {
-
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy MMM dd hh:mm a"); //$NON-NLS-1$
 
 	private GerritClient gerritClient;
 
-	private static final String ANONYMOUS_COMMENT = "showAnonymousComments.gif"; //$NON-NLS-1$
-
-	private static final String AUTHOR_COMMENT = "showAuthorComments.gif"; //$NON-NLS-1$
-
-	private static final String OTHER_COMMENT = "showComments.gif"; //$NON-NLS-1$
-
-	// For the images
-	private static ImageRegistry fImageRegistry = new ImageRegistry();
-
-	/**
-	 * Note: An image registry owns all of the image objects registered with it, and automatically disposes of them the
-	 * SWT Display is disposed.
-	 */
-	static {
-
-		String iconPath = "icons/"; //$NON-NLS-1$
-
-		fImageRegistry.put(ANONYMOUS_COMMENT, EGerritUIPlugin.getImageDescriptor(iconPath + ANONYMOUS_COMMENT));
-		fImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(iconPath + AUTHOR_COMMENT));
-		fImageRegistry.put(OTHER_COMMENT, EGerritUIPlugin.getImageDescriptor(iconPath + OTHER_COMMENT));
-	}
-
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
 	public HistoryTableLabelProvider(IObservableMap[] iObservableMaps, GerritClient gerritClient) {
 		super(iObservableMaps);
 		this.gerritClient = gerritClient;
 	}
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Return the text associated to the column
@@ -129,15 +94,15 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 				boolean hasComments = changeMessageInfo.isComment();
 				if (hasComments) {
 					if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
-						return fImageRegistry.get(ANONYMOUS_COMMENT);
+						return EGerritImages.get(EGerritImages.ANONYMOUS_COMMENT);
 					} else {
 						String currentUser = gerritClient.getRepository().getCredentials().getUsername();
 						AccountInfo author = changeMessageInfo.getAuthor();
 						if (author != null && (currentUser.equals(author.getEmail())
 								|| currentUser.equals(author.getName()) || currentUser.equals(author.getUsername()))) {
-							return fImageRegistry.get(AUTHOR_COMMENT);
+							return EGerritImages.get(EGerritImages.AUTHOR_COMMENT);
 						} else {
-							return fImageRegistry.get(OTHER_COMMENT);
+							return EGerritImages.get(EGerritImages.ANONYMOUS_COMMENT);
 						}
 					}
 				}

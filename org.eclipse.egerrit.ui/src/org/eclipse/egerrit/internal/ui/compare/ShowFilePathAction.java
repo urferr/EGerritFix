@@ -13,7 +13,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.function.Supplier;
 
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.table.model.FilesTableModel;
 import org.eclipse.egerrit.ui.internal.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 
 public class ShowFilePathAction extends Action {
-	private static final String TOGGLE_FILEPATH = "icons/toggleFilePathpane.gif"; //$NON-NLS-1$
 
 	private Supplier<TreeViewer> viewer;
 
@@ -30,8 +29,7 @@ public class ShowFilePathAction extends Action {
 		this.viewer = viewerRef;
 		setDescription(Messages.ShowFilePathAction_0);
 		setToolTipText(Messages.ShowFilePathAction_1);
-		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(TOGGLE_FILEPATH));
-
+		setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH));
 	}
 
 	@Override

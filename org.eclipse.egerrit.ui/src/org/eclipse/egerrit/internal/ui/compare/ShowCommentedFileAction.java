@@ -13,7 +13,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.function.Supplier;
 
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -22,8 +22,6 @@ import org.eclipse.jface.viewers.TreeViewer;
  * Implements the toolbar action to filter the files with comments
  */
 public class ShowCommentedFileAction extends Action {
-	private static final String COMMENT_FILTER = "icons/showComments.gif"; //$NON-NLS-1$
-
 	private boolean filterOn = false;
 
 	private Supplier<TreeViewer> viewer;
@@ -36,7 +34,7 @@ public class ShowCommentedFileAction extends Action {
 		setDescription(Messages.ShowCommentedFileAction_0);
 		setToolTipText(Messages.ShowCommentedFileAction_1);
 		setChecked(filterOn);
-		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(COMMENT_FILTER));
+		setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER));
 	}
 
 	@Override

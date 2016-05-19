@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.ui.EGerritImages;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
 import org.eclipse.jface.action.Action;
@@ -26,7 +26,6 @@ import org.eclipse.jface.viewers.TreeViewer;
  * Provide the action that allows to execute a reply directly from the compare Editor
  */
 public class ReplyAction extends Action {
-	private static final String ICONS_REPLY = "icons/reply.png"; //$NON-NLS-1$
 
 	//The reference to the viewer
 	private Supplier<TreeViewer> viewer;
@@ -39,7 +38,7 @@ public class ReplyAction extends Action {
 
 		setText(Messages.ReplyAction_0);
 		setDescription(Messages.ReplyAction_1);
-		setImageDescriptor(EGerritUIPlugin.getImageDescriptor(ICONS_REPLY));
+		setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.REPLY));
 
 		String anonymousUserToolTip = Messages.ReplyAction_2
 				+ input.gerritClient.getRepository().getServerInfo().getServerURI() + Messages.ReplyAction_3;
