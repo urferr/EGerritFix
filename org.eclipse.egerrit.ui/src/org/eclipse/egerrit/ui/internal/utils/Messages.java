@@ -242,8 +242,6 @@ public class Messages extends NLS {
 
 	public static String SummaryTabView_24;
 
-	public static String SummaryTabView_26;
-
 	public static String SummaryTabView_3;
 
 	public static String SummaryTabView_4;
