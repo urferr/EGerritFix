@@ -11,21 +11,18 @@
 
 package org.eclipse.egerrit.internal.ui.compare;
 
-import java.text.SimpleDateFormat;
-
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 
 //Helper class to pretty print a comment
 public class CommentPrettyPrinter {
-	final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
 	static String printComment(CommentInfo comment) {
 		return CommentPrettyPrinter.printName(comment) + '\t' + comment.getMessage() + '\t' + printDate(comment);
 	}
 
 	public static String printDate(CommentInfo comment) {
-		return Utils.formatDate(comment.getUpdated(), CommentPrettyPrinter.formatTimeOut);
+		return Utils.prettyPrintDate(comment.getUpdated());
 	}
 
 	static String printName(CommentInfo comment) {

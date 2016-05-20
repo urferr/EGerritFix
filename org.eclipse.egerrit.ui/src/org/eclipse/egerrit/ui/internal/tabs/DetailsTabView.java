@@ -127,7 +127,7 @@ import org.eclipse.ui.PartInitException;
  *
  * @since 1.0
  */
-public class SummaryTabView {
+public class DetailsTabView {
 
 	private final String TITLE = Messages.SummaryTabView_0;
 
@@ -213,7 +213,7 @@ public class SummaryTabView {
 	/**
 	 * The constructor.
 	 */
-	public SummaryTabView() {
+	public DetailsTabView() {
 	}
 
 	/**

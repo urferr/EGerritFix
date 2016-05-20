@@ -62,7 +62,7 @@ import org.eclipse.egerrit.ui.internal.table.provider.PatchSetHandlerProvider;
 import org.eclipse.egerrit.ui.internal.tabs.HistoryTabView;
 import org.eclipse.egerrit.ui.internal.tabs.MessageTabView;
 import org.eclipse.egerrit.ui.internal.tabs.ObservableCollector;
-import org.eclipse.egerrit.ui.internal.tabs.SummaryTabView;
+import org.eclipse.egerrit.ui.internal.tabs.DetailsTabView;
 import org.eclipse.egerrit.ui.internal.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.ui.internal.utils.Messages;
 import org.eclipse.egerrit.ui.internal.utils.UIUtils;
@@ -122,7 +122,7 @@ public class ChangeDetailEditor extends EditorPart {
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
-	public SummaryTabView summaryTab = null;
+	public DetailsTabView detailsTab = null;
 
 	private HistoryTabView historytab = null;
 
@@ -186,8 +186,8 @@ public class ChangeDetailEditor extends EditorPart {
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
 
-		summaryTab = new SummaryTabView();
-		summaryTab.create(fGerritClient, tabFolder, fChangeInfo);
+		detailsTab = new DetailsTabView();
+		detailsTab.create(fGerritClient, tabFolder, fChangeInfo);
 
 		Composite compButton = buttonSection(parent);
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -1063,6 +1063,6 @@ public class ChangeDetailEditor extends EditorPart {
 		hidableSubmitButton.dispose();
 		historytab.dispose();
 		messageTab.dispose();
-		summaryTab.dispose();
+		detailsTab.dispose();
 	}
 }

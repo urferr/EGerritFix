@@ -21,4 +21,5 @@ Export-Package: org.eclipse.egerrit.core,
  org.eclipse.egerrit.core.exception,
  org.eclipse.egerrit.core.rest,
  org.eclipse.egerrit.core.utils
+Import-Package: org.apache.commons.lang3.time
 

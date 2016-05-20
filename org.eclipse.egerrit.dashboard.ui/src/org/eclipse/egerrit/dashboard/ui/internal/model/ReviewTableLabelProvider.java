@@ -14,12 +14,6 @@
 
 package org.eclipse.egerrit.dashboard.ui.internal.model;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.apache.commons.lang3.time.DateUtils;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
 import org.eclipse.egerrit.core.utils.Utils;
 import org.eclipse.egerrit.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -41,14 +35,6 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
-
-	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
-
-	private final SimpleDateFormat sameYearFormatTimeOut = new SimpleDateFormat("MMM dd"); //$NON-NLS-1$
-
-	private final SimpleDateFormat sameDayFormatTimeOut = new SimpleDateFormat("HH:mm aa"); //$NON-NLS-1$
-
-	private final SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -230,23 +216,7 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 				}
 				return branch;
 			case 7: {
-				java.util.Date date = null;
-				try {
-					date = formatTimeOut.parse(reviewSummary.getUpdated());
-				} catch (ParseException e) {
-					EGerritCorePlugin.logError(e.getMessage());
-				}
-				boolean sameDay = DateUtils.isSameDay(date, Calendar.getInstance().getTime());
-				Calendar today = Calendar.getInstance();
-				Calendar currentReview = Calendar.getInstance();
-				currentReview.setTime(date);
-				if (sameDay) {
-					return Utils.formatDate(reviewSummary.getUpdated(), sameDayFormatTimeOut);
-				} else if (today.get(Calendar.YEAR) != currentReview.get(Calendar.YEAR)) {
-					return Utils.formatDate(reviewSummary.getUpdated(), differentYearFormatTimeOut);
-				} else {
-					return Utils.formatDate(reviewSummary.getUpdated(), sameYearFormatTimeOut);
-				}
+				return Utils.prettyPrintDate(reviewSummary.getUpdated());
 			}
 			case 8: {
 				fCodeReviewState = Utils.verifyTally((CODE_REVIEW), reviewSummary.getLabels());

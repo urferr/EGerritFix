@@ -12,8 +12,6 @@
 
 package org.eclipse.egerrit.ui.internal.table.provider;
 
-import java.text.SimpleDateFormat;
-
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.core.GerritClient;
 import org.eclipse.egerrit.core.utils.Utils;
@@ -31,8 +29,6 @@ import org.eclipse.swt.graphics.Image;
  */
 public class HistoryTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider {
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
-
-	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy MMM dd hh:mm a"); //$NON-NLS-1$
 
 	private GerritClient gerritClient;
 
@@ -58,7 +54,7 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 			case 0:
 				return ""; //$NON-NLS-1$
 			case 1:
-				return Utils.formatDate(changeMessageInfo.getDate(), formatTimeOut);
+				return Utils.prettyPrintDate(changeMessageInfo.getDate());
 			case 2:
 				if (changeMessageInfo.getAuthor() != null) {
 					return changeMessageInfo.getAuthor().getName();
