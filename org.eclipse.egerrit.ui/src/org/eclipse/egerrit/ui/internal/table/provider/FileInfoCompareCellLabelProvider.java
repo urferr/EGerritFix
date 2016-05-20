@@ -69,23 +69,20 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		case 1:
 			return fileInfo.getStatus();
 		case 2:
-			String previousName = ""; //$NON-NLS-1$
-			if (fileInfo.getOld_path() != null) {
-				previousName = Messages.FileInfoCompareCellLabelProvider_3 + fileInfo.getOld_path()
-						+ Messages.FileInfoCompareCellLabelProvider_4;
-			}
 			String path = null;
 			if (nameFirst) {
 				path = fileInfo.getPath();
 				int index = path.lastIndexOf("/"); //$NON-NLS-1$
 				if (index != -1) {
 					String fileName = path.substring(index + 1);
-					String firstName = fileName + previousName + " - " + path.substring(0, index); //$NON-NLS-1$
+					String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
 					path = firstName;
 				}
 			} else {
 				path = fileInfo.getPath();
-				path += previousName;
+			}
+			if (fileInfo.getOld_path() != null) {
+				path += Messages.FileTableLabelProvider_3 + fileInfo.getOld_path() + Messages.FileTableLabelProvider_4;
 			}
 			return path;
 		case 3:
