@@ -24,7 +24,7 @@ import org.eclipse.egerrit.core.rest.TopicInput;
  * @since 1.0
  */
 
-public class SetTopicCommand extends BaseCommandChangeWithInput<String, TopicInput> {
+public class SetTopicCommand extends BaseCommandChangeWithInput<NoResult, TopicInput> {
 	/**
 	 * The constructor
 	 *
