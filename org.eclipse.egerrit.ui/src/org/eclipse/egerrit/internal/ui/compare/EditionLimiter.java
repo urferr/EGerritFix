@@ -28,7 +28,10 @@ import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.link.InclusivePositionUpdater;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.slf4j.Logger;
@@ -60,6 +63,44 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 
 	public EditionLimiter(TextViewer viewer) {
 		this.textViewer = viewer;
+		textViewer.getTextWidget().addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'd')
+						|| ((e.stateMask & SWT.COMMAND) == SWT.COMMAND) && (e.keyCode == 'd')) {
+					triggeredFromWidget = true;
+					StyledText txt = (StyledText) e.getSource();
+					int lineLength = 0;
+					int lineNo = 0;
+					int caretOffset = txt.getCaretOffset();
+					if (document == null) {
+						initialize();
+					}
+					try {
+						lineNo = document.getLineOfOffset(caretOffset);
+						lineLength = document.getLineLength(lineNo);
+						if (!isEditableLine(document.getLineOffset(lineNo), 1)) {
+							return;
+						}
+						doit(caretOffset, lineLength - 1, "", false, true); //$NON-NLS-1$
+						document.replace(document.getLineOffset(lineNo), lineLength - 1, ""); //$NON-NLS-1$
+
+					} catch (BadLocationException e1) {
+						logger.debug("Exception while performing Ctrl-D", e1); //$NON-NLS-1$
+						return;
+					} finally {
+						lastTextForShortCircuiting = null;
+						triggeredFromWidget = false;
+					}
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// ignore
+			}
+		});
+
 	}
 
 	private boolean doit(int start, int length, String text, boolean fromDoc, boolean deletionOnly) {
