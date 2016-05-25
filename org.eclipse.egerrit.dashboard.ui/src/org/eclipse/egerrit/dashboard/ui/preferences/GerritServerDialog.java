@@ -51,28 +51,28 @@ public class GerritServerDialog extends Dialog {
 
 	private final int fHEIGHT = 275;
 
-	private final String DIALOG_TITLE = "Gerrit Server Selection";
+	private final String DIALOG_TITLE = Messages.GerritServerDialog_0;
 
-	private final String fOkTooltip = "Save the new Gerrit Server information";
+	private final String fOkTooltip = Messages.GerritServerDialog_1;
 
-	private final String fCancelTooltip = "Do not save the information";
+	private final String fCancelTooltip = Messages.GerritServerDialog_2;
 
-	private final String HEADER = "Enter the http(s) URL of your Gerrit server, and the username and password to connect to it.\n\nThe URL you need to enter is the same than the one you use to connect to your Gerrit server on the web.";
+	private final String HEADER = Messages.GerritServerDialog_3;
 
-	private final String URL_TOOLTIP = "For example, on Eclipse Gerrit server is https://git.eclipse.org/r/. Another way to determine the URL is to start from the URL of a change (e.g https://git.eclipse.org/r/#/c/58066/) and use as a URL the part up to the #.";
+	private final String URL_TOOLTIP = Messages.GerritServerDialog_4;
 
-	private final String URL_EXAMPLE_TOOLTIP = "Example: https://git.eclipse.org/r";
+	private final String URL_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_5;
 
-	private final String SHORTNAME_TOOLTIP = "Name to show in the Gerrit Server list";
+	private final String SHORTNAME_TOOLTIP = Messages.GerritServerDialog_6;
 
-	private final String SHORTNAME_EXAMPLE_TOOLTIP = "Example: Eclipse or Foundation";
+	private final String SHORTNAME_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_7;
 
-	private final String INVALID_MESSAGE = "URL is NOT valid";
+	private final String INVALID_MESSAGE = Messages.GerritServerDialog_8;
 
-	private final static String TITLE = "Gerrit selection";
+	private final static String TITLE = Messages.GerritServerDialog_9;
 
-	private final String WANT_TO_SAVE = "The information provided doesn't allow a connection to the Gerrit server at the moment,\n"
-			+ " do you still want to save it ?";
+	private final String WANT_TO_SAVE = Messages.GerritServerDialog_10
+			+ Messages.GerritServerDialog_11;
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -142,7 +142,7 @@ public class GerritServerDialog extends Dialog {
 		//URL
 		Label labelServerURI = new Label(composite, SWT.NONE);
 		labelServerURI.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelServerURI.setText("URL:");
+		labelServerURI.setText(Messages.GerritServerDialog_12);
 		labelServerURI.setToolTipText(URL_TOOLTIP);
 
 		txtServerURL = new Text(composite, SWT.BORDER);
@@ -154,7 +154,7 @@ public class GerritServerDialog extends Dialog {
 		//Server Name
 		Label labelServerName = new Label(composite, SWT.NONE);
 		labelServerName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelServerName.setText("Label:");
+		labelServerName.setText(Messages.GerritServerDialog_13);
 		labelServerName.setToolTipText(SHORTNAME_EXAMPLE_TOOLTIP);
 
 		txtServerName = new Text(composite, SWT.BORDER);
@@ -168,7 +168,7 @@ public class GerritServerDialog extends Dialog {
 
 		Label labelUser = new Label(composite, SWT.NONE);
 		labelUser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelUser.setText("User:");
+		labelUser.setText(Messages.GerritServerDialog_14);
 
 		txtUserName = new Text(composite, SWT.BORDER);
 		txtUserName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -177,7 +177,7 @@ public class GerritServerDialog extends Dialog {
 
 		Label labelPassword = new Label(composite, SWT.NONE);
 		labelPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		labelPassword.setText("Password:");
+		labelPassword.setText(Messages.GerritServerDialog_15);
 
 		txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -346,28 +346,28 @@ public class GerritServerDialog extends Dialog {
 			return false;
 		}
 		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_PROBLEM) {
-			throw new EGerritException("A problem occurred establishing the SSL connection with "
-					+ workingCopy.getServerURI() + ". Please see log file for more details.");
+			throw new EGerritException(Messages.GerritServerDialog_16
+					+ workingCopy.getServerURI() + Messages.GerritServerDialog_17);
 		}
 		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_INVALID_ROOT_CERTIFICATE) {
-			throw new EGerritException("A problem occurred establishing the SSL connection with "
+			throw new EGerritException(Messages.GerritServerDialog_18
 					+ workingCopy.getServerURI()
-					+ ". The trust chain of the provided certificate could not be verified. Please see log file for more details.");
+					+ Messages.GerritServerDialog_19);
 		}
 
 		if (!connexionSuccesfull) {
-			throw new EGerritException("Server " + workingCopy.getServerURI() + " : " + INVALID_MESSAGE);
+			throw new EGerritException(Messages.GerritServerDialog_20 + workingCopy.getServerURI() + Messages.GerritServerDialog_21 + INVALID_MESSAGE);
 		}
 
 		//Test the Version if it is a valid Gerrit Server
 		Version version = repo.getVersion();
 		if (version.equals(GerritRepository.NO_VERSION)) {
 			throw new EGerritException(
-					"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
-							+ GerritFactory.MINIMAL_VERSION + ".");
+					Messages.GerritServerDialog_22
+							+ GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_23);
 		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-			throw new EGerritException("Server " + workingCopy.getServerURI() + " runs version " + repo.getVersion()
-					+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION + " supported by EGerrit.");
+			throw new EGerritException(Messages.GerritServerDialog_24 + workingCopy.getServerURI() + Messages.GerritServerDialog_25 + repo.getVersion()
+					+ Messages.GerritServerDialog_26 + GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_27);
 		}
 
 		//Second pass to verify with the available credentials
@@ -395,7 +395,7 @@ public class GerritServerDialog extends Dialog {
 		}
 		if (repo.getHttpClient() == null) {
 			throw new EGerritException(
-					"Server [ " + workingCopy.getServerURI() + " ] has an invalid User and/or password ");
+					Messages.GerritServerDialog_28 + workingCopy.getServerURI() + Messages.GerritServerDialog_29);
 		}
 
 		return connexionSuccesfull;

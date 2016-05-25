@@ -32,7 +32,8 @@ public class GerritServerTableLabelProvider extends LabelProvider implements ITa
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
-	private final String[] fTitles = { "Server name", "URL", "User" };
+	private final String[] fTitles = { Messages.GerritServerTableLabelProvider_0,
+			Messages.GerritServerTableLabelProvider_1, Messages.GerritServerTableLabelProvider_2 };
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
@@ -56,8 +57,6 @@ public class GerritServerTableLabelProvider extends LabelProvider implements ITa
 	 * @return String text associated to the column
 	 */
 	public String getColumnText(Object aObj, int aIndex) {
-		// GerritPlugin.Ftracer.traceWarning("getColumnText object: " + aObj
-		// + "\tcolumn: " + aIndex);
 		if (aObj instanceof GerritServerInformation) {
 			GerritServerInformation serverInfo = (GerritServerInformation) aObj;
 			switch (aIndex) {

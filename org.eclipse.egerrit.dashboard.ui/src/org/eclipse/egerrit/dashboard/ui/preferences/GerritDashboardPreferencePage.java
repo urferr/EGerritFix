@@ -56,21 +56,21 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 
 	private final static String ID = "org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"; //$NON-NLS-1$
 
-	private final static String NEW = "New...";
+	private final static String NEW = Messages.GerritDashboardPreferencePage_0;
 
-	private final static String REMOVE = "Remove";
+	private final static String REMOVE = Messages.GerritDashboardPreferencePage_1;
 
-	private final static String MODIFY = "Modify...";
+	private final static String MODIFY = Messages.GerritDashboardPreferencePage_2;
 
-	private final static String TITLE = "Gerrit selection";
+	private final static String TITLE = Messages.GerritDashboardPreferencePage_3;
 
-	private final static String SELECTION_MESSAGE = "Need to select a Gerrit Server \nto ";
+	private final static String SELECTION_MESSAGE = Messages.GerritDashboardPreferencePage_4;
 
-	private final static String REMOVE_MESSAGE = "Need to select a Gerrit Server \nto remove it";
+	private final static String REMOVE_MESSAGE = Messages.GerritDashboardPreferencePage_5;
 
-	private final static String NO_SERVER_SAVED = "No server being saved";
+	private final static String NO_SERVER_SAVED = Messages.GerritDashboardPreferencePage_6;
 
-	private final static String INVALID_SERVER = "Invalid server: \n";
+	private final static String INVALID_SERVER = Messages.GerritDashboardPreferencePage_7;
 
 	private Composite prefsContainer = null;
 
@@ -80,7 +80,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 
 	public GerritDashboardPreferencePage() {
 		super(GRID);
-		setDescription("Gerrit Servers defined");
+		setDescription(Messages.GerritDashboardPreferencePage_8);
 	}
 
 	@Override
