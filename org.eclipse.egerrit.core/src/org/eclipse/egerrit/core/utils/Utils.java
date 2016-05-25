@@ -47,12 +47,12 @@ public class Utils {
 	 */
 	public static String formatDate(String inDate, SimpleDateFormat formatOut) {
 
-		SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.");// Gerrit timestamp format
+		SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.");// Gerrit timestamp format //$NON-NLS-1$
 
 		Date dateNew = null;
 
 		try {
-			formatIn.setTimeZone(TimeZone.getTimeZone("UTC"));
+			formatIn.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
 			dateNew = formatIn.parse(inDate);
 		} catch (ParseException ex) {
 			EGerritCorePlugin.logError(ex.getMessage());

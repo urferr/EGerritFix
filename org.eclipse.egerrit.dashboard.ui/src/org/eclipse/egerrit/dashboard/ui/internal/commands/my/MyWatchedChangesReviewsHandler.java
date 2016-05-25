@@ -21,7 +21,7 @@ import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
 
 /**
  * This class implements the Dashboard-Gerrit UI my watched changes reviews handler.
- * 
+ *
  * @since 1.0
  */
 
@@ -36,7 +36,7 @@ public class MyWatchedChangesReviewsHandler extends AbstractHandler {
 
 		// see http://gerrit-documentation.googlecode.com/svn/Documentation/2.5.2/user-search.html
 		//for My > Watched Changes--> status:open is:watched
-		reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " + ChangeStatus.OPEN.getValue());
+		reviewTableView.processCommands(ChangeState.IS_WATCHED.getValue() + " " + ChangeStatus.OPEN.getValue()); //$NON-NLS-1$
 
 		return null;
 	}

@@ -120,7 +120,6 @@ public class UIReviewTable {
 			@Override
 			public void controlResized(ControlEvent e) {
 				table.setRedraw(false);
-				Point tableSize = table.getSize();
 				Point parentSize = table.getParent().getSize();
 				//Adjust the width  according to its parent
 				int minimumTableWidth = ReviewTableDefinition.getMinimumWidth();

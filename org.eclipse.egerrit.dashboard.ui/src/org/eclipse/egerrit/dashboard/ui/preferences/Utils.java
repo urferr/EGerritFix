@@ -33,14 +33,13 @@ public class Utils {
 
 	/**
 	 * Message box asking a question and waiting for an answer
-	 * 
+	 *
 	 * @param shell
 	 * @param title
 	 * @param message
 	 * @return boolean
 	 */
 	public static boolean queryInformation(final Shell shell, final String title, final String message) {
-		final boolean b = false;
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
 				boolean b = MessageDialog.openQuestion(shell, title, message);

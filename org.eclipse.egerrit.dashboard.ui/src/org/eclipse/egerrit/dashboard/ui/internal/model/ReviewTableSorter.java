@@ -40,7 +40,7 @@ public class ReviewTableSorter extends ViewerSorter {
 	// The target column
 	private int fColumnIndex = 0;
 
-	private static final String VERIFIED = "Verified";
+	private static final String VERIFIED = "Verified"; //$NON-NLS-1$
 
 	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
