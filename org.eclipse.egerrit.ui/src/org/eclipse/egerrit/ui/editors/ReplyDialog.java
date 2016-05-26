@@ -192,16 +192,17 @@ public class ReplyDialog extends InputDialog {
 		for (FileInfo fileInfo : files) {
 			if (!fileInfo.getDraftComments().isEmpty()) {
 				Link linkFile = new Link(composite, SWT.NONE);
-				linkFile.setToolTipText(
-						Messages.ReplyDialog_2);
+				linkFile.setToolTipText(Messages.ReplyDialog_2);
 				linkFile.setText("<a>" + fileInfo.getPath() + "</a>"); //$NON-NLS-1$//$NON-NLS-2$
 				linkFile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 				linkFile.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						FileInfo fileInfo = fRevisionInfo.getFiles().get(e.text);
-						UIUtils.open(fGerritClient, fileInfo, fRevisionInfo.getChangeInfo(), "BASE"); //$NON-NLS-1$
-						cancelPressed();
+						if (fileInfo != null) {
+							UIUtils.open(fGerritClient, fileInfo, fRevisionInfo.getChangeInfo(), "BASE"); //$NON-NLS-1$
+							cancelPressed();
+						}
 					}
 				});
 
