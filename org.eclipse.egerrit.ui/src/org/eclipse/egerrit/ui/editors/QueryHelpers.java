@@ -335,7 +335,10 @@ public class QueryHelpers {
 			String[] reviewedFiles = command.call();
 			synchronized (revision.getChangeInfo()) {
 				for (String reviewed : reviewedFiles) {
-					revision.getFiles().get(reviewed).setReviewed(true);
+					FileInfo fileToMarkReviewed = revision.getFiles().get(reviewed);
+					if (fileToMarkReviewed != null) {
+						fileToMarkReviewed.setReviewed(true);
+					}
 				}
 			}
 		} catch (EGerritException e) {
