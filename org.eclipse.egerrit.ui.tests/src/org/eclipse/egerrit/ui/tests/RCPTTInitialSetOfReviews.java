@@ -16,11 +16,11 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.GerritServerInformation;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.GerritServerInformation;
 
 public class RCPTTInitialSetOfReviews {
 

@@ -14,8 +14,8 @@ package org.eclipse.egerrit.internal.ui.compare;
 import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.internal.CompareEditorInputNavigator;
 import org.eclipse.compare.internal.Utilities;
-import org.eclipse.egerrit.ui.EGerritImages;
-import org.eclipse.egerrit.ui.internal.utils.Messages;
+import org.eclipse.egerrit.internal.ui.EGerritImages;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.Action;
 
 @SuppressWarnings("restriction")

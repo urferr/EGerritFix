@@ -18,10 +18,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.egerrit.core.GerritServerInformation;
-import org.eclipse.egerrit.core.ServersStore;
-import org.eclipse.egerrit.dashboard.ui.views.GerritTableView;
-import org.eclipse.egerrit.dashboard.utils.GerritServerUtility;
+import org.eclipse.egerrit.internal.core.GerritServerInformation;
+import org.eclipse.egerrit.internal.core.ServersStore;
+import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
+import org.eclipse.egerrit.internal.dashboard.utils.GerritServerUtility;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;

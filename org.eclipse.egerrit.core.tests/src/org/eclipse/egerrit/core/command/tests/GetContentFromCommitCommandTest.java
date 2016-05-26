@@ -20,18 +20,18 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.eclipse.egerrit.core.command.GetContentFromCommitCommand;
-import org.eclipse.egerrit.core.command.SetReviewCommand;
-import org.eclipse.egerrit.core.command.SubmitCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ReviewInput;
-import org.eclipse.egerrit.core.rest.SubmitInput;
 import org.eclipse.egerrit.core.tests.Common;
+import org.eclipse.egerrit.internal.core.command.GetContentFromCommitCommand;
+import org.eclipse.egerrit.internal.core.command.SetReviewCommand;
+import org.eclipse.egerrit.internal.core.command.SubmitCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.ReviewInput;
+import org.eclipse.egerrit.internal.core.rest.SubmitInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.GetContentFromCommitCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.GetContentFromCommitCommand}
  *
  * @since 1.0
  */

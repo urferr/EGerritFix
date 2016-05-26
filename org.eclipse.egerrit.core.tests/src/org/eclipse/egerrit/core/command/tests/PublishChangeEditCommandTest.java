@@ -14,21 +14,21 @@ package org.eclipse.egerrit.core.command.tests;
 
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
-import org.eclipse.egerrit.core.command.PublishChangeEditCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
 import org.eclipse.egerrit.core.tests.Common;
+import org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand;
+import org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.ChangeEditMessageInput;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.PublishChangeEditCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
 public class PublishChangeEditCommandTest extends CommandTestWithSimpleReview {
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.PublishChangeEditCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand#call()}.
 	 */
 //	@Test
 	public void testCall() {

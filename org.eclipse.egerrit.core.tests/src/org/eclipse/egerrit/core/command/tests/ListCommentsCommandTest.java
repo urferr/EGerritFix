@@ -17,13 +17,13 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.command.ListCommentsCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.ListCommentsCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.ListCommentsCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.ListCommentsCommand}
  *
  * @since 1.0
  */

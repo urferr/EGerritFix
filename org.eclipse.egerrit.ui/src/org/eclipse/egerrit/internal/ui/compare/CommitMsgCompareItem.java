@@ -11,8 +11,8 @@
 
 package org.eclipse.egerrit.internal.ui.compare;
 
-import org.eclipse.egerrit.core.command.GetCommitMsgCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetCommitMsgCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommitInfo;
 
 public class CommitMsgCompareItem extends PatchSetCompareItem {

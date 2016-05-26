@@ -15,22 +15,22 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.AddReviewerCommand;
-import org.eclipse.egerrit.core.command.DeleteReviewerCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.AddReviewerInput;
-import org.eclipse.egerrit.core.rest.AddReviewerResult;
+import org.eclipse.egerrit.internal.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.AddReviewerInput;
+import org.eclipse.egerrit.internal.core.rest.AddReviewerResult;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.DeleteReviewerCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
 public class DeleteReviewerCommandTest extends CommandTestWithSimpleReview {
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.DeleteReviewerCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand#call()}.
 	 */
 	@Test
 	public void testCall() {

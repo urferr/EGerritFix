@@ -12,7 +12,7 @@
 package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.egerrit.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FileInfo;
 
 /**

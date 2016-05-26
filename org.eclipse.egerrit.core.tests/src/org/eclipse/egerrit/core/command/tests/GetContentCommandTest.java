@@ -17,8 +17,8 @@ import static org.junit.Assert.fail;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.eclipse.egerrit.core.command.GetContentCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetContentCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.junit.Test;
 
 public class GetContentCommandTest extends CommandTestWithSimpleReview {

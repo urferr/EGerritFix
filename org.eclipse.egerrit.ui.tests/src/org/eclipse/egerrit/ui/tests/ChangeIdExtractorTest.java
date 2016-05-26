@@ -14,7 +14,7 @@ package org.eclipse.egerrit.ui.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.eclipse.egerrit.dashboard.ui.views.ChangeIdExtractor;
+import org.eclipse.egerrit.internal.dashboard.ui.views.ChangeIdExtractor;
 import org.junit.Test;
 
 public class ChangeIdExtractorTest {

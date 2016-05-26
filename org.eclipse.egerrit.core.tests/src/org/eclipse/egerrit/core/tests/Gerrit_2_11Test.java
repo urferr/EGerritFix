@@ -18,20 +18,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
-import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.Gerrit_2_11;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritFactory;
+import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.Gerrit_2_11;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.Gerrit_2_11}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.Gerrit_2_11}
  *
  * @since 1.0
  */
@@ -73,7 +73,7 @@ public class Gerrit_2_11Test {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.Gerrit_2_11#Gerrit_2_11(org.eclipse.egerrit.core.GerritRepository)} . and
+	 * {@link org.eclipse.egerrit.internal.core.Gerrit_2_11#Gerrit_2_11(org.eclipse.egerrit.internal.core.GerritRepository)} . and
 	 * {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
 	 */
 	@Test

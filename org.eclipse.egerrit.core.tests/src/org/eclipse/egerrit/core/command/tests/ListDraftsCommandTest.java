@@ -18,15 +18,15 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.eclipse.egerrit.core.command.CreateDraftCommand;
-import org.eclipse.egerrit.core.command.ListDraftsCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.internal.core.command.ListDraftsCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.ListDraftsCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.ListDraftsCommand}
  *
  * @since 1.0
  */

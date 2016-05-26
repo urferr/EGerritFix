@@ -15,14 +15,14 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.GetChangeCommand;
-import org.eclipse.egerrit.core.command.StarChangeCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
+import org.eclipse.egerrit.internal.core.command.StarChangeCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.SubmitCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.SubmitCommand}
  *
  * @since 1.0
  */

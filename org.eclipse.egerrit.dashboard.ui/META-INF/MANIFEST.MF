@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.egerrit.dashboard.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.egerrit.dashboard.ui.GerritUi
+Bundle-Activator: org.eclipse.egerrit.internal.dashboard.ui.GerritUi
 Bundle-Localization: OSGI-INF/l10n/bundle
 Require-Bundle: org.eclipse.ui.forms,
  org.eclipse.core.runtime,
@@ -16,23 +16,20 @@ Require-Bundle: org.eclipse.ui.forms,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
-Export-Package: org.eclipse.egerrit.dashboard.ui;x-internal:=true;
-  uses:="org.eclipse.jface.resource,
-   org.eclipse.ui.plugin,
-   org.osgi.framework",
- org.eclipse.egerrit.dashboard.ui.internal.commands;x-internal:=true;uses:="org.eclipse.core.commands",
- org.eclipse.egerrit.dashboard.ui.internal.model;x-internal:=true;
+Export-Package: org.eclipse.egerrit.internal.dashboard.ui;x-internal:=true;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
+ org.eclipse.egerrit.internal.dashboard.ui.commands;x-internal:=true;uses:="org.eclipse.core.commands",
+ org.eclipse.egerrit.internal.dashboard.ui.model;x-internal:=true;
   uses:="org.eclipse.swt.graphics,
    org.eclipse.jface.viewers,
    org.eclipse.egerrit.dashboard.core,
    org.eclipse.swt.widgets",
- org.eclipse.egerrit.dashboard.ui.internal.utils;x-internal:=true;uses:="org.eclipse.swt.widgets",
- org.eclipse.egerrit.dashboard.ui.views;x-internal:=true;
+ org.eclipse.egerrit.internal.dashboard.ui.utils;x-internal:=true;uses:="org.eclipse.swt.widgets",
+ org.eclipse.egerrit.internal.dashboard.ui.views;x-internal:=true;
   uses:="org.eclipse.jface.viewers,
    org.osgi.framework,
    org.eclipse.ui.part,
    org.eclipse.swt.widgets"
-Import-Package: org.eclipse.egerrit.dashboard.core,
- org.eclipse.egerrit.dashboard.utils,
- org.eclipse.egerrit.ui.editors,
- org.eclipse.egerrit.ui.editors.model
+Import-Package: org.eclipse.egerrit.internal.dashboard.core,
+ org.eclipse.egerrit.internal.dashboard.utils,
+ org.eclipse.egerrit.internal.ui.editors,
+ org.eclipse.egerrit.internal.ui.editors.model

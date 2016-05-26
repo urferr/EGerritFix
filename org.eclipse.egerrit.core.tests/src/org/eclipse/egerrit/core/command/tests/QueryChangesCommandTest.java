@@ -22,14 +22,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.egerrit.core.command.ChangeOption;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.ChangeOption;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.QueryChangesCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.QueryChangesCommand}
  *
  * @since 1.0
  */

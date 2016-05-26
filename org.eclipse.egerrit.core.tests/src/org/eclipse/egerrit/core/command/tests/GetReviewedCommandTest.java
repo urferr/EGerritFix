@@ -14,9 +14,9 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.GetReviewedFilesCommand;
-import org.eclipse.egerrit.core.command.SetReviewedCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetReviewedFilesCommand;
+import org.eclipse.egerrit.internal.core.command.SetReviewedCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.junit.Test;
 
 public class GetReviewedCommandTest extends CommandTestWithSimpleReview {

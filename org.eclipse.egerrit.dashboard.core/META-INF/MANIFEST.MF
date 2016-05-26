@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.egerrit.dashboard.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.eclipse.egerrit.dashboard.GerritPlugin
+Bundle-Activator: org.eclipse.egerrit.internal.dashboard.GerritPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -18,11 +18,10 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: %providerName
-Export-Package: org.eclipse.egerrit.dashboard;x-friends:="org.eclipse.egerrit.dashboard.ui";
+Export-Package: org.eclipse.egerrit.internal.dashboard;x-friends:="org.eclipse.egerrit.dashboard.ui";
   uses:="org.eclipse.core.runtime,
    org.osgi.framework",
- org.eclipse.egerrit.dashboard.core;x-friends:="org.eclipse.egerrit.dashboard.ui";
-  uses:="org.eclipse.core.runtime",
- org.eclipse.egerrit.dashboard.utils
+ org.eclipse.egerrit.internal.dashboard.core;x-friends:="org.eclipse.egerrit.dashboard.ui";uses:="org.eclipse.core.runtime",
+ org.eclipse.egerrit.internal.dashboard.utils
 Import-Package: org.eclipse.equinox.security.storage;version="1.0.0",
  org.eclipse.jface.preference

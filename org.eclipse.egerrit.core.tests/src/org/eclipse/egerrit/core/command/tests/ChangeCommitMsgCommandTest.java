@@ -14,20 +14,20 @@ package org.eclipse.egerrit.core.command.tests;
 
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.ChangeCommitMsgCommand;
-import org.eclipse.egerrit.core.command.PublishChangeEditCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.ChangeEditMessageInput;
+import org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand;
+import org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.ChangeEditMessageInput;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.ChangeCommitMsgCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand}
  *
  * @since 1.0
  */
 @SuppressWarnings("nls")
 public class ChangeCommitMsgCommandTest extends CommandTestWithSimpleReview {
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.ChangeCommitMsgCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand#call()}.
 	 */
 //	@Test
 	public void testCall() {

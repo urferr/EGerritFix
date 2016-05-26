@@ -18,12 +18,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
-import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.Gerrit_2_11;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritFactory;
+import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.Gerrit_2_11;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
@@ -85,7 +85,7 @@ public class GerritFactoryTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritFactory#create(org.eclipse.egerrit.core.GerritRepository)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * with null repository
 	 */
 	@Test
@@ -107,7 +107,7 @@ public class GerritFactoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritFactory#create(org.eclipse.egerrit.core.GerritRepository)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * with unknown repository version
 	 */
 	@Test
@@ -129,7 +129,7 @@ public class GerritFactoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritFactory#create(org.eclipse.egerrit.core.GerritRepository)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * Normal case
 	 */
 	@Test

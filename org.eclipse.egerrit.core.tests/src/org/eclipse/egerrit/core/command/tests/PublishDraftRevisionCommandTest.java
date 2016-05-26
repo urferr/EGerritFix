@@ -15,15 +15,15 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.CreateDraftCommand;
-import org.eclipse.egerrit.core.command.ListCommentsCommand;
-import org.eclipse.egerrit.core.command.PublishDraftRevisionCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.internal.core.command.ListCommentsCommand;
+import org.eclipse.egerrit.internal.core.command.PublishDraftRevisionCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.PublishDraftRevisionCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.PublishDraftRevisionCommand}
  *
  * @since 1.0
  */

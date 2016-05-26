@@ -15,13 +15,13 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.GetIncludedInCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetIncludedInCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.IncludedInInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.GetIncludedInCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.GetIncludedInCommand}
  *
  * @since 1.0
  */

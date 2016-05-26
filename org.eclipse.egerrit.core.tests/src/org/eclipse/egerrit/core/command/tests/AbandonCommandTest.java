@@ -16,14 +16,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.AbandonCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.AbandonInput;
+import org.eclipse.egerrit.internal.core.command.AbandonCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.AbandonInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.AbandonCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.AbandonCommand}
  *
  * @since 1.0
  */
@@ -31,7 +31,7 @@ import org.junit.Test;
 public class AbandonCommandTest extends CommandTestWithSimpleReview {
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.AbandonCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.AbandonCommand#call()}.
 	 */
 	@Test
 	public void testCall() {

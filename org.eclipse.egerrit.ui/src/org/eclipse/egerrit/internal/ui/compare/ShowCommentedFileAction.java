@@ -13,8 +13,8 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.util.function.Supplier;
 
-import org.eclipse.egerrit.ui.EGerritImages;
-import org.eclipse.egerrit.ui.internal.utils.Messages;
+import org.eclipse.egerrit.internal.ui.EGerritImages;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 

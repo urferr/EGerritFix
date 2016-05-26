@@ -15,17 +15,17 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.ChangeOption;
-import org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand;
-import org.eclipse.egerrit.core.command.GetChangeCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.ChangeOption;
+import org.eclipse.egerrit.internal.core.command.DeleteDraftRevisionCommand;
+import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.emf.common.util.EMap;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.DeleteDraftRevisionCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.DeleteDraftRevisionCommand}
  *
  * @since 1.0
  */

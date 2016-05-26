@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.eclipse.egerrit.ui.editors.ChangeDetailEditor"
+            class="org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor"
             default="false"
             extensions="mpe"
             icon="icons/EGerritcolor16.png"
@@ -77,15 +77,15 @@
   <extension point="org.eclipse.ui.ide.markerResolution">
 	<markerResolutionGenerator
        markerType="org.eclipse.egerrit.ui.commentMarker"
-       class="org.eclipse.egerrit.ui.editors.QuickFixer"/>
+       class="org.eclipse.egerrit.internal.ui.editors.QuickFixer"/>
    </extension>
 
 <extension point="org.eclipse.ui.menus">
 <menuContribution
-    class="org.eclipse.egerrit.ui.editors.MarkerContributionFactory"
+    class="org.eclipse.egerrit.internal.ui.editors.MarkerContributionFactory"
     locationURI="popup:#AbstractTextEditorRulerContext?after=additions">
   <dynamic
-         class="org.eclipse.egerrit.ui.editors.MarkerMenuContribution"
+         class="org.eclipse.egerrit.internal.ui.editors.MarkerMenuContribution"
          id="org.eclipse.egerrit.ui.editors.MarkerMenuContribution">
   </dynamic>
 </menuContribution>

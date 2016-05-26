@@ -15,15 +15,15 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.command.SetTopicCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.TopicInput;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.command.SetTopicCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.TopicInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.SetTopicCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.SetTopicCommand}
  *
  * @since 1.0
  */

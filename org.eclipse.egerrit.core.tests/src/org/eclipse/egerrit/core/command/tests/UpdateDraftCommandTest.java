@@ -15,16 +15,16 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.CreateDraftCommand;
-import org.eclipse.egerrit.core.command.UpdateDraftCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.CommentInput;
+import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
+import org.eclipse.egerrit.internal.core.command.UpdateDraftCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.CommentInput;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.UpdateDraftCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.UpdateDraftCommand}
  *
  * @since 1.0
  */

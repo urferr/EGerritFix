@@ -19,15 +19,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
-import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.GerritServerInformation;
-import org.eclipse.egerrit.core.command.ChangeState;
-import org.eclipse.egerrit.core.command.ChangeStatus;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritFactory;
+import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.GerritServerInformation;
+import org.eclipse.egerrit.internal.core.command.ChangeState;
+import org.eclipse.egerrit.internal.core.command.ChangeStatus;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 

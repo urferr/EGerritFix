@@ -16,14 +16,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.AddReviewerCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
-import org.eclipse.egerrit.core.rest.AddReviewerInput;
-import org.eclipse.egerrit.core.rest.AddReviewerResult;
+import org.eclipse.egerrit.internal.core.command.AddReviewerCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.rest.AddReviewerInput;
+import org.eclipse.egerrit.internal.core.rest.AddReviewerResult;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.AddReviewerCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.AddReviewerCommand}
  *
  * @since 1.0
  */
@@ -31,7 +31,7 @@ import org.junit.Test;
 public class AddReviewerCommandTest extends CommandTestWithSimpleReview {
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.AddReviewerCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.AddReviewerCommand#call()}.
 	 */
 	@Test
 	public void testCall() {
@@ -54,7 +54,7 @@ public class AddReviewerCommandTest extends CommandTestWithSimpleReview {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.AddReviewerCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.AddReviewerCommand#call()}.
 	 */
 //	@Test
 	public void testAddGroupCall() {
@@ -75,7 +75,7 @@ public class AddReviewerCommandTest extends CommandTestWithSimpleReview {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.AddReviewerCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.AddReviewerCommand#call()}.
 	 */
 	@Test
 	public void testAddUndefinedReviewerCall() {

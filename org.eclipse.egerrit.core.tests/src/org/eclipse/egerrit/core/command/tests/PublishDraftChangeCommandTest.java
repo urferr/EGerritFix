@@ -15,15 +15,15 @@ package org.eclipse.egerrit.core.command.tests;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.eclipse.egerrit.core.command.PublishDraftChangeCommand;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.command.PublishDraftChangeCommand}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand}
  *
  * @since 1.0
  */
@@ -36,7 +36,7 @@ public class PublishDraftChangeCommandTest extends CommandTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.command.PublishDraftChangeCommand#call()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand#call()}.
 	 */
 	@Test
 	public void testCall() {

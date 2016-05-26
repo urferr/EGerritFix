@@ -9,7 +9,7 @@
          point="org.eclipse.ui.views">
       <view
             category="org.eclipse.egit.ui.GitCategory"
-            class="org.eclipse.egerrit.dashboard.ui.views.GerritTableView"
+            class="org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView"
             icon="icons/view16/EGerritcolor16.png"
             id="org.eclipse.egerrit.dashboard.ui.views.GerritTableView"
             name="%view.name">
@@ -44,7 +44,7 @@
       <menuContribution
             locationURI="menu:org.eclipse.egerrit.dashboard.dropdown.toolbar.initiateGerrit">
           <dynamic
-                class="org.eclipse.egerrit.dashboard.ui.internal.menus.DynamicMenuAddition"
+                class="org.eclipse.egerrit.internal.dashboard.ui.menus.DynamicMenuAddition"
                 id="org.eclipse.egerrit.dashboard.ui.dynamic1">
           </dynamic>
           <separator
@@ -317,62 +317,62 @@
          point="org.eclipse.ui.handlers">
 
       <handler
-            class="org.eclipse.egerrit.dashboard.ui.internal.commands.AddGerritSiteHandler"
+            class="org.eclipse.egerrit.internal.dashboard.ui.commands.AddGerritSiteHandler"
             commandId="org.eclipse.egerrit.dashboard.ui.addGerritSite">
       </handler>
       <handler
-            class="org.eclipse.egerrit.dashboard.ui.RefreshDashboardHandler"
+            class="org.eclipse.egerrit.internal.dashboard.ui.RefreshDashboardHandler"
             commandId="org.eclipse.egerrit.dashboard.refresh">
       </handler>
       <handler
-            class="org.eclipse.egerrit.dashboard.ui.internal.commands.SelectReviewSiteHandler"
+            class="org.eclipse.egerrit.internal.dashboard.ui.commands.SelectReviewSiteHandler"
             commandId="org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit">
       </handler>
 
          <!-- The following are the handlers under the "All" sub-menu
          -->
 		 <handler
-		    	class="org.eclipse.egerrit.dashboard.ui.internal.commands.all.AllOpenReviewsHandler"
+		    	class="org.eclipse.egerrit.internal.dashboard.ui.commands.all.AllOpenReviewsHandler"
 		    	commandId="org.eclipse.egerrit.dashboard.ui.allOpenReviews">
 		  </handler>
 		  <handler
-		    	class="org.eclipse.egerrit.dashboard.ui.internal.commands.all.AllMergedReviewsHandler"
+		    	class="org.eclipse.egerrit.internal.dashboard.ui.commands.all.AllMergedReviewsHandler"
 		    	commandId="org.eclipse.egerrit.dashboard.ui.allMergedReviews">
 		  </handler>
 		  <handler
-		    	class="org.eclipse.egerrit.dashboard.ui.internal.commands.all.AllAbandonedReviewsHandler"
+		    	class="org.eclipse.egerrit.internal.dashboard.ui.commands.all.AllAbandonedReviewsHandler"
 		    	commandId="org.eclipse.egerrit.dashboard.ui.allAbandonedReviews">
 		  </handler>
           <!-- The following are the handlers under the "My" sub-menu
          -->
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyChangesReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyChangesReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myChanges">
 	      </handler>
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyDraftsReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyDraftsReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myDrafts">
 	      </handler>
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyWatchedChangesReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyWatchedChangesReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myWatchedChanges">
 	      </handler>
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyStarredChangesReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyStarredChangesReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myStarredChanges">
 	      </handler>
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyDraftCommentsReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyDraftCommentsReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myDraftComments">
 	      </handler>
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.my.MyRecentlyClosedChangesReviewsHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.my.MyRecentlyClosedChangesReviewsHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.myRecentlyClosedReviewsChanges">
 	      </handler>	      
           <!-- The following are the handlers under the "Documentation" sub-menu
          -->
 	      <handler
-             	class="org.eclipse.egerrit.dashboard.ui.internal.commands.documentation.SearchingHandler"
+             	class="org.eclipse.egerrit.internal.dashboard.ui.commands.documentation.SearchingHandler"
              	commandId="org.eclipse.egerrit.dashboard.ui.documentationSearching">
 	      </handler>
 
@@ -386,7 +386,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashboardPreferencePage"
+            class="org.eclipse.egerrit.internal.dashboard.ui.preferences.GerritDashboardPreferencePage"
             id="org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"
             category="org.eclipse.team.ui.TeamPreferences"
             name="Gerrit Servers">

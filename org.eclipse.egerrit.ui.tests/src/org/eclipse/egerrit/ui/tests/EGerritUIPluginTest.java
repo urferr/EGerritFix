@@ -14,7 +14,7 @@ package org.eclipse.egerrit.ui.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import org.eclipse.egerrit.ui.EGerritUIPlugin;
+import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.junit.Test;
 
 /**

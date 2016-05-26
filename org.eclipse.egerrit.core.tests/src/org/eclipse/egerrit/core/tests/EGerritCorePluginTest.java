@@ -18,13 +18,13 @@ import static org.junit.Assert.assertNull;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.egerrit.core.EGerritCorePlugin;
+import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.EGerritCorePlugin}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin}
  *
  * @since 1.0
  */
@@ -86,7 +86,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#getDefault()}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#getDefault()}
 	 */
 	@Test
 	public void testGetDefault() {
@@ -103,7 +103,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#log(org.eclipse.core.runtime.IStatus)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#log(org.eclipse.core.runtime.IStatus)}
 	 */
 	@Test
 	public void testLog() {
@@ -125,7 +125,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#logInfo(java.lang.String)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logInfo(java.lang.String)}
 	 */
 	@Test
 	public void testLogInfoString() {
@@ -152,7 +152,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#logInfo(java.lang.String, java.lang.Throwable)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logInfo(java.lang.String, java.lang.Throwable)}
 	 */
 	@Test
 	public void testLogInfoStringThrowable() {
@@ -184,7 +184,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#logWarning(java.lang.String)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logWarning(java.lang.String)}
 	 */
 	@Test
 	public void testLogWarningString() {
@@ -211,7 +211,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.EGerritCorePlugin#logWarning(java.lang.String, java.lang.Throwable)}
+	 * {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logWarning(java.lang.String, java.lang.Throwable)}
 	 */
 	@Test
 	public void testLogWarningStringThrowable() {
@@ -243,7 +243,7 @@ public class EGerritCorePluginTest implements ILogListener {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.EGerritCorePlugin#logError(java.lang.String)}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logError(java.lang.String)}
 	 */
 	@Test
 	public void testLogErrorString() {
@@ -271,7 +271,7 @@ public class EGerritCorePluginTest implements ILogListener {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.EGerritCorePlugin#logError(java.lang.String, java.lang.Throwable)}
+	 * {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logError(java.lang.String, java.lang.Throwable)}
 	 */
 	@Test
 	public void testLogErrorStringThrowable() {

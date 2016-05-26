@@ -20,8 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,11 +81,11 @@ public class GerritRepositoryTest {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.core.GerritRepository#GerritRepository(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)}
-	 * and {@link org.eclipse.egerrit.core.GerritRepository#getProtocol()} and
-	 * {@link org.eclipse.egerrit.core.GerritRepository#getHost()} and
-	 * {@link org.eclipse.egerrit.core.GerritRepository#getPort()}. and
-	 * {@link org.eclipse.egerrit.core.GerritRepository#getUser()}.
+	 * {@link org.eclipse.egerrit.internal.core.GerritRepository#GerritRepository(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)}
+	 * and {@link org.eclipse.egerrit.internal.core.GerritRepository#getProtocol()} and
+	 * {@link org.eclipse.egerrit.internal.core.GerritRepository#getHost()} and
+	 * {@link org.eclipse.egerrit.internal.core.GerritRepository#getPort()}. and
+	 * {@link org.eclipse.egerrit.internal.core.GerritRepository#getUser()}.
 	 */
 	@Test
 	public void testGerritRepository() {
@@ -98,7 +98,7 @@ public class GerritRepositoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritRepository#validateConnection()}
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritRepository#validateConnection()}
 	 */
 	@Test
 	public void testValidateConnection() {
@@ -110,7 +110,7 @@ public class GerritRepositoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritRepository#validateConnection()} Failed case
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritRepository#validateConnection()} Failed case
 	 */
 	@Test
 	public void testValidateConnectionFailed() {
@@ -122,7 +122,7 @@ public class GerritRepositoryTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritRepository#getVersion()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritRepository#getVersion()}.
 	 */
 	@Test
 	public void testGetVersion() {
@@ -139,7 +139,7 @@ public class GerritRepositoryTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritRepository#getURIBuilder()} normal case
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritRepository#getURIBuilder()} normal case
 	 */
 	@Test
 	public void testGetGenericURI() {
@@ -159,7 +159,7 @@ public class GerritRepositoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritRepository#getURIBuilder()} with invalid format
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritRepository#getURIBuilder()} with invalid format
 	 */
 	@Test
 	public void testGetGenericURIFailed() {

@@ -16,8 +16,8 @@ import static org.junit.Assert.fail;
 
 import java.util.Map;
 
-import org.eclipse.egerrit.core.command.GetRevisionActionsCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.command.GetRevisionActionsCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.junit.Test;
 

@@ -18,20 +18,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
-import org.eclipse.egerrit.core.GerritClient;
-import org.eclipse.egerrit.core.GerritCredentials;
-import org.eclipse.egerrit.core.GerritFactory;
-import org.eclipse.egerrit.core.GerritRepository;
-import org.eclipse.egerrit.core.Gerrit_2_9;
-import org.eclipse.egerrit.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritCredentials;
+import org.eclipse.egerrit.internal.core.GerritFactory;
+import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.Gerrit_2_9;
+import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
 /**
- * Test suite for {@link org.eclipse.egerrit.core.Gerrit_2_9}
+ * Test suite for {@link org.eclipse.egerrit.internal.core.Gerrit_2_9}
  *
  * @since 1.0
  */
@@ -66,8 +66,8 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.core.GerritRepository)}
-	 * . and {@link org.eclipse.egerrit.core.GerritClient#getRepository()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * . and {@link org.eclipse.egerrit.internal.core.GerritClient#getRepository()}.
 	 */
 	@Test
 	public void testGerrit_2_9() {
@@ -93,7 +93,7 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.core.GerritClient#queryChanges()}.
+	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritClient#queryChanges()}.
 	 */
 	@Test
 	public void testQueryChanges() {
