@@ -13,7 +13,6 @@ package org.eclipse.egerrit.internal.ui.table;
 
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.RelatedChangesTableModel;
-import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -52,9 +51,6 @@ public class UIRelatedChangesTable {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
-
-		// Set the content sorter
-		ReviewTableSorter.bind(fViewer);
 
 		return fViewer;
 	}
