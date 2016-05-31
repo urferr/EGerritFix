@@ -780,10 +780,6 @@ public class ChangeDetailEditor extends EditorPart {
 
 							IEditorPart editor = activePage.getActiveEditor();
 							activePage.closeEditor(editor, false);
-
-							ModelLoader loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
-							loader.loadBasicInformation();
-							loader.dispose();
 						} catch (EGerritException e1) {
 							EGerritCorePlugin
 									.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());

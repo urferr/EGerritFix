@@ -92,7 +92,7 @@ public class PatchSetHandlerProvider {
 					return;
 				}
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)) {
-					System.err.println("CHANGE to " + msg.getNewValue());
+//					System.err.println("CHANGE to " + msg.getNewValue()); //$NON-NLS-1$
 				}
 				// ignore
 			}
