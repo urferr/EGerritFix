@@ -93,6 +93,7 @@ public class HistoryTabView {
 		SashForm sashFormHorizon = new SashForm(sashForm, SWT.HORIZONTAL);
 
 		msgTextData = new TextViewerWithLinks(sashFormHorizon, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
+		msgTextData.setEditable(false);
 		tableUIFiles = new UIFilesTable(gerritClient, changeInfo);
 		tableUIFiles.createTableViewerSection(sashFormHorizon);
 		//Set the % of display data.40% table and 60% for the comment message
