@@ -91,4 +91,135 @@
 </menuContribution>
 </extension>
 
+<extension
+         point="org.eclipse.ui.commands">
+         <command
+	            id="org.eclipse.egerrit.internal.ui.compare.selectLeftPatchSet"
+	            categoryId="org.eclipse.compare.ui.category.compare"
+	            name="%nextLeftPatchset">
+	      </command>
+          <command
+	            id="org.eclipse.egerrit.internal.ui.compare.selectRightPatchSet"
+	            categoryId="org.eclipse.compare.ui.category.compare"
+	            name="%nextRightPatchset">
+	      </command>
+          <command
+                id="org.eclipse.egerrit.internal.ui.compare.selectNextFile"
+                categoryId="org.eclipse.compare.ui.category.compare"
+                name="%nextfile">
+          </command>	   
+          <command
+                id="org.eclipse.egerrit.internal.ui.compare.selectPreviousFile"
+                categoryId="org.eclipse.compare.ui.category.compare"
+                name="%previousfile">
+          </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.editors.showNextPatchSet"
+                name="%nextPatchset">
+          </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.compare.showFilePath"
+                name="%showFilePath">
+          </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.compare.showCommentedFile"
+                name="%showCommentedFile">
+          </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.compare.reply"
+                name="%reply">
+          </command>
+</extension>
+<extension
+       point="org.eclipse.ui.handlers">
+	   <handler
+	            class="org.eclipse.egerrit.internal.ui.compare.SelectNextPatchSetHandler"
+	            commandId="org.eclipse.egerrit.internal.ui.compare.selectLeftPatchSet">
+	   </handler>
+	   <handler
+	            class="org.eclipse.egerrit.internal.ui.compare.SelectNextPatchSetHandler"
+	            commandId="org.eclipse.egerrit.internal.ui.compare.selectRightPatchSet">
+	   </handler>
+       <handler
+                class="org.eclipse.egerrit.internal.ui.compare.NextPreviousFileHandler"
+                commandId="org.eclipse.egerrit.internal.ui.compare.selectNextFile">
+       </handler>
+       <handler
+                class="org.eclipse.egerrit.internal.ui.compare.NextPreviousFileHandler"
+                commandId="org.eclipse.egerrit.internal.ui.compare.selectPreviousFile">
+       </handler>
+       <handler
+             class="org.eclipse.egerrit.internal.ui.editors.ShowNextPatchSetHandler"
+             commandId="org.eclipse.egerrit.internal.ui.editors.showNextPatchSet">
+       </handler>
+       <handler
+             class="org.eclipse.egerrit.internal.ui.compare.ShowFilePathHandler"
+             commandId="org.eclipse.egerrit.internal.ui.compare.showFilePath">
+       </handler>
+       <handler
+             class="org.eclipse.egerrit.internal.ui.compare.ShowCommentedFileHandler"
+             commandId="org.eclipse.egerrit.internal.ui.compare.showCommentedFile">
+       </handler>
+       <handler
+             class="org.eclipse.egerrit.internal.ui.compare.ReplyHandler"
+             commandId="org.eclipse.egerrit.internal.ui.compare.reply">
+       </handler>
+</extension>
+<extension
+       point="org.eclipse.ui.bindings">
+	   <key
+	       commandId="org.eclipse.egerrit.internal.ui.compare.selectLeftPatchSet"
+	       contextId="org.eclipse.compare.compareEditorScope"
+	       schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+	       sequence="M1+1">
+        </key>
+	   	   <key
+	       commandId="org.eclipse.egerrit.internal.ui.compare.selectRightPatchSet"
+	       contextId="org.eclipse.compare.compareEditorScope"
+	       schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+	       sequence="M1+3">
+	   </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.editors.showNextPatchSet"
+              contextId="org.eclipse.ui.contexts.window"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+7">
+	   </key>
+        <key
+            commandId="org.eclipse.egerrit.internal.ui.compare.selectNextFile"
+            contextId="org.eclipse.compare.compareEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+5">
+        </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.compare.showFilePath"
+              contextId="org.eclipse.compare.compareEditorScope"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+8">
+        </key>
+        <key
+            commandId="org.eclipse.egerrit.internal.ui.compare.selectPreviousFile"
+            contextId="org.eclipse.compare.compareEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+        </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.compare.showCommentedFile"
+              contextId="org.eclipse.compare.compareEditorScope"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+9">
+        </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.compare.reply"
+              contextId="org.eclipse.compare.compareEditorScope"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+0">
+        </key>
+</extension>
+
+
 </plugin>

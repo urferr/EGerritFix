@@ -13,10 +13,8 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.EGerritImages;
-import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.widgets.Label;
 
 public class SwitchPatchAction extends Action {
 	private GerritMultipleInput input;
@@ -25,18 +23,11 @@ public class SwitchPatchAction extends Action {
 
 	private String inputToSwitchTo; //The string that will be passed to change the compare editor input
 
-	private Label labelToUpdate; //The text area that we update to present name of the last selected item
-
-	private String shortLabel; //text to sho in the labelToUpdate
-
-	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, RevisionInfo revision, Label labelToUpdate,
-			boolean left) {
+	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, RevisionInfo revision, boolean left) {
 		super();
 		this.input = gerritMultipleInput;
 		this.leftSide = left;
 		this.inputToSwitchTo = revision.getId();
-		this.labelToUpdate = labelToUpdate;
-		this.shortLabel = Messages.SwitchPatchAction_0 + revision.get_number();
 		boolean hasComments = revision.isCommented();
 		setText(UIUtils.revisionToString(revision));
 		if (hasComments) {
@@ -44,14 +35,11 @@ public class SwitchPatchAction extends Action {
 		}
 	}
 
-	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, String target, Label labelToUpdate,
-			boolean left) {
+	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, String target, boolean left) {
 		super(target);
 		this.input = gerritMultipleInput;
 		this.leftSide = left;
 		this.inputToSwitchTo = target;
-		this.labelToUpdate = labelToUpdate;
-		this.shortLabel = target;
 	}
 
 	@Override
@@ -61,7 +49,6 @@ public class SwitchPatchAction extends Action {
 		} else {
 			SwitchPatchAction.this.input.switchInputs(null, inputToSwitchTo);
 		}
-		labelToUpdate.setText(shortLabel);
 	}
 
 }

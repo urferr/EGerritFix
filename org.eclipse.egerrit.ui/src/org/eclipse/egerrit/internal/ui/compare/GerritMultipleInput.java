@@ -184,6 +184,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			//Compute the diffs
 			prepareInput(new NullProgressMonitor());
 			upperSection.setInput(root);
+			if (left != null) {
+				upperSection.setLeftLabel(GerritCompareHelper.resolveShortName(changeInfo, left));
+			}
+			upperSection.setRightLabel(GerritCompareHelper.resolveShortName(changeInfo, right));
 		} catch (InvocationTargetException | InterruptedException e) {
 			logger.error("Problem while switching input to " + left + " " + right, e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -466,7 +470,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	private WeakInterningHashSet<SourceViewer> decoratedViewers = new WeakInterningHashSet<>(3);
 
-	private CompareViewerPane upperSection;
+	private CompareUpperSection upperSection;
 
 	private void setupCommentColorer(Viewer contentViewer, int side) {
 		if (!(contentViewer instanceof TextMergeViewer)) {
@@ -682,5 +686,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	public String getRightSide() {
 		return rightSide;
+	}
+
+	public CompareUpperSection getUpperSection() {
+		return upperSection;
+
 	}
 }

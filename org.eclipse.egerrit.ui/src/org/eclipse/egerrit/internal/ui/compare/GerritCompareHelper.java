@@ -13,6 +13,10 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.nio.file.Paths;
 
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
+
 /**
  * Helper class used in the compare editor
  */
@@ -26,5 +30,13 @@ class GerritCompareHelper {
 	//Given a filePath, returns the filename
 	static String extractFilename(String filePath) {
 		return Paths.get(filePath).getFileName().toString();
+	}
+
+	static String resolveShortName(ChangeInfo changeInfo, String toResolve) {
+		RevisionInfo match = changeInfo.getRevisions().get(toResolve);
+		if (match != null) {
+			return Messages.CompareUpperSection_PatchSet + match.get_number();
+		}
+		return toResolve;
 	}
 }

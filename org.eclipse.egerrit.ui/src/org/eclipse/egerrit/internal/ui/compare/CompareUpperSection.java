@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.CompareViewerSwitchingPane;
-import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -31,12 +30,12 @@ import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
-import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -65,6 +64,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
+import org.eclipse.ui.services.IServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,17 +88,11 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		super(parent, style, visibility);
 		compareInput = (GerritMultipleInput) cei;
 		//These two values can't be set in createTopLeft() because when it gets called fCompareEditorInput is not set yet
-		leftPatch.setText(resolveShortName(compareInput.getLeftSide()));
-		rightPatch.setText(resolveShortName(compareInput.getRightSide()));
+		leftPatch.setText(
+				GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getLeftSide()));
+		rightPatch.setText(
+				GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getRightSide()));
 		createViewer(this);
-	}
-
-	private String resolveShortName(String toResolve) {
-		RevisionInfo match = compareInput.getChangeInfo().getRevisions().get(toResolve);
-		if (match != null) {
-			return Messages.CompareUpperSection_PatchSet + match.get_number();
-		}
-		return toResolve;
 	}
 
 	private CompareConfiguration getCompareConfiguration() {
@@ -145,16 +142,43 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		viewer = new DiffTreeViewer(new Tree(parent, SWT.FULL_SELECTION), getCompareConfiguration()) {
 			@Override
 			protected void createToolItems(ToolBarManager toolbarManager) {
-				// ignore
-				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.NEXT_CHANGE, //$NON-NLS-1$
-						compareInput));
-				toolbarManager.appendToGroup("navigation", new NextPreviousFileAction(INavigatable.PREVIOUS_CHANGE, //$NON-NLS-1$
-						compareInput));
-				toolbarManager.appendToGroup("modes", new ShowFilePathAction(() -> viewer)); //$NON-NLS-1$
-				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer)); //$NON-NLS-1$
+				IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 
-				toolbarManager.appendToGroup("merge", //$NON-NLS-1$
-						new ReplyAction(compareInput, () -> viewer));
+				CommandContributionItemParameter replyContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.reply", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				replyContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.REPLY);
+
+				toolbarManager.add(new CommandContributionItem(replyContributionParameter));
+
+				CommandContributionItemParameter showCommentContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showCommentedFile", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				showCommentContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER);
+
+				toolbarManager.add(new CommandContributionItem(showCommentContributionParameter));
+
+				CommandContributionItemParameter showFileContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showFilePath", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				showFileContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH);
+
+				toolbarManager.add(new CommandContributionItem(showFileContributionParameter));
+
+				CommandContributionItemParameter nextContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectNextFile", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				nextContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.DOWN_ARROW);
+
+				toolbarManager.add(new CommandContributionItem(nextContributionParameter));
+
+				CommandContributionItemParameter previousContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectPreviousFile", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				previousContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.UP_ARROW);
+
+				toolbarManager.add(new CommandContributionItem(previousContributionParameter));
+
 			}
 		};
 		//Set a content provider
@@ -193,11 +217,11 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	}
 
-	private void fillMenuItemForChangeInfo(MenuManager menu, Label labelToUpdate, boolean side) {
+	private void fillMenuItemForChangeInfo(MenuManager menu, boolean side) {
 		ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(
 				compareInput.getChangeInfo().getRevisions().values());
 		revisions.sort((o1, o2) -> o2.get_number() - o1.get_number());
-		revisions.stream().forEach(rev -> menu.add(new SwitchPatchAction(compareInput, rev, labelToUpdate, side)));
+		revisions.stream().forEach(rev -> menu.add(new SwitchPatchAction(compareInput, rev, side)));
 	}
 
 	@Override
@@ -228,9 +252,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
-				fillMenuItemForChangeInfo(mgr, leftPatch, true);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", leftPatch, true)); //$NON-NLS-1$
-				mgr.add(new SwitchPatchAction(compareInput, "BASE", leftPatch, true)); //$NON-NLS-1$
+				fillMenuItemForChangeInfo(mgr, true);
+				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", true)); //$NON-NLS-1$
+				mgr.add(new SwitchPatchAction(compareInput, "BASE", true)); //$NON-NLS-1$
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
@@ -258,8 +282,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
-				fillMenuItemForChangeInfo(mgr, rightPatch, false);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", rightPatch, false)); //$NON-NLS-1$
+				fillMenuItemForChangeInfo(mgr, false);
+				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", false)); //$NON-NLS-1$
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
@@ -381,5 +405,18 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		column.setResizable(tableInfo.getResize());
 		column.setMoveable(tableInfo.getMoveable());
 		return treeColumViewer;
+	}
+
+	public void setLeftLabel(String left) {
+		leftPatch.setText(left);
+	}
+
+	public void setRightLabel(String right) {
+		rightPatch.setText(right);
+	}
+
+	public DiffTreeViewer getDiffTreeViewer() {
+		return viewer;
+
 	}
 }
