@@ -49,10 +49,13 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.core.net.proxy.IProxyChangeEvent;
+import org.eclipse.core.net.proxy.IProxyChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 @SuppressWarnings("restriction")
-public class GerritHttpClient {
+public class GerritHttpClient implements IProxyChangeListener {
 
 	private static Logger logger = LoggerFactory.getLogger(GerritHttpClient.class);
 
@@ -105,6 +108,16 @@ public class GerritHttpClient {
 	 */
 	public GerritHttpClient(GerritRepository repository, GerritCredentials creds) {
 		fRepository = repository;
+		fCredentials = creds;
+		createHttpClient();
+		watchProxyChange();
+	}
+
+	private void watchProxyChange() {
+		EGerritCorePlugin.getDefault().getProxyService().addProxyChangeListener(this);
+	}
+
+	private void createHttpClient() {
 		try {
 			// Basic builder
 			HttpClientBuilder builder = HttpClients.custom()
@@ -115,6 +128,11 @@ public class GerritHttpClient {
 			HttpHost proxy = fRepository.getProxy();
 			if (proxy != null) {
 				builder.setProxy(proxy);
+			} else {
+				HttpHost proxyHost = EGerritCorePlugin.getDefault().getProxyForHost(fRepository.getHostname());
+				if (proxyHost != null) {
+					builder.setProxy(proxyHost);
+				}
 			}
 
 			// Handle self-signed certificates (SSC)
@@ -124,49 +142,42 @@ public class GerritHttpClient {
 			builder.setSSLSocketFactory(sslsf);
 
 			// Handle user credentials
-			if (creds != null && creds.getUsername() != null && !creds.getUsername().isEmpty()) {
-				fCredentials = creds;
+			if (fCredentials != null && fCredentials.getUsername() != null && !fCredentials.getUsername().isEmpty()) {
 				AuthScope scope = new AuthScope(fRepository.getHost());
 				fCredentialsProvider.setCredentials(scope, fCredentials.getGerritCredentials());
 				builder.setDefaultCredentialsProvider(fCredentialsProvider);
 			}
 			// Build the client
-			fHttpClient = builder.build();
+			CloseableHttpClient newlyCreatedClient = builder.build();
+			synchronized (this) {
+				fHttpClient = newlyCreatedClient;
+			}
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			e.printStackTrace();
 		}
 	}
 
-	// ------------------------------------------------------------------------
-	// HttpClient mini-wrap
-	// ------------------------------------------------------------------------
-
-	public HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
-		return fHttpClient.execute(request);
+	public synchronized HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
+		synchronized (this) {
+			return fHttpClient.execute(request);
+		}
 	}
 
 	public <T> T execute(HttpUriRequest request, ResponseHandler<? extends T> responseHandler)
 			throws IOException, ClientProtocolException {
-		if (gotKey) {
-			request.addHeader(X_GERRIT_AUTHORITY_TAG, fKey);
+		synchronized (this) {
+			if (gotKey) {
+				request.addHeader(X_GERRIT_AUTHORITY_TAG, fKey);
+			}
+			return fHttpClient.execute(request, responseHandler);
 		}
-		return fHttpClient.execute(request, responseHandler);
 	}
-
-	// ------------------------------------------------------------------------
-	// Helper stuff
-	// ------------------------------------------------------------------------
 
 	public CookieStore getCookieStore() {
 		return fCookieStore;
 	}
 
-	// ------------------------------------------------------------------------
-	// Authentication
-	// ------------------------------------------------------------------------
-
 	public boolean authenticate() {
-
 		if (fCredentials == null) {
 			return true;
 		}
@@ -440,4 +451,14 @@ public class GerritHttpClient {
 		return fStatus;
 	}
 
+	@Override
+	public void proxyInfoChanged(IProxyChangeEvent event) {
+		createHttpClient();
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		//This is not ideal, but it is the best we can do to remove the listener
+		EGerritCorePlugin.getDefault().getProxyService().removeProxyChangeListener(this);
+	}
 }

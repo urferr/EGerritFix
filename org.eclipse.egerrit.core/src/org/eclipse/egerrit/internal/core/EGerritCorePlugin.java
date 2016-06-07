@@ -12,12 +12,16 @@
 
 package org.eclipse.egerrit.internal.core;
 
+import org.apache.http.HttpHost;
+import org.eclipse.core.net.proxy.IProxyData;
+import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
 /**
@@ -43,6 +47,8 @@ public class EGerritCorePlugin extends Plugin {
 	 * User agent string used to communicate with the gerrit server
 	 */
 	private String userAgent;
+
+	private BundleContext ctx;
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -88,6 +94,7 @@ public class EGerritCorePlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		setDefault(this);
+		ctx = context;
 	}
 
 	/*
@@ -100,6 +107,7 @@ public class EGerritCorePlugin extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		setDefault(null);
 		super.stop(context);
+		ctx = null;
 	}
 
 	// ------------------------------------------------------------------------
@@ -232,5 +240,29 @@ public class EGerritCorePlugin extends Plugin {
 			ret = version.toString();
 		}
 		return ret;
+	}
+
+	public IProxyService getProxyService() {
+		ServiceReference<IProxyService> sr = ctx.getServiceReference(IProxyService.class);
+		try {
+			return ctx.getService(sr);
+		} finally {
+			if (ctx != null) {
+				ctx.ungetService(sr);
+			}
+		}
+	}
+
+	public HttpHost getProxyForHost(String hostname) {
+		IProxyService proxyService = getProxyService();
+		if (proxyService == null) {
+			return null;
+		}
+		IProxyData[] potentialProxies = proxyService.getProxyDataForHost(hostname);
+		if (potentialProxies != null && potentialProxies.length > 0) {
+			IProxyData proxyData = potentialProxies[0];
+			return new HttpHost(proxyData.getHost(), proxyData.getPort(), proxyData.getType());
+		}
+		return null;
 	}
 }
