@@ -80,6 +80,8 @@ public class Messages extends NLS {
 
 	public static String GerritServerDialog_29;
 
+	public static String GerritServerDialog_30;
+
 	public static String GerritServerDialog_3;
 
 	public static String GerritServerDialog_4;

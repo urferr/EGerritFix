@@ -14,6 +14,10 @@ package org.eclipse.egerrit.internal.dashboard.ui.preferences;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritFactory;
 import org.eclipse.egerrit.internal.core.GerritRepository;
@@ -34,6 +38,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Version;
@@ -71,8 +76,7 @@ public class GerritServerDialog extends Dialog {
 
 	private final static String TITLE = Messages.GerritServerDialog_9;
 
-	private final String WANT_TO_SAVE = Messages.GerritServerDialog_10
-			+ Messages.GerritServerDialog_11;
+	private final String WANT_TO_SAVE = Messages.GerritServerDialog_10 + Messages.GerritServerDialog_11;
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -88,17 +92,19 @@ public class GerritServerDialog extends Dialog {
 
 	private Shell shell;
 
-	private static Button ok;
+	private Button ok;
 
-	private static Button cancel;
-
-	private static Button validate;
+	private Button cancel;
 
 	//The working workingCopy the dialog works against
 	private GerritServerInformation workingCopy;
 
 	//The original version passed in
 	private GerritServerInformation original;
+
+	private ProgressBar progressBar;
+
+	GerritServerDialog instance = null;
 
 	/**
 	 * Construct a new dialog, optionally displaying information of a server
@@ -110,6 +116,7 @@ public class GerritServerDialog extends Dialog {
 		if (originalInfo != null) {
 			this.workingCopy = originalInfo.clone();
 		}
+		this.instance = this;
 	}
 
 	/**
@@ -183,6 +190,15 @@ public class GerritServerDialog extends Dialog {
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtPassword.setText(workingCopy == null ? "" : (workingCopy.isPasswordProvided() ? "********" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		txtPassword.addModifyListener(passwdListener());
+
+		Label separator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+		progressBar = new ProgressBar(composite, SWT.NONE);
+		progressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(100);
+		progressBar.setVisible(false);
 
 		//Listener to validate settings when enter key is pressed
 		composite.addTraverseListener(keyTraversedListener());
@@ -289,6 +305,8 @@ public class GerritServerDialog extends Dialog {
 	protected void buttonPressed(int aButtonId) {
 		// Ok button selected
 		if (aButtonId == IDialogConstants.OK_ID) {
+			progressBar.setSelection(0); //Init the progress bar before any actions
+			progressBar.setVisible(true);
 			validateSettings();
 		}
 
@@ -304,34 +322,92 @@ public class GerritServerDialog extends Dialog {
 	 * Validate the settings entered by the user. Display an invalid message if the url is not valid.
 	 */
 	private void validateSettings() {
-		try {
-			if (validateURL()) {
-				if (validConnection()) {
-					super.setReturnCode(IDialogConstants.OK_ID);
-					super.okPressed();
-				} else {
-					//Either off line or Invalid data provided
-					if (getServerInfo().getHostId().isEmpty()) {
-						Utils.displayInformation(null, TITLE, INVALID_MESSAGE);
+		final Job job = new Job(Messages.GerritServerDialog_30) {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				// Set total number of work units
+				monitor.beginTask(Messages.GerritServerDialog_30, 100);
+				try {
+					isServerInfoReady();
+					if (validateURL(monitor)) {
+						completeURLValidation(validConnection(monitor));
 					} else {
-						boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
-						if (bool) {
-							super.setReturnCode(IDialogConstants.OK_ID);
-							super.okPressed();
+						if (!ok.isDisposed()) {
+							Utils.displayInformation(null, DIALOG_TITLE, INVALID_MESSAGE);
 						}
 					}
+				} catch (URISyntaxException e) {
+					setProgress(monitor, 100);
+					if (!ok.isDisposed()) {
+						//The dialogue is still present, so job is still running
+						Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
+					}
+				} catch (EGerritException e) {
+					setProgress(monitor, 100);
+					if (!ok.isDisposed()) {
+						//The dialogue is still present, so job is still running
+						Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
+					}
+				} finally {
+					monitor.done();
 				}
-			} else {
-				Utils.displayInformation(null, DIALOG_TITLE, INVALID_MESSAGE);
+				return Status.OK_STATUS;
 			}
-		} catch (URISyntaxException e) {
-			Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
-		} catch (EGerritException e) {
-			Utils.displayInformation(shell, DIALOG_TITLE, e.getLocalizedMessage());
+		};
+		job.setUser(false);
+		job.schedule();
+	}
+
+	private void completeURLValidation(boolean b) {
+		if (b) {
+			super.setReturnCode(IDialogConstants.OK_ID);
+			if (!ok.isDisposed()) {
+				ok.getDisplay().syncExec(new Runnable() {
+					public void run() {
+						instance.okPressed();
+					}
+				});
+			}
+		} else {
+
+			//Either off line or Invalid data provided
+			if (getServerInfo().getHostId().isEmpty()) {
+				Utils.displayInformation(null, TITLE, INVALID_MESSAGE);
+			} else {
+				boolean bool = Utils.queryInformation(null, TITLE, WANT_TO_SAVE);
+				if (bool) {
+					super.setReturnCode(IDialogConstants.OK_ID);
+					if (!ok.isDisposed()) {
+						ok.getDisplay().syncExec(new Runnable() {
+							public void run() {
+								instance.okPressed();
+							}
+						});
+					}
+				}
+			}
 		}
 	}
 
-	private boolean validConnection() throws EGerritException {
+	private void setProgress(IProgressMonitor monitor, int value) {
+		monitor.worked(value);
+		if (!progressBar.isDisposed()) {
+			progressBar.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if (!progressBar.isDisposed()) {
+						int toset = progressBar.getSelection() + value;
+						if (toset >= 100) {
+							progressBar.setVisible(false);
+						}
+						progressBar.setSelection(toset);
+					}
+				}
+			});
+		}
+	}
+
+	private boolean validConnection(IProgressMonitor monitor) throws EGerritException {
 		// Initialize
 		GerritRepository repo;
 		boolean connexionSuccesfull = false;
@@ -345,64 +421,87 @@ public class GerritServerDialog extends Dialog {
 		} catch (EGerritException e) {
 			return false;
 		}
+		setProgress(monitor, 10);
 		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_PROBLEM) {
-			throw new EGerritException(Messages.GerritServerDialog_16
-					+ workingCopy.getServerURI() + Messages.GerritServerDialog_17);
+			setProgress(monitor, 100);
+			monitor.done();
+			throw new EGerritException(
+					Messages.GerritServerDialog_16 + workingCopy.getServerURI() + Messages.GerritServerDialog_17);
 		}
 		if (!connexionSuccesfull && repo.getStatus() == GerritRepository.SSL_INVALID_ROOT_CERTIFICATE) {
-			throw new EGerritException(Messages.GerritServerDialog_18
-					+ workingCopy.getServerURI()
-					+ Messages.GerritServerDialog_19);
+			setProgress(monitor, 100);
+			monitor.done();
+			throw new EGerritException(
+					Messages.GerritServerDialog_18 + workingCopy.getServerURI() + Messages.GerritServerDialog_19);
 		}
 
+		setProgress(monitor, 10);
 		if (!connexionSuccesfull) {
-			throw new EGerritException(Messages.GerritServerDialog_20 + workingCopy.getServerURI() + Messages.GerritServerDialog_21 + INVALID_MESSAGE);
+			setProgress(monitor, 100);
+			monitor.done();
+			throw new EGerritException(Messages.GerritServerDialog_20 + workingCopy.getServerURI()
+					+ Messages.GerritServerDialog_21 + INVALID_MESSAGE);
 		}
 
+		setProgress(monitor, 10);
 		//Test the Version if it is a valid Gerrit Server
 		Version version = repo.getVersion();
 		if (version.equals(GerritRepository.NO_VERSION)) {
+			setProgress(monitor, 100);
+			monitor.done();
 			throw new EGerritException(
-					Messages.GerritServerDialog_22
-							+ GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_23);
+					Messages.GerritServerDialog_22 + GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_23);
 		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-			throw new EGerritException(Messages.GerritServerDialog_24 + workingCopy.getServerURI() + Messages.GerritServerDialog_25 + repo.getVersion()
-					+ Messages.GerritServerDialog_26 + GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_27);
+			setProgress(monitor, 100);
+			monitor.done();
+			throw new EGerritException(Messages.GerritServerDialog_24 + workingCopy.getServerURI()
+					+ Messages.GerritServerDialog_25 + repo.getVersion() + Messages.GerritServerDialog_26
+					+ GerritFactory.MINIMAL_VERSION + Messages.GerritServerDialog_27);
 		}
 
+		setProgress(monitor, 10);
 		//Second pass to verify with the available credentials
-		String password = workingCopy.getPassword();
-		if (workingCopy.isPasswordProvided()) {
-			if (workingCopy.isPasswordChanged()) {
-				password = workingCopy.getPassword();
-			} else {
-				password = original.getPassword();
-				workingCopy.setPassword(password);
+		if (workingCopy != null) {
+			String password = workingCopy.getPassword();
+			if (workingCopy.isPasswordProvided()) {
+				if (workingCopy.isPasswordChanged()) {
+					password = workingCopy.getPassword();
+				} else {
+					password = original.getPassword();
+					workingCopy.setPassword(password);
+				}
 			}
+			repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), password));
 		}
-		repo.setCredentials(new GerritCredentials(workingCopy.getUserName(), password));
-		// Run test connection with a user if provided
 
+		// Run test connection with a user if provided
+		setProgress(monitor, 10);
 		if (!repo.getHostname().isEmpty()) {
 			connexionSuccesfull = repo.connect();
 			if (!connexionSuccesfull) {
 				//Test self signed automatically if needed
 				boolean bo = true;
-				workingCopy.setSelfSigned(bo);
+				if (workingCopy != null) {
+					workingCopy.setSelfSigned(bo);
+				}
 				repo.acceptSelfSignedCerts(bo);
 				connexionSuccesfull = repo.connect();
 			}
 		}
+		setProgress(monitor, 10);
 		if (repo.getHttpClient() == null) {
-			throw new EGerritException(
-					Messages.GerritServerDialog_28 + workingCopy.getServerURI() + Messages.GerritServerDialog_29);
+			setProgress(monitor, 100);
+			monitor.done();
+			String value = workingCopy == null ? "" : workingCopy.getServerURI(); //$NON-NLS-1$
+			throw new EGerritException(Messages.GerritServerDialog_28 + value + Messages.GerritServerDialog_29);
 		}
 
 		return connexionSuccesfull;
 	}
 
-	private Boolean validateURL() throws URISyntaxException {
+	private Boolean validateURL(IProgressMonitor monitor) throws URISyntaxException {
 		Boolean b = true;
+		setProgress(monitor, 10);
 		if (workingCopy != null) {
 			if (!workingCopy.isValid()) {
 				b = false;
