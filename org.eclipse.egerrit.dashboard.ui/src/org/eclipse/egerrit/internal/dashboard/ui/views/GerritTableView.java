@@ -45,6 +45,8 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.internal.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.internal.dashboard.ui.completion.SearchContentProposalAdapter;
+import org.eclipse.egerrit.internal.dashboard.ui.completion.SearchContentProposalProvider;
 import org.eclipse.egerrit.internal.dashboard.ui.model.UIReviewTable;
 import org.eclipse.egerrit.internal.dashboard.ui.preferences.Utils;
 import org.eclipse.egerrit.internal.dashboard.ui.utils.SelectionDialog;
@@ -198,6 +200,13 @@ public class GerritTableView extends ViewPart {
 	private Composite searchSection;
 
 	private UIReviewTable reviewTable;
+
+	SearchContentProposalProvider searchProposalProvider = new SearchContentProposalProvider(() -> {
+		initializeDefaultServer();
+		if (defaultServerInfo != null) {
+			connectToServer(defaultServerInfo);
+		}
+	});
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -361,6 +370,9 @@ public class GerritTableView extends ViewPart {
 
 		//Create a SEARCH text data entry
 		fSearchRequestText = new Combo(searchComposite, SWT.NONE);
+		// Create a content proposal for the search box
+		new SearchContentProposalAdapter(fSearchRequestText, searchProposalProvider);
+
 		GridData searchGridData = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
 		searchGridData.widthHint = SEARCH_WIDTH;
 		searchGridData.minimumWidth = 100;
@@ -1025,37 +1037,11 @@ public class GerritTableView extends ViewPart {
 			}
 		}
 
+		connectToServer(repository);
+
 		// Format the query id
 		String queryString = queryType;
-
-		URI uri = null;
-		try {
-			if (!repository.getServerURI().isEmpty()) {
-				uri = new URI(repository.getServerURI());
-			}
-		} catch (URISyntaxException e) {
-			EGerritCorePlugin.logError(gerritClient != null
-					? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
-					: e.getMessage());
-
-		}
 		IStatus ret = Status.OK_STATUS;
-		if (uri != null) {
-			String SCHEME = uri.getScheme();
-			String HOST = uri.getHost();
-			int PORT = uri.getPort();
-			String PATH = uri.getPath();
-			String USER = repository.getUserName();
-			String PASSWORD = repository.getPassword();
-			GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
-			// Initialize
-			GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
-			gerritRepository.setCredentials(creds);
-			gerritRepository.setServerInfo(repository);
-			gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
-
-			gerritClient = gerritRepository.instantiateGerrit();
-		}
 		Reviews shownReviews = ModelFactory.eINSTANCE.createReviews();
 		if (gerritClient != null) {
 			// Fetch the list of reviews and pre-populate the table
@@ -1084,6 +1070,37 @@ public class GerritTableView extends ViewPart {
 		}
 		refresh(shownReviews);
 		return ret;
+	}
+
+	private void connectToServer(GerritServerInformation repository) {
+		URI uri = null;
+		try {
+			if (!repository.getServerURI().isEmpty()) {
+				uri = new URI(repository.getServerURI());
+			}
+		} catch (URISyntaxException e) {
+			EGerritCorePlugin.logError(gerritClient != null
+					? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
+					: e.getMessage());
+		}
+
+		if (uri != null) {
+			String SCHEME = uri.getScheme();
+			String HOST = uri.getHost();
+			int PORT = uri.getPort();
+			String PATH = uri.getPath();
+			String USER = repository.getUserName();
+			String PASSWORD = repository.getPassword();
+			GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
+			// Initialize
+			GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
+			gerritRepository.setCredentials(creds);
+			gerritRepository.setServerInfo(repository);
+			gerritRepository.acceptSelfSignedCerts(repository.getSelfSigned());
+
+			gerritClient = gerritRepository.instantiateGerrit();
+			searchProposalProvider.setGerritClient(gerritClient);
+		}
 	}
 
 	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {

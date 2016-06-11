@@ -56,4 +56,14 @@ public class UIUtils {
 		});
 	}
 
+	public static String quoteIfNeeded(String s) {
+		if (!s.trim().matches("^\\S*$")) { //$NON-NLS-1$
+			if (s.endsWith(" ")) { //$NON-NLS-1$
+				return "\"" + s.trim() + "\" "; //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				return "\"" + s + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+		return s;
+	}
 }
