@@ -32,8 +32,11 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
 import org.eclipse.core.internal.databinding.property.value.SelfValueProperty;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.AddReviewerCommand;
@@ -108,6 +111,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -172,6 +176,8 @@ public class DetailsTabView {
 	private DataBindingContext bindingContext = new DataBindingContext();
 
 	private ObservableCollector observableCollector;
+
+	private Job activeCompletionJob;
 
 	/**
 	 * Class that provides suggestion for completion for adding a reviwer.
@@ -422,42 +428,8 @@ public class DetailsTabView {
 				if (shouldIgnoreKeyForCompletion(event.keyCode)) {
 					return;
 				}
-				// Don't trigger the query unless we have at least 3 characters.
-				// The query will always return empty if there is not at least 3 characters
-				if (userName.getText().length() < 3) {
-					if (userName.getText().isEmpty()) {
-						reviewerProposal.setProposals(new String[0]);
-					}
-					return;
-				}
 
-				// Query the Gerrit server for matching reviewers
-				SuggestReviewersCommand command = fGerritClient.suggestReviewers(fChangeInfo.getId());
-				command.setMaxNumberOfResults(10);
-				command.setQuery(userName.getText());
-
-				SuggestReviewerInfo[] res = null;
-				try {
-					res = command.call();
-					if (res != null) {
-						List<String> proposals = new ArrayList<>(res.length);
-						for (SuggestReviewerInfo info : res) {
-							String idString;
-							if (info.getAccount() != null) {
-								idString = info.getAccount().getName() + " <" + info.getAccount().getEmail() + ">"; //$NON-NLS-1$ //$NON-NLS-2$
-							} else if (info.getGroup() != null) {
-								idString = info.getGroup().getId();
-							} else {
-								// No valid reviewer info
-								continue;
-							}
-							proposals.add(idString);
-						}
-						reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
-					}
-				} catch (EGerritException e) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
-				}
+				handleKeyReleased(userName.getText(), reviewerProposal);
 			}
 
 			@Override
@@ -474,6 +446,77 @@ public class DetailsTabView {
 		//Set the binding for this section
 		sumReviewerDataBindings();
 		return grpReviewers;
+	}
+
+	private void handleKeyReleased(String queryText, AddReviewerContentProposal reviewerProposal) {
+		// Don't trigger the query unless we have at least 3 characters.
+		// The query will always return empty if there is not at least 3 characters
+		if (queryText.length() < 3) {
+			if (queryText.isEmpty()) {
+				reviewerProposal.setProposals(new String[0]);
+				// If we had started a completion job, we no longer need it
+				if (activeCompletionJob != null) {
+					activeCompletionJob.cancel();
+					activeCompletionJob = null;
+				}
+			}
+			return;
+		}
+
+		runCompletionJob(queryText, reviewerProposal);
+	}
+
+	private void runCompletionJob(String queryText, AddReviewerContentProposal reviewerProposal) {
+		// We are starting a new completion job, so let's cancel any previous one
+		if (activeCompletionJob != null) {
+			activeCompletionJob.cancel();
+		}
+
+		// Start a job for the possibly long call so as to not block the UI thread
+		activeCompletionJob = new Job(Messages.SummaryTabView_20) {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				// Query the Gerrit server for matching reviewers
+				SuggestReviewersCommand command = fGerritClient.suggestReviewers(fChangeInfo.getId());
+				command.setMaxNumberOfResults(10);
+				command.setQuery(queryText);
+
+				SuggestReviewerInfo[] res = null;
+				try {
+					res = command.call();
+				} catch (EGerritException e) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
+				}
+
+				if (monitor.isCanceled() || res == null) {
+					return Status.OK_STATUS;
+				}
+
+				List<String> proposals = new ArrayList<>(res.length);
+				for (SuggestReviewerInfo info : res) {
+					String idString;
+					if (info.getAccount() != null) {
+						idString = info.getAccount().getName() + " <" + info.getAccount().getEmail() //$NON-NLS-1$
+								+ ">"; //$NON-NLS-1$
+					} else if (info.getGroup() != null) {
+						idString = info.getGroup().getId();
+					} else {
+						// No valid reviewer info
+						continue;
+					}
+					proposals.add(idString);
+				}
+
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
+					}
+				});
+
+				return Status.OK_STATUS;
+			}
+		};
+		activeCompletionJob.schedule();
 	}
 
 	/**
