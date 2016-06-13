@@ -240,18 +240,16 @@ public class UIUtils {
 	 * @param key
 	 * @param revInfo
 	 * @param line
+	 * @return
 	 */
-	public static void openSingleFile(Object key, GerritClient gerritClient, RevisionInfo revInfo, int line) {
+	public static boolean openSingleFile(Object key, GerritClient gerritClient, RevisionInfo revInfo, int line) {
 		FileInfo fileInfo = revInfo.getFiles().get(key);
 		if (fileInfo != null) {
 			IFile workspaceFile = new OpenCompareEditor(gerritClient, revInfo.getChangeInfo())
 					.getCorrespondingWorkspaceFile(fileInfo);
 
 			if (workspaceFile == null) {
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				MessageDialog.openError(shell, Messages.UIUtils_6,
-						Messages.UIUtils_7 + fileInfo.getPath() + Messages.UIUtils_8);
-				return;
+				return false;
 			}
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
@@ -261,5 +259,6 @@ public class UIUtils {
 				logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
 			}
 		}
+		return true;
 	}
 }

@@ -11,6 +11,8 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.table;
 
+import java.util.Iterator;
+
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -56,8 +58,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -91,8 +95,8 @@ public class UIFilesTable {
 	}
 
 	public TableViewer createTableViewerSection(Composite aParent) {
-		// Create the table viewer to maintain the list of reviews
-		fViewer = new TableViewer(aParent, TABLE_STYLE);
+		// Create the table viewer to maintain the list of review files
+		fViewer = new TableViewer(aParent, TABLE_STYLE | SWT.MULTI);
 		buildAndLayoutTable();
 		adjustTableData();//Set the properties for the files table
 
@@ -121,7 +125,6 @@ public class UIFilesTable {
 		GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gribData.minimumWidth = tableInfo[0].getWidth();
 		fViewer.getTable().setLayoutData(gribData);
-
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
 
@@ -319,15 +322,26 @@ public class UIFilesTable {
 					if (selection instanceof IStructuredSelection) {
 
 						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-
-						Object element = structuredSelection.getFirstElement();
-
-						if (element == null) {
-							return;
+						Iterator itr = structuredSelection.iterator();
+						String failedFiles = "";
+						while (itr.hasNext()) {
+							Object element = itr.next();
+							if (element == null) {
+								return;
+							}
+							FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
+							String status = fileInfo.getStatus();
+							if (status.compareTo("D") != 0) { //$NON-NLS-1$
+								if (UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), fGerritClient,
+										fileInfo.getRevision(), 0) == false) {
+									failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
+								}
+							}
 						}
-						FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-						UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), fGerritClient,
-								fileInfo.getRevision(), 0);
+						if (!failedFiles.isEmpty()) {
+							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+							UIUtils.displayInformation(shell, Messages.UIFilesTable_2, failedFiles);
+						}
 					}
 				}
 

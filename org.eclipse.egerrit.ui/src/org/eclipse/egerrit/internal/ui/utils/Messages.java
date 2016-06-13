@@ -262,6 +262,8 @@ public class Messages extends NLS {
 
 	public static String UIFilesTable_1;
 
+	public static String UIFilesTable_2;
+
 	public static String UIUtils_0;
 
 	public static String UIUtils_1;
@@ -273,12 +275,6 @@ public class Messages extends NLS {
 	public static String UIUtils_4;
 
 	public static String UIUtils_5;
-
-	public static String UIUtils_6;
-
-	public static String UIUtils_7;
-
-	public static String UIUtils_8;
 
 	public static String FileTabView_EGerriTip;
 
