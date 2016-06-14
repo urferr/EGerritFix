@@ -52,7 +52,7 @@ public class QuickFixReplyToComment extends EGerritQuickFix {
 					Messages.QuickFixReplyToComment_1 + message.toString(), "", null) { //$NON-NLS-1$
 				@Override
 				protected int getInputTextStyle() {
-					return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
+					return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
 				}
 
 				@Override

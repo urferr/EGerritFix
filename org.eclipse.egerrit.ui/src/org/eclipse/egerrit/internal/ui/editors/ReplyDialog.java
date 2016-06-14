@@ -107,7 +107,7 @@ public class ReplyDialog extends InputDialog {
 
 	@Override
 	protected int getInputTextStyle() {
-		return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL;
+		return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
 	}
 
 	@Override
