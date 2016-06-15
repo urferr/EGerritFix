@@ -890,6 +890,7 @@ public class GerritTableView extends ViewPart {
 							}
 						});
 					}
+					status = Status.OK_STATUS;
 				} catch (GerritQueryException e) {
 					status = e.getStatus();
 					logger.error(e.getMessage());
@@ -1036,6 +1037,7 @@ public class GerritTableView extends ViewPart {
 					: e.getMessage());
 
 		}
+		IStatus ret = Status.OK_STATUS;
 		if (uri != null) {
 			String SCHEME = uri.getScheme();
 			String HOST = uri.getHost();
@@ -1062,6 +1064,7 @@ public class GerritTableView extends ViewPart {
 				}
 			} else {
 				shownReviews.getAllReviews().clear();
+				ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error");
 			}
 		} else {
 			//Reset the list to prevent bad request
@@ -1074,10 +1077,11 @@ public class GerritTableView extends ViewPart {
 					setRepositoryVersionLabel("Invalid Server", "NO connection");
 				}
 			});
+			ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error");
 
 		}
 		refresh(shownReviews);
-		return Status.OK_STATUS;
+		return ret;
 	}
 
 	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {
