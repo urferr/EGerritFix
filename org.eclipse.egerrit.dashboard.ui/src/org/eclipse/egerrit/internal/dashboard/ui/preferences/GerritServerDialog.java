@@ -104,8 +104,6 @@ public class GerritServerDialog extends Dialog {
 
 	private ProgressBar progressBar;
 
-	GerritServerDialog instance = null;
-
 	/**
 	 * Construct a new dialog, optionally displaying information of a server
 	 */
@@ -116,7 +114,6 @@ public class GerritServerDialog extends Dialog {
 		if (originalInfo != null) {
 			this.workingCopy = originalInfo.clone();
 		}
-		this.instance = this;
 	}
 
 	/**
@@ -365,7 +362,7 @@ public class GerritServerDialog extends Dialog {
 			if (!ok.isDisposed()) {
 				ok.getDisplay().syncExec(new Runnable() {
 					public void run() {
-						instance.okPressed();
+						okPressed();
 					}
 				});
 			}
@@ -381,7 +378,7 @@ public class GerritServerDialog extends Dialog {
 					if (!ok.isDisposed()) {
 						ok.getDisplay().syncExec(new Runnable() {
 							public void run() {
-								instance.okPressed();
+								okPressed();
 							}
 						});
 					}
