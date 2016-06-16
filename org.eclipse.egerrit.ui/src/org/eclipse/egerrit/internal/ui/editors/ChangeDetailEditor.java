@@ -661,7 +661,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), null, fGerritClient);
+						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), null, fGerritClient, false);
 						refreshStatus();
 					}
 

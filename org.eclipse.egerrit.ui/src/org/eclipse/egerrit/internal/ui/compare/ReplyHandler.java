@@ -48,7 +48,7 @@ public class ReplyHandler extends AbstractHandler {
 				return IStatus.ERROR;
 			}
 			RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(input.getRightSide());
-			UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient);
+			UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient, true);
 			input.fireInputChange();
 		}
 		return Status.OK_STATUS;

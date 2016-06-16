@@ -100,7 +100,8 @@ public class UIUtils {
 		return text.trim();
 	}
 
-	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client) {
+	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client,
+			boolean waitForDataRefresh) {
 		String current = revisionInfo.getId();
 		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client);
 		Display.getDefault().syncExec(new Runnable() {
@@ -113,7 +114,7 @@ public class UIUtils {
 					reviewInput.setLabels(replyDialog.getRadiosSelection());
 					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 
-					CompletableFuture.runAsync(() -> {
+					CompletableFuture<Void> reloading = CompletableFuture.runAsync(() -> {
 						try {
 							SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(),
 									current);
@@ -128,6 +129,9 @@ public class UIUtils {
 						loader.loadBasicInformation();
 						loader.dispose();
 					});
+					if (waitForDataRefresh) {
+						reloading.join();
+					}
 				}
 			}
 		});

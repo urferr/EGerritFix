@@ -222,7 +222,7 @@ public class ActiveWorkspaceRevision {
 			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			UIUtils.replyToChange(shell, fRevisionInContext,
 					Messages.ActiveWorkspaceRevision_0 + fRevisionInContext.getChangeInfo().getSubject() + "\"\n\n", //$NON-NLS-1$
-					fGerritClient);
+					fGerritClient, false);
 		}
 		fRevisionInContext = null;
 		firePropertyChange("activeRevision", null, null); //$NON-NLS-1$
