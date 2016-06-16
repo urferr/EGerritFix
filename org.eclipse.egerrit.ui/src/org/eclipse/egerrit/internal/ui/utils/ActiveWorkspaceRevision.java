@@ -40,6 +40,7 @@ import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
@@ -261,11 +262,11 @@ public class ActiveWorkspaceRevision {
 		}
 		try {
 			IMarker commentMarker = workspaceFile.createMarker(EGerritCommentMarkers.COMMENT_MARKER_ID);
-			commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine());
 			if (workspaceFile == ResourcesPlugin.getWorkspace().getRoot()) {
 				commentMarker.setAttribute(IMarker.MESSAGE,
 						resourceMissingMessage(newComment) + UIUtils.formatMessageForMarkerView(newComment));
 			} else {
+				commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine());
 				commentMarker.setAttribute(IMarker.MESSAGE, UIUtils.formatMessageForMarkerView(newComment));
 			}
 			commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
@@ -281,8 +282,7 @@ public class ActiveWorkspaceRevision {
 	}
 
 	private String resourceMissingMessage(CommentInfo comment) {
-		return Messages.ActiveWorkspaceRevision_1 + ModelHelpers.getFileInfo(comment).getPath()
-				+ Messages.ActiveWorkspaceRevision_2;
+		return NLS.bind(Messages.ActiveWorkspaceRevision_1, ModelHelpers.getFileInfo(comment).getPath());
 	}
 
 	public RevisionInfo getActiveRevision() {

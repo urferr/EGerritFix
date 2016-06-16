@@ -20,8 +20,6 @@ public class Messages extends NLS {
 
 	public static String ActiveWorkspaceRevision_1;
 
-	public static String ActiveWorkspaceRevision_2;
-
 	public static String ChangeDetailEditor_0;
 
 	public static String ChangeDetailEditor_1;
