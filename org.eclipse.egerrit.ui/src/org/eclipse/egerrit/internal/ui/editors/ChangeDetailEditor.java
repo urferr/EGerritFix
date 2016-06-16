@@ -77,6 +77,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -416,9 +417,9 @@ public class ChangeDetailEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 
-				String revertMsg = Messages.ChangeDetailEditor_0 + fChangeInfo.getSubject() + "\n\n" + Messages.ChangeDetailEditor_11 //$NON-NLS-1$
-						+ fChangeInfo.getCurrent_revision() + Messages.ChangeDetailEditor_6
-						+ fChangeInfo.get_number() + '.';
+				String revertMsg = Messages.ChangeDetailEditor_0 + fChangeInfo.getSubject() + "\n\n" //$NON-NLS-1$
+						+ Messages.ChangeDetailEditor_11 + fChangeInfo.getCurrent_revision()
+						+ Messages.ChangeDetailEditor_6 + fChangeInfo.get_number() + '.';
 				RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
 				RevertInput revertInput = new RevertInput();
 				revertInput.setMessage(revertMsg);
@@ -768,7 +769,8 @@ public class ChangeDetailEditor extends EditorPart {
 					public void widgetSelected(SelectionEvent e) {
 						super.widgetSelected(e);
 						if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-								Messages.ChangeDetailEditor_28, Messages.ChangeDetailEditor_29)) {
+								Messages.ChangeDetailEditor_28,
+								NLS.bind(Messages.ChangeDetailEditor_29, fChangeInfo.getSubject()))) {
 							return;
 						}
 						DeleteDraftChangeCommand deleteDraftChangeCmd = fGerritClient
