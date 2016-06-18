@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -72,6 +73,8 @@ public abstract class BaseCommand<T> {
 	private String pathFormat;
 
 	private List<NameValuePair> queryParameters = new ArrayList<>(5);
+
+	private Header[] responseHeaders;
 
 	protected String getPath() throws UnsupportedEncodingException {
 		Set<Entry<String, String>> params = parameters.entrySet();
@@ -123,6 +126,7 @@ public abstract class BaseCommand<T> {
 						//Nothing to handle since the buffer is OK but empty
 						return null;
 					}
+					responseHeaders = response.getAllHeaders();
 					HttpEntity entity = response.getEntity();
 					BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
 					if (entity == null) {
@@ -284,5 +288,12 @@ public abstract class BaseCommand<T> {
 
 	protected GerritRepository getRepository() {
 		return server;
+	}
+
+	/**
+	 * Return the headers returned by the http response 
+	 */
+	protected Header[] getResponseHeaders() {
+		return responseHeaders;
 	}
 }

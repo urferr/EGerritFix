@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ package org.eclipse.egerrit.internal.core.command;
 
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.egerrit.internal.core.GerritRepository;
 
@@ -51,6 +52,22 @@ public class GetContentCommand extends BaseCommandChangeAndRevisionAndFile<Strin
 
 	@Override
 	protected Map<String, String> getHeaders() {
+		return null;
+	}
+
+	/**
+	 * Return the mime type of the file retrieved as part of the command
+	 */
+	public String getFileMimeType() {
+		Header[] headers = getResponseHeaders();
+		if (headers == null) {
+			return null;
+		}
+		for (Header h : headers) {
+			if (h.getName().equals("X-FYI-Content-Type")) { //$NON-NLS-1$
+				return h.getValue();
+			}
+		}
 		return null;
 	}
 }

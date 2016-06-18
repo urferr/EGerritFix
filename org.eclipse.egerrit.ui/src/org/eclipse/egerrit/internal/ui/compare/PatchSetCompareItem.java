@@ -57,6 +57,7 @@ public class PatchSetCompareItem extends CommentableCompareItem
 				if (fileContent == null) {
 					fileContent = ""; //$NON-NLS-1$
 				}
+				setFileType(command.getFileMimeType());
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e.getMessage());
 			}

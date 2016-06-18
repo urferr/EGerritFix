@@ -187,7 +187,9 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			if (left != null) {
 				upperSection.setLeftLabel(GerritCompareHelper.resolveShortName(changeInfo, left));
 			}
-			upperSection.setRightLabel(GerritCompareHelper.resolveShortName(changeInfo, right));
+			if (right != null) {
+				upperSection.setRightLabel(GerritCompareHelper.resolveShortName(changeInfo, right));
+			}
 		} catch (InvocationTargetException | InterruptedException e) {
 			logger.error("Problem while switching input to " + left + " " + right, e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
