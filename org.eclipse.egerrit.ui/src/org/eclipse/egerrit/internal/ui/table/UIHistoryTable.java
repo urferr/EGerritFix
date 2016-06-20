@@ -78,11 +78,25 @@ public class UIHistoryTable {
 				if (fViewer.getTable().getItemCount() > 0) {
 					fViewer.getTable().select(0); //initially select the first item in the table
 					fViewer.setSelection(fViewer.getSelection());
+					resizeTable(fViewer.getTable());
 					fViewer.getTable().removeListener(SWT.Paint, this);
 				}
 			}
 		};
 		return paint;
+	}
+
+	/**
+	 * Adjust the table column according to the text in each column
+	 *
+	 * @param table
+	 */
+	private void resizeTable(Table table) {
+		//Not resizing the first column since this is an icon for the comments
+		for (int index = 1; index < table.getColumnCount(); index++) {
+			TableColumn tc = table.getColumn(index);
+			tc.pack();
+		}
 	}
 
 	/**
