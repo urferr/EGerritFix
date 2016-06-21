@@ -65,7 +65,9 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 	protected byte[] loadFileContent() {
 		GetContentFromCommitCommand getContent = gerrit.getContentFromCommit(projectId, commitId, getOldPathOrPath());
 		try {
-			return Base64.decodeBase64(getContent.call());
+			String encodedFile = getContent.call();
+			setFileType(getContent.getFileMimeType());
+			return Base64.decodeBase64(encodedFile);
 		} catch (EGerritException e) {
 			logger.debug("Exception retrieving commitId", e); //$NON-NLS-1$
 		}

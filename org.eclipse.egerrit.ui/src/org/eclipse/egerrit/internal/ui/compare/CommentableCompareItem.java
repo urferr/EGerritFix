@@ -39,6 +39,8 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.team.core.IFileContentManager;
+import org.eclipse.team.core.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +69,10 @@ public abstract class CommentableCompareItem extends Document
 	private boolean dataLoaded = false; //Indicate whether the data has been retrieved from the server
 
 	private final String commentSide;
+
+	private String fileType = UNKNOWN_TYPE;
+
+	private byte[] binaryFileContent; //This field is only set when the content of the file is detected to be binary
 
 	public CommentableCompareItem(String commentSide) {
 		this.commentSide = commentSide;
@@ -105,12 +111,13 @@ public abstract class CommentableCompareItem extends Document
 
 	@Override
 	public String getType() {
-		return ITypedElement.UNKNOWN_TYPE;
+		return fileType;
 	}
 
 	@Override
 	public boolean isEditable() {
-		return !gerrit.getRepository().getServerInfo().isAnonymous() && !"D".equals(fileInfo.getStatus()); //$NON-NLS-1$
+		return !gerrit.getRepository().getServerInfo().isAnonymous() && !"D".equals(fileInfo.getStatus()) //$NON-NLS-1$
+				&& !isBinary();
 	}
 
 	@Override
@@ -201,7 +208,11 @@ public abstract class CommentableCompareItem extends Document
 	@Override
 	public InputStream getContents() throws CoreException {
 		prefetch();
-		return new ByteArrayInputStream(get().getBytes());
+		if (isBinary()) {
+			return new ByteArrayInputStream(binaryFileContent);
+		} else {
+			return new ByteArrayInputStream(get().getBytes());
+		}
 	}
 
 	private void prefetch() {
@@ -210,7 +221,12 @@ public abstract class CommentableCompareItem extends Document
 		}
 		QueryHelpers.markAsReviewed(gerrit, fileInfo);
 		loadComments();
-		mergeCommentsInText(StringUtils.newStringUtf8(loadFileContent()));
+		byte[] fileContent = loadFileContent();
+		if (!isBinary()) {
+			mergeCommentsInText(StringUtils.newStringUtf8(fileContent));
+		} else {
+			binaryFileContent = fileContent;
+		}
 		dataLoaded = true;
 	}
 
@@ -277,5 +293,23 @@ public abstract class CommentableCompareItem extends Document
 
 	public void reset() {
 		dataLoaded = false;
+	}
+
+	protected boolean isBinary() {
+		IFileContentManager manager = Team.getFileContentManager();
+		return manager.getTypeForExtension(getType()) == Team.BINARY;
+	}
+
+	public void setFileType(String fileType) {
+		if (fileType == null) {
+			this.fileType = UNKNOWN_TYPE;
+			return;
+		}
+		int lastSlash = fileType.lastIndexOf('/');
+		if (lastSlash == -1) {
+			this.fileType = fileType;
+		} else {
+			this.fileType = fileType.substring(lastSlash + 1);
+		}
 	}
 }
