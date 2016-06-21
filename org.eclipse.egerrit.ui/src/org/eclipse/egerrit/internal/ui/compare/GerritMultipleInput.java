@@ -52,20 +52,17 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.AnnotationPainter.HighlightingStrategy;
-import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GerritMultipleInput extends SaveableCompareEditorInput {
-
 	private static Logger logger = LoggerFactory.getLogger(GerritMultipleInput.class);
 
 	private GerritDiffNode root;
@@ -482,6 +479,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		//Navigate from the top level widget of the compare editor down to the right pane of the editor
 		//to participate in the coloring of the text: see method applyTextPresentation
 		TextMergeViewer textMergeViewer = (TextMergeViewer) contentViewer;
+
 		try {
 			Class<TextMergeViewer> clazz = TextMergeViewer.class;
 			Field declaredField = clazz.getDeclaredField(side == 0 ? "fLeft" : "fRight"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -529,24 +527,14 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
-		AnnotationPainter commentPainter = new AnnotationPainter(viewer, null) {
-			@Override
-			//Override to force the annotation model to be the one that contains the comments
-			protected IAnnotationModel findAnnotationModel(ISourceViewer sourceViewer) {
-				if (sourceViewer.getDocument() instanceof CommentableCompareItem) {
-					return ((CommentableCompareItem) sourceViewer.getDocument()).getEditableComments();
-				}
-				return null;
-			}
-		};
-		Object strategyID = new Object();
-		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();
-		commentPainter.addTextStyleStrategy(strategyID, paintingStrategy);
-		commentPainter.addAnnotationType(GerritCommentAnnotation.TYPE, strategyID);
-		commentPainter.setAnnotationTypeColor(GerritCommentAnnotation.TYPE,
-				Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
-		commentPainter.addHighlightAnnotationType(strategyID);
-		return commentPainter;
+		return new CommentAnnotationPainter(viewer, null);
+//		Object strategyID = new Object();
+//		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();
+//		commentPainter.addTextStyleStrategy(strategyID, paintingStrategy);
+//		commentPainter.addAnnotationType(GerritCommentAnnotation.TYPE, strategyID);
+//
+//		commentPainter.addHighlightAnnotationType(strategyID);
+//		return commentPainter;
 	}
 
 	@Override
