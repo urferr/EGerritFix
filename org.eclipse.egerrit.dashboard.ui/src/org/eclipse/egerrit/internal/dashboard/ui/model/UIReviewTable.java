@@ -183,7 +183,8 @@ public class UIReviewTable {
 						Rectangle rect = item.getBounds(columnIndex);
 						if (rect.contains(pt)) {
 							tip.setMessage(item.getText(columnIndex));
-							tip.setLocation(rect.x, rect.y);
+							Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
+							tip.setLocation(displayPos.x, displayPos.y);
 							tip.setVisible(true);
 						}
 					}
