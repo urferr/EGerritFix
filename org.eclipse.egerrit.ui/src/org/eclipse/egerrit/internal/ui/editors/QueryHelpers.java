@@ -252,7 +252,11 @@ public class QueryHelpers {
 			toRefresh.getLabels().clear();
 			toRefresh.getLabels().addAll(newChangeInfo.getLabels());
 			mergeRevisions(toRefresh, newChangeInfo); //need to be before setting the actions and the current revision
-			toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
+			if (newChangeInfo.getCurrent_revision() != null) {
+				toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
+			} else {
+				toRefresh.setCurrent_revision(getIdForMostRecentRevision(toRefresh));
+			}
 			//Re-init the userselected revision after a revert
 			if (toRefresh.getUserSelectedRevision() == null) {
 				//Initial setting for the user selected revision if not done yet
@@ -266,6 +270,17 @@ public class QueryHelpers {
 			toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			toRefresh.setUpdated(newChangeInfo.getUpdated());
 		}
+	}
+
+	private static String getIdForMostRecentRevision(ChangeInfo changeInfo) {
+		int match = -1;
+		Collection<RevisionInfo> revisions = changeInfo.getRevisions().values();
+		for (RevisionInfo rev : revisions) {
+			if (rev.get_number() > match) {
+				match = rev.get_number();
+			}
+		}
+		return changeInfo.getRevisionByNumber(match).getId();
 	}
 
 	private static void mergeRevisions(ChangeInfo toRefresh, ChangeInfo newChangeInfo) {

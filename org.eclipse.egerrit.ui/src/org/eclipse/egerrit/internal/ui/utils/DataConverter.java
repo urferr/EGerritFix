@@ -281,8 +281,9 @@ public class DataConverter {
 		return new Converter(String.class, String.class) {
 			@Override
 			public Object convert(Object fromObject) {
-				if (fromObject == null) {
-					return ""; //$NON-NLS-1$
+				if (fromObject == null || changeInfo.getUserSelectedRevision() == null) {
+					//Force this string to be long to reserve the space because the first time things get rendered there is no selection 
+					return "                               "; //$NON-NLS-1$
 				}
 				final String PATCHSET = Messages.DataConverter_5;
 				final String SEPARATOR = "/"; //$NON-NLS-1$

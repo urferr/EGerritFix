@@ -360,6 +360,9 @@ public class ChangeDetailEditor extends EditorPart {
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 						@Override
 						public Object convert(Object value) {
+							if (value == null) {
+								return false;
+							}
 							boolean state = ((Boolean) value).booleanValue();
 							if (state) {
 								return true;

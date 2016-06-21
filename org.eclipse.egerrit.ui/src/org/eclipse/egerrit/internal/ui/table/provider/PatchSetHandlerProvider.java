@@ -22,10 +22,8 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.tabs.ObservableCollector;
 import org.eclipse.egerrit.internal.ui.utils.DataConverter;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
-import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
@@ -85,18 +83,6 @@ public class PatchSetHandlerProvider {
 	 * Add binding to this patch set button
 	 */
 	private void patchsetSelectionBinding() {
-		fChangeInfo.eAdapters().add(new EContentAdapter() {
-			@Override
-			public void notifyChanged(Notification msg) {
-				if (msg.getFeature() == null) {
-					return;
-				}
-				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)) {
-//					System.err.println("CHANGE to " + msg.getNewValue()); //$NON-NLS-1$
-				}
-				// ignore
-			}
-		});
 		FeaturePath selectRevision = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION);
 		IObservableValue observerValue = EMFProperties.value(selectRevision).observe(fChangeInfo);
 

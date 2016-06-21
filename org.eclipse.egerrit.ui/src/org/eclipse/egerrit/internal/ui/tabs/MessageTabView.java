@@ -203,7 +203,7 @@ public class MessageTabView {
 		if (isEditingAllowed()) {
 			ModifyListener textModifiedListener = new ModifyListener() {
 				public void modifyText(ModifyEvent event) {
-					if (changeInfo.getUserSelectedRevision()
+					if (changeInfo.getUserSelectedRevision() != null && changeInfo.getUserSelectedRevision()
 							.getCommit()
 							.getMessage()
 							.compareTo(msgTextData.getText()) != 0) {
