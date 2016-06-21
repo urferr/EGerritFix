@@ -15,7 +15,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.time.DateUtils;
@@ -37,6 +36,8 @@ public class Utils {
 	private final static SimpleDateFormat sameDayFormatTimeOut = new SimpleDateFormat("HH:mm aa"); //$NON-NLS-1$
 
 	private final static SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
+
+	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	/**
 	 * Format the UTC time from Gerrit data structure to a new desired format
@@ -114,16 +115,29 @@ public class Utils {
 	 * @return int
 	 */
 	public static int verifyTally(String testLabels, EMap<String, LabelInfo> labels) {
-		int state = 0;
-
-		if (labels != null && labels.get(testLabels) != null) {
-			for (Map.Entry<String, LabelInfo> entry : labels.entrySet()) {
-				if (entry.getKey() != null && entry.getKey().compareTo(testLabels) == 0) {
-					LabelInfo labelInfo = entry.getValue();
-					if (labelInfo.getAll() != null) {
-						for (ApprovalInfo it : labelInfo.getAll()) {
-							if (it.getValue() != null) {
-								state = Utils.getStateValue(it.getValue(), state);
+		int state = 0, prevState;
+		if (labels == null) {
+			return state;
+		}
+		LabelInfo labelInfo = labels.get(testLabels);
+		if (labelInfo == null) {
+			return state;
+		}
+		if (labelInfo.getAll() != null) {
+			for (ApprovalInfo it : labelInfo.getAll()) {
+				if (it.getValue() != null) {
+					prevState = state;
+					state = Utils.getStateValue(it.getValue(), state);
+					if (testLabels.compareTo(CODE_REVIEW) == 0) {
+						if (state <= -1) {
+							if (state < prevState) {
+								state = Math.min(state, prevState);
+							}
+						} else if (state >= 1) {
+							if (state > prevState && !(prevState < 0)) {
+								state = Math.max(state, prevState);
+							} else if (prevState < state) {
+								state = prevState;
 							}
 						}
 					}
