@@ -144,6 +144,14 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			protected void createToolItems(ToolBarManager toolbarManager) {
 				IServiceLocator serviceLocator = PlatformUI.getWorkbench();
 
+				CommandContributionItemParameter showReviewEditorContributionParameter = new CommandContributionItemParameter(
+						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showReviewEditor", //$NON-NLS-1$
+						CommandContributionItem.STYLE_PUSH);
+				showReviewEditorContributionParameter.icon = EGerritImages
+						.getDescriptor(EGerritImages.SHOW_REVIEW_EDITOR_IMAGE);
+
+				toolbarManager.add(new CommandContributionItem(showReviewEditorContributionParameter));
+
 				CommandContributionItemParameter replyContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.reply", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);

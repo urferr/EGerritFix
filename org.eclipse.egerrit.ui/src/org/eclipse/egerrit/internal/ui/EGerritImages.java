@@ -42,6 +42,8 @@ public class EGerritImages {
 
 	public static final String CHECKED_IMAGE = "icons/greenCheck.png"; //$NON-NLS-1$
 
+	public static final String SHOW_REVIEW_EDITOR_IMAGE = "icons/back.gif"; //$NON-NLS-1$
+
 	static {
 		fgImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(AUTHOR_COMMENT));
 		fgImageRegistry.put(ANONYMOUS_COMMENT, EGerritUIPlugin.getImageDescriptor(ANONYMOUS_COMMENT));
@@ -53,6 +55,7 @@ public class EGerritImages {
 		fgImageRegistry.put(COMMENT_FILTER, EGerritUIPlugin.getImageDescriptor(COMMENT_FILTER));
 		fgImageRegistry.put(TOGGLE_FILEPATH, EGerritUIPlugin.getImageDescriptor(TOGGLE_FILEPATH));
 		fgImageRegistry.put(CHECKED_IMAGE, EGerritUIPlugin.getImageDescriptor(CHECKED_IMAGE));
+		fgImageRegistry.put(SHOW_REVIEW_EDITOR_IMAGE, EGerritUIPlugin.getImageDescriptor(SHOW_REVIEW_EDITOR_IMAGE));
 	}
 
 	/**

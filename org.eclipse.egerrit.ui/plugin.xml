@@ -133,6 +133,11 @@
                 id="org.eclipse.egerrit.internal.ui.compare.reply"
                 name="%reply">
           </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.compare.showReviewEditor"
+                name="%showReviewEditor">
+          </command>
 </extension>
 <extension
        point="org.eclipse.ui.handlers">
@@ -168,6 +173,10 @@
              class="org.eclipse.egerrit.internal.ui.compare.ReplyHandler"
              commandId="org.eclipse.egerrit.internal.ui.compare.reply">
        </handler>
+       <handler
+             class="org.eclipse.egerrit.internal.ui.compare.ShowReviewEditorHandler"
+             commandId="org.eclipse.egerrit.internal.ui.compare.showReviewEditor">
+       </handler>
 </extension>
 <extension
        point="org.eclipse.ui.bindings">
@@ -193,7 +202,7 @@
             commandId="org.eclipse.egerrit.internal.ui.compare.selectNextFile"
             contextId="org.eclipse.compare.compareEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+5">
+            sequence="M1+]">
         </key>
         <key
               commandId="org.eclipse.egerrit.internal.ui.compare.showFilePath"
@@ -205,7 +214,7 @@
             commandId="org.eclipse.egerrit.internal.ui.compare.selectPreviousFile"
             contextId="org.eclipse.compare.compareEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+6">
+            sequence="M1+[">
         </key>
         <key
               commandId="org.eclipse.egerrit.internal.ui.compare.showCommentedFile"
@@ -218,6 +227,12 @@
               contextId="org.eclipse.compare.compareEditorScope"
               schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
               sequence="M1+0">
+        </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.compare.showReviewEditor"
+              contextId="org.eclipse.compare.compareEditorScope"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+U">
         </key>
 </extension>
 
