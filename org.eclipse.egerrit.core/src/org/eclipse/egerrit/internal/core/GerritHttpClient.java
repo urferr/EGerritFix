@@ -108,8 +108,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 	 */
 	public GerritHttpClient(GerritRepository repository, GerritCredentials creds) {
 		fRepository = repository;
-		fCredentials = creds;
-		createHttpClient();
+		createHttpClient(creds);
 		watchProxyChange();
 	}
 
@@ -117,7 +116,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 		EGerritCorePlugin.getDefault().getProxyService().addProxyChangeListener(this);
 	}
 
-	private void createHttpClient() {
+	private void createHttpClient(GerritCredentials creds) {
 		try {
 			// Basic builder
 			HttpClientBuilder builder = HttpClients.custom()
@@ -142,7 +141,8 @@ public class GerritHttpClient implements IProxyChangeListener {
 			builder.setSSLSocketFactory(sslsf);
 
 			// Handle user credentials
-			if (fCredentials != null && fCredentials.getUsername() != null && !fCredentials.getUsername().isEmpty()) {
+			if (creds != null && creds.getUsername() != null && !creds.getUsername().isEmpty()) {
+				fCredentials = creds;
 				AuthScope scope = new AuthScope(fRepository.getHost());
 				fCredentialsProvider.setCredentials(scope, fCredentials.getGerritCredentials());
 				builder.setDefaultCredentialsProvider(fCredentialsProvider);
@@ -444,7 +444,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	/*
 	 * return the error code of the http connection
-
+	
 	 * @return
 	 */
 	public int getStatus() {
@@ -453,7 +453,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	@Override
 	public void proxyInfoChanged(IProxyChangeEvent event) {
-		createHttpClient();
+		createHttpClient(fCredentials);
 	}
 
 	@Override
