@@ -51,7 +51,6 @@ import org.eclipse.emf.common.util.WeakInterningHashSet;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.AnnotationPainter;
-import org.eclipse.jface.text.source.AnnotationPainter.HighlightingStrategy;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -528,13 +527,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
 		return new CommentAnnotationPainter(viewer, null);
-//		Object strategyID = new Object();
-//		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();
-//		commentPainter.addTextStyleStrategy(strategyID, paintingStrategy);
-//		commentPainter.addAnnotationType(GerritCommentAnnotation.TYPE, strategyID);
-//
-//		commentPainter.addHighlightAnnotationType(strategyID);
-//		return commentPainter;
 	}
 
 	@Override
