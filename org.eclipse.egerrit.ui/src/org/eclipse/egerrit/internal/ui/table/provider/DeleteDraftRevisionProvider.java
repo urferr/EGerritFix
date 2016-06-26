@@ -66,7 +66,7 @@ public class DeleteDraftRevisionProvider {
 			public void widgetSelected(SelectionEvent e) {
 				if (!MessageDialog.openConfirm(fDeleteDraftRevisionButton.getParent().getShell(),
 						Messages.DeleteDraft_Dialogue_Title, NLS.bind(Messages.DeleteDraft_Dialogue_Message,
-								changeInfo.getUserSelectedRevision().get_number()))) {
+								changeInfo.getUserSelectedRevision().get_number(), changeInfo.getSubject()))) {
 					return;
 				}
 				DeleteDraftRevisionCommand deleteDraftChangeCmd = gerritClient.deleteDraftRevision(changeInfo.getId(),
