@@ -150,42 +150,42 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 				showReviewEditorContributionParameter.icon = EGerritImages
 						.getDescriptor(EGerritImages.SHOW_REVIEW_EDITOR_IMAGE);
 
-				toolbarManager.add(new CommandContributionItem(showReviewEditorContributionParameter));
+				toolbarManager.appendToGroup("merge", new CommandContributionItem(showReviewEditorContributionParameter)); //$NON-NLS-1$
 
 				CommandContributionItemParameter replyContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.reply", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				replyContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.REPLY);
 
-				toolbarManager.add(new CommandContributionItem(replyContributionParameter));
+				toolbarManager.appendToGroup("merge", new CommandContributionItem(replyContributionParameter)); //$NON-NLS-1$
 
 				CommandContributionItemParameter showCommentContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showCommentedFile", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				showCommentContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER);
 
-				toolbarManager.add(new CommandContributionItem(showCommentContributionParameter));
+				toolbarManager.appendToGroup("modes",new CommandContributionItem(showCommentContributionParameter));
 
 				CommandContributionItemParameter showFileContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showFilePath", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				showFileContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH);
 
-				toolbarManager.add(new CommandContributionItem(showFileContributionParameter));
+				toolbarManager.appendToGroup("modes",new CommandContributionItem(showFileContributionParameter));
 
 				CommandContributionItemParameter nextContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectNextFile", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				nextContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.DOWN_ARROW);
 
-				toolbarManager.add(new CommandContributionItem(nextContributionParameter));
+				toolbarManager.appendToGroup("navigation", new CommandContributionItem(nextContributionParameter));
 
 				CommandContributionItemParameter previousContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectPreviousFile", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				previousContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.UP_ARROW);
 
-				toolbarManager.add(new CommandContributionItem(previousContributionParameter));
+				toolbarManager.appendToGroup("navigation", new CommandContributionItem(previousContributionParameter));
 
 			}
 		};
