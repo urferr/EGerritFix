@@ -11,6 +11,9 @@
 
 package org.eclipse.egerrit.internal.ui.table.provider;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
@@ -18,7 +21,10 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.editors.ModelLoader;
 import org.eclipse.egerrit.internal.ui.tabs.ObservableCollector;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.databinding.EMFProperties;
@@ -74,11 +80,21 @@ public class DeleteDraftRevisionProvider {
 				try {
 					deleteDraftChangeCmd.call();
 					if (changeInfo.getRevisions().size() == 1) {
+						//We are deleting the last draft, close the editor
 						IWorkbench workbench = PlatformUI.getWorkbench();
 						final IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
 
 						IEditorPart editor = activePage.getActiveEditor();
 						activePage.closeEditor(editor, false);
+					} else {
+						//Change the user selected revision to the most recent one
+						Collection<RevisionInfo> revisions = new ArrayList<>(changeInfo.getRevisions().values());
+						revisions.remove(changeInfo.getUserSelectedRevision());
+						changeInfo.setUserSelectedRevision(
+								changeInfo.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(revisions)));
+						ModelLoader ml = ModelLoader.initialize(gerritClient, changeInfo);
+						ml.reload();
+						ml.dispose();
 					}
 				} catch (EGerritException e1) {
 					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());

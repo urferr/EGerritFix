@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.ui.editors;
 
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
+import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
@@ -78,8 +79,9 @@ public class MarkerMenuContribution extends ContributionItem {
 				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				RevisionInfo revision = ActiveWorkspaceRevision.getInstance().getActiveRevision();
 				final InputDialog replyDialog = new InputDialog(shell, Messages.MarkerMenuContribution_1,
-						Messages.MarkerMenuContribution_2 + revision.get_number() + "/" //$NON-NLS-2$
-								+ revision.getChangeInfo().getRevisions().size(),
+						Messages.MarkerMenuContribution_2 + revision.get_number() + "/" //$NON-NLS-1$
+								+ ModelHelpers
+										.getHighestRevisionNumber(revision.getChangeInfo().getRevisions().values()),
 						"", null) { //$NON-NLS-1$
 					@Override
 					protected int getInputTextStyle() {

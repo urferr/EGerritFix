@@ -197,7 +197,8 @@ public class UIUtils {
 
 	public static String formatMessageForMarkerView(CommentInfo commentInfo) {
 		String patchSet = ModelHelpers.getRevision(commentInfo).get_number() + "/" //$NON-NLS-1$
-				+ ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().size();
+				+ ModelHelpers.getHighestRevisionNumber(
+						ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().values());
 		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : Messages.UIUtils_1;
 		return commentInfo.getMessage() + Messages.UIUtils_2 + author + Messages.UIUtils_3
 				+ CommentPrettyPrinter.printDate(commentInfo) + Messages.UIUtils_4 + patchSet + Messages.UIUtils_5;
@@ -221,7 +222,7 @@ public class UIUtils {
 
 	public static String getPatchSetString(RevisionInfo revision) {
 		return revision.get_number() + "/" //$NON-NLS-1$
-				+ revision.getChangeInfo().getRevisions().size();
+				+ ModelHelpers.getHighestRevisionNumber(revision.getChangeInfo().getRevisions().values());
 	}
 
 	/**

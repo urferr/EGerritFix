@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.ui.editors;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -252,10 +253,12 @@ public class QueryHelpers {
 			toRefresh.getLabels().clear();
 			toRefresh.getLabels().addAll(newChangeInfo.getLabels());
 			mergeRevisions(toRefresh, newChangeInfo); //need to be before setting the actions and the current revision
-			if (newChangeInfo.getCurrent_revision() != null) {
+			if (newChangeInfo.getCurrent_revision() != null
+					&& newChangeInfo.getRevisions().get(newChangeInfo.getCurrent_revision()) != null) {
 				toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
 			} else {
-				toRefresh.setCurrent_revision(getIdForMostRecentRevision(toRefresh));
+				toRefresh.setCurrent_revision(
+						toRefresh.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(toRefresh.getRevisions().values())).getId());
 			}
 			//Re-init the userselected revision after a revert
 			if (toRefresh.getUserSelectedRevision() == null) {
@@ -270,17 +273,6 @@ public class QueryHelpers {
 			toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			toRefresh.setUpdated(newChangeInfo.getUpdated());
 		}
-	}
-
-	private static String getIdForMostRecentRevision(ChangeInfo changeInfo) {
-		int match = -1;
-		Collection<RevisionInfo> revisions = changeInfo.getRevisions().values();
-		for (RevisionInfo rev : revisions) {
-			if (rev.get_number() > match) {
-				match = rev.get_number();
-			}
-		}
-		return changeInfo.getRevisionByNumber(match).getId();
 	}
 
 	private static void mergeRevisions(ChangeInfo toRefresh, ChangeInfo newChangeInfo) {
@@ -299,6 +291,17 @@ public class QueryHelpers {
 				rev.setDraft(newChangeInfo.getRevisions().get(revId).isDraft());
 			}
 		});
+
+		//Identify the revisions that could have been removed
+		Set<String> deletedKeys = new HashSet<>();
+		for (String key : oldKeys) {
+			if (newChangeInfo.getRevisions().get(key) == null) {
+				deletedKeys.add(key);
+			}
+		}
+
+		//Delete all the revisions that have been removed from the server
+		deletedKeys.stream().forEach(toRefresh.getRevisions()::removeKey);
 
 		//Isolate the revisions that need to be kept by removing the entries already loaded from the new collection
 		//Once this is done we simply add the new remaining of the revisions to the old revision
