@@ -141,7 +141,7 @@ public abstract class BaseCommand<T> {
 					GsonBuilder builder = new GsonBuilder();
 					builder.registerTypeAdapterFactory(new EMFTypeAdapterFactory());
 					Gson gson = builder.create();
-					InputStreamReader reader = new InputStreamReader(myEntity.getContent());
+					InputStreamReader reader = new InputStreamReader(myEntity.getContent(), "UTF-8");//$NON-NLS-1$
 
 					return gson.fromJson(reader, fResultType);
 				}
@@ -212,14 +212,9 @@ public abstract class BaseCommand<T> {
 	private void setInput() {
 		if (input != null) {
 			if (request instanceof HttpEntityEnclosingRequestBase) {
-				StringEntity entity;
-				try {
-					entity = new StringEntity(new Gson().toJson(input));
-					entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, BaseCommand.JSON_HEADER));
-					((HttpEntityEnclosingRequestBase) request).setEntity(entity);
-				} catch (UnsupportedEncodingException e) {
-					throw new IllegalArgumentException(e);
-				}
+				StringEntity entity = new StringEntity(new Gson().toJson(input), "UTF-8"); //$NON-NLS-1$
+				entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, BaseCommand.JSON_HEADER));
+				((HttpEntityEnclosingRequestBase) request).setEntity(entity);
 			} else {
 				throw new IllegalArgumentException("Input should not be set if the request is not PUT or POST"); //$NON-NLS-1$
 			}
@@ -291,7 +286,7 @@ public abstract class BaseCommand<T> {
 	}
 
 	/**
-	 * Return the headers returned by the http response 
+	 * Return the headers returned by the http response
 	 */
 	protected Header[] getResponseHeaders() {
 		return responseHeaders;

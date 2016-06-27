@@ -35,7 +35,7 @@ public class ListDraftsCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
 		// create a comment
-		final String commentMessage = "This is a test comment";
+		final String commentMessage = "This is a test comment héhé";
 		CreateDraftCommand command = fGerrit.createDraftComments(change_id, commit_id);
 		CommentInfo commentInfo = ModelFactory.eINSTANCE.createCommentInfo();
 		commentInfo.setLine(2);
