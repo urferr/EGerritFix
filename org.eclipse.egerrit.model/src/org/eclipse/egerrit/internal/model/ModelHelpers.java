@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.egerrit.internal.model;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.emf.common.util.EList;
@@ -41,4 +42,13 @@ public class ModelHelpers {
 		return (FileInfo) comment.eContainer();
 	}
 
+	public static int getHighestRevisionNumber(Collection<RevisionInfo> revisions) {
+		int match = 0;
+		for (RevisionInfo rev : revisions) {
+			if (rev.get_number() > match) {
+				match = rev.get_number();
+			}
+		}
+		return match;
+	}
 }
