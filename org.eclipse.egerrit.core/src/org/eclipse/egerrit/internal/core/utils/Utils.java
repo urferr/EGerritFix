@@ -69,7 +69,9 @@ public class Utils {
 	 */
 	public static String prettyPrintDate(String inDate) {
 		java.util.Date date = null;
+		long hourMSec = 3600000;
 		try {
+			formatTimeOut.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
 			date = formatTimeOut.parse(inDate);
 		} catch (ParseException e) {
 			EGerritCorePlugin.logError(e.getMessage());
@@ -77,8 +79,9 @@ public class Utils {
 		boolean sameDay = DateUtils.isSameDay(date, Calendar.getInstance().getTime());
 		Calendar today = Calendar.getInstance();
 		Calendar currentReview = Calendar.getInstance();
+		long diffMSec = today.getTimeInMillis() - date.getTime();
 		currentReview.setTime(date);
-		if (sameDay) {
+		if (sameDay || (diffMSec <= (6 * hourMSec))) { // format if same day or not more than 6 hours apart
 			return Utils.formatDate(inDate, sameDayFormatTimeOut);
 		} else if (today.get(Calendar.YEAR) != currentReview.get(Calendar.YEAR)) {
 			return Utils.formatDate(inDate, differentYearFormatTimeOut);
