@@ -20,6 +20,24 @@ public class Messages extends NLS {
 
 	public static String ActiveWorkspaceRevision_1;
 
+	public static String Branch_perfect_match;
+
+	public static String Branch_change_Id;
+
+	public static String Branch_branch_name;
+
+	public static String BranchSelectionTableModel_title;
+
+	public static String BranchSelectionTableModel_branch;
+
+	public static String BranchSelectionTableModel_match;
+
+	public static String BranchSelectionTableModel_switch;
+
+	public static String BranchSelectionTableModel_new;
+
+	public static String BranchSelectionTableModel_question;
+
 	public static String ChangeDetailEditor_0;
 
 	public static String ChangeDetailEditor_1;
@@ -76,43 +94,15 @@ public class Messages extends NLS {
 
 	public static String CheckoutRevision_1;
 
-	public static String CheckoutRevision_11;
-
 	public static String CheckoutRevision_12;
 
 	public static String CheckoutRevision_13;
 
-	public static String CheckoutRevision_14;
-
-	public static String CheckoutRevision_15;
-
-	public static String CheckoutRevision_16;
-
-	public static String CheckoutRevision_17;
-
-	public static String CheckoutRevision_18;
-
-	public static String CheckoutRevision_19;
-
 	public static String CheckoutRevision_2;
-
-	public static String CheckoutRevision_20;
-
-	public static String CheckoutRevision_21;
-
-	public static String CheckoutRevision_22;
-
-	public static String CheckoutRevision_24;
-
-	public static String CheckoutRevision_26;
-
-	public static String CheckoutRevision_27;
 
 	public static String CheckoutRevision_3;
 
 	public static String CheckoutRevision_4;
-
-	public static String CheckoutRevision_7;
 
 	public static String CherryPickDialog_0;
 

@@ -35,7 +35,6 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
-import org.eclipse.egerrit.internal.ui.utils.GerritToGitMapping;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egit.ui.JobFamilies;
 import org.eclipse.egit.ui.internal.CommonUtils;
@@ -82,7 +81,7 @@ public class CherryPickRevision extends Action {
 
 	@Override
 	public void run() {
-		repo = findLocalRepo(gerritClient, revision.getChangeInfo().getProject());
+		repo = new FindLocalRepository(gerritClient, revision.getChangeInfo().getProject()).getRepository();
 		if (repo == null) {
 			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CherryPickRevision_1);
 			ErrorDialog.openError(Display.getDefault().getActiveShell(), Messages.CherryPickRevision_2,
@@ -187,24 +186,6 @@ public class CherryPickRevision extends Action {
 		new FetchOperationUI(repo, getRemoteURI(), specs, 0, false).execute(monitor);
 	}
 
-	private Repository findLocalRepo(GerritClient gerrit, String projectName) {
-		GerritToGitMapping gerritToGitMap = null;
-		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
-					projectName);
-		} catch (URISyntaxException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-			return null;
-		}
-		Repository jgitRepo = null;
-		try {
-			jgitRepo = gerritToGitMap.find();
-		} catch (IOException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-		}
-		return jgitRepo;
-	}
-
 	private URIish getRemoteURI() {
 		try {
 			return new URIish(gerritClient.getRepository().getURIBuilder(false).toString() + "/" //$NON-NLS-1$
@@ -218,5 +199,4 @@ public class CherryPickRevision extends Action {
 	private boolean connectionTypeAvailable(String scheme) {
 		return revision.getFetch().get(scheme) != null;
 	}
-
 }

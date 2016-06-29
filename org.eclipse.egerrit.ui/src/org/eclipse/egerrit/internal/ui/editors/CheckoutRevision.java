@@ -12,28 +12,27 @@
 package org.eclipse.egerrit.internal.ui.editors;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.table.model.BranchMatch;
 import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
-import org.eclipse.egerrit.internal.ui.utils.GerritToGitMapping;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutResult;
@@ -41,11 +40,10 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 public class CheckoutRevision extends Action {
 
@@ -64,7 +62,7 @@ public class CheckoutRevision extends Action {
 
 	@Override
 	public void run() {
-		Repository localRepo = findLocalRepo(gerritClient, changeInfo.getProject());
+		Repository localRepo = new FindLocalRepository(gerritClient, changeInfo.getProject()).getRepository();
 
 		if (localRepo == null) {
 			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_1);
@@ -78,92 +76,133 @@ public class CheckoutRevision extends Action {
 			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_3, status);
 		}
 
-		//Find the current selected Patch set reference in the table
-		FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
-		WizardDialog w = new WizardDialog(getShell(), var);
-		String currentActiveBranchName = getCurrentBranchName(localRepo);
-		w.create();
-		String dialogErrorMsg = w.getErrorMessage();
-		String existingLocalBranchName = getTargetBranchName(localRepo);
-		// already on the branch, nothing to do
-		if (existingLocalBranchName != null && currentActiveBranchName.compareTo(existingLocalBranchName) == 0) {
-			ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient,
-					changeInfo.getUserSelectedRevision());
-			return;
-		}
-
-		// the target branch exists
-		if (dialogErrorMsg != null && dialogErrorMsg.contains("already exists")) { // branch already exists, //$NON-NLS-1$
-			int result = checkOutOrNot(existingLocalBranchName);
-			if (result == IDialogConstants.INTERNAL_ID) {
-				w.open();
-				return;
-			} else if (result == IDialogConstants.CANCEL_ID) { // cancel
-				return;
-			}
-
-			try {
-				checkoutBranch(existingLocalBranchName, localRepo);
-			} catch (Exception e) {
-			}
+		Map<String, BranchMatch> potentialBranches = findAllPotentialBranches(localRepo);
+		if (potentialBranches.size() > 1) {
+			branchUiSelection(localRepo, potentialBranches);
 		} else {
-			// no branch yet, go through wizard
-			try {
+			if (potentialBranches.isEmpty()) {
+				//New selected
+				FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
+				WizardDialog w = new WizardDialog(getShell(), var);
+				w.create();
 				w.open();
-			} catch (Exception e) {
+			} else if (!potentialBranches.entrySet().iterator().next().getValue().equals(BranchMatch.PERFECT_MATCH)) {
+				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
+				branchUiSelection(localRepo, potentialBranches);
+			} else {
+				String branchToCheckout = potentialBranches.keySet().iterator().next();//Get the only element PERFECT_MATCH
+
+				try {
+					checkoutBranch(branchToCheckout, localRepo);
+				} catch (Exception e) {
+				}
 			}
 		}
 		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient,
 				changeInfo.getUserSelectedRevision());
 	}
 
-	private String getCurrentBranchName(Repository localRepo) {
-		String head = null;
-		try {
-			head = localRepo.getFullBranch();
-		} catch (IOException e1) {
+	private Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
+		Git gitRepo = new Git(localRepo);
+		String changeIdKey = "Change-Id"; //$NON-NLS-1$
+		//Map <Key,value> = Map<Short branch name, commit id>
+		Map<String, String> mapBranches = new HashMap<String, String>();
+		Map<String, BranchMatch> potentialBranches = null;
+		//Map <Key,Map<keycommit, ListChangeIdvalue> = Map<Short branch name, commit id, list of changeId>
+		Map<String, Map<String, List<String>>> mapBranchesChangeId = new HashMap<String, Map<String, List<String>>>();
+		try (RevWalk walk = new RevWalk(localRepo)) {
+			mapBranchNameWithCommitId(gitRepo, changeIdKey, mapBranches, mapBranchesChangeId, walk);
+			//Get only potential branches
+			potentialBranches = mapPotentialBranch(mapBranchesChangeId);
+		} catch (
 
+		GitAPIException e1) {
+			e1.printStackTrace();
 		}
-		if (head.startsWith(Messages.CheckoutRevision_7)) { // Print branch name with "refs/heads/" stripped.
-			try {
-				return localRepo.getBranch();
-			} catch (IOException e) {
-			}
-
-		}
-		return head;
+		gitRepo.close();
+		return potentialBranches;
 	}
 
-	private int checkOutOrNot(String branchName) {
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs"); //$NON-NLS-1$
-
-		Preferences editorPrefs = prefs.node("checkout"); //$NON-NLS-1$
-
-		int choice = editorPrefs.getInt("doCheckout", 0); //$NON-NLS-1$
-
-		if (choice != 0) {
-			return choice;
-		}
-		String title = Messages.CheckoutRevision_11;
-		String message = Messages.CheckoutRevision_12 + changeInfo.getSubject() + Messages.CheckoutRevision_13
-				+ Messages.CheckoutRevision_14 + Messages.CheckoutRevision_15 + branchName
-				+ Messages.CheckoutRevision_16 + Messages.CheckoutRevision_17 + Messages.CheckoutRevision_18;
-		MessageDialogWithToggle dialog = new MessageDialogWithToggle(Display.getDefault().getActiveShell(), title,
-				null, message, MessageDialog.NONE, new String[] { Messages.CheckoutRevision_19,
-						Messages.CheckoutRevision_20, Messages.CheckoutRevision_21 },
-				0, Messages.CheckoutRevision_22, false);
-		dialog.open();
-		int result = dialog.getReturnCode();
-
-		if (result != IDialogConstants.CANCEL_ID && dialog.getToggleState()) {
-			editorPrefs.putInt("doCheckout", result); //$NON-NLS-1$
+	private void mapBranchNameWithCommitId(Git gitRepo, String changeIdKey, Map<String, String> mapBranches,
+			Map<String, Map<String, List<String>>> mapBranchesChangeId, RevWalk walk) throws GitAPIException {
+		for (Ref current : gitRepo.branchList().call()) {
+			RevCommit commit;
 			try {
-				editorPrefs.flush();
-			} catch (BackingStoreException e) {
-				//There is not much we can do
+				commit = walk.parseCommit(current.getObjectId());
+				mapBranches.put(Repository.shortenRefName(current.getName()), commit.getName());
+
+				//Map branch -> commitId -> List of changeId
+				Map<String, List<String>> mapCommitChangeid = new HashMap<String, List<String>>();
+				List<String> footerLines = commit.getFooterLines(changeIdKey);
+
+				mapCommitChangeid.put(commit.getName(), footerLines);
+				mapBranchesChangeId.put(Repository.shortenRefName(current.getName()), mapCommitChangeid);
+			} catch (IOException e) {
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
 		}
-		return result;
+	}
+
+	/**
+	 * Open the dialog to let the user selects his options
+	 *
+	 * @param localRepo
+	 * @param potentialBranches
+	 */
+	private void branchUiSelection(Repository localRepo, Map<String, BranchMatch> potentialBranches) {
+		BranchSelectionDialog branchSelectDialog = new BranchSelectionDialog(null, potentialBranches, changeInfo);
+		int result = branchSelectDialog.open();
+		String selectedBranch = branchSelectDialog.getSelectedBranch();
+		if (result == IDialogConstants.OK_ID) {
+			//New selected
+			String psSelected = revision.getRef();
+			FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
+			WizardDialog w = new WizardDialog(getShell(), var);
+			w.create();
+			w.open();
+		} else if (result == IDialogConstants.CLIENT_ID) { // SWITCH
+			try {
+				if (selectedBranch != null) {
+					checkoutBranch(selectedBranch, localRepo);
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
+		String lookingChangeId = revision.getChangeInfo().getChange_id().trim();
+		String lookingCommitIdForRevision = revision.getCommit().getCommit().trim();
+		Map<String, BranchMatch> mapBranches = new TreeMap<String, BranchMatch>();
+		String defaultBranchName = changeInfo.get_number() + "/" //$NON-NLS-1$
+				+ changeInfo.getUserSelectedRevision().get_number();
+		Iterator<Entry<String, Map<String, List<String>>>> iterBranch = mapBranchesChangeId.entrySet().iterator();
+		while (iterBranch.hasNext()) {
+			Entry<String, Map<String, List<String>>> entryBranch = iterBranch.next();
+			Map<String, List<String>> mapCommitId = entryBranch.getValue();
+			Iterator<Entry<String, List<String>>> iteratorcommitId = mapCommitId.entrySet().iterator();
+			while (iteratorcommitId.hasNext()) {
+				Entry<String, List<String>> entryCommitIds = iteratorcommitId.next();
+				List<String> listChangeIds = entryCommitIds.getValue();
+				Iterator<String> iterChangeId = listChangeIds.iterator();
+				while (iterChangeId.hasNext()) {
+					String changeId = iterChangeId.next().trim();
+					if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
+						mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
+						continue;
+					}
+					if (lookingChangeId.equals(changeId)) {
+						mapBranches.put(entryBranch.getKey(), BranchMatch.CHANGE_ID_MATCH);//Potential branch for this changeId, but with some modification on the branch
+						continue;
+					}
+					if (entryBranch.getKey().contains(defaultBranchName)) {
+						mapBranches.put(entryBranch.getKey(), BranchMatch.BRANCH_NAME_MATCH);//Perfect match branch
+						continue;
+					}
+				}
+			}
+		}
+		return mapBranches;
 	}
 
 	private void checkoutBranch(String branchName, Repository repo) throws Exception {
@@ -178,54 +217,6 @@ public class CheckoutRevision extends Action {
 			CheckoutResult result = command.getResult();
 			new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList()).open();
 		}
-	}
-
-	private String getTargetBranchName(Repository localRepo) {
-		Set<String> branches = null;
-		try {
-			branches = getShortLocalBranchNames(new Git(localRepo));
-		} catch (GitAPIException e1) {
-			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_24);
-			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_26, status);
-			return Messages.CheckoutRevision_27;
-		}
-		String shortName = changeInfo.get_number() + "/" + changeInfo.getUserSelectedRevision().get_number(); //$NON-NLS-1$
-		Iterator<String> iterator = branches.iterator();
-		String branchName = null;
-		while (iterator.hasNext()) {
-			String setElement = iterator.next();
-			if (setElement.contains(shortName)) {
-				branchName = setElement;
-				break;
-			}
-		}
-		return branchName;
-	}
-
-	private Set<String> getShortLocalBranchNames(Git git) throws GitAPIException {
-		Set<String> branches = new HashSet<String>();
-		Iterator<Ref> iter = git.branchList().call().iterator();
-		while (iter.hasNext()) {
-			branches.add(Repository.shortenRefName(iter.next().getName()));
-		}
-		return branches;
-	}
-
-	private Repository findLocalRepo(GerritClient gerrit, String projectName) {
-		GerritToGitMapping gerritToGitMap = null;
-		try {
-			gerritToGitMap = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
-					projectName);
-		} catch (URISyntaxException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-		}
-		Repository jgitRepo = null;
-		try {
-			jgitRepo = gerritToGitMap.find();
-		} catch (IOException e2) {
-			EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + e2.getMessage());
-		}
-		return jgitRepo;
 	}
 
 	private Shell getShell() {
