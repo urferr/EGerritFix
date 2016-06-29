@@ -35,6 +35,7 @@ import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
+import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.action.MenuManager;
@@ -83,6 +84,10 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	DiffTreeViewer viewer;
 
 	Label leftPatch, rightPatch;
+
+	private FileInfoCompareCellLabelProvider labelProvider;
+
+	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
 	public CompareUpperSection(Composite parent, int style, boolean visibility, CompareEditorInput cei) {
 		super(parent, style, visibility);
@@ -150,7 +155,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 				showReviewEditorContributionParameter.icon = EGerritImages
 						.getDescriptor(EGerritImages.SHOW_REVIEW_EDITOR_IMAGE);
 
-				toolbarManager.appendToGroup("merge", new CommandContributionItem(showReviewEditorContributionParameter)); //$NON-NLS-1$
+				toolbarManager.appendToGroup("merge", //$NON-NLS-1$
+						new CommandContributionItem(showReviewEditorContributionParameter));
 
 				CommandContributionItemParameter replyContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.reply", //$NON-NLS-1$
@@ -164,14 +170,14 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 						CommandContributionItem.STYLE_PUSH);
 				showCommentContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER);
 
-				toolbarManager.appendToGroup("modes",new CommandContributionItem(showCommentContributionParameter));
+				toolbarManager.appendToGroup("modes", new CommandContributionItem(showCommentContributionParameter));
 
 				CommandContributionItemParameter showFileContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showFilePath", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				showFileContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH);
 
-				toolbarManager.appendToGroup("modes",new CommandContributionItem(showFileContributionParameter));
+				toolbarManager.appendToGroup("modes", new CommandContributionItem(showFileContributionParameter));
 
 				CommandContributionItemParameter nextContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectNextFile", //$NON-NLS-1$
@@ -199,7 +205,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		int size = tableInfo.length;
 
 		for (int index = 0; index < size; index++) {
-			createTreeViewerColumn(tableInfo[index]);
+			TreeViewerColumn val = createTreeViewerColumn(tableInfo[index]);
+			dynamicMenu.getTreeViewerColumn().put(tableInfo[index], val);
 		}
 
 		viewer.getTree().setHeaderVisible(true);
@@ -221,8 +228,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT));
 		final IObservableMap[] watchedProperties = Properties.observeEach(cp.getKnownElements(),
 				new IValueProperty[] { reviewedFlag, comments, draftComments });
-		viewer.setLabelProvider(new FileInfoCompareCellLabelProvider(watchedProperties));
-
+		labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
+		viewer.setLabelProvider(labelProvider);
+		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient);
 	}
 
 	private void fillMenuItemForChangeInfo(MenuManager menu, boolean side) {
@@ -406,12 +414,12 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	private TreeViewerColumn createTreeViewerColumn(ITableModel tableInfo) {
 		TreeViewerColumn treeColumViewer = new TreeViewerColumn(viewer, SWT.NONE);
 		final TreeColumn column = treeColumViewer.getColumn();
-
 		column.setText(tableInfo.getName());
 		column.setWidth(tableInfo.getWidth());
 		column.setAlignment(tableInfo.getAlignment());
 		column.setResizable(tableInfo.getResize());
 		column.setMoveable(tableInfo.getMoveable());
+
 		return treeColumViewer;
 	}
 

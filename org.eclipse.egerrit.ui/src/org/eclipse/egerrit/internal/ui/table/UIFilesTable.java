@@ -11,8 +11,6 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.table;
 
-import java.util.Iterator;
-
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -29,14 +27,11 @@ import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
+import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
-import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -51,17 +46,11 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -86,6 +75,8 @@ public class UIFilesTable {
 	private ChangeInfo fChangeInfo;
 
 	private ModelLoader loader;
+
+	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
 	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo) {
 		this.fGerritClient = gerritClient;
@@ -131,7 +122,7 @@ public class UIFilesTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		addPulldownMenu();
+		dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
 	}
 
 	/**
@@ -287,125 +278,6 @@ public class UIFilesTable {
 			}
 		}
 		return;
-	}
-
-	private void addPulldownMenu() {
-		MenuManager menuManager = new MenuManager();
-		Menu menu = menuManager.createContextMenu(fViewer.getTable());
-		menuManager.addMenuListener(new IMenuListener() {
-
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				addMenuItem(menu);
-			}
-		});
-
-		// set the menu on the SWT widget
-		fViewer.getTable().setMenu(menu);
-		menuManager.update(true);
-	}
-
-	private void addMenuItem(Menu menu) {
-		if (menu.getItemCount() == 0) {
-
-			final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
-			openFile.setText(Messages.UIFilesTable_0);
-			final FileTableLabelProvider labelProvider = (FileTableLabelProvider) fViewer.getLabelProvider();
-			openFile.setSelection(labelProvider.getFileOrder());
-
-			openFile.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-
-					ISelection selection = fViewer.getSelection();
-					if (selection instanceof IStructuredSelection) {
-
-						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-						Iterator itr = structuredSelection.iterator();
-						String failedFiles = "";
-						while (itr.hasNext()) {
-							Object element = itr.next();
-							if (element == null) {
-								return;
-							}
-							FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-							String status = fileInfo.getStatus();
-							if (status.compareTo("D") != 0) { //$NON-NLS-1$
-								if (UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), fGerritClient,
-										fileInfo.getRevision(), 0) == false) {
-									failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
-								}
-							}
-						}
-						if (!failedFiles.isEmpty()) {
-							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-							UIUtils.displayInformation(shell, Messages.UIFilesTable_2, failedFiles);
-						}
-					}
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-
-			final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
-			nameFirst.setText(Messages.UIFilesTable_1);
-			nameFirst.setSelection(labelProvider.getFileOrder());
-
-			nameFirst.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					MenuItem menuItem = (MenuItem) e.getSource();
-					labelProvider.setFileNameFirst(menuItem.getSelection());
-					fViewer.refresh();
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-			//Add Menu item to select which column to be visible
-			addVisibleColumnSelection(menu);
-		}
-	}
-
-	/**
-	 * Create the menu item to allow selection on which column should we make visible
-	 *
-	 * @param menu
-	 */
-	private void addVisibleColumnSelection(Menu menu) {
-		new MenuItem(menu, SWT.SEPARATOR);
-		final MenuItem visible = new MenuItem(menu, SWT.MENU);
-		visible.setText("Visible column");
-		final ITableModel[] tableInfo = FilesTableModel.values();
-		for (ITableModel element : tableInfo) {
-			final MenuItem menuItem = new MenuItem(menu, SWT.CHECK);
-			if (element.getName().isEmpty()) {
-				menuItem.setText("Column: " + ((FilesTableModel) element).ordinal());
-			} else {
-				menuItem.setText(element.getName());
-			}
-			menuItem.setData(element);
-			menuItem.setSelection(((FilesTableModel) element).isColumnVisible());
-			menuItem.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					MenuItem subMenuItem = (MenuItem) e.getSource();
-					FilesTableModel tablemodel = (FilesTableModel) subMenuItem.getData();
-					tablemodel.setColumnVisible(subMenuItem.getSelection());
-					fViewer.getTable().getColumn(tablemodel.ordinal()).setWidth(tablemodel.getWidth());
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-		}
 	}
 
 	public void dispose() {
