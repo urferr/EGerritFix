@@ -125,7 +125,7 @@ public class ChangeDetailEditor extends EditorPart {
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
-	public DetailsTabView detailsTab = null;
+	private DetailsTabView detailsTab = null;
 
 	private HistoryTabView historytab = null;
 

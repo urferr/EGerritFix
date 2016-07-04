@@ -86,4 +86,18 @@ public enum HistoryTableModel implements ITableModel {
 		}
 		return width;
 	}
+
+	/**
+	 * Provide an index array width the default order definition
+	 *
+	 * @return int[]
+	 */
+	public static int[] getDefaultOrder() {
+		int size = HistoryTableModel.values().length;
+		int[] order = new int[size];
+		for (int index = 0; index < size; index++) {
+			order[index] = index;
+		}
+		return order;
+	}
 }

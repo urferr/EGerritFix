@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 public class UIRelatedChangesTable {
 
+	public static final String RELATED_CHANGES_TABLE = "relatedChangesTable"; //$NON-NLS-1$
+
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 	// ------------------------------------------------------------------------
@@ -80,6 +82,7 @@ public class UIRelatedChangesTable {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.setData(RELATED_CHANGES_TABLE);
 
 		return aViewer;
 	}

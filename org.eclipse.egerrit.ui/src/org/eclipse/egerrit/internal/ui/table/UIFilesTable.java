@@ -61,6 +61,8 @@ import org.osgi.service.prefs.Preferences;
  */
 public class UIFilesTable {
 
+	public static final String FILES_TABLE = "filesTable"; //$NON-NLS-1$
+
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 	// ------------------------------------------------------------------------
@@ -121,6 +123,7 @@ public class UIFilesTable {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.setData(FILES_TABLE);
 
 		dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
 	}

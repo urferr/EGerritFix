@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 public class UIHistoryTable {
 
+	public static final String HISTORY_TABLE = "historyTable"; //$NON-NLS-1$
+
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 	// ------------------------------------------------------------------------
@@ -121,6 +123,7 @@ public class UIHistoryTable {
 
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.setData(HISTORY_TABLE);
 
 		return aViewer;
 	}

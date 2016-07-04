@@ -107,4 +107,18 @@ public enum FilesTableModel implements ITableModel {
 			fwidth = 0;
 		}
 	}
+
+	/**
+	 * Provide an index array width the default order definition
+	 *
+	 * @return int[]
+	 */
+	public static int[] getDefaultOrder() {
+		int size = FilesTableModel.values().length;
+		int[] order = new int[size];
+		for (int index = 0; index < size; index++) {
+			order[index] = index;
+		}
+		return order;
+	}
 }

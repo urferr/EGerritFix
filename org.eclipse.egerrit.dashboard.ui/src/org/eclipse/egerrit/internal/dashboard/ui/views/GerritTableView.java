@@ -1207,4 +1207,11 @@ public class GerritTableView extends ViewPart {
 	public void update(String query) {
 		rtv.processCommands(query);
 	}
+
+	/**
+	 * return the fViewer
+	 */
+	public TableViewer getViewer() {
+		return fViewer;
+	}
 }

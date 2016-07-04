@@ -29,7 +29,8 @@ Export-Package: org.eclipse.egerrit.internal.dashboard.ui;x-internal:=true;uses:
    org.osgi.framework,
    org.eclipse.ui.part,
    org.eclipse.swt.widgets"
-Import-Package: org.eclipse.egerrit.internal.dashboard.core,
+Import-Package: org.eclipse.compare.internal,
+ org.eclipse.egerrit.internal.dashboard.core,
  org.eclipse.egerrit.internal.dashboard.utils,
  org.eclipse.egerrit.internal.ui.editors,
  org.eclipse.egerrit.internal.ui.editors.model
