@@ -37,4 +37,9 @@ public class RevertCommand extends BaseCommandChangeWithInput<ChangeInfo, Revert
 		super(gerritRepository, AuthentificationRequired.YES, HttpPost.class, ChangeInfo.class, changeId);
 		setPathFormat("/changes/{change-id}/revert"); //$NON-NLS-1$
 	}
+
+	@Override
+	protected boolean errorsExpected() {
+		return true;
+	}
 }

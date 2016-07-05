@@ -74,6 +74,7 @@ import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -90,6 +91,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -418,22 +420,66 @@ public class ChangeDetailEditor extends EditorPart {
 		revertButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-
-				String revertMsg = Messages.ChangeDetailEditor_0 + fChangeInfo.getSubject() + "\n\n" //$NON-NLS-1$
-						+ Messages.ChangeDetailEditor_11 + fChangeInfo.getCurrent_revision()
-						+ Messages.ChangeDetailEditor_6 + fChangeInfo.get_number() + '.';
-				RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
-				RevertInput revertInput = new RevertInput();
-				revertInput.setMessage(revertMsg);
-
-				revertCmd.setCommandInput(revertInput);
-
+				boolean revertSuccessfull = false;
+				String revertMsg = NLS.bind(Messages.Revert_message, new Object[] { fChangeInfo.getSubject(),
+						fChangeInfo.getRevision().getCommit().getCommit(), fChangeInfo.get_number() });
 				ChangeInfo revertResult = null;
-				try {
-					revertResult = revertCmd.call();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				String revertErrorMessage = null;
+
+				while (!revertSuccessfull) {
+					final String errorMsg = revertErrorMessage;
+					final InputDialog replyDialog = new InputDialog(revertButton.getShell(),
+							Messages.Revert_dialog_title, Messages.Revert_dialog_message, revertMsg,
+							revertErrorMessage == null ? null : new IInputValidator() {
+								//Because InputDialog does not allow us to set the text w/o disabling the ok button,
+								//we need to trick the dialog in displaying what we want with this counter.
+								private int count = 0;
+
+								@Override
+								public String isValid(String newText) {
+									if (count == 0) {
+										count++;
+										return errorMsg;
+									} else {
+										return null;
+									}
+								}
+							}) {
+						@Override
+						protected int getInputTextStyle() {
+							return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
+						}
+
+						@Override
+						protected Control createDialogArea(Composite parent) {
+							Control res = super.createDialogArea(parent);
+							((GridData) this.getText().getLayoutData()).heightHint = 100;
+							((GridData) this.getText().getLayoutData()).widthHint = 500;
+							return res;
+						}
+					};
+					if (replyDialog.open() != Window.OK) {
+						return;
+					}
+
+					RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
+					RevertInput revertInput = new RevertInput();
+					revertMsg = replyDialog.getValue();
+					revertInput.setMessage(revertMsg);
+					revertCmd.setCommandInput(revertInput);
+
+					try {
+						revertResult = revertCmd.call();
+						if (revertResult == null) {
+							revertErrorMessage = revertCmd.getFailureReason();
+						} else {
+							revertSuccessfull = true;
+						}
+					} catch (EGerritException e3) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						return;
+					}
 				}
 				openAnotherEditor(revertResult);
 			}

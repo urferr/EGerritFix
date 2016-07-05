@@ -38,11 +38,7 @@ public class Messages extends NLS {
 
 	public static String BranchSelectionTableModel_question;
 
-	public static String ChangeDetailEditor_0;
-
 	public static String ChangeDetailEditor_1;
-
-	public static String ChangeDetailEditor_11;
 
 	public static String ChangeDetailEditor_12;
 
@@ -83,8 +79,6 @@ public class Messages extends NLS {
 	public static String ChangeDetailEditor_4;
 
 	public static String ChangeDetailEditor_5;
-
-	public static String ChangeDetailEditor_6;
 
 	public static String ChangeDetailEditor_7;
 
@@ -301,6 +295,12 @@ public class Messages extends NLS {
 	public static String RelatedChangesTableDefinition_headline;
 
 	public static String RelatedChangesTableDefinition_flag;
+
+	public static String Revert_message;
+
+	public static String Revert_dialog_title;
+
+	public static String Revert_dialog_message;
 
 	public static String ReviewersTableDefinition_id;
 

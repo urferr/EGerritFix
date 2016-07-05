@@ -76,6 +76,8 @@ public abstract class BaseCommand<T> {
 
 	private Header[] responseHeaders;
 
+	private String failureReason;
+
 	protected String getPath() throws UnsupportedEncodingException {
 		Set<Entry<String, String>> params = parameters.entrySet();
 		String result = pathFormat;
@@ -118,6 +120,7 @@ public abstract class BaseCommand<T> {
 					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					if (statusLine.getStatusCode() >= 300) {
 						if (errorsExpected()) {
+							extractFailureReason(response);
 							return null;
 						}
 						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
@@ -144,6 +147,22 @@ public abstract class BaseCommand<T> {
 					InputStreamReader reader = new InputStreamReader(myEntity.getContent(), "UTF-8");//$NON-NLS-1$
 
 					return gson.fromJson(reader, fResultType);
+				}
+
+				private void extractFailureReason(HttpResponse response) {
+					HttpEntity entity = response.getEntity();
+					if (entity == null) {
+						return;
+					}
+					try {
+						try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+							BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
+							myEntity.writeTo(os);
+							failureReason = os.toString();
+						}
+					} catch (IOException e) {
+						return;
+					}
 				}
 			};
 			result = postProcessResult(server.getHttpClient().execute(request, rh));
@@ -290,5 +309,9 @@ public abstract class BaseCommand<T> {
 	 */
 	protected Header[] getResponseHeaders() {
 		return responseHeaders;
+	}
+
+	public String getFailureReason() {
+		return failureReason;
 	}
 }
