@@ -245,10 +245,12 @@ public class GerritTableView extends ViewPart {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				fViewer.setInput(reviews);
-				//Refresh the counter
-				setReviewsTotalResultLabel(Integer.toString(reviews.getAllReviews().size()));
-				searchSection.layout(true);
+				if (!fViewer.getTable().isDisposed()) {
+					fViewer.setInput(reviews);
+					//Refresh the counter
+					setReviewsTotalResultLabel(Integer.toString(reviews.getAllReviews().size()));
+					searchSection.layout(true);
+				}
 			}
 		});
 	}

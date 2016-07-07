@@ -50,12 +50,6 @@ public class Gerrit_2_11Test {
 
 	@Before
 	public void setUp() throws Exception {
-		System.err.println("System.getProperty(): " + System.getProperties());
-		System.err.println("====-----=====-----======-----====");
-		System.err.println("System.getProperty(localhost.test.server http://localhost:2080)"
-				+ System.getProperty("localhost.test.server", "http://localhost:2080"));
-		System.err.println("System.getProperty(org.eclipse.egerrit.test.all: "
-				+ System.getProperty("org.eclipse.egerrit.test.all", "Jacques"));
 		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_11.PORT, Common_2_11.PATH);
 		if (Common.PROXY_HOST != null) {
 			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
@@ -73,8 +67,8 @@ public class Gerrit_2_11Test {
 
 	/**
 	 * Test method for
-	 * {@link org.eclipse.egerrit.internal.core.Gerrit_2_11#Gerrit_2_11(org.eclipse.egerrit.internal.core.GerritRepository)} . and
-	 * {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
+	 * {@link org.eclipse.egerrit.internal.core.Gerrit_2_11#Gerrit_2_11(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * . and {@link org.eclipse.egerrit.core.Gerrit#getRepository()}.
 	 */
 	@Test
 	public void testGerrit_2_11() {

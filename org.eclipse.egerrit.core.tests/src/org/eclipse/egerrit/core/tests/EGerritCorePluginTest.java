@@ -70,6 +70,8 @@ public class EGerritCorePluginTest implements ILogListener {
 	@After
 	public void tearDown() throws Exception {
 		fPlugin.getLog().removeLogListener(this);
+		EGerritCorePlugin.getDefault().start(EGerritCorePlugin.getDefault().getBundle().getBundleContext());
+		;
 	}
 
 	// ------------------------------------------------------------------------
@@ -152,7 +154,8 @@ public class EGerritCorePluginTest implements ILogListener {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logInfo(java.lang.String, java.lang.Throwable)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.EGerritCorePlugin#logInfo(java.lang.String, java.lang.Throwable)}
 	 */
 	@Test
 	public void testLogInfoStringThrowable() {

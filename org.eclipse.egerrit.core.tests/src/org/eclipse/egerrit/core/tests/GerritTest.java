@@ -15,7 +15,6 @@ package org.eclipse.egerrit.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.http.HttpHost;
@@ -31,31 +30,11 @@ import org.junit.Test;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.GerritClient}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
 public class GerritTest {
-
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
-	private final String SCHEME = Common.SCHEME;
-
-	private final String HOST = Common.HOST;
-
-	private final int PORT = Common.PORT;
-
-	private final String PATH = Common.PATH;
-
-	private final String PROXY_HOST = Common.PROXY_HOST;
-
-	private final int PROXY_PORT = Common.PROXY_PORT;
-
-	private final String USER = Common.USER;
-
-	private final String PASSWORD = Common.PASSWORD;
 
 	// ------------------------------------------------------------------------
 	// Helper classes
@@ -65,12 +44,11 @@ public class GerritTest {
 
 	@Before
 	public void setUp() throws Exception {
-		fRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
-		if (PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
+		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_11.PORT, Common_2_11.PATH);
+		if (Common.PROXY_HOST != null) {
+			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
 		}
-		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
-		assertNotNull(fRepository);
+		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 	}
 
 	@After
@@ -88,8 +66,9 @@ public class GerritTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritClient#Gerrit(org.eclipse.egerrit.internal.core.GerritRepository)} and
-	 * {@link org.eclipse.egerrit.internal.core.GerritClient#getRepository()}.
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.GerritClient#Gerrit(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * and {@link org.eclipse.egerrit.internal.core.GerritClient#getRepository()}.
 	 */
 	@Test
 	public void testGerrit() {
@@ -103,13 +82,13 @@ public class GerritTest {
 
 		// Verify result
 		assertNotNull("Gerrit instance is null", gerrit);
-		assertTrue("Wrong version", gerrit instanceof GerritClient);
 		assertEquals("Wrong repository", fRepository, gerrit.getRepository());
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritClient#Gerrit(org.eclipse.egerrit.internal.core.GerritRepository)} when
-	 * repository == null
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.GerritClient#Gerrit(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * when repository == null
 	 */
 	@Test
 	public void testGerrit_Null_Repo() {
