@@ -11,11 +11,17 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.fieldassist.ComboContentAdapter;
+import org.eclipse.jface.fieldassist.ContentProposal;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
@@ -92,6 +98,7 @@ public class CherryPickDialog extends Dialog {
 
 		Label lblBranch = new Label(parent, SWT.LEFT);
 		fBranch = new Combo(parent, SWT.NONE);
+		addContentProposal(fBranch);
 
 		GridData gd_combo = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
 		gd_combo.verticalIndent = 5;
@@ -123,6 +130,27 @@ public class CherryPickDialog extends Dialog {
 		parent.getShell().setMinimumSize(500, 300);
 
 		return parent;
+	}
+
+	private void addContentProposal(Combo combo) {
+		IContentProposalProvider cp = new IContentProposalProvider() {
+			@Override
+			public IContentProposal[] getProposals(String contents, int position) {
+				List<IContentProposal> resultList = new ArrayList<>();
+
+				for (final String branch : branchesRef) {
+					if (branch.indexOf(contents) != -1) {
+						resultList.add(new ContentProposal(branch));
+					}
+				}
+
+				return resultList.toArray(new IContentProposal[resultList.size()]);
+			}
+		};
+
+		ContentProposalAdapter adapter = new ContentProposalAdapter(combo, new ComboContentAdapter(), cp, null, null);
+		// set the acceptance style to always replace the complete content
+		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 	}
 
 	/**
