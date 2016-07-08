@@ -32,9 +32,12 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -45,6 +48,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 /**
@@ -69,6 +73,8 @@ public class ReplyDialog extends InputDialog {
 
 	private Composite detailTextComposite;
 
+	private ScrolledComposite scrolledDraftArea;
+
 	private final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
 
 	private LinkedHashMap<String, String> radioMap = new LinkedHashMap<String, String>();
@@ -76,6 +82,8 @@ public class ReplyDialog extends InputDialog {
 	private RevisionInfo fRevisionInfo;
 
 	private GerritClient fGerritClient;
+
+	private static final int WIDTH = 650;
 
 	/**
 	 * The constructor.
@@ -125,7 +133,8 @@ public class ReplyDialog extends InputDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite) super.createDialogArea(parent);
 		((GridData) this.getText().getLayoutData()).heightHint = 100;
-
+		((GridData) this.getText().getLayoutData()).grabExcessVerticalSpace = true;
+		((GridData) this.getText().getLayoutData()).verticalAlignment = SWT.FILL;
 		//Create area to display the draft comments
 		createMessageArea(composite);
 
@@ -134,8 +143,26 @@ public class ReplyDialog extends InputDialog {
 			createMiddleRadioSection(composite);
 		}
 
-		//Create the bottom section for the buttons
-		parent.getShell().setMinimumSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		// Add a control listener to initialize a default minimum size
+		parent.getShell().addControlListener(new ControlListener() {
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				Point size = parent.getShell().computeSize(WIDTH, SWT.DEFAULT);
+				parent.getShell().setMinimumSize(size);
+				parent.getShell().setSize(size);
+
+				if (hasDrafts(fRevisionInfo)) {
+					//Re-layout the DRAFT AREA
+					scrolledDraftArea.layout();
+				}
+				parent.getShell().removeControlListener(this);
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+			}
+		});
 		return parent;
 	}
 
@@ -161,11 +188,12 @@ public class ReplyDialog extends InputDialog {
 
 			// Create the title area which will contain
 			// a title, message, and image.
-			ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+			scrolledDraftArea = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+
 			GridData grid = new GridData(GridData.FILL_BOTH);
 			grid.heightHint = 100;
-			scrolledComposite.setLayoutData(grid);
-			Composite composite = new Composite(scrolledComposite, SWT.NONE);
+			scrolledDraftArea.setLayoutData(grid);
+			Composite composite = new Composite(scrolledDraftArea, SWT.NONE);
 
 			GridLayout gl_composite = new GridLayout(1, false);
 			gl_composite.marginTop = 0;
@@ -174,16 +202,32 @@ public class ReplyDialog extends InputDialog {
 			GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 			gd_composite.heightHint = 150;
 			composite.setLayoutData(gd_composite);
+			composite.addControlListener(new ControlListener() {
+
+				@Override
+				public void controlResized(ControlEvent e) {
+					// ignore
+					Rectangle size = composite.getParent().getClientArea();
+					composite.setSize(composite.computeSize(size.width, SWT.DEFAULT));
+					scrolledDraftArea.setMinWidth(size.x);
+					Rectangle compoHeight = composite.getBounds();
+					scrolledDraftArea.setMinHeight(compoHeight.height);
+				}
+
+				@Override
+				public void controlMoved(ControlEvent e) {
+				}
+			});
 
 			createLink(composite);
 
-			scrolledComposite.setContent(composite);
+			scrolledDraftArea.setContent(composite);
 			Point p = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-			scrolledComposite.setMinHeight(p.y);
-			scrolledComposite.setMinWidth(p.x);
+			scrolledDraftArea.setMinHeight(p.y);
+			scrolledDraftArea.setMinWidth(p.x);
 
-			scrolledComposite.setExpandHorizontal(true);
-			scrolledComposite.setExpandVertical(true);
+			scrolledDraftArea.setExpandHorizontal(true);
+			scrolledDraftArea.setExpandVertical(true);
 		}
 	}
 
@@ -214,9 +258,12 @@ public class ReplyDialog extends InputDialog {
 					sb.append("\t " + comment.getLine() + "\t "); //$NON-NLS-1$ //$NON-NLS-2$
 					sb.append(comment.getMessage() + "\n"); //$NON-NLS-1$
 				}
-				Label commentLabel = new Label(composite, SWT.NONE);
+				Text commentLabel = new Text(composite, SWT.WRAP | SWT.MULTI);
+				commentLabel.setBackground(composite.getBackground());
+				commentLabel.setEditable(false);
 				commentLabel.setText(sb.toString());
-				commentLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+				GridData grid = new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1);
+				commentLabel.setLayoutData(grid);
 			}
 		}
 	}
