@@ -120,6 +120,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 	private static final String CODE_REVIEW = Messages.ChangeDetailEditor_1;
 
+	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
+
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -259,6 +261,7 @@ public class ChangeDetailEditor extends EditorPart {
 							return ACTIVATION_MESSAGE;
 						}
 						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
+							activateMarkers();
 							return Messages.ChangeDetailEditor_7 + (((RevisionInfo) value)).get_number();
 						}
 						return ACTIVATION_MESSAGE;
@@ -294,7 +297,6 @@ public class ChangeDetailEditor extends EditorPart {
 					try {
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
 								"org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
-
 					} catch (PartInitException e1) {
 						EGerritCorePlugin
 								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
@@ -322,6 +324,16 @@ public class ChangeDetailEditor extends EditorPart {
 		//Set the binding for this section
 		headerSectionDataBindings();
 		return group_header;
+	}
+
+	private void activateMarkers() {
+		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			String title = NLS.bind(Messages.ChangeDetailEditor_EGerriTip, fChangeInfo.get_number(),
+					fChangeInfo.getSubject());
+			String value = NLS.bind(Messages.ChangeDetailEditor_EGerriTipValue,
+					fChangeInfo.getUserSelectedRevision().get_number());
+			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), title, value);
+		}
 	}
 
 	private Composite buttonSection(final Composite parent) {

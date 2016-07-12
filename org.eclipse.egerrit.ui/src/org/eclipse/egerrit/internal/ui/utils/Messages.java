@@ -16,6 +16,10 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.ui.utils.messages"; //$NON-NLS-1$
 
+	public static String ChangeDetailEditor_EGerriTip;
+
+	public static String ChangeDetailEditor_EGerriTipValue;
+
 	public static String ActiveWorkspaceRevision_0;
 
 	public static String ActiveWorkspaceRevision_1;
@@ -246,6 +250,8 @@ public class Messages extends NLS {
 
 	public static String UIFilesTable_2;
 
+	public static String UIUtils_EGerriTipShowAgain;
+
 	public static String UIUtils_0;
 
 	public static String UIUtils_1;
@@ -261,8 +267,6 @@ public class Messages extends NLS {
 	public static String FileTabView_EGerriTip;
 
 	public static String FileTabView_EGerriTipValue;
-
-	public static String FileTabView_EGerriTipShowAgain;
 
 	public static String DeleteDraft_Text;
 

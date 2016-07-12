@@ -15,7 +15,6 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
 import org.eclipse.core.databinding.property.value.IValueProperty;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -30,10 +29,10 @@ import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -51,8 +50,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * This class implements the files table view.
@@ -64,6 +61,8 @@ public class UIFilesTable {
 	public static final String FILES_TABLE = "filesTable"; //$NON-NLS-1$
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+
+	private final String EDITOR_KEY = "fileEditortip"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -162,7 +161,9 @@ public class UIFilesTable {
 					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
 					OpenCompareEditor compareEditor;
 					if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-						showEditorTip();
+						UIUtils.showDialogTip(EDITOR_KEY, fViewer.getControl().getShell(),
+								Messages.FileTabView_EGerriTip, Messages.FileTabView_EGerriTipValue);
+
 					}
 					compareEditor = new OpenCompareEditor(fGerritClient, fChangeInfo);
 
@@ -256,31 +257,6 @@ public class UIFilesTable {
 			fViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
 			fViewer.setInput(revisionsChanges);
 		}
-	}
-
-	private void showEditorTip() {
-		final String KEY = "editortip"; //$NON-NLS-1$
-		Preferences prefs = ConfigurationScope.INSTANCE.getNode("org.eclipse.egerrit.prefs"); //$NON-NLS-1$
-
-		Preferences editorPrefs = prefs.node("editor"); //$NON-NLS-1$
-		boolean choice = editorPrefs.getBoolean(KEY, false);
-
-		if (choice) {
-			return;
-		}
-		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(fViewer.getControl().getShell(),
-				Messages.FileTabView_EGerriTip, Messages.FileTabView_EGerriTipValue,
-				Messages.FileTabView_EGerriTipShowAgain, false, null, null);
-
-		if (dialog.getToggleState()) {
-			editorPrefs.putBoolean(KEY, true);
-			try {
-				editorPrefs.flush();
-			} catch (BackingStoreException e) {
-				//There is not much we can do
-			}
-		}
-		return;
 	}
 
 	public void dispose() {

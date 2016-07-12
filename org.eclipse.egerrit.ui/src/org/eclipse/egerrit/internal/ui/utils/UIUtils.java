@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
@@ -35,6 +36,7 @@ import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.ReplyDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -46,6 +48,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +62,10 @@ import org.slf4j.LoggerFactory;
 public class UIUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
+
+	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs";
+
+	private final static int TITLE_LENGTH = 75;
 
 	/**
 	 * To display some information to the end-user
@@ -265,5 +273,42 @@ public class UIUtils {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Show an EGerrit tip to the end-user until the toggle is selected
+	 *
+	 * @param key
+	 * @param shell
+	 * @param title
+	 * @param value
+	 */
+	public static void showDialogTip(String key, Shell shell, String title, String value) {
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode(EGERRIT_PREF);
+
+		Preferences editorPrefs = prefs.node(key);
+		boolean choice = editorPrefs.getBoolean(key, false);
+
+		if (choice) {
+			return;
+		}
+
+		//Keep the title length to TITLE_LENGTH characters max
+		if (title.length() > TITLE_LENGTH) {
+			title = title.substring(0, (TITLE_LENGTH - 3)).concat("..."); //$NON-NLS-1$
+		}
+
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(shell, title, value,
+				Messages.UIUtils_EGerriTipShowAgain, false, null, null);
+
+		if (dialog.getToggleState()) {
+			editorPrefs.putBoolean(key, true);
+			try {
+				editorPrefs.flush();
+			} catch (BackingStoreException e) {
+				//There is not much we can do
+			}
+		}
+		return;
 	}
 }
