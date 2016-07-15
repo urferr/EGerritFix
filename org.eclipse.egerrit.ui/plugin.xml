@@ -138,6 +138,16 @@
                 id="org.eclipse.egerrit.internal.ui.compare.showReviewEditor"
                 name="%showReviewEditor">
           </command>
+         <command
+               description="Go To Next comment"
+               id="org.eclipse.egerrit.internal.ui.compare.NextCommentAnnotationHandler"
+               name="Next Anomaly">
+         </command>
+         <command
+               description="Go To Previous comment"
+               id="org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler"
+               name="Previous Anomaly">
+         </command>          
 </extension>
 <extension
        point="org.eclipse.ui.handlers">
@@ -177,6 +187,14 @@
              class="org.eclipse.egerrit.internal.ui.compare.ShowReviewEditorHandler"
              commandId="org.eclipse.egerrit.internal.ui.compare.showReviewEditor">
        </handler>
+         <handler
+               class="org.eclipse.egerrit.internal.ui.compare.NextCommentAnnotationHandler"
+               commandId="org.eclipse.egerrit.internal.ui.compare.NextCommentAnnotationHandler">
+         </handler>
+         <handler
+               class="org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler"
+               commandId="org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler">
+         </handler>       
 </extension>
 <extension
        point="org.eclipse.ui.bindings">

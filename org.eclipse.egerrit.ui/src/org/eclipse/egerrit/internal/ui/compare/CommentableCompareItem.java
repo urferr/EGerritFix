@@ -279,9 +279,11 @@ public abstract class CommentableCompareItem extends Document
 				formattedComment += originalDocument.getDefaultLineDelimiter();
 				originalDocument.replace(insertionPosition, 0, formattedComment);
 				replace(insertionPosition, 0, formattedComment);
-				originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+				originalComments.addAnnotation(
+						new GerritCommentAnnotation(commentInfo, formattedComment, commentTextIndex, commentTextLength),
 						new Position(commentTextIndex, commentTextLength));
-				editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+				editableComments.addAnnotation(
+						new GerritCommentAnnotation(commentInfo, formattedComment, commentTextIndex, commentTextLength),
 						new Position(commentTextIndex, commentTextLength));
 			} catch (BadLocationException e) {
 				logger.debug("Exception merging text and comments.", e); //$NON-NLS-1$

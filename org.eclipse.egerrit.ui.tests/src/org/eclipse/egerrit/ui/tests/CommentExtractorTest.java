@@ -466,7 +466,7 @@ public class CommentExtractorTest {
 				int line = -1;
 				try {
 					line = document.getLineOfOffset(offset);
-					commentModel.addAnnotation(createGerritComment(comment, line - lineDelta),
+					commentModel.addAnnotation(createGerritComment(comment, line - lineDelta, offset, comment.length()),
 							new Position(offset, comment.length()));
 					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
 				} catch (BadLocationException e) {
@@ -484,7 +484,7 @@ public class CommentExtractorTest {
 				int line = -1;
 				try {
 					line = document.getLineOfOffset(offset);
-					commentModel.addAnnotation(new GerritCommentAnnotation(null, ""),
+					commentModel.addAnnotation(new GerritCommentAnnotation(null, "", offset, comment.length()),
 							new Position(offset, comment.length()));
 					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
 				} catch (BadLocationException e) {
@@ -497,7 +497,7 @@ public class CommentExtractorTest {
 		return new Object[] { document, commentModel };
 	}
 
-	private GerritCommentAnnotation createGerritComment(String comment, int line) {
+	private GerritCommentAnnotation createGerritComment(String comment, int line, int offset, int length) {
 		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
 		info.setId("ID-" + comment);
 		info.setLine(line);
@@ -507,7 +507,7 @@ public class CommentExtractorTest {
 			info.setAuthor(author);
 		}
 		info.setUpdated("2015-09-23 16:05:16.000000000");
-		return new GerritCommentAnnotation(info, "");
+		return new GerritCommentAnnotation(info, "", offset, length);
 	}
 
 }

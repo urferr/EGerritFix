@@ -25,8 +25,10 @@ import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
+import org.eclipse.compare.structuremergeviewer.Differencer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
+import org.eclipse.compare.structuremergeviewer.StructureDiffViewer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -48,13 +50,16 @@ import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
@@ -442,6 +447,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return parents.get(0).getCommit();
 	}
 
+
 	@Override
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
@@ -456,6 +462,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		if (isCommentable(input.getRight())) {
 			setupCommentColorer(newViewer, 1);
 		}
+
+		ToolBarManager tbm = CompareViewerPane.getToolBarManager(parent);
+		UICompareUtils.insertAnnotationNavigationCommands(CompareViewerPane.getToolBarManager(parent));
+
 		return newViewer;
 	}
 

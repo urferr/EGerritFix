@@ -384,6 +384,14 @@ public class Messages extends NLS {
 
 	public static String QuickFixReplyToComment_1;
 
+	public static String UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_NAME;
+
+	public static String UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_TOOLTIP;
+
+	public static String UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_NAME;
+
+	public static String UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_TOOLTIP;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
