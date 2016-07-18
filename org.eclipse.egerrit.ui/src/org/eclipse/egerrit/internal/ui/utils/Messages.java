@@ -16,7 +16,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.ui.utils.messages"; //$NON-NLS-1$
 
-	public static String ChangeDetailEditor_EGerriTip;
+	public static String EGerriTip;
 
 	public static String ChangeDetailEditor_EGerriTipValue;
 
@@ -263,8 +263,6 @@ public class Messages extends NLS {
 	public static String UIUtils_4;
 
 	public static String UIUtils_5;
-
-	public static String FileTabView_EGerriTip;
 
 	public static String FileTabView_EGerriTipValue;
 

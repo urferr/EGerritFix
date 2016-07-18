@@ -161,8 +161,8 @@ public class UIFilesTable {
 					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
 					OpenCompareEditor compareEditor;
 					if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-						UIUtils.showDialogTip(EDITOR_KEY, fViewer.getControl().getShell(),
-								Messages.FileTabView_EGerriTip, Messages.FileTabView_EGerriTipValue);
+						UIUtils.showDialogTip(EDITOR_KEY, fViewer.getControl().getShell(), Messages.EGerriTip,
+								Messages.FileTabView_EGerriTipValue);
 
 					}
 					compareEditor = new OpenCompareEditor(fGerritClient, fChangeInfo);

@@ -328,11 +328,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 	private void activateMarkers() {
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			String title = NLS.bind(Messages.ChangeDetailEditor_EGerriTip, fChangeInfo.get_number(),
-					fChangeInfo.getSubject());
-			String value = NLS.bind(Messages.ChangeDetailEditor_EGerriTipValue,
-					fChangeInfo.getUserSelectedRevision().get_number());
-			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), title, value);
+			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), Messages.EGerriTip, Messages.ChangeDetailEditor_EGerriTipValue);
 		}
 	}
 
