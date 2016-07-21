@@ -17,6 +17,15 @@ get-quick-access | set-text setupRCPTT
 get-quick-access | key-type Enter
 
 
+get-preferences-menu | click
+with [get-window Preferences] {
+    get-editbox | set-text proxy
+    get-tree | select "General/Network Connections"
+    get-combo -after [get-label "Active Provider:"] | select Direct
+    get-button Apply | click
+    get-button OK | click
+}
+
 //Open the Dashboard
 get-menu "Window/Show View/Other..." | click
 with [get-window "Show View"] {
