@@ -44,6 +44,7 @@
 	</pluginRepositories>
 	<properties>
 		<rcptt-maven-version>2.1.0</rcptt-maven-version>
+		<!-- To make tests run faster, you can replace this URL by path of a file on the local filesystem  -->
 		<base-aut>http://download.eclipse.org/eclipse/downloads/drops4/R-4.6-201606061100/eclipse-SDK-4.6-linux-gtk-x86_64.tar.gz</base-aut>
 	</properties>
 
@@ -78,6 +79,8 @@
 					<aut>
 						<vmArgs>
 							<vmArg>${argLine}</vmArg>
+							<!-- Argument to enable remote debugging of the AUT -->
+							<!-- <vmArg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=6677</vmArg> -->
 						</vmArgs>
 
 						<explicit>${base-aut}</explicit>
@@ -88,6 +91,7 @@
 									<feature>org.eclipse.egit.feature.group</feature>
 									<feature>org.eclipse.jgit.feature.group</feature>
 									<feature>org.eclipse.emf.feature.group</feature>
+									<feature>org.eclipse.swtbot.eclipse.feature.group</feature>
 								</features>
 							</injection>
  							<injection>
@@ -108,6 +112,8 @@
 								<features>
 									<feature>org.slf4j.api</feature>
 									<feature>org.apache.commons.lang3</feature>
+									<feature>org.hamcrest.library</feature>
+									<feature>org.hamcrest.core</feature>
 								</features>
 							</injection>
 						</injections>

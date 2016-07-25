@@ -1,0 +1,24 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Context-Type: org.eclipse.rcptt.ctx.ecl
+Element-Name: SetProxyToDirect
+Element-Type: context
+Element-Version: 2.0
+Id: _vazFEFRCEeaXLqlXvYQIgg
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 7/27/16 5:40 PM
+
+------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
+Content-Type: text/ecl
+Entry-Name: .ecl.context
+
+// ensure proxy setting is set to direct
+get-preferences-menu | click
+with [get-window Preferences] {
+    get-editbox | set-text proxy
+    get-tree | select "General/Network Connections"
+    get-combo -after [get-label "Active Provider:"] | select Direct
+    get-button Apply | click
+    get-button OK | click
+}
+------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

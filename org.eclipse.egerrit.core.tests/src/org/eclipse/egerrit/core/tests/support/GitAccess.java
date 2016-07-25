@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Guy Perron - Initial API and implementation
+ *   Ericsson - Initial API and implementation
  *******************************************************************************/
 package org.eclipse.egerrit.core.tests.support;
 
@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.net.URI;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
@@ -27,16 +26,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.tests.Common;
-import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
-import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.core.GerritCredentials;
-import org.eclipse.egerrit.internal.core.GerritFactory;
-import org.eclipse.egerrit.internal.core.GerritRepository;
-import org.eclipse.egerrit.internal.core.GerritServerInformation;
-import org.eclipse.egerrit.internal.core.command.ChangeOption;
-import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
-import org.eclipse.egerrit.internal.core.exception.EGerritException;
-import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egit.core.Activator;
 import org.eclipse.egit.core.RepositoryUtil;
 import org.eclipse.jgit.api.CloneCommand;
@@ -52,7 +41,7 @@ import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 /**
- * A utility class for supporting JUnit tests scenarios
+ * A helper to deal with Git repos for testing purpose
  *
  * @since 1.0
  */
@@ -69,28 +58,31 @@ public class GitAccess {
 
 	private File checkoutFolder;
 
-	private GerritRepository gerritRepo;
-
-	private GerritClient gerrit;
-
-	private String fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/"
-			+ Common.TEST_PROJECT;
+	private String gitRepoURL;
 
 	static {
 		setDefaultAuthenticator();
+	}
+
+	public GitAccess() {
+		this(null, null);
+	}
+
+	public GitAccess(String server, String project) {
+		if (server == null) {
+			server = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH;
+		}
+
+		if (project == null) {
+			project = Common.TEST_PROJECT;
+		}
+		gitRepoURL = server + '/' + project;
 	}
 
 	/**
 	 * Instantiates a local git repo connected to the server.
 	 */
 	public Git getGitProject() throws Exception {
-		gerritRepo = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
-		//TODO DEAL WITH HTTPS AND SUCH
-		gerritRepo.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
-		gerritRepo.setServerInfo(new GerritServerInformation(
-				new URI(Common.SCHEME, null, Common.HOST, Common.PORT, Common.PATH, null, null).toASCIIString(),
-				"Test server"));
-		gerrit = GerritFactory.create(gerritRepo);
 		if (fGit == null) {
 			cloneRepo();
 		}
@@ -100,8 +92,8 @@ public class GitAccess {
 	private void cloneRepo() throws Exception {
 		CloneCommand cloneCmd = Git.cloneRepository();
 		checkoutFolder = createTempFolder("egerrit");
-		System.out.println("Checking out " + fUrl + " into " + checkoutFolder);
-		cloneCmd.setGitDir(new File(checkoutFolder, ".git")).setURI(fUrl).setDirectory(checkoutFolder);
+		System.out.println("Checking out " + gitRepoURL + " into " + checkoutFolder);
+		cloneCmd.setGitDir(new File(checkoutFolder, ".git")).setURI(gitRepoURL).setDirectory(checkoutFolder);
 		cloneCmd.setBare(false).setBranch("master").setNoCheckout(false);
 		fGit = cloneCmd.call();
 	}
@@ -292,15 +284,6 @@ public class GitAccess {
 	}
 
 	/**
-	 * Get the object representing the gerrit server.
-	 *
-	 * @return
-	 */
-	public GerritRepository getGerritRepo() {
-		return gerritRepo;
-	}
-
-	/**
 	 * Return the id of the last commit done locally
 	 *
 	 * @return the commit id
@@ -319,34 +302,6 @@ public class GitAccess {
 		fGit.reset().setMode(ResetType.HARD).setRef(commitId).call();
 	}
 
-	/**
-	 * Get a ChangeInfo object from a given changeID
-	 *
-	 * @param changeId
-	 * @return a fully populated ChangeInfo
-	 * @throws Exception
-	 */
-	public ChangeInfo getChange(String changeId) throws Exception {
-		GetChangeCommand command = gerrit.getChange(changeId);
-		command.addOption(ChangeOption.ALL_FILES);
-		command.addOption(ChangeOption.CURRENT_REVISION);
-		command.addOption(ChangeOption.CURRENT_COMMIT);
-		command.addOption(ChangeOption.MESSAGES);
-		command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
-
-		ChangeInfo res = null;
-		try {
-			res = command.call();
-		} catch (EGerritException e) {
-			EGerritCorePlugin.logError(e.getMessage());
-		}
-		return res;
-	}
-
-	public GerritClient getGerrit() {
-		return gerrit;
-	}
-
 	//This is necessary to avoid being prompted for username/pwd when we are pushing commit to the git repo
 	private static void setDefaultAuthenticator() {
 		Authenticator.setDefault(new Authenticator() {
@@ -356,11 +311,5 @@ public class GitAccess {
 				return new PasswordAuthentication(Common.USER, Common.PASSWORD.toCharArray());
 			}
 		});
-	}
-
-	// Allow to change the project
-	public void setTestProject(String project) {
-		fUrl = Common.SCHEME + "://" + Common.HOST + ":" + Common.PORT + Common.PATH + "/" + project;
-
 	}
 }

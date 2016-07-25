@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
- <extension
-         point="org.eclipse.ui.commands">
-
-      <command
-
-            id="org.eclipse.egerrit.ui.tests.SetupRCPTT"
-            name="setupRCPTT">
-      </command>
-</extension>
    <extension
-         point="org.eclipse.ui.handlers">
+         point="org.eclipse.rcptt.ecl.core.scriptlet">
+      <scriptlet
+            class="org.eclipse.egerrit.internal.rcptt.support.CreateReviewService"
+            name="CreateReview"
+            namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
+      </scriptlet>
+   </extension>
 
-      <handler
-            class="org.eclipse.egerrit.ui.tests.SetupRCPTTHandler"
-            commandId="org.eclipse.egerrit.ui.tests.SetupRCPTT">
-      </handler>
-</extension>
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated egerritecl -->
+      <package
+            uri="http://www.eclipse.org/egerrit/2016/egerritecl.ecore"
+            class="org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage"
+            genModel="model/egerritecl.genmodel"/>
+   </extension>
 
 </plugin>

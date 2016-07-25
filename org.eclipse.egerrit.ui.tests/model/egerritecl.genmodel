@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    copyrightText="  Copyright (c) 2016 Ericsson AB&#xA; &#xA;  All rights reserved. This program and the accompanying materials are&#xA;  made available under the terms of the Eclipse Public License v1.0 which&#xA;  accompanies this distribution, and is available at&#xA;  http://www.eclipse.org/legal/epl-v10.html&#xA; &#xA;  Contributors:&#xA;    Ericsson AB - Initial API and implementation"
+    modelDirectory="/org.eclipse.egerrit.ui.tests/src-gen" modelPluginID="org.eclipse.egerrit.ui.tests"
+    modelName="egerritecl" nonNLSMarkers="true" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" copyrightFields="false"
+    language="en" usedGenPackages="../../org.eclipse.rcptt.ecl.core/model/ecl.genmodel#//core platform:/plugin/org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>egerrit.ecore</foreignModel>
+  <genPackages prefix="egerritecl" basePackage="org.eclipse.egerrit.internal.rcptt.support"
+      disposableProviderFactory="true" ecorePackage="egerritecl.ecore#/">
+    <genClasses ecoreClass="egerritecl.ecore#//CreateReview"/>
+  </genPackages>
+</genmodel:GenModel>

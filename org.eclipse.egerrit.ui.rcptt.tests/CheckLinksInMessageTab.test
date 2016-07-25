@@ -1,0 +1,37 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CheckLinksInMessageTab
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _4XxmEFUREeak2Y1KpcW4TQ
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 7/28/16 6:46 PM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Select links in the editor and make sure that they are set in the dashboard
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val reviewId -value [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $reviewId
+
+	with [get-editor] {
+		get-tab-folder | get-tab-item Details | click
+	}
+	//Click the author link in the editor and perform the check
+	get-editor | get-link "<a>egerrit/RCPTTtest</a>" | click-link
+	getDashboard | get-combo | get-property selection | equals "project:egerrit/RCPTTtest"
+		| verify-true
+		
+	//Click the changeId link in the editor and perform the check
+	get-editor | get-link [concat "<a>master</a>"] | click-link
+	getDashboard | get-combo | get-property selection | equals "branch:master project:egerrit/RCPTTtest" | verify-true
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
