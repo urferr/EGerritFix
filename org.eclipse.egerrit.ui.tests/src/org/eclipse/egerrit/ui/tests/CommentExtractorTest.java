@@ -484,7 +484,7 @@ public class CommentExtractorTest {
 				int line = -1;
 				try {
 					line = document.getLineOfOffset(offset);
-					commentModel.addAnnotation(new GerritCommentAnnotation(null, "", offset, comment.length()),
+					commentModel.addAnnotation(new GerritCommentAnnotation(null, ""),
 							new Position(offset, comment.length()));
 					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
 				} catch (BadLocationException e) {
@@ -507,7 +507,7 @@ public class CommentExtractorTest {
 			info.setAuthor(author);
 		}
 		info.setUpdated("2015-09-23 16:05:16.000000000");
-		return new GerritCommentAnnotation(info, "", offset, length);
+		return new GerritCommentAnnotation(info, "");
 	}
 
 }

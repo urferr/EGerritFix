@@ -362,14 +362,6 @@ public class Messages extends NLS {
 
 	public static String GerritMultipleInput_9;
 
-	public static String NextPreviousFileAction_1;
-
-	public static String NextPreviousFileAction_2;
-
-	public static String NextPreviousFileAction_4;
-
-	public static String NextPreviousFileAction_5;
-
 	public static String QuickFixer_0;
 
 	public static String QuickFixer_1;
@@ -382,13 +374,13 @@ public class Messages extends NLS {
 
 	public static String QuickFixReplyToComment_1;
 
-	public static String UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_NAME;
+	public static String NextCommentAnnotationCommandName;
 
-	public static String UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_TOOLTIP;
+	public static String NextCommentAnnotationCommandTooltip;
 
-	public static String UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_NAME;
+	public static String PreviousCommentAnnotationCommandName;
 
-	public static String UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_TOOLTIP;
+	public static String PreviousCommentAnnotationCommandTooltip;
 
 	static {
 		// initialize resource bundle
