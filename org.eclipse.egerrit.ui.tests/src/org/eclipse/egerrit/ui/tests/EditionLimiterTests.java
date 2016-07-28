@@ -207,7 +207,7 @@ public class EditionLimiterTests {
 			AccountInfo author = ModelFactory.eINSTANCE.createAccountInfo();
 			info.setAuthor(author);
 		}
-		return new GerritCommentAnnotation(info, "", 0, 10);
+		return new GerritCommentAnnotation(info, ""); //$NON-NLS-1$
 	}
 
 	public void typeKeystroke(org.eclipse.jface.bindings.keys.KeyStroke... strokes) {

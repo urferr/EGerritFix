@@ -12,7 +12,6 @@
 package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.egerrit.internal.model.CommentInfo;
-import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 
 /*
@@ -25,25 +24,15 @@ public class GerritCommentAnnotation extends Annotation {
 
 	private String formattedComment;
 
-	private Position position;
-
 	/**
 	 * Instantiate an annotation with the comment and its textual representation shown in the document
 	 *
 	 * @param comment
 	 * @param formattedComment
 	 */
-	public GerritCommentAnnotation(CommentInfo comment, String formattedComment, int offset, int length) {
+	public GerritCommentAnnotation(CommentInfo comment, String formattedComment) {
 		this.comment = comment;
 		this.formattedComment = formattedComment;
-		position = new Position(offset, length);
-	}
-
-	/**
-	 * return comment position
-	 */
-	public Position getPosition() {
-		return position;
 	}
 
 	@Override

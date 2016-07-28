@@ -177,7 +177,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 					textWidget.setCaretOffset(
 							insertionPosition + insertedText.length() - textWidget.getLineDelimiter().length());
 				}
-				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText, 0, 10),
+				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
 						new Position(insertionPosition, commentText.length()));
 
 				return false;

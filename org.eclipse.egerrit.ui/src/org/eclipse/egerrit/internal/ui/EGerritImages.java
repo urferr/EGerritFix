@@ -44,6 +44,10 @@ public class EGerritImages {
 
 	public static final String SHOW_REVIEW_EDITOR_IMAGE = "icons/back.gif"; //$NON-NLS-1$
 
+	public static final String NEXT_COMMENT_ANNOTATION_ICON_FILE = "icons/nxtcomment_menu.png"; //$NON-NLS-1$
+
+	public static final String PREVIOUS_COMMENT_ANNOTATION_ICON_FILE = "icons/prevcomment_menu.png"; //$NON-NLS-1$
+
 	static {
 		fgImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(AUTHOR_COMMENT));
 		fgImageRegistry.put(ANONYMOUS_COMMENT, EGerritUIPlugin.getImageDescriptor(ANONYMOUS_COMMENT));
@@ -56,6 +60,10 @@ public class EGerritImages {
 		fgImageRegistry.put(TOGGLE_FILEPATH, EGerritUIPlugin.getImageDescriptor(TOGGLE_FILEPATH));
 		fgImageRegistry.put(CHECKED_IMAGE, EGerritUIPlugin.getImageDescriptor(CHECKED_IMAGE));
 		fgImageRegistry.put(SHOW_REVIEW_EDITOR_IMAGE, EGerritUIPlugin.getImageDescriptor(SHOW_REVIEW_EDITOR_IMAGE));
+		fgImageRegistry.put(NEXT_COMMENT_ANNOTATION_ICON_FILE,
+				EGerritUIPlugin.getImageDescriptor(NEXT_COMMENT_ANNOTATION_ICON_FILE));
+		fgImageRegistry.put(PREVIOUS_COMMENT_ANNOTATION_ICON_FILE,
+				EGerritUIPlugin.getImageDescriptor(PREVIOUS_COMMENT_ANNOTATION_ICON_FILE));
 	}
 
 	/**

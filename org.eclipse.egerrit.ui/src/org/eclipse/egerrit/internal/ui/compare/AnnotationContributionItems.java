@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.IContributionItem;
@@ -52,10 +53,10 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND, UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND, null,
 				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault()
 						.getBundle()
-						.getEntry(UICompareUtils.NEXT_COMMENT_ANNOTATION_ICON_FILE)),
-				null, null, Messages.UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_NAME,
+						.getEntry(EGerritImages.NEXT_COMMENT_ANNOTATION_ICON_FILE)),
+				null, null, Messages.NextCommentAnnotationCommandName,
 				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC,
-				Messages.UICompareUtils_NEXT_COMMENT_ANNOTATION_COMMAND_TOOLTIP, CommandContributionItem.STYLE_PUSH,
+				Messages.NextCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH,
 				null, true);
 
 		list.add(new CommandContributionItem(params));
@@ -71,10 +72,10 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 				null,
 				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault()
 						.getBundle()
-						.getEntry(UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_ICON_FILE)),
-				null, null, Messages.UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_NAME,
+						.getEntry(EGerritImages.PREVIOUS_COMMENT_ANNOTATION_ICON_FILE)),
+				null, null, Messages.PreviousCommentAnnotationCommandName,
 				UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_COMMAND_MNEMONIC,
-				Messages.UICompareUtils_PREVIOUS_COMMENT_ANNOTATION_COMMAND_TOOLTIP, CommandContributionItem.STYLE_PUSH,
+				Messages.PreviousCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH,
 				null, true);
 
 		list.add(new CommandContributionItem(params));
