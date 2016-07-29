@@ -655,14 +655,19 @@ public class DetailsTabView {
 				String subject = null;
 				if (element instanceof ChangeInfo) {
 					ChangeInfo changeInfo = (ChangeInfo) element;
-					changeId = changeInfo.getChange_id();
+					//Note: Need to use the id instead of the changeInfo.getChange_id() for cases where
+					//we can have the same changeId on two different branches
+					//See review 78088
+					changeId = changeInfo.getId();
 					if (changeId == null) {
 						subject = changeInfo.getSubject();
 					}
 				} else if (element instanceof RelatedChangeAndCommitInfo) {
 					RelatedChangeAndCommitInfo relChangeInfo = (RelatedChangeAndCommitInfo) element;
-					changeId = relChangeInfo.getChange_id();
-
+					//Note: Need to use the number instead of the changeId for cases where
+					//we we can have the same changeId on two separate branches and this generates
+					//an error since we received two reviews
+					changeId = relChangeInfo.get_change_number();
 					if (changeId == null) {
 						subject = relChangeInfo.getCommit().getSubject();
 					}
