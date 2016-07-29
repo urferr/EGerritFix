@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201606221726
-Save-Time: 7/28/16 7:14 PM
+Save-Time: 7/29/16 12:18 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -34,7 +34,7 @@ proc closeDashboard [] {
 }
 
 // Enter a query in the dashboard search dialog and execute it. The query is executed against the default server.
-proc runQuery [val query -input] {
+proc runQuery [val query] {
 	getDashboard | get-button "Select current Gerrit repository" | click -arrow
 	get-menu $serverName | click
 	get-view "Gerrit Dashboard (EGerrit)" | get-combo | set-text $query
@@ -42,7 +42,7 @@ proc runQuery [val query -input] {
 }
 
 // Run the query and open the review editor on the first match
-proc runQueryAndOpenEditor [val query -input] {
+proc runQueryAndOpenEditor [val query] {
 	runQuery $query
 	wait -ms 500
 	with [getDashboard] {
@@ -52,11 +52,53 @@ proc runQueryAndOpenEditor [val query -input] {
 	}
 }
 
-proc assertStatusInDashboard [val expectedStatus -input] {
-	getDashboard | get-table | get-item false | get-property "columns[3]" | equals $expectedStatus | verify-true
+proc "assert-that-status-in-dashboard" [val is] {
+	getDashboard | get-table | get-item false | get-property "columns[3]" | equals $is | verify-true
 }
 
-proc assertSubjectInDashboard [val expectedSubject -input] {
-	getDashboard | get-table | get-item false | get-property "columns[2]" | equals $expectedSubject | verify-true
+proc "assert-that-subject-in-dashboard" [val is] {
+	getDashboard | get-table | get-item false | get-property "columns[2]" | equals $is | verify-true
 }
+
+proc "assert-that-first-entry-in-history-table" [val atColumn] [val is] [val in -input] {
+	with [$in] {
+		get-tab-folder | get-tab-item History | click
+	}
+	with [get-table] {
+		get-cell -row 0 -column 1 | get-property [concat "columns[" $atColumn "]"] | contains $is | verify-true
+	}
+}
+
+proc "assert-that-status-in-editor-header" [val is] [val in -input] {
+	$in | get-editbox -after [get-label "ID:"] -index 1 | get-property text | equals $is | verify-true
+}
+
+proc "assert-that-button" [val button] [val is] [val in -input] {
+	with [$in] {
+		if [$is | equals enabled] {
+			get-button $button | get-property enablement | equals true | verify-true
+		}
+		if [$is | equals disabled] {
+			get-button $button | get-property enablement | equals false | verify-true
+		}
+		if [$is | equals "not-present"] {
+			verify-error {
+				get-button $button
+			}
+		}
+	}
+}
+
+proc "assert-that-search-box-is-dashboard" [val is] {
+	getDashboard | get-combo | get-property selection | equals $is | verify-true
+}
+
+proc "assert-that-subject-in-editor" [val is] [val in -input] {
+	$in | get-editbox -after [get-label "Subject:"] | get-property text | equals $is | verify-true
+}
+
+proc "assert-that-patchset-counter-in-editor" [val is] [val in -input] {
+	$in |  get-label "Patch Sets.*" | get-property caption | contains $is | verify-true
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
