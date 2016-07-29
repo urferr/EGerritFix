@@ -36,6 +36,7 @@ import org.eclipse.egerrit.internal.core.command.GetRevisionActionsCommand;
 import org.eclipse.egerrit.internal.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.internal.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.internal.core.command.ListDraftsCommand;
+import org.eclipse.egerrit.internal.core.command.ListProjectsCommand;
 import org.eclipse.egerrit.internal.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand;
 import org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand;
@@ -50,6 +51,7 @@ import org.eclipse.egerrit.internal.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.internal.core.command.SetTopicCommand;
 import org.eclipse.egerrit.internal.core.command.StarChangeCommand;
 import org.eclipse.egerrit.internal.core.command.SubmitCommand;
+import org.eclipse.egerrit.internal.core.command.SuggestAccountCommand;
 import org.eclipse.egerrit.internal.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.internal.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.internal.core.command.UpdateDraftCommand;
@@ -222,6 +224,17 @@ public abstract class GerritClient {
 	}
 
 	/**
+	 * Returns a command object to execute a {@code suggestAccount} command
+	 *
+	 * @param id
+	 * @return a default {@link SuggestAccountCommand} used to retrieve a list of possible users from the Gerrit
+	 *         repository
+	 */
+	public SuggestAccountCommand suggestAccount() {
+		return new SuggestAccountCommand(fGerritRepository);
+	}
+
+	/**
 	 * Returns a command object to execute a {@code getCommitMSg} command
 	 *
 	 * @param id
@@ -298,6 +311,17 @@ public abstract class GerritClient {
 	 */
 	public ListDraftsCommand listDraftsComments(String change_id, String revision_id) {
 		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
+	}
+
+	/**
+	 * Returns a command object to execute a {@code listProjects} command
+	 *
+	 * @param id
+	 * @return a default {@link ListProjectsCommand} used to retrieve a list of possible projects from the Gerrit
+	 *         repository
+	 */
+	public ListProjectsCommand listProjects() {
+		return new ListProjectsCommand(fGerritRepository);
 	}
 
 	/**
