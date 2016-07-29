@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _4NUTQFT1Eeak2Y1KpcW4TQ
 Runtime-Version: 2.1.0.201606221726
-Save-Time: 7/28/16 4:52 PM
+Save-Time: 7/29/16 12:19 PM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -19,23 +19,25 @@ Make sure that a change to the commit message is propagated
 Content-Type: text/ecl
 Entry-Name: .content
 
-//Create a review
+// Create a review
 runQueryAndOpenEditor [create-review -server $serverURL]
 
-//Change the title of the review
+// Change the title of the review
 with [get-editor] {
-    get-tab-folder | get-tab-item Messages | click
-    with [get-editbox -index 3] {
-        set-text "Commit message from test by RCPTT\n\n"
-            + "Change-Id: I508ea1bf110e80bd00611c61e59303351cd6f69b\n"
-    }
-    get-button Save | click
+	get-tab-folder | get-tab-item Messages | click
+	with [get-editbox -index 3] {
+		set-text "Commit message from test by RCPTT\n\nChange-Id: I508ea1bf110e80bd00611c61e59303351cd6f69b\n"
+	}
+	get-button Save | click
 }
 
-//Confirm that the subject has changed in the editor
-get-editor | get-editbox -after [get-label "Subject:"] 
-    | get-property text | equals "Commit message from test by RCPTT" | verify-true
+// Confirm that the subject has changed in the editor
+assert-that-subject-in-editor -is "Commit message from test by RCPTT" -in [get-editor]
 
-//Confirm that the subject has changed in the dashboard
-assertSubjectInDashboard "Commit message from test by RCPTT"
+// Confirm that the subject has changed in the dashboard
+assert-that-subject-in-dashboard -is "Commit message from test by RCPTT"
+
+// Confirm that a second patchset is published
+assert-that-patchset-counter-in-editor -is "1/2" -in [get-editor]
+
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
