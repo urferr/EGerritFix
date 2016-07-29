@@ -4,8 +4,8 @@
     nsPrefix="org.eclipse.egerrit.ecl">
   <eClassifiers xsi:type="ecore:EClass" name="CreateReview" eSuperTypes="../../org.eclipse.rcptt.ecl.core/model/ecl.ecore#//Command">
     <eAnnotations source="http://www.eclipse.org/ecl/docs">
-      <details key="description" value="Reads a string from input pipe and parses it accoridng to a given format string."/>
-      <details key="returns" value="Timestamp value (as a number of milliseconds since January, 1, 1970)"/>
+      <details key="description" value="Create a review"/>
+      <details key="returns" value="ChangeId of the created review"/>
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="server" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral=""/>

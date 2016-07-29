@@ -27,7 +27,7 @@ import org.eclipse.rcptt.ecl.core.Command;
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview()
- * @model annotation="http://www.eclipse.org/ecl/docs description='Reads a string from input pipe and parses it accoridng to a given format string.' returns='Timestamp value (as a number of milliseconds since January, 1, 1970)'"
+ * @model annotation="http://www.eclipse.org/ecl/docs description='Create a review' returns='ChangeId of the created review'"
  * @generated
  */
 public interface CreateReview extends Command {

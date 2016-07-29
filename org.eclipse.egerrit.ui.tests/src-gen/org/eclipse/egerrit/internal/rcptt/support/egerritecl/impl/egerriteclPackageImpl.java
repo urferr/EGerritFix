@@ -219,8 +219,8 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		  (createReviewEClass, 
 		   source, 
 		   new String[] {
-			 "description", "Reads a string from input pipe and parses it accoridng to a given format string.", //$NON-NLS-1$ //$NON-NLS-2$
-			 "returns", "Timestamp value (as a number of milliseconds since January, 1, 1970)" //$NON-NLS-1$ //$NON-NLS-2$
+			 "description", "Create a review", //$NON-NLS-1$ //$NON-NLS-2$
+			 "returns", "ChangeId of the created review" //$NON-NLS-1$ //$NON-NLS-2$
 		   });
 	}
 
