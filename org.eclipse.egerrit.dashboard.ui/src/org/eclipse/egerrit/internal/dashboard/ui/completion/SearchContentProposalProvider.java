@@ -99,6 +99,8 @@ public class SearchContentProposalProvider implements IContentProposalProvider {
 		completionList.add("is:submitted"); //$NON-NLS-1$
 		completionList.add("is:watched"); //$NON-NLS-1$
 		completionList.add("label:"); //$NON-NLS-1$
+		completionList.add("limit:"); //$NON-NLS-1$
+		completionList.add("limit:10"); //$NON-NLS-1$
 		completionList.add("message:"); //$NON-NLS-1$
 		completionList.add("NOT"); //$NON-NLS-1$
 		completionList.add("OR"); //$NON-NLS-1$
