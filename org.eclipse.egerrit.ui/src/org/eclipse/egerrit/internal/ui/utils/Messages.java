@@ -194,6 +194,10 @@ public class Messages extends NLS {
 
 	public static String ReplyDialog_2;
 
+	public static String ReplyHandlerTitle;
+
+	public static String ReplyHandlerMessage;
+
 	public static String SummaryTabView_0;
 
 	public static String SummaryTabView_1;

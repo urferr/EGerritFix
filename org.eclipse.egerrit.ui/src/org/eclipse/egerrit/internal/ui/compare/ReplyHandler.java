@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IWorkbenchPart;
@@ -47,9 +48,14 @@ public class ReplyHandler extends AbstractHandler {
 			} catch (CoreException e) {
 				return IStatus.ERROR;
 			}
-			RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(input.getRightSide());
-			UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient, true);
-			input.fireInputChange();
+			if (input.getRightSide().equals("WORKSPACE")) {
+				//if the right side is the workspace file, the revision is null
+				UIUtils.displayInformation(null, Messages.ReplyHandlerTitle, Messages.ReplyHandlerMessage);
+			} else {
+				RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(input.getRightSide());
+				UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient, true);
+				input.fireInputChange();
+			}
 		}
 		return Status.OK_STATUS;
 
