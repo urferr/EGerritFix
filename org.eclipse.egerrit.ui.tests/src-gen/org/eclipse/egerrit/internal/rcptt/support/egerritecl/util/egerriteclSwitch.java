@@ -84,6 +84,19 @@ public class egerriteclSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case egerriteclPackage.REVIEW_DESCRIPTION: {
+				ReviewDescription reviewDescription = (ReviewDescription)theEObject;
+				T result = caseReviewDescription(reviewDescription);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case egerriteclPackage.AMEND_REVIEW: {
+				AmendReview amendReview = (AmendReview)theEObject;
+				T result = caseAmendReview(amendReview);
+				if (result == null) result = caseCommand(amendReview);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -100,6 +113,36 @@ public class egerriteclSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseCreateReview(CreateReview object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Review Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Review Description</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseReviewDescription(ReviewDescription object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Amend Review</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Amend Review</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAmendReview(AmendReview object) {
 		return null;
 	}
 

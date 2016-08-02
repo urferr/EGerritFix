@@ -66,6 +66,8 @@ public class egerriteclFactoryImpl extends EFactoryImpl implements egerriteclFac
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case egerriteclPackage.CREATE_REVIEW: return createCreateReview();
+			case egerriteclPackage.REVIEW_DESCRIPTION: return createReviewDescription();
+			case egerriteclPackage.AMEND_REVIEW: return createAmendReview();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -79,6 +81,26 @@ public class egerriteclFactoryImpl extends EFactoryImpl implements egerriteclFac
 	public CreateReview createCreateReview() {
 		CreateReviewImpl createReview = new CreateReviewImpl();
 		return createReview;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ReviewDescription createReviewDescription() {
+		ReviewDescriptionImpl reviewDescription = new ReviewDescriptionImpl();
+		return reviewDescription;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public AmendReview createAmendReview() {
+		AmendReviewImpl amendReview = new AmendReviewImpl();
+		return amendReview;
 	}
 
 	/**

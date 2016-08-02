@@ -13,13 +13,19 @@ package org.eclipse.egerrit.internal.rcptt.support;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritRepository;
 import org.eclipse.egerrit.internal.core.GerritServerInformation;
-import org.junit.Test;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclFactory;
 
+/**
+ * A Helper class to create and amend reviews.
+ */
 public class ReviewFactory {
 
 	public String server;
@@ -47,14 +53,45 @@ public class ReviewFactory {
 //			+ "			</arguments>\n" + "		</buildCommand>\n" + "	</buildSpec>\n" + "	<natures>\n"
 //			+ "		<nature>org.eclipse.jdt.core.javanature</nature>\n" + "	</natures>\n" + "</projectDescription>\n";
 
-	public String createReview(String server, String project) throws Exception {
+	public static ReviewDescription amendReview(String localRepo, String server, String project, String changeId)
+			throws Exception {
+		ReviewFactory factory = new ReviewFactory();
+		factory.doAmendReview(localRepo, server, project, changeId);
+
+		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
+		commandResult.setGerritServerURL(server);
+		commandResult.setProjectName(project);
+		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
+		commandResult.setLastChangeId(changeId);
+		return commandResult;
+	}
+
+	public static ReviewDescription createReview(String server, String project) throws Exception {
+		ReviewFactory factory = new ReviewFactory();
+		String changeId = factory.doCreateReview(server, project);
+
+		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
+		commandResult.setGerritServerURL(server);
+		commandResult.setProjectName(project);
+		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
+		commandResult.setLastChangeId(changeId);
+		return commandResult;
+	}
+
+	private String doAmendReview(String localRepo, String server, String project, String changeId) throws Exception {
+		gitAccess = new GitAccess(new File(localRepo));
+		this.server = server;
+		this.project = project;
+		initGerritConnection();
+		amendReview(changeId, false);
+		return gitAccess.getChangeId();
+	}
+
+	private String doCreateReview(String server, String project) throws Exception {
 		this.server = server;
 		this.project = project;
 		if (filename == null) {
 			filename = A_PROJECT_A_JAVA;
-		}
-		if (fileContent == null) {
-			fileContent = INITIAL_CONTENT_FILE_A;
 		}
 		initGitAccess();
 		initGerritConnection();
@@ -85,14 +122,20 @@ public class ReviewFactory {
 		}
 	}
 
-	@Test
-	public void coucou() {
+	private void amendReview(String changeId, boolean draft) {
 		try {
-			String s = new ReviewFactory().createReview("http://localhost:28112", "egerrit/RCPTTtest");
-			System.out.println(s);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
+			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n" //$NON-NLS-1$
+					+ System.currentTimeMillis();
+
+			gitAccess.addFile(filename, fileContent);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + changeId, draft, true);
+		} catch (Exception e1) {
+			fail(e1.getMessage());
 		}
+	}
+
+	public GitAccess getGitAccess() {
+		return gitAccess;
 	}
 }

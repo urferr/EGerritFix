@@ -40,6 +40,24 @@ public interface egerriteclFactory extends EFactory {
 	CreateReview createCreateReview();
 
 	/**
+	 * Returns a new object of class '<em>Review Description</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Review Description</em>'.
+	 * @generated
+	 */
+	ReviewDescription createReviewDescription();
+
+	/**
+	 * Returns a new object of class '<em>Amend Review</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Amend Review</em>'.
+	 * @generated
+	 */
+	AmendReview createAmendReview();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

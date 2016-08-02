@@ -89,6 +89,16 @@ public class GitAccess {
 		return fGit;
 	}
 
+	public GitAccess(File repo) {
+		try {
+			fGit = Git.open(repo);
+			checkoutFolder = repo;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void cloneRepo() throws Exception {
 		CloneCommand cloneCmd = Git.cloneRepository();
 		checkoutFolder = createTempFolder("egerrit");
@@ -311,5 +321,9 @@ public class GitAccess {
 				return new PasswordAuthentication(Common.USER, Common.PASSWORD.toCharArray());
 			}
 		});
+	}
+
+	public File getCheckoutFolder() {
+		return checkoutFolder;
 	}
 }

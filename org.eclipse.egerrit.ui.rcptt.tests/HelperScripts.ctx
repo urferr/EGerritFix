@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 7/29/16 2:32 PM
+Save-Time: 8/4/16 4:59 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -43,7 +43,11 @@ proc runQuery [val query] {
 
 // Run the query and open the review editor on the first match
 proc runQueryAndOpenEditor [val query] {
-	runQuery $query
+	try {
+		runQuery [$query | get lastChangeId]
+	} -catch {
+		runQuery [$query]
+	}
 	wait -ms 500
 	with [getDashboard] {
 		with [get-table] {
@@ -98,7 +102,6 @@ proc "assert-that-subject-in-editor" [val is] [val in -input] {
 }
 
 proc "assert-that-patchset-counter-in-editor" [val is] [val in -input] {
-	$in |  get-label "Patch Sets.*" | get-property caption | contains $is | verify-true
+	$in | get-label "Patch Sets.*" | get-property caption | contains $is | verify-true
 }
-
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

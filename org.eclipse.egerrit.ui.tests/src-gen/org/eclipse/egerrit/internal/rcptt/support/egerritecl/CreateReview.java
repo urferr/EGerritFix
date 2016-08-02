@@ -27,7 +27,7 @@ import org.eclipse.rcptt.ecl.core.Command;
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview()
- * @model annotation="http://www.eclipse.org/ecl/docs description='Create a review' returns='ChangeId of the created review'"
+ * @model annotation="http://www.eclipse.org/ecl/docs description='Create a review' returns='A repo description object'"
  * @generated
  */
 public interface CreateReview extends Command {

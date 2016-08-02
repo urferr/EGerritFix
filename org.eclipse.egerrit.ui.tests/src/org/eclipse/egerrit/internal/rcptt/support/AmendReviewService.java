@@ -14,39 +14,36 @@ package org.eclipse.egerrit.internal.rcptt.support;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription;
 import org.eclipse.egerrit.ui.tests.EGerritUITestsPlugin;
 import org.eclipse.rcptt.ecl.core.Command;
 import org.eclipse.rcptt.ecl.runtime.ICommandService;
 import org.eclipse.rcptt.ecl.runtime.IProcess;
 
 /**
- * This class implements the create-review ECL command. For more details on how to implement ECL commands, please see
- * https://www.eclipse.org/rcptt/documentation/userguide/ecl/new-command-guide/
+ * This class implements the amend-review ECL command.
  */
-public class CreateReviewService implements ICommandService {
+public class AmendReviewService implements ICommandService {
 
-	public CreateReviewService() {
+	public AmendReviewService() {
 		// ignore
 	}
 
 	@Override
-	public IStatus service(Command cmd, IProcess result) throws InterruptedException, CoreException {
-		String httpServer = ((CreateReview) cmd).getServer();
-		if (httpServer == null) {
-			return new Status(IStatus.ERROR, "org.eclipse.egerrit.ui.tests", //$NON-NLS-1$
-					"HttpServer must be specified in create-review command"); //$NON-NLS-1$
+	public IStatus service(Command command, IProcess context) throws InterruptedException, CoreException {
+		AmendReview amendCmd = (AmendReview) command;
+		ReviewDescription cmdArgument = (ReviewDescription) amendCmd.getReview();
+		if (cmdArgument == null) {
+			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID, "Parameter review is missing"); //$NON-NLS-1$
 		}
-		String project = ((CreateReview) cmd).getProject();
-		if (project == null) {
-			project = "egerrit/RCPTTtest"; //$NON-NLS-1$
-		}
-
+		String resultingChangeId = null;
 		try {
-			result.getOutput().write(ReviewFactory.createReview(httpServer, project));
+			context.getOutput().write(ReviewFactory.amendReview(cmdArgument.getLocalClone(),
+					cmdArgument.getGerritServerURL(), cmdArgument.getProjectName(), cmdArgument.getLastChangeId()));
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID,
-					"An error occurred while creating the review", e); //$NON-NLS-1$
+					"An error occurred while amending the review " + resultingChangeId, e); //$NON-NLS-1$
 		}
 		return Status.OK_STATUS;
 	}

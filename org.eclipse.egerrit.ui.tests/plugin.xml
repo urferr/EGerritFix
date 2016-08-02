@@ -8,8 +8,19 @@
             name="CreateReview"
             namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
       </scriptlet>
+
    </extension>
 
+   <extension
+         point="org.eclipse.rcptt.ecl.core.scriptlet">
+      <scriptlet
+            class="org.eclipse.egerrit.internal.rcptt.support.AmendReviewService"
+            name="AmendReview"
+            namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
+      </scriptlet>
+
+   </extension>
+   
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated egerritecl -->
       <package
