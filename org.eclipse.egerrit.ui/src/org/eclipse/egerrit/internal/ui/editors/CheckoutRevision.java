@@ -12,8 +12,6 @@
 package org.eclipse.egerrit.internal.ui.editors;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,15 +37,11 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutResult;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ReflogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.revwalk.RevWalkUtils;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -58,8 +52,6 @@ public class CheckoutRevision extends Action {
 	private GerritClient gerritClient;
 
 	private ChangeInfo changeInfo;
-
-	private Map<String, List<Ref>> mapLocalBranchWithParentRefs = new HashMap<String, List<Ref>>();
 
 	public CheckoutRevision(RevisionInfo revision, GerritClient gerritClient) {
 		this.revision = revision;
@@ -133,88 +125,22 @@ public class CheckoutRevision extends Action {
 
 	private void mapBranchNameWithCommitId(Git gitRepo, String changeIdKey, Map<String, String> mapBranches,
 			Map<String, Map<String, List<String>>> mapBranchesChangeId, RevWalk walk) throws GitAPIException {
-
-		for (Ref currentLocalBranch : gitRepo.branchList().call()) {
+		for (Ref current : gitRepo.branchList().call()) {
 			RevCommit commit;
 			try {
-				commit = walk.parseCommit(currentLocalBranch.getObjectId());
-				mapBranches.put(Repository.shortenRefName(currentLocalBranch.getName()), commit.getName());
-
-				//Map the local branch ref with its remote ref
-				setLocalBranchWithParentRef(currentLocalBranch, commit, gitRepo);
+				commit = walk.parseCommit(current.getObjectId());
+				mapBranches.put(Repository.shortenRefName(current.getName()), commit.getName());
 
 				//Map branch -> commitId -> List of changeId
 				Map<String, List<String>> mapCommitChangeid = new HashMap<String, List<String>>();
 				List<String> footerLines = commit.getFooterLines(changeIdKey);
 
 				mapCommitChangeid.put(commit.getName(), footerLines);
-				mapBranchesChangeId.put(Repository.shortenRefName(currentLocalBranch.getName()), mapCommitChangeid);
+				mapBranchesChangeId.put(Repository.shortenRefName(current.getName()), mapCommitChangeid);
 			} catch (IOException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
-			} finally {
 			}
 		}
-	}
-
-	/**
-	 * Create a map to associate the Git local branch with all of its parents branches
-	 *
-	 * @param currentLocalBranch
-	 * @param commit
-	 * @param gitRepo
-	 */
-	private void setLocalBranchWithParentRef(Ref currentLocalBranch, RevCommit commit, Git gitRepo) {
-		Repository repo = gitRepo.getRepository();
-		ReflogCommand refs = gitRepo.reflog();
-		//Map all references from the local repository
-		Map<String, Ref> mapAllLocalRefs = refs.getRepository().getAllRefs();
-
-		//Get all potential parent branches for each local commit branches
-		RevCommit[] parentCommit = commit.getParents();
-		List<Ref> refBranches = new ArrayList<Ref>();
-		for (RevCommit element : parentCommit) {
-			refBranches.addAll(getReachableBranches(element, mapAllLocalRefs.values(), repo));
-		}
-		//Build the map for each local branch with all branch references
-		mapLocalBranchWithParentRefs.put(Repository.shortenRefName(currentLocalBranch.getName()), refBranches);
-	}
-
-	/**
-	 * @param commit
-	 * @param allRefs
-	 * @param repo
-	 * @return List of heads from those current commit is reachable
-	 */
-	private List<Ref> getReachableBranches(RevCommit commit, Collection<Ref> allRefs, Repository repo) {
-		try (RevWalk revWalk = new RevWalk(repo)) {
-			revWalk.setRetainBody(false);
-			try {
-				return RevWalkUtils.findBranchesReachableFrom(commit, revWalk, allRefs);
-			} catch (MissingObjectException e) {
-			} catch (IncorrectObjectTypeException e) {
-			} catch (IOException e) {
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @param localBranch
-	 * @param lookingRemoteBranch
-	 * @return True if the local branches are available for the parent remote branch
-	 */
-	private boolean isRemoteBranchAvailable(String localBranch, String lookingRemoteBranch) {
-		boolean b = false;
-		if (!mapLocalBranchWithParentRefs.isEmpty()) {
-			List<Ref> branchListRef = mapLocalBranchWithParentRefs.get(localBranch);
-			for (Ref ref : branchListRef) {
-				b = ref.getName().endsWith(lookingRemoteBranch);
-				if (b) {
-					continue;
-				}
-			}
-		}
-		return b;
 	}
 
 	/**
@@ -247,7 +173,6 @@ public class CheckoutRevision extends Action {
 	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
 		String lookingChangeId = revision.getChangeInfo().getChange_id().trim();
 		String lookingCommitIdForRevision = revision.getCommit().getCommit().trim();
-		String lookingRemoteBranch = revision.getChangeInfo().getBranch();
 		Map<String, BranchMatch> mapBranches = new TreeMap<String, BranchMatch>();
 		String defaultBranchName = changeInfo.get_number() + "/" //$NON-NLS-1$
 				+ changeInfo.getUserSelectedRevision().get_number();
@@ -262,15 +187,13 @@ public class CheckoutRevision extends Action {
 				Iterator<String> iterChangeId = listChangeIds.iterator();
 				while (iterChangeId.hasNext()) {
 					String changeId = iterChangeId.next().trim();
-					if (isRemoteBranchAvailable(entryBranch.getKey(), lookingRemoteBranch)) {
-						if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
-							mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
-							continue;
-						}
-						if (lookingChangeId.equals(changeId)) {
-							mapBranches.put(entryBranch.getKey(), BranchMatch.CHANGE_ID_MATCH);//Potential branch for this changeId, but with some modification on the branch
-							continue;
-						}
+					if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
+						mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
+						continue;
+					}
+					if (lookingChangeId.equals(changeId)) {
+						mapBranches.put(entryBranch.getKey(), BranchMatch.CHANGE_ID_MATCH);//Potential branch for this changeId, but with some modification on the branch
+						continue;
 					}
 					if (entryBranch.getKey().contains(defaultBranchName)) {
 						mapBranches.put(entryBranch.getKey(), BranchMatch.BRANCH_NAME_MATCH);//Perfect match branch
