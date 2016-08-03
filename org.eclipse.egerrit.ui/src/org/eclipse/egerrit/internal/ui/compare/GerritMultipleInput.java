@@ -591,7 +591,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	@Override
 	public String getName() {
-		if (fileToReveal != null) {
+		if (fileToReveal != null && (StringToFileInfoImpl) fileToReveal.eContainer() != null) {
 			return ((StringToFileInfoImpl) fileToReveal.eContainer()).getKey();
 		}
 		return ""; //$NON-NLS-1$

@@ -6,12 +6,18 @@ import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 
 public class ModifiedFileInfoImpl extends FileInfoImpl {
 	@Override
 	public String getPath() {
-		return ((StringToFileInfoImpl) this.eContainer()).getKey();
+		 StringToFileInfoImpl container = (StringToFileInfoImpl) this.eContainer();
+		 if (container != null) {
+				return container.getKey();
+		 } else {
+			 return null;
+		 }
 	}
 
 	@Override
