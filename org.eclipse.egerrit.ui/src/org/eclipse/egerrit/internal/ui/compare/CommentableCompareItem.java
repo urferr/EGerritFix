@@ -143,20 +143,14 @@ public abstract class CommentableCompareItem extends Document
 			}
 		}
 		for (CommentInfo deletedComment : extractor.getRemovedComments()) {
-			DeleteDraftCommand deleteDraft = gerrit.deleteDraft(getChangeId(), fileInfo.getRevision().getId(),
-					deletedComment.getId());
-			try {
-				logger.debug("Deleting comment: " + deletedComment); //$NON-NLS-1$
-				deleteDraft.call();
-				fileInfo.getDraftComments().remove(deletedComment);
-			} catch (EGerritException e) {
-				//This exception is handled by GerritCompareInput to properly handle problems while persisting.
-				//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
-				throw new RuntimeException(CommentableCompareItem.class.getName(),
-						new Throwable(String.valueOf(hashCode())));
-			}
+			processDraftDeletion(deletedComment);
 		}
 		for (CommentInfo modifiedComment : extractor.getModifiedComments()) {
+			if (modifiedComment.getId() != null && modifiedComment.getMessage().isEmpty()) {
+				//Prevent saving an empty comment, so the delete empty draft cannot happen anymore (Bug 499156)
+				processDraftDeletion(modifiedComment);
+				continue;
+			}
 			UpdateDraftCommand modifyDraft = gerrit.updateDraftComments(getChangeId(), fileInfo.getRevision().getId(),
 					modifiedComment.getId());
 			modifyDraft.setCommandInput(CommentInput.fromCommentInfo(modifiedComment));
@@ -170,6 +164,21 @@ public abstract class CommentableCompareItem extends Document
 				throw new RuntimeException(CommentableCompareItem.class.getName(),
 						new Throwable(String.valueOf(hashCode())));
 			}
+		}
+	}
+
+	private void processDraftDeletion(CommentInfo deletedComment) {
+		DeleteDraftCommand deleteDraft = gerrit.deleteDraft(getChangeId(), fileInfo.getRevision().getId(),
+				deletedComment.getId());
+		try {
+			logger.debug("Deleting comment: " + deletedComment); //$NON-NLS-1$
+			deleteDraft.call();
+			fileInfo.getDraftComments().remove(deletedComment);
+		} catch (EGerritException e) {
+			//This exception is handled by GerritCompareInput to properly handle problems while persisting.
+			//The throwable is an additional trick that allows to detect, in case of failure, which side failed persisting.
+			throw new RuntimeException(CommentableCompareItem.class.getName(),
+					new Throwable(String.valueOf(hashCode())));
 		}
 	}
 
