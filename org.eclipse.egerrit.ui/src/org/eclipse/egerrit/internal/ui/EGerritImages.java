@@ -44,9 +44,9 @@ public class EGerritImages {
 
 	public static final String SHOW_REVIEW_EDITOR_IMAGE = "icons/back.gif"; //$NON-NLS-1$
 
-	public static final String NEXT_COMMENT_ANNOTATION_ICON_FILE = "icons/nxtcomment_menu.png"; //$NON-NLS-1$
+	public static final String NEXT_COMMENT_ANNOTATION_ICON_FILE = "icons/nextComment_menu.gif"; //$NON-NLS-1$
 
-	public static final String PREVIOUS_COMMENT_ANNOTATION_ICON_FILE = "icons/prevcomment_menu.png"; //$NON-NLS-1$
+	public static final String PREVIOUS_COMMENT_ANNOTATION_ICON_FILE = "icons/previousComment_menu.gif"; //$NON-NLS-1$
 
 	static {
 		fgImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(AUTHOR_COMMENT));
