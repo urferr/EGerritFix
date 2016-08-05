@@ -72,6 +72,7 @@ proc switchLeftInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
+	wait 200
 }
 
 proc switchRightInput [val to] [val in -input] {
@@ -79,6 +80,7 @@ proc switchRightInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
+	wait 200
 }
 
 proc insertComment [val on] [val text] [val atLine] [val in -input] {
