@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/4/16 4:59 PM
+Save-Time: 8/5/16 12:07 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -53,6 +53,31 @@ proc runQueryAndOpenEditor [val query] {
 		with [get-table] {
 			get-cell -row 0 -column 1 | double-click
 		}
+	}
+}
+
+proc openCompareEditor [val query] {
+	runQueryAndOpenEditor $query
+
+	// Select the second file in the list
+	with [get-editor | get-table -index 1] {
+		get-cell -row 1 -column 2 | double-click
+	}
+	// Click ok on tip
+	get-window "EGerrit Tip" | get-button OK | click
+}
+
+proc switchLeftInput [val to] [val in -input] {
+	with [$in | get-button -after [get-label -index 0] ] {
+	 	click
+    	get-menu $to | click
+	}
+}
+
+proc switchRightInput [val to] [val in -input] {
+	with [$in | get-button -after [get-label -index 2] ] {
+	 	click
+    	get-menu $to | click
 	}
 }
 
@@ -104,4 +129,29 @@ proc "assert-that-subject-in-editor" [val is] [val in -input] {
 proc "assert-that-patchset-counter-in-editor" [val is] [val in -input] {
 	$in | get-label "Patch Sets.*" | get-property caption | contains $is | verify-true
 }
+
+proc "assert-that-left-selected-patch" [val is] [val in -input] {
+	with [$in] {
+		get-label -index 0 | get-property caption | equals $is | verify-true
+	}
+}
+
+proc "assert-that-right-selected-patch" [val is] [val in -input] {
+	with [$in] {
+		get-label -index 2  | get-property caption | equals "Patch set 2" | verify-true
+	}
+}
+
+proc "assert-that-left-editor-content" [val is] [val in -input] {
+	with [$in] {
+		get-editbox -index 0 | get-property text | contains $is | verify-true
+	}
+}
+
+proc "assert-that-right-editor-content" [val is] [val in -input] {
+	with [$in] {
+		get-editbox -index 1 | get-property text | contains $is | verify-true
+	}
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
