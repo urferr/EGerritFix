@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/5/16 12:07 AM
+Save-Time: 8/5/16 12:54 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -68,16 +68,31 @@ proc openCompareEditor [val query] {
 }
 
 proc switchLeftInput [val to] [val in -input] {
-	with [$in | get-button -after [get-label -index 0] ] {
-	 	click
-    	get-menu $to | click
+	with [$in | get-button -after [get-label -index 0]] {
+		click
+		get-menu $to | click
 	}
 }
 
 proc switchRightInput [val to] [val in -input] {
-	with [$in | get-button -after [get-label -index 2] ] {
-	 	click
-    	get-menu $to | click
+	with [$in | get-button -after [get-label -index 2]] {
+		click
+		get-menu $to | click
+	}
+}
+
+proc insertComment [val on] [val text] [val atLine] [val in -input] {
+	if [$on | equals "right"] {
+		doInsertComment -idx 1 -text $text -atLine $atLine -in $in
+	} -else {
+		doInsertComment -idx 0 -text $text -atLine $atLine -in $in
+	}
+}
+
+proc doInsertComment [val idx] [val text] [val atLine] [val in -input] {
+	with [$in | get-text-viewer -index $idx] {
+		set-caret-pos -line $atLine -column 0
+		type-text $text
 	}
 }
 
@@ -138,7 +153,7 @@ proc "assert-that-left-selected-patch" [val is] [val in -input] {
 
 proc "assert-that-right-selected-patch" [val is] [val in -input] {
 	with [$in] {
-		get-label -index 2  | get-property caption | equals "Patch set 2" | verify-true
+		get-label -index 2 | get-property caption | equals "Patch set 2" | verify-true
 	}
 }
 
@@ -153,5 +168,4 @@ proc "assert-that-right-editor-content" [val is] [val in -input] {
 		get-editbox -index 1 | get-property text | contains $is | verify-true
 	}
 }
-
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
