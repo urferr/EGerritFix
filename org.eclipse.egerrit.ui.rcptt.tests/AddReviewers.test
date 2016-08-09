@@ -1,0 +1,63 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AddReviewers
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _7pXZcF5jEeaLErCO3SKPNg
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 8/9/16 6:46 PM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Add reviewers to a review, then delete some
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val reviewId -value [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $reviewId
+
+	with [get-editor] {
+		get-tab-folder | get-tab-item Details | click
+	}
+	
+}
+
+// add 2 reviewers
+with [get-editor | get-group Reviewers] {
+    with [get-editbox -after [get-label "Reviewer:"]] {
+        set-text test1
+        key-type Enter
+        set-text "test1 <test1@localhost.com>"
+        key-type Enter
+    }
+    get-button Add | click
+    with [get-editbox -after [get-label "Reviewer:"]] {
+        set-text test2
+        key-type Enter
+        set-text "test2 <test2@localhost.com>"
+        key-type Enter
+    }
+    get-button Add | click
+}
+
+// first entry must be test1
+assert-that-first-entry-in-reviewer-table -atColumn 2 -is "test1@localhost.com" -in [get-editor]
+
+
+// delete reviewer test1
+with [get-editor | get-group Reviewers] {
+   get-table | get-cell 0 0 | mouse down -count 1
+}
+get-window "Delete reviewer" | get-button OK | click
+
+// now there should only be test2 left
+assert-that-first-entry-in-reviewer-table -atColumn 2 -is "test2@localhost.com" -in [get-editor]
+
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
