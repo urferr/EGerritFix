@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _qu9iQF5tEeaLErCO3SKPNg
 Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/10/16 12:53 PM
+Save-Time: 8/10/16 1:14 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -36,6 +36,7 @@ with [get-editor] {
     assert-that-button Revert -is enabled
     get-button Revert | click
     get-window "Revert merged change" | get-button OK | click
+    wait -ms 5000
 }
 
 try {
@@ -44,7 +45,7 @@ try {
      }
 } -catch {
 		wait -ms 1000
-} -times 3 -finally {
+} -times 20 -finally {
 }
 
 
