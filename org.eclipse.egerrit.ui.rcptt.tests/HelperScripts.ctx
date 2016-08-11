@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/9/16 3:17 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/11/16 11:55 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -177,6 +177,15 @@ proc "assert-that-first-entry-in-reviewer-table" [val atColumn] [val is] [val in
 	}
 	with [get-table -index 0] {
 		get-cell -row 0 -column 1 | get-property [concat "columns[" $atColumn "]"] | contains $is | verify-true
+	}
+}
+
+proc "assert-that-no-editor-present" [] {
+	try {
+		get-editor -index 0
+		verify-true 0
+	} -catch {
+		verify-true 1
 	}
 }
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

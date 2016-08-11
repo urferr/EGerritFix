@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl#getLocalClone <em>Local Clone</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl#getLastChangeId <em>Last Change Id</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @generated
@@ -117,6 +118,26 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 	 * @ordered
 	 */
 	protected String lastChangeId = LAST_CHANGE_ID_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean IS_DRAFT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean isDraft = IS_DRAFT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -226,6 +247,27 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isIsDraft() {
+		return isDraft;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setIsDraft(boolean newIsDraft) {
+		boolean oldIsDraft = isDraft;
+		isDraft = newIsDraft;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, egerriteclPackage.REVIEW_DESCRIPTION__IS_DRAFT, oldIsDraft, isDraft));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -237,6 +279,8 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 				return getLocalClone();
 			case egerriteclPackage.REVIEW_DESCRIPTION__LAST_CHANGE_ID:
 				return getLastChangeId();
+			case egerriteclPackage.REVIEW_DESCRIPTION__IS_DRAFT:
+				return isIsDraft();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -260,6 +304,9 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 				return;
 			case egerriteclPackage.REVIEW_DESCRIPTION__LAST_CHANGE_ID:
 				setLastChangeId((String)newValue);
+				return;
+			case egerriteclPackage.REVIEW_DESCRIPTION__IS_DRAFT:
+				setIsDraft((Boolean)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -285,6 +332,9 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 			case egerriteclPackage.REVIEW_DESCRIPTION__LAST_CHANGE_ID:
 				setLastChangeId(LAST_CHANGE_ID_EDEFAULT);
 				return;
+			case egerriteclPackage.REVIEW_DESCRIPTION__IS_DRAFT:
+				setIsDraft(IS_DRAFT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -305,6 +355,8 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 				return LOCAL_CLONE_EDEFAULT == null ? localClone != null : !LOCAL_CLONE_EDEFAULT.equals(localClone);
 			case egerriteclPackage.REVIEW_DESCRIPTION__LAST_CHANGE_ID:
 				return LAST_CHANGE_ID_EDEFAULT == null ? lastChangeId != null : !LAST_CHANGE_ID_EDEFAULT.equals(lastChangeId);
+			case egerriteclPackage.REVIEW_DESCRIPTION__IS_DRAFT:
+				return isDraft != IS_DRAFT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -327,6 +379,8 @@ public class ReviewDescriptionImpl extends MinimalEObjectImpl.Container implemen
 		result.append(localClone);
 		result.append(", lastChangeId: "); //$NON-NLS-1$
 		result.append(lastChangeId);
+		result.append(", isDraft: "); //$NON-NLS-1$
+		result.append(isDraft);
 		result.append(')');
 		return result.toString();
 	}

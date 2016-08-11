@@ -53,41 +53,44 @@ public class ReviewFactory {
 //			+ "			</arguments>\n" + "		</buildCommand>\n" + "	</buildSpec>\n" + "	<natures>\n"
 //			+ "		<nature>org.eclipse.jdt.core.javanature</nature>\n" + "	</natures>\n" + "</projectDescription>\n";
 
-	public static ReviewDescription amendReview(String localRepo, String server, String project, String changeId)
+	public static ReviewDescription amendReview(String localRepo, String server, String project, String changeId,
+			boolean isDraft) throws Exception {
+		ReviewFactory factory = new ReviewFactory();
+		factory.doAmendReview(localRepo, server, project, changeId, isDraft);
+
+		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
+		commandResult.setGerritServerURL(server);
+		commandResult.setProjectName(project);
+		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
+		commandResult.setLastChangeId(changeId);
+		commandResult.setIsDraft(isDraft);
+		return commandResult;
+	}
+
+	public static ReviewDescription createReview(String server, String project, boolean isDraft) throws Exception {
+		ReviewFactory factory = new ReviewFactory();
+		String changeId = factory.doCreateReview(server, project, isDraft);
+
+		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
+		commandResult.setGerritServerURL(server);
+		commandResult.setProjectName(project);
+		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
+		commandResult.setLastChangeId(changeId);
+		commandResult.setIsDraft(isDraft);
+		return commandResult;
+	}
+
+	private String doAmendReview(String localRepo, String server, String project, String changeId, boolean isDraft)
 			throws Exception {
-		ReviewFactory factory = new ReviewFactory();
-		factory.doAmendReview(localRepo, server, project, changeId);
-
-		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
-		commandResult.setGerritServerURL(server);
-		commandResult.setProjectName(project);
-		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
-		commandResult.setLastChangeId(changeId);
-		return commandResult;
-	}
-
-	public static ReviewDescription createReview(String server, String project) throws Exception {
-		ReviewFactory factory = new ReviewFactory();
-		String changeId = factory.doCreateReview(server, project);
-
-		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
-		commandResult.setGerritServerURL(server);
-		commandResult.setProjectName(project);
-		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
-		commandResult.setLastChangeId(changeId);
-		return commandResult;
-	}
-
-	private String doAmendReview(String localRepo, String server, String project, String changeId) throws Exception {
 		gitAccess = new GitAccess(new File(localRepo));
 		this.server = server;
 		this.project = project;
 		initGerritConnection();
-		amendReview(changeId, false);
+		amendReview(changeId, isDraft);
 		return gitAccess.getChangeId();
 	}
 
-	private String doCreateReview(String server, String project) throws Exception {
+	private String doCreateReview(String server, String project, boolean isDraft) throws Exception {
 		this.server = server;
 		this.project = project;
 		if (filename == null) {
@@ -95,7 +98,7 @@ public class ReviewFactory {
 		}
 		initGitAccess();
 		initGerritConnection();
-		createReviewWithSimpleFile(false);
+		createReviewWithSimpleFile(isDraft);
 		return gitAccess.getChangeId();
 	}
 

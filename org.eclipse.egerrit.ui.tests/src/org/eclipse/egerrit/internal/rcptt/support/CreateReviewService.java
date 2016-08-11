@@ -33,6 +33,8 @@ public class CreateReviewService implements ICommandService {
 	@Override
 	public IStatus service(Command cmd, IProcess result) throws InterruptedException, CoreException {
 		String httpServer = ((CreateReview) cmd).getServer();
+		CreateReview createCmd = (CreateReview) cmd;
+
 		if (httpServer == null) {
 			return new Status(IStatus.ERROR, "org.eclipse.egerrit.ui.tests", //$NON-NLS-1$
 					"HttpServer must be specified in create-review command"); //$NON-NLS-1$
@@ -42,8 +44,9 @@ public class CreateReviewService implements ICommandService {
 			project = "egerrit/RCPTTtest"; //$NON-NLS-1$
 		}
 
+		boolean isDraft = createCmd.isIsDraft();
 		try {
-			result.getOutput().write(ReviewFactory.createReview(httpServer, project));
+			result.getOutput().write(ReviewFactory.createReview(httpServer, project, isDraft));
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID,
 					"An error occurred while creating the review", e); //$NON-NLS-1$

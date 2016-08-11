@@ -25,6 +25,7 @@ import org.eclipse.rcptt.ecl.core.Command;
  * </p>
  * <ul>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview#getReview <em>Review</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getAmendReview()
@@ -57,5 +58,32 @@ public interface AmendReview extends Command {
 	 * @generated
 	 */
 	void setReview(EObject value);
+
+	/**
+	 * Returns the value of the '<em><b>Is Draft</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Is Draft</em>' attribute.
+	 * @see #setIsDraft(boolean)
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getAmendReview_IsDraft()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isIsDraft();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview#isIsDraft <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Is Draft</em>' attribute.
+	 * @see #isIsDraft()
+	 * @generated
+	 */
+	void setIsDraft(boolean value);
 
 } // AmendReview
