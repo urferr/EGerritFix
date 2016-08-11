@@ -13,8 +13,8 @@
 package org.eclipse.egerrit.internal.core.rest;
 
 /**
- * Data model object for <a
- * href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submit-input">SubmitInput</a>
+ * Data model object for
+ * <a href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submit-input">SubmitInput</a>
  */
 public class SubmitInput {
 
@@ -38,36 +38,4 @@ public class SubmitInput {
 	public void setWait_for_merge(boolean wait_for_merge) {
 		this.wait_for_merge = wait_for_merge;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (wait_for_merge ? 1231 : 1237);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		SubmitInput other = (SubmitInput) obj;
-		if (wait_for_merge != other.wait_for_merge) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "SubmitInput [wait_for_merge=" + wait_for_merge + "]";
-	}
-
 }

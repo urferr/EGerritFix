@@ -13,8 +13,8 @@
 package org.eclipse.egerrit.internal.core.rest;
 
 /**
- * Data model object for <a
- * href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ChangeEditMessageInput"
+ * Data model object for
+ * <a href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ChangeEditMessageInput"
  * >ChangeEditMessageInput</a>
  *
  * @since 1.0
@@ -38,55 +38,4 @@ public class ChangeEditMessageInput {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
-	/**
-	 * generate hashcode based on the method's members
-	 *
-	 * @return the calculated value
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((message == null) ? 0 : message.hashCode());
-		return result;
-	}
-
-	/**
-	 * evaluate object equality
-	 *
-	 * @return true if equal false otherwise
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ChangeEditMessageInput other = (ChangeEditMessageInput) obj;
-		if (message == null) {
-			if (other.message != null) {
-				return false;
-			}
-		} else if (!message.equals(other.message)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * generate string based on the method's members
-	 *
-	 * @return the calculated value
-	 */
-	@Override
-	public String toString() {
-		return "ChangeEditMessageInput [message=" + message + "]";
-	}
-
 }

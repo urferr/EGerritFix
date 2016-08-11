@@ -13,8 +13,8 @@
 package org.eclipse.egerrit.internal.core.rest;
 
 /**
- * Data model object for <a
- * href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rebase-input">RebaseInput</a>
+ * Data model object for
+ * <a href="https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rebase-input">RebaseInput</a>
  *
  * @since 1.0
  */
@@ -41,55 +41,4 @@ public class RebaseInput {
 	public void setBase(String base) {
 		this.base = base;
 	}
-
-	/**
-	 * generate hashcode based on the method's members
-	 *
-	 * @return the calculated value
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((base == null) ? 0 : base.hashCode());
-		return result;
-	}
-
-	/**
-	 * evaluate object equality
-	 *
-	 * @return true if equal false otherwise
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		RebaseInput other = (RebaseInput) obj;
-		if (base == null) {
-			if (other.base != null) {
-				return false;
-			}
-		} else if (!base.equals(other.base)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * generate string based on the method's members
-	 *
-	 * @return the calculated value
-	 */
-	@Override
-	public String toString() {
-		return "RebaseInput [base=" + base + "]";
-	}
-
 }
