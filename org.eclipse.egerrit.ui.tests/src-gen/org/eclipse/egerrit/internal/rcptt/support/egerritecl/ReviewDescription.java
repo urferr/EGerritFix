@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone <em>Local Clone</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId <em>Last Change Id</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getReviewDescription()
@@ -136,5 +137,31 @@ public interface ReviewDescription extends EObject {
 	 * @generated
 	 */
 	void setLastChangeId(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Is Draft</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Is Draft</em>' attribute.
+	 * @see #setIsDraft(boolean)
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getReviewDescription_IsDraft()
+	 * @model
+	 * @generated
+	 */
+	boolean isIsDraft();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Is Draft</em>' attribute.
+	 * @see #isIsDraft()
+	 * @generated
+	 */
+	void setIsDraft(boolean value);
 
 } // ReviewDescription

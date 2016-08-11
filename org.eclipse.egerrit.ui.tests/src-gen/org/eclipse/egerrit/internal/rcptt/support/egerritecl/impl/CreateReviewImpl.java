@@ -32,6 +32,7 @@ import org.eclipse.rcptt.ecl.core.impl.CommandImpl;
  * <ul>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#getServer <em>Server</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#getProject <em>Project</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @generated
@@ -76,6 +77,26 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 	 * @ordered
 	 */
 	protected String project = PROJECT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean IS_DRAFT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean isDraft = IS_DRAFT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -143,6 +164,27 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isIsDraft() {
+		return isDraft;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setIsDraft(boolean newIsDraft) {
+		boolean oldIsDraft = isDraft;
+		isDraft = newIsDraft;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, egerriteclPackage.CREATE_REVIEW__IS_DRAFT, oldIsDraft, isDraft));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -150,6 +192,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return getServer();
 			case egerriteclPackage.CREATE_REVIEW__PROJECT:
 				return getProject();
+			case egerriteclPackage.CREATE_REVIEW__IS_DRAFT:
+				return isIsDraft();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -167,6 +211,9 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return;
 			case egerriteclPackage.CREATE_REVIEW__PROJECT:
 				setProject((String)newValue);
+				return;
+			case egerriteclPackage.CREATE_REVIEW__IS_DRAFT:
+				setIsDraft((Boolean)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -186,6 +233,9 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 			case egerriteclPackage.CREATE_REVIEW__PROJECT:
 				setProject(PROJECT_EDEFAULT);
 				return;
+			case egerriteclPackage.CREATE_REVIEW__IS_DRAFT:
+				setIsDraft(IS_DRAFT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -202,6 +252,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return SERVER_EDEFAULT == null ? server != null : !SERVER_EDEFAULT.equals(server);
 			case egerriteclPackage.CREATE_REVIEW__PROJECT:
 				return PROJECT_EDEFAULT == null ? project != null : !PROJECT_EDEFAULT.equals(project);
+			case egerriteclPackage.CREATE_REVIEW__IS_DRAFT:
+				return isDraft != IS_DRAFT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -220,6 +272,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 		result.append(server);
 		result.append(", project: "); //$NON-NLS-1$
 		result.append(project);
+		result.append(", isDraft: "); //$NON-NLS-1$
+		result.append(isDraft);
 		result.append(')');
 		return result.toString();
 	}

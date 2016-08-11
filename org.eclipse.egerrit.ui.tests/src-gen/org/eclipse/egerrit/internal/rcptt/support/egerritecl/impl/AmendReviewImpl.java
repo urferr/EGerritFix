@@ -33,6 +33,7 @@ import org.eclipse.rcptt.ecl.core.impl.CommandImpl;
  * </p>
  * <ul>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl#getReview <em>Review</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @generated
@@ -47,6 +48,25 @@ public class AmendReviewImpl extends CommandImpl implements AmendReview {
 	 * @ordered
 	 */
 	protected EObject review;
+
+	/**
+	 * The default value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean IS_DRAFT_EDEFAULT = false;
+	/**
+	 * The cached value of the '{@link #isIsDraft() <em>Is Draft</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isIsDraft()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean isDraft = IS_DRAFT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -110,12 +130,35 @@ public class AmendReviewImpl extends CommandImpl implements AmendReview {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isIsDraft() {
+		return isDraft;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setIsDraft(boolean newIsDraft) {
+		boolean oldIsDraft = isDraft;
+		isDraft = newIsDraft;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, egerriteclPackage.AMEND_REVIEW__IS_DRAFT, oldIsDraft, isDraft));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case egerriteclPackage.AMEND_REVIEW__REVIEW:
 				if (resolve) return getReview();
 				return basicGetReview();
+			case egerriteclPackage.AMEND_REVIEW__IS_DRAFT:
+				return isIsDraft();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -130,6 +173,9 @@ public class AmendReviewImpl extends CommandImpl implements AmendReview {
 		switch (featureID) {
 			case egerriteclPackage.AMEND_REVIEW__REVIEW:
 				setReview((EObject)newValue);
+				return;
+			case egerriteclPackage.AMEND_REVIEW__IS_DRAFT:
+				setIsDraft((Boolean)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -146,6 +192,9 @@ public class AmendReviewImpl extends CommandImpl implements AmendReview {
 			case egerriteclPackage.AMEND_REVIEW__REVIEW:
 				setReview((EObject)null);
 				return;
+			case egerriteclPackage.AMEND_REVIEW__IS_DRAFT:
+				setIsDraft(IS_DRAFT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -160,8 +209,26 @@ public class AmendReviewImpl extends CommandImpl implements AmendReview {
 		switch (featureID) {
 			case egerriteclPackage.AMEND_REVIEW__REVIEW:
 				return review != null;
+			case egerriteclPackage.AMEND_REVIEW__IS_DRAFT:
+				return isDraft != IS_DRAFT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy()) return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (isDraft: "); //$NON-NLS-1$
+		result.append(isDraft);
+		result.append(')');
+		return result.toString();
 	}
 
 } //AmendReviewImpl

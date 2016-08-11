@@ -37,13 +37,15 @@ public class AmendReviewService implements ICommandService {
 		if (cmdArgument == null) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID, "Parameter review is missing"); //$NON-NLS-1$
 		}
-		String resultingChangeId = null;
+
+		boolean draftRequested = amendCmd.isIsDraft();
 		try {
-			context.getOutput().write(ReviewFactory.amendReview(cmdArgument.getLocalClone(),
-					cmdArgument.getGerritServerURL(), cmdArgument.getProjectName(), cmdArgument.getLastChangeId()));
+			context.getOutput()
+					.write(ReviewFactory.amendReview(cmdArgument.getLocalClone(), cmdArgument.getGerritServerURL(),
+							cmdArgument.getProjectName(), cmdArgument.getLastChangeId(), draftRequested));
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID,
-					"An error occurred while amending the review " + resultingChangeId, e); //$NON-NLS-1$
+					"An error occurred while amending the review " + cmdArgument.getLastChangeId(), e); //$NON-NLS-1$
 		}
 		return Status.OK_STATUS;
 	}

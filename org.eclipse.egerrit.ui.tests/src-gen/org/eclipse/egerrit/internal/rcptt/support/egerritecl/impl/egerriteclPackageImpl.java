@@ -151,6 +151,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getCreateReview_IsDraft() {
+		return (EAttribute)createReviewEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getReviewDescription() {
 		return reviewDescriptionEClass;
 	}
@@ -196,6 +205,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getReviewDescription_IsDraft() {
+		return (EAttribute)reviewDescriptionEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getAmendReview() {
 		return amendReviewEClass;
 	}
@@ -207,6 +225,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 */
 	public EReference getAmendReview_Review() {
 		return (EReference)amendReviewEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getAmendReview_IsDraft() {
+		return (EAttribute)amendReviewEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -240,15 +267,18 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		createReviewEClass = createEClass(CREATE_REVIEW);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__SERVER);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__PROJECT);
+		createEAttribute(createReviewEClass, CREATE_REVIEW__IS_DRAFT);
 
 		reviewDescriptionEClass = createEClass(REVIEW_DESCRIPTION);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__GERRIT_SERVER_URL);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__PROJECT_NAME);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__LOCAL_CLONE);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__LAST_CHANGE_ID);
+		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__IS_DRAFT);
 
 		amendReviewEClass = createEClass(AMEND_REVIEW);
 		createEReference(amendReviewEClass, AMEND_REVIEW__REVIEW);
+		createEAttribute(amendReviewEClass, AMEND_REVIEW__IS_DRAFT);
 	}
 
 	/**
@@ -290,15 +320,18 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		initEClass(createReviewEClass, CreateReview.class, "CreateReview", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getCreateReview_Server(), ecorePackage.getEString(), "server", "", 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 		initEAttribute(getCreateReview_Project(), ecorePackage.getEString(), "project", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getCreateReview_IsDraft(), ecorePackage.getEBoolean(), "isDraft", "false", 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 
 		initEClass(reviewDescriptionEClass, ReviewDescription.class, "ReviewDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_GerritServerURL(), ecorePackage.getEString(), "gerritServerURL", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_LocalClone(), ecorePackage.getEString(), "localClone", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_LastChangeId(), ecorePackage.getEString(), "lastChangeId", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getReviewDescription_IsDraft(), ecorePackage.getEBoolean(), "isDraft", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(amendReviewEClass, AmendReview.class, "AmendReview", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEReference(getAmendReview_Review(), theEcorePackage.getEObject(), null, "review", null, 0, 1, AmendReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getAmendReview_IsDraft(), ecorePackage.getEBoolean(), "isDraft", "false", 0, 1, AmendReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Create resource
 		createResource(eNS_URI);

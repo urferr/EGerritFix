@@ -1,0 +1,27 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: DraftDelete
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _1xE30GANEeasJOwXq3LXAw
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/12/16 12:00 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+runQueryAndOpenEditor [create-review -server $serverURL -isDraft]
+
+// delete a draft
+get-editor  | get-button "Draft ..." | click
+get-menu Delete | click
+
+get-window "Delete draft review" | get-button OK | click
+
+// ensure the editor is gone
+assert-that-no-editor-present
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
