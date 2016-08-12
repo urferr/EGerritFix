@@ -19,10 +19,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.core.GerritServerInformation;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
+import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
@@ -350,12 +352,22 @@ public class ReplyDialog extends InputDialog {
 			Label rowLabel = new Label(keyComposite, SWT.BOLD);
 			rowLabel.setText(permittedlabel.getKey());
 
-			//Verify the last value set for this key
-			String valueSet = radioMap.get(permittedlabel.getKey());
-			int lastValue = -999; //Initialize the value
-			if (valueSet != null) {
-				lastValue = Integer.parseInt(valueSet);
+			String valueSet = "0"; //$NON-NLS-1$
+			//Verify if a last value was set for this key by the current user and set it as default
+			GerritServerInformation serverinfo = fGerritClient.getRepository().getServerInfo();
+			EList<ReviewerInfo> reviewers = fRevisionInfo.getChangeInfo().getReviewers();
+			for (int i = 0; i < reviewers.size(); i++) {
+				if (reviewers.get(i).getEmail() != null
+						&& serverinfo.getUserName().compareTo(reviewers.get(i).getEmail()) == 0) {
+					EMap<String, String> approvals = reviewers.get(i).getApprovals();
+					if (approvals.get(permittedlabel.getKey()) != null) {
+						valueSet = approvals.get(permittedlabel.getKey()).trim();
+					}
+				}
 			}
+
+			//fetch the last value set for this key
+			int lastValue = Integer.parseInt(valueSet);
 
 			//Create the text data for the selection
 			Label detailLabel = new Label(detailTextComposite, SWT.NONE);

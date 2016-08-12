@@ -1,0 +1,42 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ReplyToReviewDefaultValue
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _inl-EGDUEeamXfKo3m2CPA
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 8/12/16 6:36 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $review
+
+   // do a reply and vote +1
+   get-editor | get-button "Reply ..." | click
+   get-menu "Reply ..." | click
+   with [get-window "Reply to comment"] {
+       get-button "Looks good to me, but someone else must approve" | click
+       get-button OK | click
+   }
+
+   get-editor | close
+
+   runQueryAndOpenEditor $review
+
+    // vote once more ...
+   get-editor | get-button "Reply ..." | click
+   get-menu "Reply ..." | click
+   with [get-window "Reply to comment"] {
+       // ensure that the default is the same as the first vote
+       assert-that-button "Looks good to me, but someone else must approve" -is enabled
+       get-button "Looks good to me, approved" | click
+       get-button OK | click
+   }
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
