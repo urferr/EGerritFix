@@ -5,8 +5,8 @@ Element-Name: ConfigureDefaultServer
 Element-Type: context
 Element-Version: 2.0
 Id: _ZOuNAE93EeaShYKSdCzdSw
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 7/28/16 11:07 AM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/16/16 4:17 PM
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
 Content-Type: text/plain
@@ -20,36 +20,7 @@ Content-Type: text/ecl
 Entry-Name: .ecl.context
 
 // delete server if present
-get-preferences-menu | click
-with [get-window Preferences] {
-	get-editbox | set-text gerrit
-	get-tree | select "Team/Gerrit Servers" | double-click
-	try {
-		get-table | select $serverName
-		get-button Remove | click
-		get-button Apply | click
-	} -catch {
-		wait -ms 1000
-	} -times 3 -finally {
-	}
-	get-button OK | click
-}
+delete-gerrit-server -serverName $serverName
 
-// Add the default server
-get-preferences-menu | click
-with [get-window Preferences] {
-	get-tree | select "Team/Gerrit Servers"
-	get-button "New..." | click
-	with [get-window "Gerrit Server Selection"] {
-		get-editbox -after [get-label "URL:"] | set-text $serverURL
-
-		with [get-editbox -after [get-label "Label:"]] {
-			set-text $serverName
-		}
-		get-editbox -after [get-label "User:"] | set-text admin
-		get-button OK | click
-	}
-	get-button Apply | click
-	get-button OK | click
-}
+add-gerrit-server -serverURL $serverURL -serverName $serverName -userName admin
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

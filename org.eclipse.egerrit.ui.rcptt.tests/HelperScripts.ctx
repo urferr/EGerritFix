@@ -12,6 +12,41 @@ Save-Time: 8/16/16 12:46 PM
 Content-Type: text/ecl
 Entry-Name: .ecl.context
 
+proc "add-gerrit-server" [val serverURL] [val serverName] [val userName] [val userPwd] {
+	get-preferences-menu | click
+	with [get-window Preferences] {
+		get-tree | select "Team/Gerrit Servers"
+		get-button "New..." | click
+		with [get-window "Gerrit Server Selection"] {
+			get-editbox -after [get-label "URL:"] | set-text $serverURL
+
+			with [get-editbox -after [get-label "Label:"]] {
+				set-text $serverName
+			}
+			get-editbox -after [get-label "User:"] | set-text $userName
+			get-button OK | click
+		}
+		get-button Apply | click
+		get-button OK | click
+	}
+}
+
+proc "delete-gerrit-server" [val serverName] {
+	// delete server if present
+	get-preferences-menu | click
+	with [get-window Preferences] {
+		get-editbox | set-text gerrit
+		get-tree | select "Team/Gerrit Servers" | double-click
+		try {
+			get-table | select $serverName
+			get-button Remove | click
+			get-button Apply | click
+		} -catch {
+		}
+		get-button OK | click
+	}
+}
+
 // Return the dashboard view. Open it if necessary.
 proc getDashboard [] {
 	try {
@@ -87,7 +122,7 @@ proc switchRightInput [val to] [val in -input] {
 }
 
 proc insertComment [val on] [val text] [val atLine] [val in -input] {
-	if [$on | equals "right"] {
+	if [$on | equals right] {
 		doInsertComment -idx 1 -text $text -atLine $atLine -in $in
 	} -else {
 		doInsertComment -idx 0 -text $text -atLine $atLine -in $in
