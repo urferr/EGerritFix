@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/11/16 11:55 PM
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 8/16/16 12:46 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -59,9 +59,12 @@ proc runQueryAndOpenEditor [val query] {
 proc openCompareEditor [val query] {
 	runQueryAndOpenEditor $query
 
-	// Select the second file in the list
+	with [get-table -index 1 | get-column-header "File Path"] {
+		click
+	}
+	// Select the first file in the list
 	with [get-editor | get-table -index 1] {
-		get-cell -row 1 -column 2 | double-click
+		get-cell -row 0 -column 2 | double-click
 	}
 	// Click ok on tip
 	get-window "EGerrit Tip" | get-button OK | click
