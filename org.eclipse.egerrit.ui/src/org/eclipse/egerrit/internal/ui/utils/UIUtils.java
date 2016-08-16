@@ -31,8 +31,8 @@ import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.compare.CommentPrettyPrinter;
-import org.eclipse.egerrit.internal.ui.editors.ModelLoader;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.editors.ReplyDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -133,9 +133,8 @@ public class UIUtils {
 
 						}
 					}).thenRun(() -> {
-						ModelLoader loader = ModelLoader.initialize(client, revisionInfo.getChangeInfo());
-						loader.loadBasicInformation();
-						loader.dispose();
+						//Here we don't use the model loader because we need the re-loading of the comments to be done synchronously
+						QueryHelpers.loadBasicInformation(client, revisionInfo.getChangeInfo());
 					});
 					if (waitForDataRefresh) {
 						reloading.join();
