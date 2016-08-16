@@ -326,4 +326,8 @@ public class GitAccess {
 	public File getCheckoutFolder() {
 		return checkoutFolder;
 	}
+
+	public void close() {
+		fGit.close();
+	}
 }

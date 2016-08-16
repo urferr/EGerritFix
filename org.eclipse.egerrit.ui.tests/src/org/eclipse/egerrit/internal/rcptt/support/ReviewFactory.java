@@ -64,7 +64,12 @@ public class ReviewFactory {
 		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
 		commandResult.setLastChangeId(changeId);
 		commandResult.setIsDraft(isDraft);
+		factory.close();
 		return commandResult;
+	}
+
+	private void close() {
+		gitAccess.close();
 	}
 
 	public static ReviewDescription createReview(String server, String project, boolean isDraft) throws Exception {
@@ -77,6 +82,7 @@ public class ReviewFactory {
 		commandResult.setLocalClone(factory.getGitAccess().getCheckoutFolder().getAbsolutePath());
 		commandResult.setLastChangeId(changeId);
 		commandResult.setIsDraft(isDraft);
+		factory.close();
 		return commandResult;
 	}
 
@@ -138,7 +144,7 @@ public class ReviewFactory {
 		}
 	}
 
-	public GitAccess getGitAccess() {
+	private GitAccess getGitAccess() {
 		return gitAccess;
 	}
 }
