@@ -191,4 +191,11 @@ proc "assert-that-no-editor-present" [] {
 		verify-true 1
 	}
 }
+
+proc "assert-that-patchset-menu" [val contains] [val in -input] {
+	with [$in | get-button -after [get-label "Patch Sets.*"]] {
+		click
+		get-menu $contains
+	}
+}
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

@@ -1,0 +1,44 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ReviewWithDraftPatchSet
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _9QGtgGPkEea30cmg4vy5LA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/16/16 3:39 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+// Create a normal review but add a second patchset that is a draft
+let [val review [amend-review -review [create-review -server $serverURL] -isDraft]] {
+	runQueryAndOpenEditor $review
+}
+
+//Check the state of the editor
+with [get-editor] {
+	assert-that-patchset-counter-in-editor -is "2/2"
+	assert-that-button -button "Delete Revision" -is enabled
+	assert-that-button -button "Draft ..." -is disabled
+	assert-that-status-in-editor-header -is NEW
+	assert-that-patchset-menu -contains "2.*draft.*"
+	assert-that-first-entry-in-history-table -atColumn 3 -is "2" 
+}
+
+//Delete the draft
+get-editor | get-button "Delete Revision" | click
+get-window "Delete draft revision" | get-button OK | click
+
+//Check the state of the editor after we deleted the patchset
+with [get-editor] {
+	assert-that-patchset-counter-in-editor -is "1/1"
+	assert-that-button -button "Delete Revision" -is disabled
+	assert-that-button -button "Draft ..." -is disabled
+	assert-that-status-in-editor-header -is NEW
+	assert-that-first-entry-in-history-table -atColumn 3 -is "1"
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
