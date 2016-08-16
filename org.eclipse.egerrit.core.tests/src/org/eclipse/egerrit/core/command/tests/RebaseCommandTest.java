@@ -103,7 +103,7 @@ public class RebaseCommandTest extends CommandTestWithSimpleReview {
 
 			change_id = gAccess.getChangeId();
 			commit_id = gAccess.getCommitId();
-
+			gAccess.close();
 		} catch (Exception e1) {
 			fail(e1.getMessage());
 		}

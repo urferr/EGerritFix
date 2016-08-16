@@ -78,6 +78,7 @@ public abstract class CommandTest {
 		fRepository.getCredentials().setHttpCredentials(Common.USER, Common.PASSWORD);
 		fRepository.setServerInfo(serverInfo);
 		fGerrit = GerritFactory.create(fRepository);
+		gitAccess = new GitAccess();
 	}
 
 	/**
@@ -88,7 +89,6 @@ public abstract class CommandTest {
 	 */
 	public void createReviewWithSimpleFile(boolean draft) {
 		try {
-			gitAccess = new GitAccess();
 			gitRepo = gitAccess.getGitProject();
 			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
 					+ ".java"; //$NON-NLS-1$
@@ -139,6 +139,7 @@ public abstract class CommandTest {
 
 	@After
 	public void tearDown() throws IOException {
+		gitAccess.close();
 		delete(gitRepo.getRepository().getWorkTree());
 	}
 }
