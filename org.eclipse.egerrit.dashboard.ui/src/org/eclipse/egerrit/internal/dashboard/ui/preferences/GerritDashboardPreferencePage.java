@@ -23,11 +23,12 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -77,6 +78,10 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 	private List<GerritServerInformation> listServers = new ArrayList<GerritServerInformation>();
 
 	private TableViewer serverInfoViewer;
+
+	private Button buttonRemove;
+
+	private Button buttonModify;
 
 	public GerritDashboardPreferencePage() {
 		super(GRID);
@@ -128,6 +133,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 		serverInfoViewer.setContentProvider(contentProvider);
 		serverInfoViewer.setLabelProvider(labelProvider);
 		serverInfoViewer.addDoubleClickListener(doubleClickListener());
+		serverInfoViewer.addSelectionChangedListener(selectionChangedListener());
 
 		TableLayout tableLayout = new TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(150, 50, true));
@@ -141,31 +147,46 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 
 		listServers = ServersStore.getAllServers();
 		updateTable();
+
+		if (serverInfoViewer.getTable().getItemCount() > 0) {
+			serverInfoViewer.getTable().setSelection(0);
+		}
+	}
+
+	private ISelectionChangedListener selectionChangedListener() {
+		return new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				ISelection tableSelection = serverInfoViewer.getSelection();
+				boolean validSelection = (tableSelection instanceof IStructuredSelection)
+						&& ((IStructuredSelection) tableSelection).getFirstElement() instanceof GerritServerInformation;
+				buttonModify.setEnabled(validSelection);
+				buttonRemove.setEnabled(validSelection);
+			}
+		};
 	}
 
 	private void createButtonBar() {
-		ScrolledComposite scrolComposite = new ScrolledComposite(prefsContainer, SWT.V_SCROLL | SWT.H_SCROLL);
-		scrolComposite.setLayout(new GridLayout(1, true));
-		scrolComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
-
-		Composite buttonBar = new Composite(scrolComposite, SWT.NONE);
-		scrolComposite.setContent(buttonBar);
+		Composite buttonBar = new Composite(prefsContainer, SWT.NONE);
 
 		buttonBar.setLayout(new GridLayout(1, true));
 		Button buttonNew = new Button(buttonBar, SWT.PUSH);
 		buttonNew.setText(NEW);
 		buttonNew.addSelectionListener(buttonNewListener());
+		buttonNew.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		Button buttonRemove = new Button(buttonBar, SWT.PUSH);
+		buttonRemove = new Button(buttonBar, SWT.PUSH);
 		buttonRemove.setText(REMOVE);
 		buttonRemove.addSelectionListener(buttonRemoveListener());
+		buttonRemove.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		Button buttonModify = new Button(buttonBar, SWT.PUSH);
+		buttonModify = new Button(buttonBar, SWT.PUSH);
 		buttonModify.setText(MODIFY);
 		buttonModify.addSelectionListener(buttonModifyListener());
+		buttonModify.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		buttonBar.setSize(buttonBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		scrolComposite.setMinSize(buttonBar.getSize());
 	}
 
 	private void updateTable() {
@@ -200,7 +221,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 					Object obj = ((IStructuredSelection) tableSelection).getFirstElement();
 
 					if (obj instanceof GerritServerInformation) {
-						processDialogueInfo((GerritServerInformation) obj, selectedIndex);
+						processDialogInfo((GerritServerInformation) obj, selectedIndex);
 					} else {
 						Utils.displayInformation(prefsContainer.getShell(), TITLE,
 								SELECTION_MESSAGE + ((Button) e.widget).getText());
@@ -221,7 +242,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				processDialogueInfo(null, -1);
+				processDialogInfo(null, -1);
 			}
 
 			@Override
@@ -271,33 +292,33 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 					int selectedIndex = serverInfoViewer.getTable().getSelectionIndex();
 
 					if (obj instanceof GerritServerInformation) {
-						processDialogueInfo((GerritServerInformation) obj, selectedIndex);
+						processDialogInfo((GerritServerInformation) obj, selectedIndex);
 					}
 				}
 			}
 		};
 	}
 
-	private void processDialogueInfo(GerritServerInformation serverInfo, int selectedIndex) {
+	private void processDialogInfo(GerritServerInformation serverInfo, int selectedIndex) {
 
-		GerritServerDialog dialogue = new GerritServerDialog(getFieldEditorParent().getShell(), serverInfo);
-		int ret = dialogue.open();
+		GerritServerDialog dialog = new GerritServerDialog(getFieldEditorParent().getShell(), serverInfo);
+		int ret = dialog.open();
 		if (ret == IDialogConstants.OK_ID) {
 			try {
-				if (dialogue.getServerInfo() != null && dialogue.getServerInfo().isValid()) {
+				if (dialog.getServerInfo() != null && dialog.getServerInfo().isValid()) {
 					if (selectedIndex >= 0) {
 						listServers.remove(selectedIndex);
-						listServers.add(selectedIndex, dialogue.getServerInfo());
+						listServers.add(selectedIndex, dialog.getServerInfo());
 					} else {
 						//Add it at the end
-						listServers.add(listServers.size(), dialogue.getServerInfo());
+						listServers.add(listServers.size(), dialog.getServerInfo());
 					}
 					updateTable();
 				} else {
 					Utils.displayInformation(null, TITLE, NO_SERVER_SAVED);
 				}
 			} catch (URISyntaxException e) {
-				Utils.displayInformation(dialogue.getShell(), TITLE, INVALID_SERVER + e.getLocalizedMessage());
+				Utils.displayInformation(dialog.getShell(), TITLE, INVALID_SERVER + e.getLocalizedMessage());
 			}
 		}
 	}
