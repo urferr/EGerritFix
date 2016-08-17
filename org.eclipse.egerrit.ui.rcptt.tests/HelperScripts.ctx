@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/16/16 12:46 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/16/16 10:25 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -69,7 +69,7 @@ proc closeDashboard [] {
 }
 
 // Enter a query in the dashboard search dialog and execute it. The query is executed against the default server.
-proc runQuery [val query] {
+proc runQuery [val query] [val serverName $serverName] {
 	getDashboard | get-button "Select current Gerrit repository" | click -arrow
 	get-menu $serverName | click
 	get-view "Gerrit Dashboard (EGerrit)" | get-combo | set-text $query
@@ -77,11 +77,11 @@ proc runQuery [val query] {
 }
 
 // Run the query and open the review editor on the first match
-proc runQueryAndOpenEditor [val query] {
+proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 	try {
-		runQuery [$query | get lastChangeId]
+		runQuery [$query | get lastChangeId] -serverName $serverName
 	} -catch {
-		runQuery [$query]
+		runQuery [$query] -serverName $serverName
 	}
 	wait -ms 500
 	with [getDashboard] {
