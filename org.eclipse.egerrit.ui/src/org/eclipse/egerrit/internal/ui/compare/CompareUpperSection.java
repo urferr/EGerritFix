@@ -165,18 +165,12 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 				toolbarManager.appendToGroup("merge", new CommandContributionItem(replyContributionParameter)); //$NON-NLS-1$
 
-				CommandContributionItemParameter showCommentContributionParameter = new CommandContributionItemParameter(
-						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showCommentedFile", //$NON-NLS-1$
-						CommandContributionItem.STYLE_PUSH);
-				showCommentContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER);
-
-				toolbarManager.appendToGroup("modes", new CommandContributionItem(showCommentContributionParameter));
+				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
 
 				CommandContributionItemParameter showFileContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showFilePath", //$NON-NLS-1$
-						CommandContributionItem.STYLE_PUSH);
+						CommandContributionItem.STYLE_CHECK);
 				showFileContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH);
-
 				toolbarManager.appendToGroup("modes", new CommandContributionItem(showFileContributionParameter));
 
 				CommandContributionItemParameter nextContributionParameter = new CommandContributionItemParameter(

@@ -176,10 +176,6 @@
              commandId="org.eclipse.egerrit.internal.ui.compare.showFilePath">
        </handler>
        <handler
-             class="org.eclipse.egerrit.internal.ui.compare.ShowCommentedFileHandler"
-             commandId="org.eclipse.egerrit.internal.ui.compare.showCommentedFile">
-       </handler>
-       <handler
              class="org.eclipse.egerrit.internal.ui.compare.ReplyHandler"
              commandId="org.eclipse.egerrit.internal.ui.compare.reply">
        </handler>
