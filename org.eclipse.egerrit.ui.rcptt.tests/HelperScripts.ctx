@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/16/16 10:25 PM
+Save-Time: 8/18/16 4:51 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -121,11 +121,16 @@ proc switchRightInput [val to] [val in -input] {
 	wait 200
 }
 
-proc insertComment [val on] [val text] [val atLine] [val in -input] {
+proc insertComment [val on] [val text] [val atLine] [val save false] [val in -input] {
 	if [$on | equals right] {
 		doInsertComment -idx 1 -text $text -atLine $atLine -in $in
 	} -else {
 		doInsertComment -idx 0 -text $text -atLine $atLine -in $in
+	}
+	if [$save] {
+		with [$in] {
+			key-type "M1+s"
+		}
 	}
 }
 
@@ -233,4 +238,11 @@ proc "assert-that-patchset-menu" [val contains] [val in -input] {
 		get-menu $contains
 	}
 }
+
+proc "assert-that-number-of-files-in-compare" [val is] [val compare -input] {
+	with [$compare] {
+		get-tree | get-property "getItems().length" | equals $is | verify-true
+	}
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
