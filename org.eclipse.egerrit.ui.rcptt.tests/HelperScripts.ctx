@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/18/16 3:21 PM
+Save-Time: 8/18/16 9:26 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -253,4 +253,15 @@ proc "get-right-editor" [val in -input] {
 	get-text-viewer -index 1
 }
 
+proc "assert-that-star-in-dashboard-is-off" [val is] {
+	assert-that-star-in-dashboard -is "org.eclipse.egerrit.dashboard.ui/icons/view16/starOpen.gif"
+}
+
+proc "assert-that-star-in-dashboard-is-on" [val is] [val in -input] {
+	assert-that-star-in-dashboard -is "org.eclipse.egerrit.dashboard.ui/icons/view16/starFilled.gif"
+}
+
+proc "assert-that-star-in-dashboard" [val is] [val in -input] {
+	getDashboard | get-table | get-cell -row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
+}
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

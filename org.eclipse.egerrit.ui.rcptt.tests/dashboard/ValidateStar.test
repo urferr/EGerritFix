@@ -1,0 +1,35 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ValidateStar
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _wnmC0GVuEea5G8_7LPqyQA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/18/16 9:24 PM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Validate the star review feature of the dashboard
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [create-review -server $serverURL]] {
+	runQuery [$review | get lastChangeId] -serverName $serverName
+}
+
+// Check that the star is off (default)
+assert-that-star-in-dashboard-is-off
+
+//Click on the star
+with [getDashboard | get-table | get-cell -row 0 -column 0] {
+	click
+}
+
+assert-that-star-in-dashboard-is-on
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
