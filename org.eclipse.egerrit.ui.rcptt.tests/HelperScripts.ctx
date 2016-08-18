@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/18/16 4:51 PM
+Save-Time: 8/18/16 3:21 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -243,6 +243,14 @@ proc "assert-that-number-of-files-in-compare" [val is] [val compare -input] {
 	with [$compare] {
 		get-tree | get-property "getItems().length" | equals $is | verify-true
 	}
+}
+
+proc "assert-that-selected-text" [val is] [val in -input] {
+	$in | get-property -name "getSelectionText()" | equals $is | verify-true
+}
+
+proc "get-right-editor" [val in -input] {
+	get-text-viewer -index 1
 }
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

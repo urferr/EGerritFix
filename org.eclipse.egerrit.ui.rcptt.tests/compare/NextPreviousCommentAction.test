@@ -1,0 +1,48 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: NextPreviousCommentAction
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _yjV7cGU6EeaCA8nt1hTvvg
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/18/16 3:15 PM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Test the next comment action
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [amend-review -review [create-review -server $serverURL]]] {
+	openCompareEditor $review
+}
+
+// Type a comment and make sure it is colored in yellow
+with [get-editor "Compare.*"] {
+	insertComment -on right -text "first comment" -atLine 0 -save
+	insertComment -on right -text "second comment" -atLine 2 -save
+}
+
+with [get-editor "Compare.*"] {
+	get-button "Go To Next Group of Comment Annotation" | click
+	get-right-editor | assert-that-selected-text -is ".*first comment.*"
+
+	get-button "Go To Next Group of Comment Annotation" | click
+	get-right-editor | assert-that-selected-text -is ".*second comment.*"
+
+	// Check that we circle through the comments in the same editor
+	get-button "Go To Next Group of Comment Annotation" | click
+	get-right-editor | assert-that-selected-text -is ".*first comment.*"
+
+	// Now use the previous comment button
+	// Check that we circle through the comments in the same editor
+	get-button "Go To Previous Group of Comment Annotation" | click
+	get-right-editor | assert-that-selected-text -is ".*second comment.*"
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

@@ -5,8 +5,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _Hr_sEFq6EeaEZtYu-O9HmA
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/16/16 11:42 AM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/18/16 3:17 PM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -26,7 +26,7 @@ let [val review [amend-review -review [create-review -server $serverURL]]] {
 // Type a comment and make sure it is colored in yellow
 with [get-editor -index 1] {
 	insertComment -on right -text comment -atLine 1
-	with [get-text-viewer -index 1] {
+	with [get-right-editor] {
 		set-caret-pos -line 2
 		get-property "styleAtCaret.text" | equals comment | verify-true
 		get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
@@ -37,7 +37,7 @@ with [get-editor -index 1] {
 // Save the comment and confirm that it is a draft and is colored in yellow
 with [get-editor -index 1] {
 	key-type "M1+s"
-	with [get-text-viewer -index 1] {
+	with [get-right-editor] {
 		set-caret-pos -line 2
 		get-property "styleAtCaret.text" | equals "Draft.*comment.*" | verify-true
 		get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
@@ -52,7 +52,7 @@ wait 500
 
 // Now check that the color is not yellow
 with [get-editor -index 1] {
-	with [get-text-viewer -index 1] {
+	with [get-right-editor] {
 		set-caret-pos -line 2
 		get-property "styleAtCaret.text" | equals "admin.*comment.*" | verify-true
 		get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
