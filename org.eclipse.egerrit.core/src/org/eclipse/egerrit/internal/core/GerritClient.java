@@ -40,7 +40,6 @@ import org.eclipse.egerrit.internal.core.command.ListProjectsCommand;
 import org.eclipse.egerrit.internal.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand;
 import org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand;
-import org.eclipse.egerrit.internal.core.command.PublishDraftRevisionCommand;
 import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.internal.core.command.RebaseCommand;
 import org.eclipse.egerrit.internal.core.command.RebaseRevisionCommand;
@@ -278,17 +277,6 @@ public abstract class GerritClient {
 	 */
 	public CreateDraftCommand createDraftComments(String change_id, String revision_id) {
 		return new CreateDraftCommand(fGerritRepository, change_id, revision_id);
-	}
-
-	/**
-	 * Return a command to publish draft of a revision of a change
-	 *
-	 * @param change_id
-	 * @param revision_id
-	 * @return PublishDraftRevisionCommand
-	 */
-	public PublishDraftRevisionCommand publishDraftRevision(String change_id, String revision_id) {
-		return new PublishDraftRevisionCommand(fGerritRepository, change_id, revision_id);
 	}
 
 	/**
