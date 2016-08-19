@@ -5,8 +5,13 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
+<<<<<<< HEAD
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/19/16 6:24 PM
+=======
 Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/19/16 2:53 PM
+Save-Time: 8/19/16 1:51 PM
+>>>>>>> Add marker activation test case.
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -269,14 +274,15 @@ proc "assert-that-star-in-dashboard" [val is] [val in -input] {
 	getDashboard | get-table | get-cell -row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
 }
 
+<<<<<<< HEAD
 proc "assert-dialog" [val named] [val containsText] [val dismiss true] {
 	get-window $named | get-label $containsText	| get-property caption | equals $containsText | verify-true
 	if [$dismiss | equals true] {
 		get-window $named | get-button OK | click
 	}
-}
-
+=======
 proc "assert-marker-count-is" [val is] {
    get-view Markers | get-label [concat $is  " items"] | get-property caption | equals [concat $is  " items"] | verify-true
+>>>>>>> Add marker activation test case.
 }
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
