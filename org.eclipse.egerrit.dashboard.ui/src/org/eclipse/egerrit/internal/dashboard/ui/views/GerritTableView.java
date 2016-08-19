@@ -58,10 +58,6 @@ import org.eclipse.egerrit.internal.model.Reviews;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -94,19 +90,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,11 +211,6 @@ public class GerritTableView extends ViewPart {
 		rtv = this;
 	}
 
-	public void setGerritServerUtility(GerritServerUtility ServerUtil) {
-		fServerUtil = ServerUtil;
-
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
@@ -327,7 +313,6 @@ public class GerritTableView extends ViewPart {
 		fViewer = reviewTable.getViewer();
 
 		makeActions();
-//		hookContextMenu();
 		hookDoubleClickAction();
 
 		listShown = true;
@@ -478,28 +463,6 @@ public class GerritTableView extends ViewPart {
 		};
 	}
 
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager(Messages.GerritTableView_popupMenu);
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				GerritTableView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(fViewer.getControl());
-		fViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, fViewer);
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
-		CommandContributionItem[] contribItems = buildContributions();
-		for (CommandContributionItem contribItem : contribItems) {
-			manager.add(contribItem);
-		}
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
 	private void makeActions() {
 		doubleClickAction = new Action() {
 			@Override
@@ -561,25 +524,6 @@ public class GerritTableView extends ViewPart {
 	@Override
 	public void setFocus() {
 		parentComposite.setFocus();
-	}
-
-	/**
-	 * Create a list for commands to add to the table review list menu
-	 *
-	 * @return CommandContributionItem[]
-	 */
-	private CommandContributionItem[] buildContributions() {
-		IServiceLocator serviceLocator = getViewSite().getActionBars().getServiceLocator();
-		CommandContributionItem[] contributionItems = new CommandContributionItem[1];
-		CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator,
-				Messages.GerritTableView_starredName, ADJUST_MY_STARRED_COMMAND_ID, CommandContributionItem.STYLE_PUSH);
-
-		contributionParameter.label = Messages.GerritTableView_starredName;
-		contributionParameter.visibleEnabled = true;
-		contributionItems[0] = new CommandContributionItem(contributionParameter);
-
-		return contributionItems;
-
 	}
 
 	public TableViewer getTableViewer() {
