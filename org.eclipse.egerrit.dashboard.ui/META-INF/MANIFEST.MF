@@ -18,6 +18,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %providerName
 Export-Package: org.eclipse.egerrit.internal.dashboard.ui;x-internal:=true;uses:="org.eclipse.jface.resource,org.eclipse.ui.plugin,org.osgi.framework",
  org.eclipse.egerrit.internal.dashboard.ui.commands;x-internal:=true;uses:="org.eclipse.core.commands",
+ org.eclipse.egerrit.internal.dashboard.ui.completion,
  org.eclipse.egerrit.internal.dashboard.ui.model;x-internal:=true;
   uses:="org.eclipse.swt.graphics,
    org.eclipse.jface.viewers,
