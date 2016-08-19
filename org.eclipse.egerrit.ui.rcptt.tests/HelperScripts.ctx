@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 8/19/16 2:53 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/19/16 10:50 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -278,5 +278,9 @@ proc "assert-dialog" [val named] [val containsText] [val dismiss true] {
 
 proc "assert-marker-count-is" [val is] {
    get-view Markers | get-label [concat $is  " items"] | get-property caption | equals [concat $is  " items"] | verify-true
+}
+
+proc "assert-sameTopic-table" [val contains] [val in -input] {
+	$in | get-group "Same Topic" | get-table | get-item [$firstReview | get lastChangeId]
 }
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
