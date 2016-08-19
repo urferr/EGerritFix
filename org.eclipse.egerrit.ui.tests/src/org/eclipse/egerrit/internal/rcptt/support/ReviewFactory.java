@@ -123,7 +123,7 @@ public class ReviewFactory {
 	private void createReviewWithSimpleFile(boolean draft) {
 		try {
 			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
-			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
+			fileContent = "Hello reviewers {community} !\n This is the second line \n" + System.currentTimeMillis(); //$NON-NLS-1$
 			gitAccess.addFile(filename, fileContent);
 			gitAccess.pushFile(draft, false);
 		} catch (Exception e1) {
