@@ -1,0 +1,27 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: TestInvalidQueriesForAnonymous
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _ubcSEGYjEeacLsYYjZ3eXQ
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/19/16 6:24 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+// Add a server connected by an anonymous user and make it the default server
+add-gerrit-server -serverURL $serverURL -serverName anonymous -userName ""
+selectActiveServer -serverName anonymous
+
+// Enter a query that will fail
+getDashboard | get-combo | set-text "owner:self"
+
+assert-dialog -named "Gerrit Server" -containsText "The query \"owner:self\" can not be executed by anonymous users."
+// Check that we got an error dialog
+
+delete-gerrit-server -serverName anonymous
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
