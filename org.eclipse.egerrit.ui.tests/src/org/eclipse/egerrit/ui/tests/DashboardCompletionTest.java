@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.net.URI;
 import java.util.HashMap;
 
+import org.apache.http.HttpHost;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
@@ -48,6 +49,9 @@ public class DashboardCompletionTest {
 		serverInfo.setUserName(Common.USER);
 		serverInfo.setPassword(Common.PASSWORD);
 		GerritRepository fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
+		if (Common.PROXY_HOST != null) {
+			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
+		}
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 		fRepository.getCredentials().setHttpCredentials(Common.USER, Common.PASSWORD);
 		fRepository.setServerInfo(serverInfo);
