@@ -47,7 +47,7 @@ public class DashboardCompletionTest {
 				"Test server"); //$NON-NLS-1$
 		serverInfo.setUserName(Common.USER);
 		serverInfo.setPassword(Common.PASSWORD);
-		GerritRepository fRepository = new GerritRepository(Common.SCHEME, Common.HOST, 28212, Common.PATH);
+		GerritRepository fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 		fRepository.getCredentials().setHttpCredentials(Common.USER, Common.PASSWORD);
 		fRepository.setServerInfo(serverInfo);
