@@ -234,7 +234,7 @@ public class GerritRepository {
 		if (fHttpClient != null) {
 			fVersion = queryVersion();
 		}
-		return (fVersion != null);
+		return fVersion != null;
 	}
 
 	/**
@@ -314,7 +314,6 @@ public class GerritRepository {
 			ResponseHandler<String> rh = new ResponseHandler<String>() {
 				@Override
 				public String handleResponse(final HttpResponse response) throws IOException {
-					String result = null;
 					StatusLine statusLine = response.getStatusLine();
 					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
 					int status = statusLine.getStatusCode();
@@ -334,8 +333,7 @@ public class GerritRepository {
 					int prefixLength = JSON_NON_EXECUTABLE_PREFIX.length();
 					String rawResult = EntityUtils.toString(entity);
 					logger.debug("Server version information is: '" + rawResult + "'"); //$NON-NLS-1$ //$NON-NLS-2$
-					result = rawResult.substring(prefixLength + 1, rawResult.length() - 2);
-					return result;
+					return rawResult.substring(prefixLength + 1, rawResult.length() - 2);
 				}
 			};
 
@@ -343,22 +341,13 @@ public class GerritRepository {
 			if (gerritClient != null) {
 				String result = getHttpClient().execute(request, rh);
 				version = parseVersion(result);
-			} else {
-				// Could not create the http client, could not authenticate it
-				// MESSAGE sun.security.validator.ValidatorException
-				// System.err
-				// .println("NO HTTP CLIENT created, so no connection");
 			}
-
-		} catch (ClientProtocolException e) {
-			if (e instanceof HttpResponseException) {
-				HttpResponseException httpException = (HttpResponseException) e;
-				if (httpException.getStatusCode() == 404) {
-					version = NO_VERSION;
-				}
-				if (httpException.getStatusCode() != 404) {
-					EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-				}
+		} catch (HttpResponseException httpException) {
+			if (httpException.getStatusCode() == 404) {
+				version = NO_VERSION;
+			}
+			if (httpException.getStatusCode() != 404) {
+				EGerritCorePlugin.logError(httpException.getLocalizedMessage(), httpException);
 			}
 		} catch (SSLHandshakeException e) {
 			fStatus = SSL_PROBLEM;
@@ -366,9 +355,7 @@ public class GerritRepository {
 				fStatus = SSL_INVALID_ROOT_CERTIFICATE;
 			}
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-		} catch (IOException e) {
-			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
-		} catch (URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
 		}
 
@@ -424,9 +411,9 @@ public class GerritRepository {
 	 * @return String
 	 */
 	public String formatGerritVersion() {
-		String gerritVersion = ""; //$NON-NLS-1$
+		String gerritVersion;
 		StringBuilder sb = new StringBuilder();
-		sb.append("Gerrit server: " + (serverInfo != null ? serverInfo.getServerURI() : "Unknown"));
+		sb.append("Gerrit server: " + (serverInfo != null ? serverInfo.getServerURI() : "Unknown")); //$NON-NLS-2$
 		sb.append("\nVersion: ");
 		gerritVersion = fVersion != null ? fVersion.toString() : "Unknown";
 		sb.append(gerritVersion);
@@ -436,7 +423,7 @@ public class GerritRepository {
 
 	/*
 	 * return the error code of the http connection
-
+	
 	 * @return
 	 */
 	public int getStatus() {
