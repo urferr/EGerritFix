@@ -89,12 +89,27 @@ public abstract class CommandTest {
 	 */
 	public void createReviewWithSimpleFile(boolean draft) {
 		try {
-			gitRepo = gitAccess.getGitProject();
+			try {
+				gitRepo = gitAccess.getGitProject();
+			} catch (Exception e1) {
+				System.err.println(e1);
+				fail(e1.getMessage());
+			}
 			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
 					+ ".java"; //$NON-NLS-1$
 			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
-			gitAccess.addFile(filename, fileContent);
-			gitAccess.pushFile(draft, false);
+			try {
+				gitAccess.addFile(filename, fileContent);
+			} catch (Exception e1) {
+				System.err.println(e1);
+				fail(e1.getMessage());
+			}
+			try {
+				gitAccess.pushFile(draft, false);
+			} catch (Exception e1) {
+				System.err.println(e1);
+				fail(e1.getMessage());
+			}
 
 			change_sha = gitAccess.getChangeId();
 			commit_id = gitAccess.getCommitId();
@@ -139,6 +154,7 @@ public abstract class CommandTest {
 
 	@After
 	public void tearDown() throws IOException {
+		System.out.println("closing");
 		gitAccess.close();
 		delete(gitRepo.getRepository().getWorkTree());
 	}
