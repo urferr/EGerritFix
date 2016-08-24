@@ -13,9 +13,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.beans.PropertyChangeListener;
 
-import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
-import org.eclipse.compare.structuremergeviewer.IDiffContainer;
 import org.eclipse.egerrit.internal.model.FileInfo;
 
 /**
@@ -31,11 +29,6 @@ public class GerritDiffNode extends DiffNode {
 
 	public GerritDiffNode(int kind) {
 		super(kind);
-	}
-
-	public GerritDiffNode(IDiffContainer parent, int kind, ITypedElement ancestor, ITypedElement left,
-			ITypedElement right) {
-		super(parent, kind, ancestor, left, right);
 	}
 
 	@Override

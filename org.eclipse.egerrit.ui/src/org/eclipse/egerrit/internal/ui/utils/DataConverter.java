@@ -13,11 +13,9 @@ package org.eclipse.egerrit.internal.ui.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.eclipse.core.databinding.conversion.Converter;
@@ -27,7 +25,6 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
-import org.eclipse.egerrit.internal.model.CommitInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.GitPersonInfo;
 import org.eclipse.egerrit.internal.model.MergeableInfo;
@@ -146,46 +143,6 @@ public class DataConverter {
 	}
 
 	/**
-	 * @return an IConverter from the a list of string to a string display
-	 */
-	public static <E> IConverter stringListConverter() {
-		IConverter converter = new Converter(List.class, String.class) {
-
-			@Override
-			public Object convert(Object fromObject) {
-
-				if (fromObject != null && !((ArrayList<?>) fromObject).isEmpty()) {
-					return ((ArrayList<?>) fromObject).toString().replace('[', ' ').replace(']', ' ').trim();
-				} else {
-					return null;
-				}
-			}
-		};
-		return converter;
-
-	}
-
-	/**
-	 * @return an IConverter to convert the commit info to a string format to display
-	 */
-	public static IConverter commitInfoIDConverter() {
-		IConverter converter = new Converter(List.class, String.class) {
-
-			@Override
-			public Object convert(Object fromObject) {
-
-				if (fromObject != null && !((ArrayList<?>) fromObject).isEmpty()) {
-					return ((CommitInfo) ((ArrayList<?>) fromObject).get(0)).getCommit();
-				} else {
-					return null;
-				}
-			}
-		};
-		return converter;
-
-	}
-
-	/**
 	 * Insert the tag for the link text
 	 *
 	 * @return
@@ -282,7 +239,7 @@ public class DataConverter {
 			@Override
 			public Object convert(Object fromObject) {
 				if (fromObject == null || changeInfo.getUserSelectedRevision() == null) {
-					//Force this string to be long to reserve the space because the first time things get rendered there is no selection 
+					//Force this string to be long to reserve the space because the first time things get rendered there is no selection
 					return "                               "; //$NON-NLS-1$
 				}
 				final String PATCHSET = Messages.DataConverter_5;

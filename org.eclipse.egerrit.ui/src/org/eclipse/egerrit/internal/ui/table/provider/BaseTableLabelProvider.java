@@ -62,22 +62,6 @@ public class BaseTableLabelProvider extends ObservableMapLabelProvider
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Format the numbering value to display
-	 *
-	 * @param aSt
-	 *            the origin number string
-	 * @return String a number string that will start with + if signed, - if unsigned, and return '0' if it is zero
-	 */
-	protected String formatValue(String aSt) {
-		int val = aSt.equals(EMPTY_STRING) ? 0 : Integer.parseInt(aSt, INTEGER_BASE);
-		if (val > 0) {
-			String st = "+" + aSt; //$NON-NLS-1$
-			return st;
-		}
-		return aSt;
-	}
-
-	/**
 	 * Return the image associated to the column
 	 *
 	 * @param Object

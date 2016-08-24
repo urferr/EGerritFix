@@ -37,7 +37,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -181,20 +180,6 @@ public class UIFilesTable {
 
 		//Set the binding for this section
 		filesTabDataBindings();
-	}
-
-	/**
-	 * This method is for the command double click on a row
-	 *
-	 * @return none
-	 */
-	public void selectRow() {
-		if (fViewer.getElementAt(0) != null) {
-			fViewer.setSelection(new StructuredSelection(fViewer.getElementAt(0)), true);
-			IStructuredSelection selection = (IStructuredSelection) fViewer.getSelection();
-			final DoubleClickEvent event = new DoubleClickEvent(fViewer, selection);
-			fdoubleClickListener.doubleClick(event);
-		}
 	}
 
 	/**

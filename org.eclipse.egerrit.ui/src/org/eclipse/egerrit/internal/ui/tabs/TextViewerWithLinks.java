@@ -31,12 +31,6 @@ public class TextViewerWithLinks extends org.eclipse.jface.text.source.SourceVie
 		super(composite, null, styles);
 	}
 
-	public void resetLinkManager() {
-		fHyperlinkManager.uninstall();
-		fHyperlinkManager = new AlwaysOnLinkManager(HyperlinkManager.ALL);
-		fHyperlinkManager.install(this, fHyperlinkPresenter, fHyperlinkDetectors, fHyperlinkStateMask);
-	}
-
 	/**
 	 * Needed by BeanPropertyListenerSupport.processListener() to add a property change
 	 *
