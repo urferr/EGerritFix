@@ -154,8 +154,8 @@ public abstract class CommandTest {
 
 	@After
 	public void tearDown() throws IOException {
-		System.out.println("closing");
 		gitAccess.close();
 		delete(gitRepo.getRepository().getWorkTree());
+		fRepository.getHttpClient().close();
 	}
 }

@@ -34,7 +34,6 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -77,7 +76,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 	private GerritRepository fRepository;
 
 	// The wrapped HTTP client
-	private HttpClient fHttpClient = null;
+	private CloseableHttpClient fHttpClient = null;
 
 	// The client's credentials
 	private GerritCredentials fCredentials = null;
@@ -444,7 +443,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	/*
 	 * return the error code of the http connection
-	
+
 	 * @return
 	 */
 	public int getStatus() {
@@ -460,5 +459,17 @@ public class GerritHttpClient implements IProxyChangeListener {
 	protected void finalize() throws Throwable {
 		//This is not ideal, but it is the best we can do to remove the listener
 		EGerritCorePlugin.getDefault().getProxyService().removeProxyChangeListener(this);
+	}
+
+	public void close() {
+		synchronized (this) {
+			if (fHttpClient != null) {
+				try {
+					fHttpClient.close();
+				} catch (IOException e) {
+					logger.debug("An exception occured closing the connection to the gerrit server", e); //$NON-NLS-1$
+				}
+			}
+		}
 	}
 }
