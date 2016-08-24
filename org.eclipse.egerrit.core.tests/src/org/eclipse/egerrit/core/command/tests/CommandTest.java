@@ -92,7 +92,7 @@ public abstract class CommandTest {
 			try {
 				gitRepo = gitAccess.getGitProject();
 			} catch (Exception e1) {
-				System.err.println(e1);
+				System.out.println(e1);
 				fail(e1.getMessage());
 			}
 			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
@@ -101,13 +101,13 @@ public abstract class CommandTest {
 			try {
 				gitAccess.addFile(filename, fileContent);
 			} catch (Exception e1) {
-				System.err.println(e1);
+				System.out.println(e1);
 				fail(e1.getMessage());
 			}
 			try {
 				gitAccess.pushFile(draft, false);
 			} catch (Exception e1) {
-				System.err.println(e1);
+				System.out.println(e1);
 				fail(e1.getMessage());
 			}
 
