@@ -73,4 +73,21 @@ public class DashboardCompletionTest {
 		IContentProposal[] proposals = provider.getProposals("s", 1); //Here we test "s" without any specific reason
 		assertEquals(10, proposals.length);
 	}
+
+	@Test
+	public void testDefaultProposals() {
+		SearchContentProposalProvider provider = new SearchContentProposalProvider(null);
+		provider.setGerritClient(fGerrit);
+		IContentProposal[] proposals = provider.getProposals("", 0);
+		assertEquals(3, proposals.length);
+	}
+
+	@Test
+	public void testAccountCompletion() {
+		SearchContentProposalProvider provider = new SearchContentProposalProvider(null);
+		provider.setGerritClient(fGerrit);
+		IContentProposal[] proposals = provider.getProposals("owner:tes", 9);
+		assertEquals(2, proposals.length);
+	}
+
 }
