@@ -47,8 +47,6 @@ public class UICompareUtils {
 
 	private static final String DEFAULT_OBJECT_CLASS_NAME = "Object"; //$NON-NLS-1$
 
-	public static int CURRENT_ELEMENT = 0;
-
 	/**
 	 * Method insertAnnotationNavigationCommands.
 	 *
@@ -65,14 +63,6 @@ public class UICompareUtils {
 			aManager.add(item);
 		}
 		aManager.update(true);
-	}
-
-	public static void setCurrentElement(int element) {
-		CURRENT_ELEMENT = element;
-	}
-
-	public static int getCurrentElement() {
-		return CURRENT_ELEMENT;
 	}
 
 	/**

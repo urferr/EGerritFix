@@ -55,9 +55,8 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 						.getBundle()
 						.getEntry(EGerritImages.NEXT_COMMENT_ANNOTATION_ICON_FILE)),
 				null, null, Messages.NextCommentAnnotationCommandName,
-				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC,
-				Messages.NextCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH,
-				null, true);
+				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC, Messages.NextCommentAnnotationCommandTooltip,
+				CommandContributionItem.STYLE_PUSH, null, true);
 
 		list.add(new CommandContributionItem(params));
 
@@ -75,12 +74,9 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 						.getEntry(EGerritImages.PREVIOUS_COMMENT_ANNOTATION_ICON_FILE)),
 				null, null, Messages.PreviousCommentAnnotationCommandName,
 				UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_COMMAND_MNEMONIC,
-				Messages.PreviousCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH,
-				null, true);
+				Messages.PreviousCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH, null, true);
 
 		list.add(new CommandContributionItem(params));
-
-		UICompareUtils.setCurrentElement(0);
 
 		return list.toArray(new IContributionItem[list.size()]);
 	}
