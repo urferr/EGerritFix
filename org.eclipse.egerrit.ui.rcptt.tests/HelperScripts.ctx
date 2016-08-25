@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/19/16 10:50 PM
+Save-Time: 8/24/16 6:33 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -125,11 +125,11 @@ proc switchRightInput [val to] [val in -input] {
 	wait 200
 }
 
-proc insertComment [val on] [val text] [val atLine] [val save false] [val in -input] {
+proc insertComment [val on] [val text] [val atLine] [val save false] [val column 0] [val in -input] {
 	if [$on | equals right] {
-		doInsertComment -idx 1 -text $text -atLine $atLine -in $in
+		doInsertComment -idx 1 -text $text -atLine $atLine -col $column -in $in
 	} -else {
-		doInsertComment -idx 0 -text $text -atLine $atLine -in $in
+		doInsertComment -idx 0 -text $text -atLine $atLine -col $column -in $in
 	}
 	if [$save] {
 		with [$in] {
@@ -138,9 +138,9 @@ proc insertComment [val on] [val text] [val atLine] [val save false] [val in -in
 	}
 }
 
-proc doInsertComment [val idx] [val text] [val atLine] [val in -input] {
+proc doInsertComment [val idx] [val text] [val atLine] [val col 0] [val in -input] {
 	with [$in | get-text-viewer -index $idx] {
-		set-caret-pos -line $atLine -column 0
+		set-caret-pos -line $atLine -column $col
 		type-text $text
 	}
 }
