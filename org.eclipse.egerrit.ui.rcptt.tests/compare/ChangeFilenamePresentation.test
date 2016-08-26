@@ -1,0 +1,36 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ChangeFilenamePresentation
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _FaIZ4GT8EeaHE_TvgR-JWQ
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 8/26/16 8:06 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [create-review -server $serverURL]] {
+	openCompareEditor $review
+}
+
+proc "assert-that-filename-in-compare" [val atLine] [val is] [val in -input] {
+	with [$in | get-tree] {
+		get-item $atLine | get-property "columns[2]" | equals $is | verify-true
+	}
+}
+
+with [get-editor "Compare.*"] {
+	assert-that-filename-in-compare -atLine 1 -is "EGerritTestReviewFile.java - src"
+	
+	get-editor "Compare.*" | get-button "Toggle the File path layout.*" | click
+	assert-that-filename-in-compare -atLine 1 -is "src/EGerritTestReviewFile.java"
+	
+	get-editor "Compare.*" | get-button "Toggle the File path layout.*" | click
+	assert-that-filename-in-compare -atLine 1 -is "EGerritTestReviewFile.java - src"
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
