@@ -41,7 +41,7 @@ public class GetCommitMsgCommandTest extends CommandTestWithSimpleReview {
 		}
 
 		// Verify result
-		assertEquals("Test commit message\n\nChange-Id: " + change_sha + "\n", result.getMessage());
+		assertEquals("Test commit message\n\nChange-Id: " + change_id + "\n", result.getMessage());
 
 	}
 

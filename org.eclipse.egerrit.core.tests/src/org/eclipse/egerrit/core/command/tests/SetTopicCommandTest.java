@@ -45,7 +45,7 @@ public class SetTopicCommandTest extends CommandTestWithSimpleReview {
 			queryForChange.addTopic("ABC");
 			queryForChange.setMaxNumberOfResults(1);
 			ChangeInfo retrievedChangeInfo = queryForChange.call()[0];
-			assertEquals(change_id, retrievedChangeInfo.getId());
+			assertEquals(change_id, retrievedChangeInfo.getChange_id());
 			assertEquals(TOPIC, retrievedChangeInfo.getTopic());
 		} catch (EGerritException e) {
 			fail(e.getMessage());

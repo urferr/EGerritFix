@@ -40,7 +40,7 @@ public class GetChangeCommandTest extends CommandTestWithSimpleReview {
 
 		// Verify result
 		if (result != null) {
-			assertEquals(change_id, result.getId());
+			assertEquals(change_id, result.getChange_id());
 		}
 	}
 
@@ -58,7 +58,7 @@ public class GetChangeCommandTest extends CommandTestWithSimpleReview {
 
 		// Verify result
 		if (result != null) {
-			assertEquals(change_id, result.getId());
+			assertEquals(change_id, result.getChange_id());
 		}
 	}
 }

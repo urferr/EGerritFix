@@ -61,7 +61,7 @@ public class RevertCommandTest extends CommandTestWithSimpleReview {
 		ChangeInfo submitCmdResult = null;
 		try {
 			submitCmdResult = submitCmd.call();
-			assertEquals(submitCmdResult.getId(), change_id);
+			assertEquals(submitCmdResult.getChange_id(), change_id);
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
