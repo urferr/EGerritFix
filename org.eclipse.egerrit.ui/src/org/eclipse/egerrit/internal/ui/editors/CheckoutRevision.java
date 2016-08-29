@@ -102,7 +102,7 @@ public class CheckoutRevision extends Action {
 				changeInfo.getUserSelectedRevision());
 	}
 
-	private Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
+	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
 		Git gitRepo = new Git(localRepo);
 		String changeIdKey = "Change-Id"; //$NON-NLS-1$
 		//Map <Key,value> = Map<Short branch name, commit id>
@@ -114,10 +114,8 @@ public class CheckoutRevision extends Action {
 			mapBranchNameWithCommitId(gitRepo, changeIdKey, mapBranches, mapBranchesChangeId, walk);
 			//Get only potential branches
 			potentialBranches = mapPotentialBranch(mapBranchesChangeId);
-		} catch (
-
-		GitAPIException e1) {
-			e1.printStackTrace();
+		} catch (GitAPIException e) {
+			EGerritCorePlugin.logError("find All Potential Branches()" + e.getMessage());
 		}
 		gitRepo.close();
 		return potentialBranches;
@@ -205,7 +203,7 @@ public class CheckoutRevision extends Action {
 		return mapBranches;
 	}
 
-	private void checkoutBranch(String branchName, Repository repo) throws Exception {
+	public void checkoutBranch(String branchName, Repository repo) throws Exception {
 		CheckoutCommand command = null;
 		try (Git gitRepo = new Git(repo)) {
 			command = gitRepo.checkout();

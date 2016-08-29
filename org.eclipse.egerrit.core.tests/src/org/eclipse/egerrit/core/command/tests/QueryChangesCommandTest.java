@@ -52,7 +52,7 @@ public class QueryChangesCommandTest extends CommandTestWithSimpleReview {
 
 		for (ListIterator<ChangeInfo> iter = listChangeInfo.listIterator(); iter.hasNext();) {
 			ChangeInfo element = iter.next();
-			if (element.getId().equals(change_id)) {
+			if (element.getChange_id().equals(change_id)) {
 				isFound = true;
 				break;
 

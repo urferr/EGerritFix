@@ -27,11 +27,13 @@ import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritFactory;
 import org.eclipse.egerrit.internal.core.GerritRepository;
 import org.eclipse.egerrit.internal.core.GerritServerInformation;
+import org.eclipse.egerrit.internal.core.command.ChangeOption;
+import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelPackage;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
@@ -46,8 +48,6 @@ public abstract class CommandTest {
 
 	protected String commit_id;
 
-	protected String change_sha;
-
 	protected ChangeInfo changeInfo;
 
 	protected String filename;
@@ -61,9 +61,8 @@ public abstract class CommandTest {
 	@Before
 	public void setUp() throws Exception {
 		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
-		EStructuralFeature l = ci.eClass().getEStructuralFeature("labels");
 		HashMap<String, LabelInfo> labels = new HashMap<String, LabelInfo>();
-		labels.put("a", ModelFactory.eINSTANCE.createLabelInfo());
+		labels.put("a", ModelFactory.eINSTANCE.createLabelInfo()); //$NON-NLS-1$
 		ci.eSet(ModelPackage.eINSTANCE.getChangeInfo_Labels(), labels);
 		GerritServerInformation serverInfo = new GerritServerInformation(
 				new URI(Common.SCHEME, null, Common.HOST, Common.PORT, Common.PATH, null, null).toASCIIString(),
@@ -89,35 +88,45 @@ public abstract class CommandTest {
 	 */
 	public void createReviewWithSimpleFile(boolean draft) {
 		try {
-			try {
-				gitRepo = gitAccess.getGitProject();
-			} catch (Exception e1) {
-				System.out.println(e1);
-				fail(e1.getMessage());
-			}
-			filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
-					+ ".java"; //$NON-NLS-1$
-			fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
-			try {
-				gitAccess.addFile(filename, fileContent);
-			} catch (Exception e1) {
-				System.out.println(e1);
-				fail(e1.getMessage());
-			}
-			try {
-				gitAccess.pushFile(draft, false);
-			} catch (Exception e1) {
-				System.out.println(e1);
-				fail(e1.getMessage());
-			}
-
-			change_sha = gitAccess.getChangeId();
-			commit_id = gitAccess.getCommitId();
-
-			changeInfo = fGerrit.getChange(change_sha).call();
-			change_id = changeInfo.getId();
+			gitRepo = gitAccess.getGitProject();
+			gitAccess.addToGitView();
 		} catch (Exception e1) {
+			System.err.println(e1);
 			fail(e1.getMessage());
+		}
+		filename = "folder/EGerritTestReviewFile" + getClass().getSimpleName() + System.currentTimeMillis() //$NON-NLS-1$
+				+ ".java"; //$NON-NLS-1$
+		fileContent = "Hello reviewers {community} !\n This is the second line \n"; //$NON-NLS-1$
+		try {
+			gitAccess.addFile(filename, fileContent);
+		} catch (Exception e1) {
+			System.err.println(e1);
+			fail(e1.getMessage());
+		}
+		try {
+			gitAccess.pushFile(draft, false);
+		} catch (Exception e1) {
+			System.err.println(e1);
+			fail(e1.getMessage());
+		}
+		commit_id = gitAccess.getCommitId();
+
+		loadReview();
+	}
+
+	/**
+	 * Helper to load the review
+	 */
+	public void loadReview() {
+		try {
+			GetChangeCommand command = fGerrit.getChange(gitAccess.getChangeId());
+			command.addOption(ChangeOption.ALL_REVISIONS);
+			command.addOption(ChangeOption.ALL_COMMITS);
+			changeInfo = command.call();
+			change_id = changeInfo.getChange_id();
+			changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+		} catch (EGerritException e) {
+			fail(e.getMessage());
 		}
 	}
 
@@ -134,7 +143,7 @@ public abstract class CommandTest {
 			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n"; //$NON-NLS-1$
 
 			gitAccess.addFile(filename, fileContent);
-			gitAccess.pushFile("Another revision\n\nChange-Id: " + change_sha, draft, true);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + gitAccess.getChangeId(), draft, true);
 
 		} catch (Exception e1) {
 			fail(e1.getMessage());

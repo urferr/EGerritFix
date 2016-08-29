@@ -49,7 +49,7 @@ public class AbandonCommandTest extends CommandTestWithSimpleReview {
 		}
 		assertNotNull(abandonCmdResult);
 		assertEquals(abandonCmdResult.getStatus(), "ABANDONED");
-		assertEquals(abandonCmdResult.getId(), change_id);
+		assertEquals(abandonCmdResult.getChange_id(), change_id);
 
 	}
 }

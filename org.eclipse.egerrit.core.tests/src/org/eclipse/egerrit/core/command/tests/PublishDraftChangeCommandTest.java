@@ -50,7 +50,7 @@ public class PublishDraftChangeCommandTest extends CommandTest {
 			comd.addQuery("is:open");
 			ChangeInfo[] changes = comd.call();
 			for (ChangeInfo s : changes) {
-				if (s.getId().compareTo(change_id) == 0) {
+				if (s.getChange_id().compareTo(change_id) == 0) {
 					assertTrue(true);
 					return;
 				}

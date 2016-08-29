@@ -47,7 +47,7 @@ public class DeleteDraftChangeCommandTest extends CommandTest {
 			command2.call();
 			QueryChangesCommand comd = fGerrit.queryChanges();
 			comd.setMaxNumberOfResults(10);
-			comd.addQuery(change_sha);
+			comd.addQuery(change_id);
 			ChangeInfo[] changes = comd.call();
 			assertEquals(0, changes.length);
 		} catch (EGerritException e) {

@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.eclipse.egerrit.core.tests.support;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,11 +30,20 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egit.core.Activator;
 import org.eclipse.egit.core.RepositoryUtil;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CheckoutResult;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.DeleteBranchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
+import org.eclipse.jgit.api.errors.DetachedHeadException;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.PushResult;
@@ -178,21 +189,16 @@ public class GitAccess {
 	 *            indicate whether the previous comment should be amended
 	 */
 	public void pushFile(String commitMsg, boolean draft, boolean amend) throws Exception {
+		//create a commit
+		commitFile(commitMsg, true, amend);
+
+		//push the commit
 		Authenticator.setDefault(null);
-		CommitCommand command = fGit.commit();
 		String refSpec = "HEAD:refs/for/master";
 		if (draft) {
 			refSpec = "HEAD:refs/drafts/master";
 		}
 		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD);
-		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
-				.setCommitter(Common.USER, Common.EMAIL)
-				.setInsertChangeId(true)
-				.setMessage(commitMsg)
-				.setAmend(amend)
-				.call();
-		int cid = call.getFullMessage().indexOf("Change-Id: ");
-		fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
 		Iterable<PushResult> result = fGit.push()
 				.setCredentialsProvider(creds)
 				.setRefSpecs(new RefSpec(refSpec))
@@ -203,6 +209,20 @@ public class GitAccess {
 		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
 				rru.getNewObjectId().toString().length() - 1);
 
+	}
+
+	public void commitFile(String commitMsg, boolean generateChangeId, boolean amend) throws Exception {
+		CommitCommand command = fGit.commit();
+		RevCommit call = command.setAuthor("Test", Common.EMAIL) //$NON-NLS-1$
+				.setCommitter(Common.USER, Common.EMAIL)
+				.setInsertChangeId(generateChangeId)
+				.setMessage(commitMsg)
+				.setAmend(amend)
+				.call();
+		int cid = call.getFullMessage().indexOf("Change-Id: ");
+		if (cid != -1) {
+			fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
+		}
 	}
 
 	private static File createTempFolder(String prefix) throws IOException {
@@ -329,5 +349,58 @@ public class GitAccess {
 
 	public void close() {
 		fGit.close();
+	}
+
+	/**
+	 * Get the current branch from egit
+	 */
+	public String getCurrentBranch() {
+		RepositoryUtil repoUtil = Activator.getDefault().getRepositoryUtil();
+		String branch = null;
+		try {
+			branch = repoUtil.getShortBranch(fGit.getRepository());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return branch;
+	}
+
+	/**
+	 * Create a new branch and make it the current one
+	 *
+	 * @param branchName
+	 * @throws Exception
+	 */
+	public void createAndCheckoutBranch(String branchName) throws Exception {
+		Repository repo = fGit.getRepository();
+		CheckoutCommand command = null;
+		try (Git gitRepo = new Git(repo)) {
+			command = gitRepo.checkout();
+			command.setCreateBranch(true);
+			command.setName(branchName);
+			command.setForce(false);
+			command.call();
+		} catch (Throwable t) {
+			CheckoutResult result = command.getResult();
+			fail(t.getMessage());
+		}
+		System.out.println("Branch c/o: " + branchName);
+	}
+
+	/**
+	 * Remove the selected branch
+	 *
+	 * @param oldBranchName
+	 */
+	public void branchRemove(String oldBranchName) {
+		DeleteBranchCommand remove = fGit.branchDelete();
+		try {
+			remove.setBranchNames(oldBranchName).setForce(true).call();
+		} catch (RefNotFoundException | InvalidRefNameException | RefAlreadyExistsException | DetachedHeadException e) {
+			fail(e.getMessage());
+		} catch (GitAPIException e) {
+			fail(e.getMessage());
+		}
 	}
 }

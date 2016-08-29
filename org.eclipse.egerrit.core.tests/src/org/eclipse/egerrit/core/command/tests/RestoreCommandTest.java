@@ -55,7 +55,7 @@ public class RestoreCommandTest extends CommandTestWithSimpleReview {
 		try {
 			ChangeInfo restoreCmdResult = null;
 			restoreCmdResult = restoreCmd.call();
-			assertEquals(restoreCmdResult.getId(), change_id);
+			assertEquals(restoreCmdResult.getChange_id(), change_id);
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
