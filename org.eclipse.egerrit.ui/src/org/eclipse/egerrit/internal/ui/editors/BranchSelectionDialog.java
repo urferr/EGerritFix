@@ -80,10 +80,6 @@ public class BranchSelectionDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		createTableViewerSection(parent);
 		parent.getShell().setText(Messages.BranchSelectionTableModel_title);//Dialog title
-		//set the dialog size
-		org.eclipse.swt.graphics.Point minSize = parent.getShell().computeSize(WIDTH, SWT.DEFAULT);
-		parent.getShell().setSize(minSize);
-		parent.getShell().setMinimumSize(WIDTH, minSize.y + 80);// + 80 to allow for the button to be visible
 		return super.createDialogArea(parent);
 	}
 

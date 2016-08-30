@@ -30,7 +30,7 @@ import org.eclipse.swt.SWT;
 public enum BranchSelectionTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	Branch(Messages.BranchSelectionTableModel_branch, 140, true, true, SWT.LEFT), //
-	Match(Messages.BranchSelectionTableModel_match, 80, true, true, SWT.LEFT);
+	Match(Messages.BranchSelectionTableModel_match, 350, true, true, SWT.LEFT);
 
 	private final String fHeader;
 
