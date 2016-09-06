@@ -14,9 +14,15 @@ package org.eclipse.egerrit.internal.dashboard.ui.utils;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * This class implements the Gerrit Dashboard UI utility.
@@ -25,6 +31,10 @@ import org.eclipse.swt.widgets.Display;
  */
 
 public class UIUtils {
+
+	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs";
+
+	private final static int TITLE_LENGTH = 75;
 
 	/**
 	 * Method showErrorDialog.
@@ -66,4 +76,43 @@ public class UIUtils {
 		}
 		return s;
 	}
+
+	/**
+	 * Show a confirmation dialog to the end-user until the toggle is selected
+	 *
+	 * @param key
+	 * @param shell
+	 * @param title
+	 * @param value
+	 * @return
+	 */
+	public static int showConfirmDialog(String key, Shell shell, String title, String value) {
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode(EGERRIT_PREF);
+
+		Preferences editorPrefs = prefs.node(key);
+		boolean choice = editorPrefs.getBoolean(key, false);
+
+		if (choice) {
+			return SWT.CANCEL;
+		}
+
+		//Keep the title length to TITLE_LENGTH characters max
+		if (title.length() > TITLE_LENGTH) {
+			title = title.substring(0, (TITLE_LENGTH - 3)).concat("..."); //$NON-NLS-1$
+		}
+
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(shell, title, value,
+				"Don't show this message again", false, null, null);
+
+		if (dialog.getToggleState()) {
+			editorPrefs.putBoolean(key, true);
+			try {
+				editorPrefs.flush();
+			} catch (BackingStoreException e) {
+				//There is not much we can do
+			}
+		}
+		return dialog.getReturnCode();
+	}
+
 }

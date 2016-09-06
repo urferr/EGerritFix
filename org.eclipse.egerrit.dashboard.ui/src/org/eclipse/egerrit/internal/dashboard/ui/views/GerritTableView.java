@@ -7,11 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Jacques Bouthillier                  - Initial Implementation of the plug-in
- *   Francois Chouinard                   - Handle gerrit queries and open reviews in editor
- *   Guy Perron                           - Add review counter, Add Gerrit button selection
- *   Jacques Bouthillier                  - Bug 426580 Add the starred functionality
- *   Thomas Wolf <thomas.wolf@paranor.ch> - Bug 501543
+ *   Ericsson - initial API and implementation
  ******************************************************************************/
 
 package org.eclipse.egerrit.internal.dashboard.ui.views;
@@ -118,10 +114,6 @@ import org.slf4j.LoggerFactory;
 public class GerritTableView extends ViewPart {
 	private static Logger logger = LoggerFactory.getLogger(GerritTableView.class);
 
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -132,13 +124,14 @@ public class GerritTableView extends ViewPart {
 	//Numbers of menu items in the Search pulldown menu; SEARCH_SIZE_MENU_LIST + 1 will be the max
 	private static final int SEARCH_SIZE_MENU_LIST = 4;
 
-	private final String TITLE = "Gerrit Server ";
+	private final String TITLE = "Gerrit Server "; //$NON-NLS-1$
 
 	public static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$
 
 	public static final String ANONYMOUS_IMAGE = "personAnonymous.png"; //$NON-NLS-1$
 
 	public static final String INVALID_IMAGE = "personInvalid.png"; //$NON-NLS-1$
+
 	// For the images
 
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
@@ -197,6 +190,8 @@ public class GerritTableView extends ViewPart {
 			connectToServer(defaultServerInfo);
 		}
 	});
+
+	private VoteHandler voteHandler;
 
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
@@ -288,7 +283,7 @@ public class GerritTableView extends ViewPart {
 					GerritServerInformation server = askUserToSelectRepo(ServersStore.getAllServers());
 					if (server != null) {
 						fServerUtil.saveLastGerritServer(server);
-						processCommands("status:open");
+						processCommands("status:open"); //$NON-NLS-1$
 					}
 				}
 			});
@@ -317,6 +312,8 @@ public class GerritTableView extends ViewPart {
 
 		listShown = true;
 		parentComposite.layout(true); //Here we force a re-layout
+		voteHandler = new VoteHandler(topComposite.getShell(), this, fViewer);
+		voteHandler.connect();
 	}
 
 	private void removeExistingWidgets() {
@@ -556,8 +553,7 @@ public class GerritTableView extends ViewPart {
 					} catch (PartInitException e) {
 						logger.warn(e.getMessage());
 					}
-					logger.debug("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart);
-
+					logger.debug("getActiveView() SHOULD (JUST) CREATED A NEW Table:" + viewPart); //$NON-NLS-1$
 				}
 			}
 
@@ -612,7 +608,7 @@ public class GerritTableView extends ViewPart {
 			});
 			defaultServerInfo = addOneServer.getServer();
 			if (defaultServerInfo == null) {
-				logger.debug("No new server entered by the user. ");
+				logger.debug("No new server entered by the user. "); //$NON-NLS-1$
 				return;
 			}
 		}
@@ -642,12 +638,12 @@ public class GerritTableView extends ViewPart {
 						"Server " + defaultServerInfo.getServerURI());
 			} else if (version.equals(GerritRepository.NO_VERSION)) {
 				UIUtils.showErrorDialog("Unsupported Gerrit server version",
-						"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than "
+						"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than " //$NON-NLS-1$
 								+ GerritFactory.MINIMAL_VERSION + ".");
 			} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
 				UIUtils.showErrorDialog("Unsupported Gerrit server version",
-						"Server " + gerritRepository.getPath() + " runs version " + version.toString()
-								+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION
+						"Server " + gerritRepository.getPath() + " runs version " + version.toString() //$NON-NLS-1$ //$NON-NLS-2$
+								+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION //$NON-NLS-1$
 								+ " supported by EGerrit.");
 			}
 
@@ -996,7 +992,7 @@ public class GerritTableView extends ViewPart {
 				}
 			} else {
 				shownReviews.getAllReviews().clear();
-				ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error");
+				ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error"); //$NON-NLS-1$
 			}
 		} else {
 			//Reset the list to prevent bad request
@@ -1006,10 +1002,10 @@ public class GerritTableView extends ViewPart {
 			Display.getDefault().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					setRepositoryVersionLabel("Invalid Server", "NO connection");
+					setRepositoryVersionLabel("Invalid Server", "NO connection"); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			});
-			ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error");
+			ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error"); //$NON-NLS-1$
 
 		}
 		refresh(shownReviews);
@@ -1062,7 +1058,7 @@ public class GerritTableView extends ViewPart {
 
 	public ChangeInfo[] performQuery(String query, IProgressMonitor monitor) throws MalformedURLException {
 		try {
-			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 
 			ChangeInfo[] res = null;
 			QueryChangesCommand command = gerritClient.queryChanges();
@@ -1151,11 +1147,11 @@ public class GerritTableView extends ViewPart {
 		addOneServer.promptToModifyServer(defaultServerInfo, true);
 		defaultServerInfo = addOneServer.getServer();
 		if (defaultServerInfo == null) {
-			logger.debug("No new server entered by the user.");
+			logger.debug("No new server entered by the user."); //$NON-NLS-1$
 			return;
 		}
 		if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
-			processCommands("status:open");
+			processCommands("status:open"); //$NON-NLS-1$
 		} else {
 			processCommands(fSearchRequestText.getText());
 		}

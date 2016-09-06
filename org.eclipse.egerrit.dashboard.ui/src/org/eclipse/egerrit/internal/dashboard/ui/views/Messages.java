@@ -22,6 +22,10 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.dashboard.ui.views.messages"; //$NON-NLS-1$
 
+	public static String GerritTableView_confirmOpenExternalPage;
+
+	public static String GerritTableView_openExternalPage;
+
 	public static String GerritTableView_commandMessage;
 
 	public static String GerritTableView_defineRepository;
