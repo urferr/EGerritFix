@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
@@ -42,6 +43,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +115,18 @@ public class ActiveWorkspaceRevision {
 		createMarkers();
 		hookListeners();
 		firePropertyChange("activeRevision", null, fRevisionInContext); //$NON-NLS-1$
+		openMarkerView();
+	}
+
+	private void openMarkerView() {
+		try {
+			PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow()
+					.getActivePage()
+					.showView("org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
+		} catch (PartInitException e1) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+		}
 	}
 
 	private void forceLoadRevision() {

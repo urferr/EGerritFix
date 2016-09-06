@@ -294,14 +294,6 @@ public class ChangeDetailEditor extends EditorPart {
 							fChangeInfo.getUserSelectedRevision() != null
 									? fChangeInfo.getUserSelectedRevision()
 									: fChangeInfo.getRevision());
-					try {
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
-								"org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
-					} catch (PartInitException e1) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-					}
-
 				} else {
 					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();
 				}
@@ -328,7 +320,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 	private void activateMarkers() {
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), Messages.EGerriTip, Messages.ChangeDetailEditor_EGerriTipValue);
+			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), Messages.EGerriTip,
+					Messages.ChangeDetailEditor_EGerriTipValue);
 		}
 	}
 
