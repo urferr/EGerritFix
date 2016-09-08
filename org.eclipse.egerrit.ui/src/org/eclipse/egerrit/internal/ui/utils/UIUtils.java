@@ -181,7 +181,7 @@ public class UIUtils {
 	private static void appendCommitTime(StringBuilder sb, RevisionInfo revisionInfo) {
 		if (revisionInfo.getCommit() != null) {
 			sb.append(Utils.formatDate(revisionInfo.getCommit().getCommitter().getDate(),
-					new SimpleDateFormat("MMM dd, yyyy hh:mm a"))); //$NON-NLS-1$
+					new SimpleDateFormat("MM dd, yyyy hh:mm a"))); //$NON-NLS-1$
 		}
 	}
 
