@@ -118,7 +118,7 @@ import com.ibm.icu.text.NumberFormat;
 public class ChangeDetailEditor extends EditorPart {
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
-	private static final String CODE_REVIEW = Messages.ChangeDetailEditor_1;
+	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
 

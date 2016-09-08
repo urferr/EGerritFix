@@ -42,8 +42,6 @@ public class Messages extends NLS {
 
 	public static String BranchSelectionTableModel_question;
 
-	public static String ChangeDetailEditor_1;
-
 	public static String ChangeDetailEditor_12;
 
 	public static String ChangeDetailEditor_13;
