@@ -45,7 +45,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CHECKOUT(1, "checkout", "Checkout"), //$NON-NLS-1$ //$NON-NLS-2$
+	CHECKOUT(1, "checkout", "Che&ckout"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Cherrypick</b></em>' literal object.
@@ -55,7 +55,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CHERRYPICK(2, "cherrypick", "Cherry-Pick"), //$NON-NLS-1$ //$NON-NLS-2$
+	CHERRYPICK(2, "cherrypick", "Cherry-Pic&k"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Draft</b></em>' literal object.
@@ -65,7 +65,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	DRAFT(3, "draft", "Draft ..."), //$NON-NLS-1$ //$NON-NLS-2$
+	DRAFT(3, "draft", "&Draft ..."), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Followup</b></em>' literal object.
@@ -85,7 +85,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	PUBLISH(5, "publish", "Publish"), //$NON-NLS-1$ //$NON-NLS-2$
+	PUBLISH(5, "publish", "P&ublish"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Rebase</b></em>' literal object.
@@ -95,7 +95,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	REBASE(6, "rebase", "Rebase"), //$NON-NLS-1$ //$NON-NLS-2$
+	REBASE(6, "rebase", "Re&base"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Refresh</b></em>' literal object.
@@ -105,7 +105,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	REFRESH(7, "refresh", "Refresh"), //$NON-NLS-1$ //$NON-NLS-2$
+	REFRESH(7, "refresh", "Refre&sh"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Reply</b></em>' literal object.
@@ -115,7 +115,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	REPLY(8, "reply", "Reply ..."), //$NON-NLS-1$ //$NON-NLS-2$
+	REPLY(8, "reply", "Repl&y ..."), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Restore</b></em>' literal object.
@@ -125,7 +125,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	RESTORE(9, "restore", "Restore"), //$NON-NLS-1$ //$NON-NLS-2$
+	RESTORE(9, "restore", "Rest&ore"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Revert</b></em>' literal object.
@@ -135,7 +135,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	REVERT(10, "revert", "Revert"), //$NON-NLS-1$ //$NON-NLS-2$
+	REVERT(10, "revert", "Rever&t"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Submit</b></em>' literal object.
@@ -145,7 +145,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	SUBMIT(11, "submit", "Submit"), //$NON-NLS-1$ //$NON-NLS-2$
+	SUBMIT(11, "submit", "S&ubmit"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Topic</b></em>' literal object.
@@ -181,7 +181,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #CHECKOUT
-	 * @model name="checkout" literal="Checkout"
+	 * @model name="checkout" literal="Che&ckout"
 	 * @generated
 	 * @ordered
 	 */
@@ -196,7 +196,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #CHERRYPICK
-	 * @model name="cherrypick" literal="Cherry-Pick"
+	 * @model name="cherrypick" literal="Cherry-Pic&k"
 	 * @generated
 	 * @ordered
 	 */
@@ -211,7 +211,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #DRAFT
-	 * @model name="draft" literal="Draft ..."
+	 * @model name="draft" literal="&Draft ..."
 	 * @generated
 	 * @ordered
 	 */
@@ -241,7 +241,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #PUBLISH
-	 * @model name="publish" literal="Publish"
+	 * @model name="publish" literal="P&ublish"
 	 * @generated
 	 * @ordered
 	 */
@@ -256,7 +256,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #REBASE
-	 * @model name="rebase" literal="Rebase"
+	 * @model name="rebase" literal="Re&base"
 	 * @generated
 	 * @ordered
 	 */
@@ -271,7 +271,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #REFRESH
-	 * @model name="refresh" literal="Refresh"
+	 * @model name="refresh" literal="Refre&sh"
 	 * @generated
 	 * @ordered
 	 */
@@ -286,7 +286,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #REPLY
-	 * @model name="reply" literal="Reply ..."
+	 * @model name="reply" literal="Repl&y ..."
 	 * @generated
 	 * @ordered
 	 */
@@ -301,7 +301,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #RESTORE
-	 * @model name="restore" literal="Restore"
+	 * @model name="restore" literal="Rest&ore"
 	 * @generated
 	 * @ordered
 	 */
@@ -316,7 +316,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #REVERT
-	 * @model name="revert" literal="Revert"
+	 * @model name="revert" literal="Rever&t"
 	 * @generated
 	 * @ordered
 	 */
@@ -331,7 +331,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #SUBMIT
-	 * @model name="submit" literal="Submit"
+	 * @model name="submit" literal="S&ubmit"
 	 * @generated
 	 * @ordered
 	 */
