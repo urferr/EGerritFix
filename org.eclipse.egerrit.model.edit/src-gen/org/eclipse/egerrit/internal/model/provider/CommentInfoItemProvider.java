@@ -292,6 +292,9 @@ public class CommentInfoItemProvider extends ItemProviderAdapter
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.COMMENT_INFO__AUTHOR,
 				ModelFactory.eINSTANCE.createAccountInfo()));
+
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.COMMENT_INFO__AUTHOR,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
 	}
 
 	/**

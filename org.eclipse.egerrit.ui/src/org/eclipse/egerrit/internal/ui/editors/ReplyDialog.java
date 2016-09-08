@@ -19,12 +19,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.core.GerritServerInformation;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
-import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
@@ -79,7 +77,7 @@ public class ReplyDialog extends InputDialog {
 
 	private final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
 
-	private LinkedHashMap<String, String> radioMap = new LinkedHashMap<String, String>();
+	private LinkedHashMap<String, String> previousVotes = new LinkedHashMap<String, String>();
 
 	private RevisionInfo fRevisionInfo;
 
@@ -352,18 +350,9 @@ public class ReplyDialog extends InputDialog {
 			Label rowLabel = new Label(keyComposite, SWT.BOLD);
 			rowLabel.setText(permittedlabel.getKey());
 
-			String valueSet = "0"; //$NON-NLS-1$
-			//Verify if a last value was set for this key by the current user and set it as default
-			GerritServerInformation serverinfo = fGerritClient.getRepository().getServerInfo();
-			EList<ReviewerInfo> reviewers = fRevisionInfo.getChangeInfo().getReviewers();
-			for (int i = 0; i < reviewers.size(); i++) {
-				if (reviewers.get(i).getEmail() != null
-						&& serverinfo.getUserName().compareTo(reviewers.get(i).getEmail()) == 0) {
-					EMap<String, String> approvals = reviewers.get(i).getApprovals();
-					if (approvals.get(permittedlabel.getKey()) != null) {
-						valueSet = approvals.get(permittedlabel.getKey()).trim();
-					}
-				}
+			String valueSet = previousVotes.get(permittedlabel.getKey());
+			if (valueSet == null) {
+				valueSet = "0"; //$NON-NLS-1$
 			}
 
 			//fetch the last value set for this key
@@ -507,7 +496,7 @@ public class ReplyDialog extends InputDialog {
 				Label toShow = (Label) objWidget;
 				toShow.setText(tootip);
 				toShow.pack();
-				radioMap.put(keyLabel, (String) obj);
+				previousVotes.put(keyLabel, (String) obj);
 			}
 		};
 	}
@@ -540,18 +529,27 @@ public class ReplyDialog extends InputDialog {
 	 * selection
 	 */
 	private void getLastLabelSet() {
-
 		if (labelsInfo != null && !labelsInfo.isEmpty()) {
-
 			Iterator<Map.Entry<String, LabelInfo>> labelIter = labelsInfo.entrySet().iterator();
 			while (labelIter.hasNext()) {
 				Entry<String, LabelInfo> entrylabel = labelIter.next();
 				LabelInfo labelInfo = entrylabel.getValue();
 				List<ApprovalInfo> listApproval = labelInfo.getAll();
 				if (listApproval != null && !listApproval.isEmpty()) {
-					ApprovalInfo lastInfo = listApproval.get(listApproval.size() - 1); //Get the value of the lastsetting
-					if (lastInfo.getValue() != null) {
-						radioMap.put(entrylabel.getKey(), StringConverter.asString(lastInfo.getValue()));
+					ApprovalInfo candidate = null;
+					//Find the most recent vote for the current user
+					for (ApprovalInfo oneApproval : listApproval) {
+						if (fGerritClient.getRepository()
+								.getServerInfo()
+								.getUserName()
+								.equals(oneApproval.getEmail())) {
+							if (candidate == null) {
+								candidate = oneApproval;
+							}
+						}
+					}
+					if (candidate != null) {
+						previousVotes.put(entrylabel.getKey(), StringConverter.asString(candidate.getValue()));
 					}
 				}
 			}
@@ -564,6 +562,6 @@ public class ReplyDialog extends InputDialog {
 	 * @return LinkedHashMap<String, String>
 	 */
 	public Map<String, String> getRadiosSelection() {
-		return radioMap;
+		return previousVotes;
 	}
 }

@@ -243,14 +243,26 @@ public class LabelInfoItemProvider extends ItemProviderAdapter
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__APPROVED,
 				ModelFactory.eINSTANCE.createAccountInfo()));
 
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__APPROVED,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
+
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__REJECTED,
 				ModelFactory.eINSTANCE.createAccountInfo()));
+
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__REJECTED,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__RECOMMENDED,
 				ModelFactory.eINSTANCE.createAccountInfo()));
 
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__RECOMMENDED,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
+
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__DISLIKED,
 				ModelFactory.eINSTANCE.createAccountInfo()));
+
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__DISLIKED,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.LABEL_INFO__ALL,
 				ModelFactory.eINSTANCE.createApprovalInfo()));
@@ -273,7 +285,8 @@ public class LabelInfoItemProvider extends ItemProviderAdapter
 		boolean qualify = childFeature == ModelPackage.Literals.LABEL_INFO__APPROVED
 				|| childFeature == ModelPackage.Literals.LABEL_INFO__REJECTED
 				|| childFeature == ModelPackage.Literals.LABEL_INFO__RECOMMENDED
-				|| childFeature == ModelPackage.Literals.LABEL_INFO__DISLIKED;
+				|| childFeature == ModelPackage.Literals.LABEL_INFO__DISLIKED
+				|| childFeature == ModelPackage.Literals.LABEL_INFO__ALL;
 
 		if (qualify) {
 			return getString("_UI_CreateChild_text2", //$NON-NLS-1$

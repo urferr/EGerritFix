@@ -251,6 +251,9 @@ public class ChangeMessageInfoItemProvider extends ItemProviderAdapter
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_MESSAGE_INFO__AUTHOR,
 				ModelFactory.eINSTANCE.createAccountInfo()));
+
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_MESSAGE_INFO__AUTHOR,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
 	}
 
 	/**

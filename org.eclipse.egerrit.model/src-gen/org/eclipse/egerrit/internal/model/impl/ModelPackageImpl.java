@@ -2893,6 +2893,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		approvalInfoEClass.getESuperTypes().add(this.getAccountInfo());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(relatedChangeAndCommitInfoEClass, RelatedChangeAndCommitInfo.class, "RelatedChangeAndCommitInfo", //$NON-NLS-1$

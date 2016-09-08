@@ -714,6 +714,9 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__OWNER,
 				ModelFactory.eINSTANCE.createAccountInfo()));
 
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__OWNER,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
+
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__ACTIONS,
 				ModelFactory.eINSTANCE.create(ModelPackage.Literals.STRING_TO_ACTION_INFO)));
 
@@ -725,6 +728,9 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__REMOVABLE_REVIEWERS,
 				ModelFactory.eINSTANCE.createAccountInfo()));
+
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__REMOVABLE_REVIEWERS,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__MESSAGES,
 				ModelFactory.eINSTANCE.createChangeMessageInfo()));

@@ -158,6 +158,9 @@ public class SuggestReviewerInfoItemProvider extends ItemProviderAdapter
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.SUGGEST_REVIEWER_INFO__ACCOUNT,
 				ModelFactory.eINSTANCE.createAccountInfo()));
 
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.SUGGEST_REVIEWER_INFO__ACCOUNT,
+				ModelFactory.eINSTANCE.createApprovalInfo()));
+
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.SUGGEST_REVIEWER_INFO__GROUP,
 				ModelFactory.eINSTANCE.createGroupBaseInfo()));
 	}

@@ -827,42 +827,6 @@ public interface ModelPackage extends EPackage {
 	int APPROVAL_INFO = 11;
 
 	/**
-	 * The feature id for the '<em><b>Value</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPROVAL_INFO__VALUE = 0;
-
-	/**
-	 * The feature id for the '<em><b>Date</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPROVAL_INFO__DATE = 1;
-
-	/**
-	 * The number of structural features of the '<em>Approval Info</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPROVAL_INFO_FEATURE_COUNT = 2;
-
-	/**
-	 * The number of operations of the '<em>Approval Info</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int APPROVAL_INFO_OPERATION_COUNT = 0;
-
-	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.RelatedChangesInfoImpl <em>Related Changes Info</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -871,6 +835,182 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	int RELATED_CHANGES_INFO = 12;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl <em>File Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.FileInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getFileInfo()
+	 * @generated
+	 */
+	int FILE_INFO = 13;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl <em>Mergeable Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getMergeableInfo()
+	 * @generated
+	 */
+	int MERGEABLE_INFO = 14;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProjectInfoImpl <em>Project Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.ProjectInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getProjectInfo()
+	 * @generated
+	 */
+	int PROJECT_INFO = 15;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.CommitInfoImpl <em>Commit Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.CommitInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getCommitInfo()
+	 * @generated
+	 */
+	int COMMIT_INFO = 16;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.AccountInfoImpl <em>Account Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.AccountInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getAccountInfo()
+	 * @generated
+	 */
+	int ACCOUNT_INFO = 17;
+
+	/**
+	 * The feature id for the '<em><b>account id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO__ACCOUNT_ID = 0;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO__NAME = 1;
+
+	/**
+	 * The feature id for the '<em><b>Email</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO__EMAIL = 2;
+
+	/**
+	 * The feature id for the '<em><b>Username</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO__USERNAME = 3;
+
+	/**
+	 * The number of structural features of the '<em>Account Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO_FEATURE_COUNT = 4;
+
+	/**
+	 * The number of operations of the '<em>Account Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACCOUNT_INFO_OPERATION_COUNT = 0;
+
+	/**
+	 * The feature id for the '<em><b>account id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__ACCOUNT_ID = ACCOUNT_INFO__ACCOUNT_ID;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__NAME = ACCOUNT_INFO__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Email</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__EMAIL = ACCOUNT_INFO__EMAIL;
+
+	/**
+	 * The feature id for the '<em><b>Username</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__USERNAME = ACCOUNT_INFO__USERNAME;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__VALUE = ACCOUNT_INFO_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Date</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO__DATE = ACCOUNT_INFO_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Approval Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO_FEATURE_COUNT = ACCOUNT_INFO_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of operations of the '<em>Approval Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int APPROVAL_INFO_OPERATION_COUNT = ACCOUNT_INFO_OPERATION_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Changes</b></em>' containment reference list.
@@ -898,16 +1038,6 @@ public interface ModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int RELATED_CHANGES_INFO_OPERATION_COUNT = 0;
-
-	/**
-	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.FileInfoImpl <em>File Info</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.egerrit.internal.model.impl.FileInfoImpl
-	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getFileInfo()
-	 * @generated
-	 */
-	int FILE_INFO = 13;
 
 	/**
 	 * The feature id for the '<em><b>Status</b></em>' attribute.
@@ -1045,16 +1175,6 @@ public interface ModelPackage extends EPackage {
 	int FILE_INFO_OPERATION_COUNT = 3;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl <em>Mergeable Info</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.egerrit.internal.model.impl.MergeableInfoImpl
-	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getMergeableInfo()
-	 * @generated
-	 */
-	int MERGEABLE_INFO = 14;
-
-	/**
 	 * The feature id for the '<em><b>Submit type</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1098,16 +1218,6 @@ public interface ModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int MERGEABLE_INFO_OPERATION_COUNT = 0;
-
-	/**
-	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProjectInfoImpl <em>Project Info</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.egerrit.internal.model.impl.ProjectInfoImpl
-	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getProjectInfo()
-	 * @generated
-	 */
-	int PROJECT_INFO = 15;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -1182,16 +1292,6 @@ public interface ModelPackage extends EPackage {
 	int PROJECT_INFO_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.CommitInfoImpl <em>Commit Info</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.egerrit.internal.model.impl.CommitInfoImpl
-	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getCommitInfo()
-	 * @generated
-	 */
-	int COMMIT_INFO = 16;
-
-	/**
 	 * The feature id for the '<em><b>Commit</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1262,70 +1362,6 @@ public interface ModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int COMMIT_INFO_OPERATION_COUNT = 0;
-
-	/**
-	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.AccountInfoImpl <em>Account Info</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.egerrit.internal.model.impl.AccountInfoImpl
-	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getAccountInfo()
-	 * @generated
-	 */
-	int ACCOUNT_INFO = 17;
-
-	/**
-	 * The feature id for the '<em><b>account id</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO__ACCOUNT_ID = 0;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO__NAME = 1;
-
-	/**
-	 * The feature id for the '<em><b>Email</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO__EMAIL = 2;
-
-	/**
-	 * The feature id for the '<em><b>Username</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO__USERNAME = 3;
-
-	/**
-	 * The number of structural features of the '<em>Account Info</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO_FEATURE_COUNT = 4;
-
-	/**
-	 * The number of operations of the '<em>Account Info</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int ACCOUNT_INFO_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ReviewerInfoImpl <em>Reviewer Info</em>}' class.

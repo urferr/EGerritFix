@@ -185,6 +185,8 @@ public class ModelSwitch<T> extends Switch<T> {
 			ApprovalInfo approvalInfo = (ApprovalInfo) theEObject;
 			T result = caseApprovalInfo(approvalInfo);
 			if (result == null)
+				result = caseAccountInfo(approvalInfo);
+			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
 		}
