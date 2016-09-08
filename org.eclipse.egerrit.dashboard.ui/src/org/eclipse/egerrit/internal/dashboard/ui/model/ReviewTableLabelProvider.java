@@ -83,7 +83,7 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 //	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 //	private static Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 
-	private static final String VERIFIED = "Verified";
+	private static final String VERIFIED = "Verified"; //$NON-NLS-1$
 
 	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 	// For the images
