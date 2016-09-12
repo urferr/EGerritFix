@@ -18,10 +18,12 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.dashboard.ui.commands.table.AdjustMyStarredHandler;
+import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider.ColorProvider;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -36,6 +38,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -49,6 +52,8 @@ import org.slf4j.LoggerFactory;
  * This class handles the creation of the table widget shown in the dashboard.
  */
 public class UIReviewTable {
+	private final String DASHBOARD_CONTEXT_MENU = "org.eclipse.egerrit.dashboard.contextMenu";
+
 	private static final String EGERRIT_DASHBOARD = "egerrit.dashboard"; //$NON-NLS-1$
 
 	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
@@ -194,6 +199,10 @@ public class UIReviewTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
+		MenuManager menuManager = new MenuManager();
+		Menu contextMenu = menuManager.createContextMenu(table);
+		table.setMenu(contextMenu);
+		GerritTableView.getActiveView(true).getSite().registerContextMenu(DASHBOARD_CONTEXT_MENU, menuManager, aViewer);
 		restoreColumnsSettings();
 		return aViewer;
 	}

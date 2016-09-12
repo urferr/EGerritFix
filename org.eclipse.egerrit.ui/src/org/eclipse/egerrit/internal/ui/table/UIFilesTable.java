@@ -20,16 +20,14 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
+import org.eclipse.egerrit.internal.process.OpenCompareProcess;
 import org.eclipse.egerrit.internal.ui.editors.ModelLoader;
-import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileTableLabelProvider;
-import org.eclipse.egerrit.internal.ui.utils.Messages;
-import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -158,17 +156,9 @@ public class UIFilesTable {
 				Object element = sel.getFirstElement();
 				if (element instanceof StringToFileInfoImpl) {
 					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
-					OpenCompareEditor compareEditor;
-					if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-						UIUtils.showDialogTip(EDITOR_KEY, fViewer.getControl().getShell(), Messages.EGerriTip,
-								Messages.FileTabView_EGerriTipValue);
-
-					}
-					compareEditor = new OpenCompareEditor(fGerritClient, fChangeInfo);
-
-					String left = "BASE"; //$NON-NLS-1$
-					String right = fChangeInfo.getUserSelectedRevision().getId();
-					compareEditor.compareFiles(left, right, selectedFile);
+					OpenCompareProcess openCompare = new OpenCompareProcess();
+					openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
+							selectedFile, fChangeInfo.getUserSelectedRevision());
 				}
 			}
 		};
