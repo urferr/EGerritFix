@@ -213,17 +213,99 @@
                 style="pulldown">
           </command>
        </menuContribution>
+<!-- If we want to put a menu pulldown at the end of the table toolbar
        <menuContribution
              allPopups="false"
-             locationURI="menu:org.eclipse.egerrit.dashboard.ui.download">
+             locationURI="menu:org.eclipse.egerrit.dashboard.ui.views.GerritTableView">
           <command
                 commandId="org.eclipse.egerrit.dashboard.ui.checkout"
                 id="org.eclipse.egerrit.dashboard.ui.checkout"
                 label="Checkout"
-                style="push">
+                style="radio">
           </command>
        </menuContribution>
-
+-->
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.egerrit.dashboard.contextMenu">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.openCompare"
+                id="org.eclipse.egerrit.dashboard.ui.openCompare"
+                label="%command.name.openCompare"
+                style="push"
+                tooltip="%command.tooltipOpenCompare">
+          </command>
+          <separator
+                name="additions"
+                visible="true">
+          </separator>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.egerrit.dashboard.contextMenu">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.submit"
+                id="org.eclipse.egerrit.dashboard.ui.submit"
+                label="%command.name.submit"
+                style="push"
+                tooltip="%command.tooltipSubmit">
+          </command>
+       </menuContribution>
+              <menuContribution
+             allPopups="true"
+             locationURI="popup:org.eclipse.egerrit.dashboard.contextMenu">
+          <menu
+                id="org.eclipse.egerrit.dashboard.ui.replyMenu"
+                label="%command.name.reply.toplevel">
+             <command
+                commandId="org.eclipse.egerrit.dashboard.ui.replyDialog"
+                id="org.eclipse.egerrit.dashboard.ui.replyCommand"
+                label="%command.name.reply"
+                style="push"
+                tooltip="%command.tooltipReply">
+             </command>
+             <command
+                commandId="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2"
+                id="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2"
+                label="%command.name.replyPlus2"
+                style="push"
+                tooltip="%command.tooltipReplyPlus2">
+             </command>
+          </menu>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.egerrit.dashboard.contextMenu">
+          <command
+                commandId="org.eclipse.egerrit.dashboard.ui.rebase"
+                id="org.eclipse.egerrit.dashboard.ui.rebase"
+                label="%command.name.rebase"
+                style="push"
+                tooltip="%command.tooltipRebase">
+          </command>
+       </menuContribution>
+       <menuContribution
+             allPopups="false"
+             locationURI="popup:org.eclipse.egerrit.dashboard.contextMenu">
+           <menu
+                id="org.eclipse.egerrit.dashboard.ui.downloadMenu"
+                label="%command.name.download">
+            <command
+                commandId="org.eclipse.egerrit.dashboard.ui.checkout"
+                id="org.eclipse.egerrit.dashboard.ui.checkout"
+                label="%command.name.checkout"
+                style="push"
+                tooltip="%command.tooltipCheckout">
+             </command>
+             <command
+                commandId="org.eclipse.egerrit.dashboard.ui.cherryPick"
+                id="org.eclipse.egerrit.dashboard.ui.cherryPick"
+                label="%command.name.cherryPick"
+                style="push"
+                tooltip="%command.tooltipCherryPick">
+             </command>
+          </menu>
+       </menuContribution>
   </extension>
    
  <!--
@@ -313,8 +395,7 @@
        <command
             	id="org.eclipse.egerrit.dashboard.ui.adjustMyStarred"
             	name="%command.name.starReview">
-      </command>
-
+       </command>
    </extension>
 
    <extension
@@ -385,11 +466,55 @@
 	      </handler>
 
 	     <!-- The following are the handlers under the "Table review list" sub-menu
+         -->
+
+	      <!-- Open Compare editor sub-menu-->
 	      <handler
-	            class="org.eclipse.egerrit.dashboard.ui.internal.commands.table.AdjustMyStarredHandler"
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.OpenCompareHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.openCompare">
+	      </handler>
+
+	      <handler
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.AdjustMyStarredHandler"
 	            commandId="org.eclipse.egerrit.dashboard.ui.adjustMyStarred">
 	      </handler>
-         -->
+
+	      <!-- Checkout sub-menu-->
+	      <handler
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.CheckoutRevisionHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.checkout">
+	      </handler>
+
+	      <!-- CherryPick sub-menu-->
+	      <handler
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.CherryPickHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.cherryPick">
+	      </handler>
+
+	      <!-- Rebase sub-menu-->
+	      <handler
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.RebaseHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.rebase">
+	      </handler>
+
+		<!-- Reply dialog open -->
+	      <handler
+				class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.ReplyDialogHandler" 
+				commandId="org.eclipse.egerrit.dashboard.ui.replyDialog">
+       </handler>
+
+		<!-- Reply Plus 2 -->
+	      <handler
+				class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.ReplyPlusTwoHandler" 
+				commandId="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2">
+       </handler>
+
+	      <!-- Submit sub-menu-->
+	      <handler
+	            class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.SubmitHandler"
+	            commandId="org.eclipse.egerrit.dashboard.ui.submit">
+	      </handler>
+
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

@@ -14,15 +14,6 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -32,29 +23,22 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.AbandonCommand;
-import org.eclipse.egerrit.internal.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteDraftChangeCommand;
-import org.eclipse.egerrit.internal.core.command.ListBranchesCommand;
 import org.eclipse.egerrit.internal.core.command.PublishDraftChangeCommand;
-import org.eclipse.egerrit.internal.core.command.RebaseRevisionCommand;
 import org.eclipse.egerrit.internal.core.command.RestoreCommand;
 import org.eclipse.egerrit.internal.core.command.RevertCommand;
-import org.eclipse.egerrit.internal.core.command.SetReviewCommand;
-import org.eclipse.egerrit.internal.core.command.SubmitCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.AbandonInput;
-import org.eclipse.egerrit.internal.core.rest.CherryPickInput;
-import org.eclipse.egerrit.internal.core.rest.RebaseInput;
 import org.eclipse.egerrit.internal.core.rest.RestoreInput;
 import org.eclipse.egerrit.internal.core.rest.RevertInput;
-import org.eclipse.egerrit.internal.core.rest.ReviewInput;
-import org.eclipse.egerrit.internal.core.rest.SubmitInput;
 import org.eclipse.egerrit.internal.model.ActionConstants;
-import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.process.CherryPickProcess;
+import org.eclipse.egerrit.internal.process.RebaseProcess;
+import org.eclipse.egerrit.internal.process.ReplyProcess;
+import org.eclipse.egerrit.internal.process.SubmitProcess;
 import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.internal.ui.table.provider.DeleteDraftRevisionProvider;
@@ -67,21 +51,16 @@ import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -117,8 +96,6 @@ import com.ibm.icu.text.NumberFormat;
 
 public class ChangeDetailEditor extends EditorPart {
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
-
-	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
 
@@ -403,18 +380,8 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				SubmitCommand submitCmd = fGerritClient.submit(fChangeInfo.getId());
-				SubmitInput submitInput = new SubmitInput();
-				submitInput.setWait_for_merge(true);
-
-				submitCmd.setCommandInput(submitInput);
-
-				try {
-					submitCmd.call();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-				}
-				refreshStatus();
+				SubmitProcess submitProcess = new SubmitProcess();
+				submitProcess.handleSubmit(fChangeInfo, fGerritClient);
 			}
 		});
 
@@ -595,59 +562,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog inputDialog = new InputDialog(rebaseButton.getParent().getShell(),
-						Messages.ChangeDetailEditor_19, Messages.ChangeDetailEditor_20, "", null) { //$NON-NLS-1$
-
-					public void enableOk(boolean isEnable) {
-						getOkButton().setEnabled(isEnable);
-					}
-
-					@Override
-					protected void createButtonsForButtonBar(Composite parent) {
-						super.createButtonsForButtonBar(parent);
-						getText().addModifyListener(new ModifyListener() {
-							@Override
-							public void modifyText(ModifyEvent e) {
-								if (!fChangeInfo.getUserSelectedRevision().isRebaseable()) {
-									if (!getText().getText().isEmpty()) {
-										getOkButton().setEnabled(true);
-									} else {
-										getOkButton().setEnabled(false);
-									}
-								}
-							}
-						});
-						getOkButton().setEnabled(fChangeInfo.getUserSelectedRevision().isRebaseable());
-						return;
-					}
-
-				};
-
-				if (inputDialog.open() != Window.OK) {
-					return;
-				}
-				RebaseRevisionCommand rebaseCmd = fGerritClient.rebase(fChangeInfo.getId(),
-						fChangeInfo.getUserSelectedRevision().getId());
-				RebaseInput rebaseInput = new RebaseInput();
-				rebaseInput.setBase(inputDialog.getValue().trim().length() == 0 ? null : inputDialog.getValue().trim());
-
-				rebaseCmd.setCommandInput(rebaseInput);
-
-				try {
-					rebaseCmd.call();
-				} catch (EGerritException e1) {
-					if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-						MessageDialog.open(MessageDialog.INFORMATION, null, Messages.ChangeDetailEditor_22,
-								Messages.ChangeDetailEditor_23, SWT.NONE);
-					} else {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-					}
-				}
-				//After a rebase, we reload and reset the user selected revision
-				//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
-				CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(fGerritClient, fChangeInfo))
-						.thenRun(() -> fChangeInfo.setUserSelectedRevision(fChangeInfo.getRevision()));
+				RebaseProcess rebaseProcess = new RebaseProcess();
+				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fGerritClient);
 			}
 		});
 
@@ -659,6 +575,7 @@ public class ChangeDetailEditor extends EditorPart {
 		Button cherryPickToRemoteBranch = new Button(c, SWT.PUSH);
 		cherryPickToRemoteBranch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		cherryPickToRemoteBranch.setText(ActionConstants.CHERRYPICK.getLiteral());
+		cherryPickToRemoteBranch.setToolTipText(Messages.ChangeDetailEditor_cherryPickBranch);
 		IObservableValue cherryPickAble = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
 				.value(ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE)
 				.observe(fChangeInfo);
@@ -668,27 +585,8 @@ public class ChangeDetailEditor extends EditorPart {
 		cherryPickToRemoteBranch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				BranchInfo[] listBranchesCmdResult = listBranches();
-
-				List<String> listBranchesRef = new ArrayList<String>();
-				Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
-				while (it.hasNext()) {
-					listBranchesRef.add(it.next().getRef());
-				}
-
-				final CherryPickDialog cherryPickDialog = new CherryPickDialog(
-						cherryPickToRemoteBranch.getParent().getShell(), listBranchesRef,
-						fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						int ret = cherryPickDialog.open();
-						if (ret == IDialogConstants.OK_ID) {
-							cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getUserSelectedRevision().getId(),
-									cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
-						}
-					}
-
-				});
+				CherryPickProcess cherryPickProcess = new CherryPickProcess();
+				cherryPickProcess.handleCherryPick(cherryPickToRemoteBranch.getShell(), fGerritClient, fChangeInfo);
 			}
 		});
 
@@ -704,6 +602,7 @@ public class ChangeDetailEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
+				ReplyProcess replyProcess = new ReplyProcess();
 
 				final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
 				itemReply.setText(ActionConstants.REPLY.getLiteral());
@@ -711,8 +610,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						UIUtils.replyToChange(shell, fChangeInfo.getUserSelectedRevision(), null, fGerritClient, false);
-						refreshStatus();
+						replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
+								fChangeInfo.getUserSelectedRevision());
 					}
 
 					@Override
@@ -723,43 +622,15 @@ public class ChangeDetailEditor extends EditorPart {
 
 				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
 				itemCRPlus2.setText(Messages.ChangeDetailEditor_25);
-
-				//Test if we should allow the +2 button or not
-				//Condition:
-				//     - User is a committer (maxCRDefined == maxCRPermitted)
-				//     - If user permitted, the maxCRPermitted > 0 if not Abandoned
-				//     - Selected patch set is the latest
-				//     - User cannot submit yet
-				int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-				int maxCRDefined = findMaxDefinedLabelValue(CODE_REVIEW);
-				boolean allowPlus2 = false;
-				if (maxCRDefined == maxCRPermitted && maxCRPermitted > 0) {
-					allowPlus2 = true;
-				}
-				//Verify the patchset if we are allowed only, no need to check if not allowed
-				if (allowPlus2) {
-					String psSelectedID = fChangeInfo.getUserSelectedRevision().getId();
-					if (!(psSelectedID != null
-							&& fChangeInfo.getLatestPatchSet().getId().compareTo(psSelectedID) == 0)) {
-						allowPlus2 = false;
-					}
-				}
-
-				itemCRPlus2.setEnabled(!fChangeInfo.getUserSelectedRevision().isSubmitable() && allowPlus2);
+				itemCRPlus2.setEnabled(replyProcess.isCRPlusTwoAllowed(fChangeInfo, fGerritClient,
+						fChangeInfo.getUserSelectedRevision()));
 
 				if (itemCRPlus2.isEnabled()) {
 					itemCRPlus2.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							super.widgetSelected(e);
-							// Code-Review +2
-							ReviewInput reviewInput = new ReviewInput();
-							reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-							Map<String, String> obj = new HashMap<String, String>();
-							obj.put(CODE_REVIEW, Messages.ChangeDetailEditor_26);
-
-							reviewInput.setLabels(obj);
-							postReply(reviewInput);
+							replyProcess.handleReplyPlus2(fChangeInfo.getUserSelectedRevision());
 						}
 					});
 				}
@@ -871,52 +742,6 @@ public class ChangeDetailEditor extends EditorPart {
 		};
 	}
 
-	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
-		CherryPickRevisionCommand cherryPickCmd = fGerritClient.cherryPickRevision(changeId, revisionId);
-		CherryPickInput cherryPickInput = new CherryPickInput();
-		cherryPickInput.setDestination(branch);
-		cherryPickInput.setMessage(message);
-
-		cherryPickCmd.setCommandInput(cherryPickInput);
-		ChangeInfo listBranchesCmdResult = null;
-		try {
-			listBranchesCmdResult = cherryPickCmd.call();
-		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-		}
-		return listBranchesCmdResult;
-	}
-
-	private BranchInfo[] listBranches() {
-		ListBranchesCommand listBranchesCmd = fGerritClient.listBranches(fChangeInfo.getProject());
-
-		BranchInfo[] listBranchesCmdResult = null;
-		try {
-			listBranchesCmdResult = listBranchesCmd.call();
-		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-		}
-		return listBranchesCmdResult;
-	}
-
-	/**
-	 * Post the reply information to the Gerrit server
-	 *
-	 * @param reviewInput
-	 */
-	private void postReply(ReviewInput reviewInput) {
-		SetReviewCommand reviewToEmit = fGerritClient.setReview(fChangeInfo.getId(),
-				fChangeInfo.getUserSelectedRevision().getId());
-		reviewToEmit.setCommandInput(reviewInput);
-
-		try {
-			reviewToEmit.call();
-			refreshStatus();
-		} catch (EGerritException e1) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-		}
-	}
-
 	@Override
 	public void setFocus() {
 		headerSection.setFocus();
@@ -951,41 +776,6 @@ public class ChangeDetailEditor extends EditorPart {
 			fChangeInfo.setDeletions(element.getDeletions());
 			fChangeInfo.setCurrent_revision(element.getCurrent_revision());
 		}
-	}
-
-	private int findMaxDefinedLabelValue(String label) {
-		Iterator<Entry<String, LabelInfo>> iterator = fChangeInfo.getLabels().entrySet().iterator();
-		//Get the structure having all the possible options
-		int maxDefined = 0;
-		while (iterator.hasNext()) {
-			Entry<String, LabelInfo> definedlabel = iterator.next();
-			if (definedlabel.getKey().compareTo(label) == 0) {
-				for (String element2 : definedlabel.getValue().getValues().keySet()) {
-					maxDefined = Math.max(maxDefined, new Integer(element2.trim()));
-				}
-			}
-		}
-		return maxDefined;
-	}
-
-	private int findMaxPermitted(String label) {
-		int maxPermitted = 0;
-		EList<String> listPermitted = null;
-		EMap<String, EList<String>> mapLabels = fChangeInfo.getPermitted_labels();
-		if (mapLabels != null) {
-			Iterator<Entry<String, EList<String>>> iterator = mapLabels.entrySet().iterator();
-			//Get the structure having all the possible options
-			while (iterator.hasNext()) {
-				Entry<String, EList<String>> permittedlabel = iterator.next();
-				listPermitted = permittedlabel.getValue();
-				if (permittedlabel.getKey().compareTo(label) == 0) {
-					for (String element2 : listPermitted) {
-						maxPermitted = Math.max(maxPermitted, new Integer(element2.trim()));
-					}
-				}
-			}
-		}
-		return maxPermitted;
 	}
 
 	/**

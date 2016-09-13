@@ -131,8 +131,6 @@ public class GerritTableView extends ViewPart {
 	//Numbers of menu items in the Search pulldown menu; SEARCH_SIZE_MENU_LIST + 1 will be the max
 	private static final int SEARCH_SIZE_MENU_LIST = 4;
 
-	private static final String ADJUST_MY_STARRED_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.adjustMyStarred"; //$NON-NLS-1$
-
 	private final String TITLE = "Gerrit Server ";
 
 	public static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$
@@ -1067,7 +1065,8 @@ public class GerritTableView extends ViewPart {
 			ChangeInfo[] res = null;
 			QueryChangesCommand command = gerritClient.queryChanges();
 			command.addOption(ChangeOption.DETAILED_LABELS, ChangeOption.CURRENT_REVISION, ChangeOption.CURRENT_FILES,
-					ChangeOption.DETAILED_ACCOUNTS, ChangeOption.CURRENT_COMMIT, ChangeOption.REVIEWED);
+					ChangeOption.DETAILED_ACCOUNTS, ChangeOption.CURRENT_COMMIT, ChangeOption.REVIEWED,
+					ChangeOption.CURRENT_ACTIONS);
 
 			try {
 				setQuery(query, command);
@@ -1174,5 +1173,9 @@ public class GerritTableView extends ViewPart {
 	 */
 	public TableViewer getViewer() {
 		return fViewer;
+	}
+
+	public GerritClient getGerritClient() {
+		return gerritClient;
 	}
 }

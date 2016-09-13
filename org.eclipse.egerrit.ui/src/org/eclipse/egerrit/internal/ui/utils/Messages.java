@@ -52,21 +52,11 @@ public class Messages extends NLS {
 
 	public static String ChangeDetailEditor_17;
 
-	public static String ChangeDetailEditor_19;
-
 	public static String ChangeDetailEditor_2;
-
-	public static String ChangeDetailEditor_20;
-
-	public static String ChangeDetailEditor_22;
-
-	public static String ChangeDetailEditor_23;
 
 	public static String ChangeDetailEditor_24;
 
 	public static String ChangeDetailEditor_25;
-
-	public static String ChangeDetailEditor_26;
 
 	public static String ChangeDetailEditor_27;
 
@@ -85,6 +75,8 @@ public class Messages extends NLS {
 	public static String ChangeDetailEditor_7;
 
 	public static String ChangeDetailEditor_9;
+
+	public static String ChangeDetailEditor_cherryPickBranch;
 
 	public static String CheckoutRevision_0;
 
@@ -384,6 +376,57 @@ public class Messages extends NLS {
 
 	public static String PreviousCommentAnnotationCommandTooltip;
 
+	public static String CheckoutHandler_generalMessage;
+
+	public static String CheckoutHandler_specificMessage;
+
+	public static String CherryPickHandler_title;
+
+	public static String CherryPickHandler_notAvailable;
+
+	public static String CherryPickHandler_generalMessage;
+
+	public static String CherryPickHandler_specificMessage;
+
+	public static String OpenCompareHandler_generalMessage;
+
+	public static String OpenCompareHandler_specificMessage;
+
+	public static String RebaseHandler_title;
+
+	public static String RebaseHandler_notNecessary;
+
+	public static String RebaseHandler_generalMessage;
+
+	public static String RebaseHandler_specificMessage;
+
+	public static String RebaseProcess_title;
+
+	public static String RebaseProcess_changeParent;
+
+	public static String RebaseProcess_failed;
+
+	public static String RebaseProcess_notPerform;
+
+	public static String ReplyProcess_PlusTwo;
+
+	public static String ReplyHandler_generalMessage;
+
+	public static String ReplyHandler_specificMessage;
+
+	public static String ReplyPlusTwoHandler_generalMessage;
+
+	public static String ReplyPlusTwoHandler_specificMessage;
+
+	public static String SubmitHandler_title;
+
+	public static String SubmitHandler_notAvailable;
+
+	public static String SubmitProcess_failed;
+
+	public static String SubmitHandler_generalMessage;
+
+	public static String SubmitHandler_specificMessage;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

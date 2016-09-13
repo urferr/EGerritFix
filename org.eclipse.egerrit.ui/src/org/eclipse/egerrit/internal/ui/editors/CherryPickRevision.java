@@ -150,8 +150,11 @@ public class CherryPickRevision extends Action {
 
 	private String getRef() {
 		//Here we can pick any FetchInfo because the ref string is same everywhere
-		Entry<String, FetchInfo> x = revision.getFetch().iterator().next();
-		return x.getValue().getRef();
+		if (!revision.getFetch().isEmpty()) {
+			Entry<String, FetchInfo> x = revision.getFetch().iterator().next();
+			return x.getValue().getRef();
+		}
+		return null;
 	}
 
 	private boolean invokeEGitCherryPickCommand() {
