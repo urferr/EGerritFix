@@ -280,7 +280,7 @@ public class ActiveWorkspaceRevision {
 				commentMarker.setAttribute(IMarker.MESSAGE,
 						resourceMissingMessage(newComment) + UIUtils.formatMessageForMarkerView(newComment));
 			} else {
-				commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine());
+				commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine() == 0 ? 1 : newComment.getLine());
 				commentMarker.setAttribute(IMarker.MESSAGE, UIUtils.formatMessageForMarkerView(newComment));
 			}
 			commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
