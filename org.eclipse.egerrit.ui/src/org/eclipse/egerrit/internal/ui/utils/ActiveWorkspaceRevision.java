@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.ui.utils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.CreateDraftCommand;
@@ -33,18 +36,26 @@ import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.compare.CommentableCompareItem;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.editors.EGerritCommentMarkers;
+import org.eclipse.egerrit.internal.ui.editors.FindLocalRepository;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
+import org.eclipse.egit.ui.internal.decorators.GitQuickDiffProvider;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.IHandlerService;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +79,14 @@ public class ActiveWorkspaceRevision {
 	private CommentAndDraftListener listener;
 
 	private Map<String, IMarker> markersManaged = new HashMap<>();
+
+	private boolean fIsAdditionIndicationInOverviewRule;
+
+	private boolean fIsChangeIndicationInOverviewRuler;
+
+	private boolean fIsDeletionIndicationInOverviewRuler;
+
+	private boolean fIsQuickDiffOn;
 
 	private final class CommentAndDraftListener extends EContentAdapter {
 		@Override
@@ -116,6 +135,7 @@ public class ActiveWorkspaceRevision {
 		hookListeners();
 		firePropertyChange("activeRevision", null, fRevisionInContext); //$NON-NLS-1$
 		openMarkerView();
+		enableQuickDiff();
 	}
 
 	private void openMarkerView() {
@@ -239,8 +259,36 @@ public class ActiveWorkspaceRevision {
 					Messages.ActiveWorkspaceRevision_0 + fRevisionInContext.getChangeInfo().getSubject() + "\"\n\n", //$NON-NLS-1$
 					fGerritClient, false);
 		}
+		deactivateQuickDiff();
 		fRevisionInContext = null;
 		firePropertyChange("activeRevision", null, null); //$NON-NLS-1$
+	}
+
+	private void deactivateQuickDiff() {
+		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"quickdiff.quickDiff", false, null); //$NON-NLS-1$
+		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"additionIndicationInOverviewRule", false, null); //$NON-NLS-1$
+		fIsChangeIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"changeIndicationInOverviewRuler", false, null); //$NON-NLS-1$
+		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"deletionIndicationInOverviewRuler", false, null); //$NON-NLS-1$
+
+		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+
+		preferences.put("quickdiff.quickDiff", new Boolean(fIsQuickDiffOn).toString());//$NON-NLS-1$
+		preferences.put("additionIndicationInOverviewRule", //$NON-NLS-1$
+				new Boolean(fIsAdditionIndicationInOverviewRule).toString());
+		preferences.put("changeIndicationInOverviewRuler", new Boolean(fIsChangeIndicationInOverviewRuler).toString());//$NON-NLS-1$
+		preferences.put("deletionIndicationInOverviewRuler", //$NON-NLS-1$
+				new Boolean(fIsDeletionIndicationInOverviewRuler).toString());
+
+		try {
+			// forces the application to save the preferences
+			preferences.flush();
+		} catch (BackingStoreException e1) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+		}
 	}
 
 	private boolean hasDrafts() {
@@ -317,4 +365,49 @@ public class ActiveWorkspaceRevision {
 	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
 		propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
 	}
+
+	/**
+	 * enables the quickdiff feature inside the editor
+	 */
+	private void enableQuickDiff() {
+
+		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+
+		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"quickdiff.quickDiff", false, null); //$NON-NLS-1$
+		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"additionIndicationInOverviewRule", false, null); //$NON-NLS-1$
+		fIsChangeIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"changeIndicationInOverviewRuler", false, null); //$NON-NLS-1$
+		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
+				"deletionIndicationInOverviewRuler", false, null); //$NON-NLS-1$
+
+		if (!fIsQuickDiffOn) {
+			preferences.put("quickdiff.quickDiff", "true");//$NON-NLS-1$ //$NON-NLS-2$
+			preferences.put("additionIndicationInOverviewRule", "true");//$NON-NLS-1$ //$NON-NLS-2$
+			preferences.put("changeIndicationInOverviewRuler", "true");//$NON-NLS-1$ //$NON-NLS-2$
+			preferences.put("deletionIndicationInOverviewRuler", "true");//$NON-NLS-1$ //$NON-NLS-2$
+
+			try {
+				// forces the application to save the preferences
+				preferences.flush();
+			} catch (BackingStoreException e1) {
+				EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+			}
+		}
+		Repository repo = new FindLocalRepository(fGerritClient, fChangeInfo.getProject()).getRepository();
+		IWorkbenchPartSite site = EGerritUIPlugin.getDefault()
+				.getWorkbench()
+				.getActiveWorkbenchWindow()
+				.getActivePage()
+				.getActivePart()
+				.getSite();
+		IHandlerService handlerService = site.getService(IHandlerService.class);
+		try {
+			GitQuickDiffProvider.setBaselineReference(repo, "HEAD^1"); //$NON-NLS-1$
+		} catch (IOException e1) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+		}
+	}
+
 }
