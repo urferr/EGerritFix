@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _ZOuNAE93EeaShYKSdCzdSw
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/16/16 4:17 PM
+Save-Time: 9/12/16 8:54 PM
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
 Content-Type: text/plain
@@ -22,5 +22,5 @@ Entry-Name: .ecl.context
 // delete server if present
 delete-gerrit-server -serverName $serverName
 
-add-gerrit-server -serverURL $serverURL -serverName $serverName -userName admin
+add-gerrit-server -serverURL $serverURL -serverName $serverName -userName $defaultUser
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

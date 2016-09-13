@@ -5,8 +5,8 @@ Element-Name: SetGlobalVariables
 Element-Type: context
 Element-Version: 2.0
 Id: _P5YQQFRDEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 7/28/16 7:14 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 9/12/16 8:54 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -15,4 +15,5 @@ Entry-Name: .ecl.context
 global [val serverURL "http://localhost:28112"]
 global [val serverName DefaultGerritServer]
 global [val gerritProject "egerrit/RCPTTtest"]
+global [val defaultUser "admin@localhost"]
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
