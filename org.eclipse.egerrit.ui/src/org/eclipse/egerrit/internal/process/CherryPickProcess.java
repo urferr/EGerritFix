@@ -24,6 +24,7 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.CherryPickInput;
 import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.CherryPickDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Display;
@@ -44,7 +45,7 @@ public class CherryPickProcess {
 	public CherryPickProcess() {
 	}
 
-	public void handleCherryPick(Shell shell, GerritClient gerritClient, ChangeInfo changeInfo) {
+	public void handleCherryPick(Shell shell, GerritClient gerritClient, ChangeInfo changeInfo, RevisionInfo revision) {
 		fGerritClient = gerritClient;
 		fChangeInfo = changeInfo;
 		BranchInfo[] listBranchesCmdResult = listBranches();
@@ -56,13 +57,13 @@ public class CherryPickProcess {
 		}
 
 		final CherryPickDialog cherryPickDialog = new CherryPickDialog(shell, listBranchesRef,
-				fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
+				revision.getCommit().getMessage());
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				int ret = cherryPickDialog.open();
 				if (ret == IDialogConstants.OK_ID) {
-					cherryPickRevision(fChangeInfo.getId(), fChangeInfo.getUserSelectedRevision().getId(),
-							cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
+					cherryPickRevision(fChangeInfo.getId(), revision.getId(), cherryPickDialog.getBranch(),
+							cherryPickDialog.getMessage());
 				}
 			}
 		});

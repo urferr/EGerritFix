@@ -36,7 +36,8 @@ public class RebaseHandler extends DashboardFactoryHandler {
 			ActionInfo rebaseInfo = getRevisionAction(ActionConstants.REBASE.getName());
 			if (rebaseInfo != null && rebaseInfo.isEnabled()) {
 				RebaseProcess rebaseProcess = new RebaseProcess();
-				rebaseProcess.handleRebase(HandlerUtil.getActiveShell(event), getChangeInfo(), getGerritClient());
+				rebaseProcess.handleRebase(HandlerUtil.getActiveShell(event), getChangeInfo(), getLatestRevision(),
+						getGerritClient());
 			} else {
 				Utils.displayInformation(null, Messages.RebaseHandler_title,
 						NLS.bind(Messages.RebaseHandler_notNecessary, getChangeInfo().getSubject()));

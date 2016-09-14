@@ -563,7 +563,8 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				RebaseProcess rebaseProcess = new RebaseProcess();
-				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fGerritClient);
+				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
+						fGerritClient);
 			}
 		});
 
@@ -586,7 +587,8 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CherryPickProcess cherryPickProcess = new CherryPickProcess();
-				cherryPickProcess.handleCherryPick(cherryPickToRemoteBranch.getShell(), fGerritClient, fChangeInfo);
+				cherryPickProcess.handleCherryPick(cherryPickToRemoteBranch.getShell(), fGerritClient, fChangeInfo,
+						fChangeInfo.getUserSelectedRevision());
 			}
 		});
 

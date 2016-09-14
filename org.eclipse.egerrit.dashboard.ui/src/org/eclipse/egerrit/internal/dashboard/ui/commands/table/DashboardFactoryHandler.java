@@ -55,7 +55,11 @@ public abstract class DashboardFactoryHandler extends AbstractHandler implements
 	private void fillDataStructure() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		final TableViewer viewer = reviewTableView.getTableViewer();
-		final ISelection tableSelection = viewer.getSelection();
+		ISelection tableSelection = null;
+		if (viewer != null) {
+			tableSelection = viewer.getSelection();
+		}
+
 		gerritClient = reviewTableView.getGerritClient();
 
 		if (tableSelection instanceof IStructuredSelection) {
@@ -63,6 +67,10 @@ public abstract class DashboardFactoryHandler extends AbstractHandler implements
 			if (obj instanceof ChangeInfo) {
 				changeInfo = (ChangeInfo) obj;
 				latestRevision = changeInfo.getRevision();
+			} else {
+				logger.debug("The selection does not contain a ChangeInfo"); //$NON-NLS-1$
+				changeInfo = null;
+				latestRevision = null;
 			}
 		} else {
 			logger.debug("The selection does not contain a ChangeInfo"); //$NON-NLS-1$

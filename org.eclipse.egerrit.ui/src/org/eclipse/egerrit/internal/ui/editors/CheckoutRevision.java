@@ -85,7 +85,7 @@ public class CheckoutRevision extends Action {
 				FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
 				WizardDialog w = new WizardDialog(getShell(), var);
 				w.create();
-				w.open();
+				int ret = w.open();
 			} else if (!potentialBranches.entrySet().iterator().next().getValue().equals(BranchMatch.PERFECT_MATCH)) {
 				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
 				branchUiSelection(localRepo, potentialBranches);
@@ -98,8 +98,7 @@ public class CheckoutRevision extends Action {
 				}
 			}
 		}
-		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient,
-				changeInfo.getUserSelectedRevision());
+		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revision);
 	}
 
 	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
@@ -173,7 +172,7 @@ public class CheckoutRevision extends Action {
 		String lookingCommitIdForRevision = revision.getCommit().getCommit().trim();
 		Map<String, BranchMatch> mapBranches = new TreeMap<String, BranchMatch>();
 		String defaultBranchName = changeInfo.get_number() + "/" //$NON-NLS-1$
-				+ changeInfo.getUserSelectedRevision().get_number();
+				+ revision.get_number();
 		Iterator<Entry<String, Map<String, List<String>>>> iterBranch = mapBranchesChangeId.entrySet().iterator();
 		while (iterBranch.hasNext()) {
 			Entry<String, Map<String, List<String>>> entryBranch = iterBranch.next();

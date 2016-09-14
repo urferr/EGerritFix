@@ -19,6 +19,7 @@ import org.eclipse.egerrit.internal.core.command.RebaseRevisionCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.RebaseInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -41,13 +42,9 @@ public class RebaseProcess {
 	public RebaseProcess() {
 	}
 
-	public void handleRebase(Shell shell, ChangeInfo changeInfo, GerritClient gerritClient) {
-		InputDialog inputDialog = new InputDialog(shell, Messages.RebaseProcess_title, Messages.RebaseProcess_changeParent,
-				"", null) { //$NON-NLS-1$
-
-			public void enableOk(boolean isEnable) {
-				getOkButton().setEnabled(isEnable);
-			}
+	public void handleRebase(Shell shell, ChangeInfo changeInfo, RevisionInfo toRebase, GerritClient gerritClient) {
+		InputDialog inputDialog = new InputDialog(shell, Messages.RebaseProcess_title,
+				Messages.RebaseProcess_changeParent, "", null) { //$NON-NLS-1$
 
 			@Override
 			protected void createButtonsForButtonBar(Composite parent) {
@@ -55,7 +52,7 @@ public class RebaseProcess {
 				getText().addModifyListener(new ModifyListener() {
 					@Override
 					public void modifyText(ModifyEvent e) {
-						if (!changeInfo.getUserSelectedRevision().isRebaseable()) {
+						if (!toRebase.isRebaseable()) {
 							if (!getText().getText().isEmpty()) {
 								getOkButton().setEnabled(true);
 							} else {
@@ -64,7 +61,7 @@ public class RebaseProcess {
 						}
 					}
 				});
-				getOkButton().setEnabled(changeInfo.getUserSelectedRevision().isRebaseable());
+				getOkButton().setEnabled(toRebase.isRebaseable());
 				return;
 			}
 		};
@@ -72,8 +69,7 @@ public class RebaseProcess {
 		if (inputDialog.open() != Window.OK) {
 			return;
 		}
-		RebaseRevisionCommand rebaseCmd = gerritClient.rebase(changeInfo.getId(),
-				changeInfo.getUserSelectedRevision().getId());
+		RebaseRevisionCommand rebaseCmd = gerritClient.rebase(changeInfo.getId(), toRebase.getId());
 		RebaseInput rebaseInput = new RebaseInput();
 		rebaseInput.setBase(inputDialog.getValue().trim().length() == 0 ? null : inputDialog.getValue().trim());
 
