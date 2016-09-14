@@ -47,16 +47,16 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CheckoutRevision extends Action {
 
-	private RevisionInfo revision;
+	private RevisionInfo revisionCheckedOut;
 
 	private GerritClient gerritClient;
 
 	private ChangeInfo changeInfo;
 
 	public CheckoutRevision(RevisionInfo revision, GerritClient gerritClient) {
-		this.revision = revision;
+		this.revisionCheckedOut = revision;
 		this.gerritClient = gerritClient;
-		this.changeInfo = this.revision.getChangeInfo();
+		this.changeInfo = this.revisionCheckedOut.getChangeInfo();
 		setText(Messages.CheckoutRevision_0);
 	}
 
@@ -70,7 +70,7 @@ public class CheckoutRevision extends Action {
 			return;
 		}
 
-		String psSelected = revision.getRef();
+		String psSelected = revisionCheckedOut.getRef();
 		if ((psSelected == null) || psSelected.isEmpty()) {
 			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_4);
 			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_3, status);
@@ -98,7 +98,7 @@ public class CheckoutRevision extends Action {
 				}
 			}
 		}
-		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revision);
+		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
 	}
 
 	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
@@ -147,12 +147,13 @@ public class CheckoutRevision extends Action {
 	 * @param potentialBranches
 	 */
 	private void branchUiSelection(Repository localRepo, Map<String, BranchMatch> potentialBranches) {
-		BranchSelectionDialog branchSelectDialog = new BranchSelectionDialog(null, potentialBranches, changeInfo);
+		BranchSelectionDialog branchSelectDialog = new BranchSelectionDialog(null, potentialBranches, changeInfo,
+				revisionCheckedOut);
 		int result = branchSelectDialog.open();
 		String selectedBranch = branchSelectDialog.getSelectedBranch();
 		if (result == IDialogConstants.OK_ID) {
 			//New selected
-			String psSelected = revision.getRef();
+			String psSelected = revisionCheckedOut.getRef();
 			FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
 			WizardDialog w = new WizardDialog(getShell(), var);
 			w.create();
@@ -168,11 +169,11 @@ public class CheckoutRevision extends Action {
 	}
 
 	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
-		String lookingChangeId = revision.getChangeInfo().getChange_id().trim();
-		String lookingCommitIdForRevision = revision.getCommit().getCommit().trim();
+		String lookingChangeId = revisionCheckedOut.getChangeInfo().getChange_id().trim();
+		String lookingCommitIdForRevision = revisionCheckedOut.getCommit().getCommit().trim();
 		Map<String, BranchMatch> mapBranches = new TreeMap<String, BranchMatch>();
 		String defaultBranchName = changeInfo.get_number() + "/" //$NON-NLS-1$
-				+ revision.get_number();
+				+ revisionCheckedOut.get_number();
 		Iterator<Entry<String, Map<String, List<String>>>> iterBranch = mapBranchesChangeId.entrySet().iterator();
 		while (iterBranch.hasNext()) {
 			Entry<String, Map<String, List<String>>> entryBranch = iterBranch.next();

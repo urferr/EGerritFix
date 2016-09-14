@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.table.model.BranchMatch;
 import org.eclipse.egerrit.internal.ui.table.model.BranchSelectionTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
@@ -67,13 +68,17 @@ public class BranchSelectionDialog extends Dialog {
 
 	private ChangeInfo changeInfo;
 
+	private RevisionInfo revisionCheckedOut;
+
 	private final static int WIDTH = 400;
 
-	public BranchSelectionDialog(Shell parent, Map<String, BranchMatch> potentialBranches2, ChangeInfo changeInfo) {
+	public BranchSelectionDialog(Shell parent, Map<String, BranchMatch> potentialBranches2, ChangeInfo changeInfo,
+			RevisionInfo revisionCheckedOut) {
 		super(parent);
 		setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
 		this.potentialBranches = potentialBranches2;
 		this.changeInfo = changeInfo;
+		this.revisionCheckedOut = revisionCheckedOut;
 	}
 
 	@Override
@@ -122,8 +127,8 @@ public class BranchSelectionDialog extends Dialog {
 		aParent.setLayout(layout);
 		// Create the table viewer to maintain the list of review files
 		Label labelHeader = new Label(aParent, SWT.NONE | SWT.WRAP);
-		labelHeader.setText(NLS.bind(Messages.BranchSelectionTableModel_question,
-				changeInfo.getUserSelectedRevision().get_number(), changeInfo.getSubject()));
+		labelHeader.setText(NLS.bind(Messages.BranchSelectionTableModel_question, revisionCheckedOut.get_number(),
+				changeInfo.getSubject()));
 		labelHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
