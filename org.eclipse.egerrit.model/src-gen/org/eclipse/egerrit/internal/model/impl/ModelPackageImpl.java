@@ -2082,6 +2082,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EOperation getChangeInfo__GetMostRelevantVote__String() {
+		return changeInfoEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getProblemInfo() {
 		return problemInfoEClass;
 	}
@@ -2801,6 +2811,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(changeInfoEClass, CHANGE_INFO__DELETEABLE);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
+		createEOperation(changeInfoEClass, CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING);
 
 		problemInfoEClass = createEClass(PROBLEM_INFO);
 		createEAttribute(problemInfoEClass, PROBLEM_INFO__MESSAGE);
@@ -3057,10 +3068,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
 		initEClass(approvalInfoEClass, ApprovalInfo.class, "ApprovalInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getApprovalInfo_Value(), ecorePackage.getEIntegerObject(), "value", null, 0, 1, //$NON-NLS-1$
+		initEAttribute(getApprovalInfo_Value(), ecorePackage.getEIntegerObject(), "value", "0", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
 				ApprovalInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getApprovalInfo_Date(), ecorePackage.getEString(), "date", null, 0, 1, ApprovalInfo.class, //$NON-NLS-1$
+		initEAttribute(getApprovalInfo_Date(), ecorePackage.getEString(), "date", "0", 0, 1, ApprovalInfo.class, //$NON-NLS-1$//$NON-NLS-2$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(relatedChangesInfoEClass, RelatedChangesInfo.class, "RelatedChangesInfo", !IS_ABSTRACT, //$NON-NLS-1$
@@ -3340,6 +3351,10 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		op = initEOperation(getChangeInfo__IsActionAllowed__String(), ecorePackage.getEBoolean(), "isActionAllowed", 0, //$NON-NLS-1$
 				1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEString(), "action", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getChangeInfo__GetMostRelevantVote__String(), this.getApprovalInfo(), "getMostRelevantVote", //$NON-NLS-1$
+				0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(problemInfoEClass, ProblemInfo.class, "ProblemInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

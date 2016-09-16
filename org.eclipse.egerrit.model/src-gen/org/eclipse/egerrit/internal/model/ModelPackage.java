@@ -2109,13 +2109,22 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO___IS_ACTION_ALLOWED__STRING = 1;
 
 	/**
+	 * The operation id for the '<em>Get Most Relevant Vote</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING = 2;
+
+	/**
 	 * The number of operations of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_OPERATION_COUNT = 2;
+	int CHANGE_INFO_OPERATION_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
@@ -4599,6 +4608,16 @@ public interface ModelPackage extends EPackage {
 	EOperation getChangeInfo__IsActionAllowed__String();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getMostRelevantVote(java.lang.String) <em>Get Most Relevant Vote</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Most Relevant Vote</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getMostRelevantVote(java.lang.String)
+	 * @generated
+	 */
+	EOperation getChangeInfo__GetMostRelevantVote__String();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.ProblemInfo <em>Problem Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6584,6 +6603,15 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation CHANGE_INFO___IS_ACTION_ALLOWED__STRING = eINSTANCE.getChangeInfo__IsActionAllowed__String();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Most Relevant Vote</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING = eINSTANCE
+				.getChangeInfo__GetMostRelevantVote__String();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.

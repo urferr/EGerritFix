@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.dashboard.ui.model;
 
-import org.eclipse.egerrit.internal.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -101,12 +100,12 @@ public class ReviewTableSorter extends ViewerSorter {
 				}
 				break;
 			case 8: // Code Review
-				result = Utils.verifyTally(CODE_REVIEW, changeInfo2.getLabels())
-						- Utils.verifyTally(CODE_REVIEW, changeInfo1.getLabels());
+				result = changeInfo2.getMostRelevantVote(CODE_REVIEW).getValue()
+						- changeInfo1.getMostRelevantVote(CODE_REVIEW).getValue();
 				break;
 			case 9: // Verify
-				result = Utils.verifyTally(VERIFIED, changeInfo2.getLabels())
-						- Utils.verifyTally(VERIFIED, changeInfo1.getLabels());
+				result = changeInfo2.getMostRelevantVote(VERIFIED).getValue()
+						- changeInfo1.getMostRelevantVote(VERIFIED).getValue();
 				break;
 			case 10: // IPLog Clean
 			default:

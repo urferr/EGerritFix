@@ -219,11 +219,11 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 				return Utils.prettyPrintDate(reviewSummary.getUpdated());
 			}
 			case 8: {
-				fCodeReviewState = Utils.verifyTally((CODE_REVIEW), reviewSummary.getLabels());
+				fCodeReviewState = reviewSummary.getMostRelevantVote(CODE_REVIEW).getValue();
 				return EMPTY_STRING;
 			}
 			case 9: {
-				fVerifyState = Utils.verifyTally((VERIFIED), reviewSummary.getLabels());
+				fVerifyState = reviewSummary.getMostRelevantVote(VERIFIED).getValue();
 
 				return EMPTY_STRING;
 			}

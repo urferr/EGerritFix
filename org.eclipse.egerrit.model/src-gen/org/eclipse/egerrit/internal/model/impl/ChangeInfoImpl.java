@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ActionInfo;
+import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.IncludedInInfo;
@@ -1706,6 +1707,18 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public ApprovalInfo getMostRelevantVote(String label) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public boolean isRevertable() {
 		// TODO: implement this method to return the 'Revertable' attribute
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -2261,6 +2274,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return getRevisionByNumber((Integer) arguments.get(0));
 		case ModelPackage.CHANGE_INFO___IS_ACTION_ALLOWED__STRING:
 			return isActionAllowed((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING:
+			return getMostRelevantVote((String) arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

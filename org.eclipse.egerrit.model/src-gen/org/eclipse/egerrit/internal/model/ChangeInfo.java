@@ -989,6 +989,14 @@ public interface ChangeInfo extends EObject {
 	boolean isActionAllowed(String action);
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	ApprovalInfo getMostRelevantVote(String label);
+
+	/**
 	 * Returns the value of the '<em><b>Revertable</b></em>' attribute.
 	 * The default value is <code>"false"</code>.
 	 * <!-- begin-user-doc -->

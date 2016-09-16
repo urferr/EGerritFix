@@ -19,9 +19,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
-import org.eclipse.egerrit.internal.model.ApprovalInfo;
-import org.eclipse.egerrit.internal.model.LabelInfo;
-import org.eclipse.emf.common.util.EMap;
 
 /**
  * @author lmcbout
@@ -88,65 +85,5 @@ public class Utils {
 		} else {
 			return Utils.formatDate(inDate, sameYearFormatTimeOut);
 		}
-	}
-
-	/**
-	 * Determines the right value for voting tally
-	 *
-	 * @param newState
-	 * @param oldState
-	 * @return Integer
-	 */
-	public static Integer getStateValue(Integer newState, Integer oldState) {
-		Integer state = 0;
-		if (newState < 0) {
-			state = Math.min(oldState, newState);
-		} else if (newState > 0) {
-			state = Math.max(oldState, newState);
-		} else {
-			state = oldState;
-		}
-
-		return state;
-	}
-
-	/**
-	 * Verify the highest status of the testlabels
-	 *
-	 * @param testLabels
-	 * @param labels
-	 * @return int
-	 */
-	public static int verifyTally(String testLabels, EMap<String, LabelInfo> labels) {
-		int state = 0, prevState;
-		if (labels == null) {
-			return state;
-		}
-		LabelInfo labelInfo = labels.get(testLabels);
-		if (labelInfo == null) {
-			return state;
-		}
-		if (labelInfo.getAll() != null) {
-			for (ApprovalInfo it : labelInfo.getAll()) {
-				if (it.getValue() != null) {
-					prevState = state;
-					state = Utils.getStateValue(it.getValue(), state);
-					if (testLabels.compareTo(CODE_REVIEW) == 0) {
-						if (state <= -1) {
-							if (state < prevState) {
-								state = Math.min(state, prevState);
-							}
-						} else if (state >= 1) {
-							if (state > prevState && !(prevState < 0)) {
-								state = Math.max(state, prevState);
-							} else if (prevState < state) {
-								state = prevState;
-							}
-						}
-					}
-				}
-			}
-		}
-		return state;
 	}
 }

@@ -20,7 +20,6 @@ import org.eclipse.egerrit.internal.model.impl.StringToActionInfoImpl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -269,7 +268,44 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			super.setUpdated(newUpdated);
 		}
 	}
-
+	
+	private static ApprovalInfo NO_VOTE = ModelFactory.eINSTANCE.createApprovalInfo();
+	
+	@Override
+	public ApprovalInfo getMostRelevantVote(String label) {
+			if (labels == null) {
+				return NO_VOTE;
+			}
+			LabelInfo labelInfo = labels.get(label);
+			if (labelInfo == null) {
+				return NO_VOTE;
+			}
+			//As per the gerrit doc, the votes are always considered in this order of priority.
+			//https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail
+			//The combined label vote is calculated in the following order (from highest to lowest): REJECTED > APPROVED > DISLIKED > RECOMMENDED.
+			if (labelInfo.getRejected() != null) {
+				return fromVoteToValue(labelInfo, labelInfo.getRejected());
+			}
+			if (labelInfo.getApproved() != null) {
+				return fromVoteToValue(labelInfo, labelInfo.getApproved());
+			}
+			if (labelInfo.getDisliked() != null) {
+				return fromVoteToValue(labelInfo, labelInfo.getDisliked());
+			}
+			if (labelInfo.getRecommended() != null) {
+				return fromVoteToValue(labelInfo, labelInfo.getRecommended());
+			}
+			return NO_VOTE;
+	}
+	
+	private ApprovalInfo fromVoteToValue(LabelInfo match, AccountInfo voter) {
+		for (ApprovalInfo candidate : match.getAll()) {
+			if (candidate.get_account_id() == voter.get_account_id())
+				return candidate;
+		}
+		return NO_VOTE;
+	}
+	
 	//Helper method setting if a comment is contained in a message
 	//Also update the comment flag on a revision
 	private void deriveCommentPresence() {

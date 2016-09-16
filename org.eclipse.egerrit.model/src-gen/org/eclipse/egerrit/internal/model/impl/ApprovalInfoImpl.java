@@ -40,7 +40,7 @@ public class ApprovalInfoImpl extends AccountInfoImpl implements ApprovalInfo {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Integer VALUE_EDEFAULT = null;
+	protected static final Integer VALUE_EDEFAULT = new Integer(0);
 
 	/**
 	 * The cached value of the '{@link #getValue() <em>Value</em>}' attribute.
@@ -60,7 +60,7 @@ public class ApprovalInfoImpl extends AccountInfoImpl implements ApprovalInfo {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DATE_EDEFAULT = null;
+	protected static final String DATE_EDEFAULT = "0";
 
 	/**
 	 * The cached value of the '{@link #getDate() <em>Date</em>}' attribute.

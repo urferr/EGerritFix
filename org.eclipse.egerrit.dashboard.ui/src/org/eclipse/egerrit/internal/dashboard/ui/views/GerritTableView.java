@@ -1066,9 +1066,13 @@ public class GerritTableView extends ViewPart {
 
 			ChangeInfo[] res = null;
 			QueryChangesCommand command = gerritClient.queryChanges();
-			command.addOption(ChangeOption.DETAILED_LABELS, ChangeOption.CURRENT_REVISION, ChangeOption.CURRENT_FILES,
-					ChangeOption.DETAILED_ACCOUNTS, ChangeOption.CURRENT_COMMIT, ChangeOption.REVIEWED,
-					ChangeOption.CURRENT_ACTIONS);
+			command.addOption(ChangeOption.LABELS);
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+			command.addOption(ChangeOption.MESSAGES);
+			command.addOption(ChangeOption.CURRENT_REVISION);
+			command.addOption(ChangeOption.CURRENT_COMMIT);
+			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 			try {
 				setQuery(query, command);

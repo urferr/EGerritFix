@@ -31,6 +31,7 @@ package org.eclipse.egerrit.internal.model;
 public interface ApprovalInfo extends AccountInfo {
 	/**
 	 * Returns the value of the '<em><b>Value</b></em>' attribute.
+	 * The default value is <code>"0"</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Value</em>' attribute isn't clear,
@@ -40,7 +41,7 @@ public interface ApprovalInfo extends AccountInfo {
 	 * @return the value of the '<em>Value</em>' attribute.
 	 * @see #setValue(Integer)
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getApprovalInfo_Value()
-	 * @model
+	 * @model default="0"
 	 * @generated
 	 */
 	Integer getValue();
@@ -57,6 +58,7 @@ public interface ApprovalInfo extends AccountInfo {
 
 	/**
 	 * Returns the value of the '<em><b>Date</b></em>' attribute.
+	 * The default value is <code>"0"</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Date</em>' attribute isn't clear,
@@ -66,7 +68,7 @@ public interface ApprovalInfo extends AccountInfo {
 	 * @return the value of the '<em>Date</em>' attribute.
 	 * @see #setDate(String)
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getApprovalInfo_Date()
-	 * @model
+	 * @model default="0"
 	 * @generated
 	 */
 	String getDate();

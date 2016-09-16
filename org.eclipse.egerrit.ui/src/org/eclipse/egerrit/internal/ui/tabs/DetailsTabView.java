@@ -47,8 +47,8 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.AddReviewerInput;
 import org.eclipse.egerrit.internal.core.rest.AddReviewerResult;
 import org.eclipse.egerrit.internal.core.rest.TopicInput;
-import org.eclipse.egerrit.internal.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
@@ -965,7 +965,7 @@ public class DetailsTabView {
 		ComputedValue<String> cv = new ComputedValue<String>() {
 			@Override
 			protected String calculate() {
-				HashMap<String, Integer> hashMap = extractReviewerApprovals(observedList);
+				HashMap<String, Integer> hashMap = extractAllVotesSummary(observedList);
 				//Now sort and Display the vote:
 				return formatReviewersVote(hashMap);
 			}
@@ -1000,26 +1000,17 @@ public class DetailsTabView {
 			 * @param observedList
 			 * @return HashMap
 			 */
-			private HashMap<String, Integer> extractReviewerApprovals(
-					final IObservableList<ReviewerInfo> observedList) {
-				Iterator<ReviewerInfo> iter = observedList.iterator();
-				HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-				while (iter.hasNext()) {
-					ReviewerInfo revInfo = iter.next();
-					EMap<String, String> approvals = revInfo.getApprovals();
-					Iterator<Entry<String, String>> approvalIter = approvals.iterator();
-					while (approvalIter.hasNext()) {
-						Entry<String, String> entry = approvalIter.next();
-						//Verify if we have that key
-						if (!hashMap.containsKey(entry.getKey())) {
-							hashMap.put(entry.getKey(), 0);
-						}
-						int oldValue = hashMap.get(entry.getKey());
-						int sumValue = Utils.getStateValue(Integer.parseInt(entry.getValue().trim()), oldValue);
-						hashMap.put(entry.getKey(), sumValue);
-					}
+			private HashMap<String, Integer> extractAllVotesSummary(final IObservableList<ReviewerInfo> observedList) {
+				EMap<String, LabelInfo> allVotes = fChangeInfo.getLabels();
+				HashMap<String, Integer> mostRevelantVotesPerLabel = new HashMap<String, Integer>();
+				if (allVotes == null) {
+					return mostRevelantVotesPerLabel;
 				}
-				return hashMap;
+
+				for (String aLabel : allVotes.keySet()) {
+					mostRevelantVotesPerLabel.put(aLabel, fChangeInfo.getMostRelevantVote(aLabel).getValue());
+				}
+				return mostRevelantVotesPerLabel;
 			}
 
 		};
