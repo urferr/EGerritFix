@@ -33,6 +33,7 @@ import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutResult;
@@ -63,6 +64,7 @@ public class CheckoutRevision extends Action {
 	@Override
 	public void run() {
 		Repository localRepo = new FindLocalRepository(gerritClient, changeInfo.getProject()).getRepository();
+		boolean reActivateWorkspaceRevision = true;
 
 		if (localRepo == null) {
 			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_1);
@@ -78,7 +80,7 @@ public class CheckoutRevision extends Action {
 
 		Map<String, BranchMatch> potentialBranches = findAllPotentialBranches(localRepo);
 		if (potentialBranches.size() > 1) {
-			branchUiSelection(localRepo, potentialBranches);
+			reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
 		} else {
 			if (potentialBranches.isEmpty()) {
 				//New selected
@@ -86,9 +88,12 @@ public class CheckoutRevision extends Action {
 				WizardDialog w = new WizardDialog(getShell(), var);
 				w.create();
 				int ret = w.open();
+				if (ret == Window.CANCEL) {
+					reActivateWorkspaceRevision = false;
+				}
 			} else if (!potentialBranches.entrySet().iterator().next().getValue().equals(BranchMatch.PERFECT_MATCH)) {
 				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
-				branchUiSelection(localRepo, potentialBranches);
+				reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
 			} else {
 				String branchToCheckout = potentialBranches.keySet().iterator().next();//Get the only element PERFECT_MATCH
 
@@ -98,7 +103,9 @@ public class CheckoutRevision extends Action {
 				}
 			}
 		}
-		ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
+		if (reActivateWorkspaceRevision) {
+			ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
+		}
 	}
 
 	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
@@ -146,10 +153,14 @@ public class CheckoutRevision extends Action {
 	 * @param localRepo
 	 * @param potentialBranches
 	 */
-	private void branchUiSelection(Repository localRepo, Map<String, BranchMatch> potentialBranches) {
+	private boolean branchUiSelection(Repository localRepo, Map<String, BranchMatch> potentialBranches) {
 		BranchSelectionDialog branchSelectDialog = new BranchSelectionDialog(null, potentialBranches, changeInfo,
 				revisionCheckedOut);
 		int result = branchSelectDialog.open();
+		boolean returnOK = true;
+		if (result == Window.CANCEL) {
+			returnOK = false;
+		}
 		String selectedBranch = branchSelectDialog.getSelectedBranch();
 		if (result == IDialogConstants.OK_ID) {
 			//New selected
@@ -157,7 +168,10 @@ public class CheckoutRevision extends Action {
 			FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
 			WizardDialog w = new WizardDialog(getShell(), var);
 			w.create();
-			w.open();
+			int retCode = w.open();
+			if (retCode == Window.CANCEL) {
+				returnOK = false;
+			}
 		} else if (result == IDialogConstants.CLIENT_ID) { // SWITCH
 			try {
 				if (selectedBranch != null) {
@@ -166,6 +180,7 @@ public class CheckoutRevision extends Action {
 			} catch (Exception e) {
 			}
 		}
+		return returnOK;
 	}
 
 	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
