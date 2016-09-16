@@ -65,11 +65,12 @@ public class QueryHelpers {
 			monitor.beginTask(EXECUTING_QUERY, IProgressMonitor.UNKNOWN);
 
 			QueryChangesCommand command = gerritClient.queryChanges();
-			command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+			command.addOption(ChangeOption.LABELS);
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+			command.addOption(ChangeOption.MESSAGES);
 			command.addOption(ChangeOption.ALL_REVISIONS);
 			command.addOption(ChangeOption.ALL_COMMITS);
-			command.addOption(ChangeOption.MESSAGES);
-			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 			try {
@@ -100,11 +101,12 @@ public class QueryHelpers {
 
 			GetChangeCommand command = null;
 			command = gerrit.getChange(change_id);
-			command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+			command.addOption(ChangeOption.LABELS);
+			command.addOption(ChangeOption.DETAILED_LABELS);
+			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+			command.addOption(ChangeOption.MESSAGES);
 			command.addOption(ChangeOption.ALL_REVISIONS);
 			command.addOption(ChangeOption.ALL_COMMITS);
-			command.addOption(ChangeOption.MESSAGES);
-			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 			try {
@@ -320,11 +322,12 @@ public class QueryHelpers {
 
 	private static ChangeInfo queryBasicInformation(GerritClient gerrit, String id) {
 		GetChangeCommand command = gerrit.getChange(id);
-		command.addOption(ChangeOption.DOWNLOAD_COMMANDS);
+		command.addOption(ChangeOption.LABELS);
+		command.addOption(ChangeOption.DETAILED_LABELS);
+		command.addOption(ChangeOption.DETAILED_ACCOUNTS);
+		command.addOption(ChangeOption.MESSAGES);
 		command.addOption(ChangeOption.ALL_REVISIONS);
 		command.addOption(ChangeOption.ALL_COMMITS);
-		command.addOption(ChangeOption.MESSAGES);
-		command.addOption(ChangeOption.DETAILED_LABELS);
 		command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 		ChangeInfo res = null;

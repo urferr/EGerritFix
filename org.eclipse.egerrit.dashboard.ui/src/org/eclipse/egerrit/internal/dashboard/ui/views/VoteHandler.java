@@ -23,7 +23,6 @@ import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
-import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.osgi.util.NLS;
@@ -158,9 +157,6 @@ public class VoteHandler implements Listener, MouseListener {
 	}
 
 	private Optional<Object> selectInformationFromMessage(ChangeInfo review, String label, Function mapper) {
-		//Force the loading of the review because the history messages may not have been loaded yet.
-		QueryHelpers.loadBasicInformation(view.getGerritClient(), review);
-
 		ApprovalInfo vote = review.getMostRelevantVote(label);
 		Optional<Object> messageToShow = review.getMessages()
 				.stream()
