@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013,2015 Ericsson
+ * Copyright (c) 2013,2016 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -7,10 +7,11 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *   Jacques Bouthillier - Initial Implementation of the plug-in
- *   Francois Chouinard  - Handle gerrit queries and open reviews in editor
- *   Guy Perron          - Add review counter, Add Gerrit button selection
- *   Jacques Bouthillier - Bug 426580 Add the starred functionality
+ *   Jacques Bouthillier                  - Initial Implementation of the plug-in
+ *   Francois Chouinard                   - Handle gerrit queries and open reviews in editor
+ *   Guy Perron                           - Add review counter, Add Gerrit button selection
+ *   Jacques Bouthillier                  - Bug 426580 Add the starred functionality
+ *   Thomas Wolf <thomas.wolf@paranor.ch> - Bug 501543
  ******************************************************************************/
 
 package org.eclipse.egerrit.internal.dashboard.ui.views;
@@ -310,6 +311,7 @@ public class GerritTableView extends ViewPart {
 		reviewTable.createTableViewerSection(topComposite).setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		fViewer = reviewTable.getViewer();
 
+		getSite().setSelectionProvider(fViewer);
 		makeActions();
 		hookDoubleClickAction();
 
