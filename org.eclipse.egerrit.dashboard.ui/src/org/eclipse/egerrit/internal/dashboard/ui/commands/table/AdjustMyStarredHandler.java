@@ -93,6 +93,9 @@ public class AdjustMyStarredHandler extends AbstractHandler {
 	public boolean isEnabled() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
 		final TableViewer viewer = reviewTableView.getTableViewer();
+		if (viewer == null) {
+			return false;
+		}
 		final ISelection tableSelection = viewer.getSelection();
 
 		if (tableSelection.isEmpty()) {
