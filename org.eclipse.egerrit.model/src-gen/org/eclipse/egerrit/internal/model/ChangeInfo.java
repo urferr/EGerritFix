@@ -67,6 +67,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isAbandonable <em>Abandonable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isRestoreable <em>Restoreable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#isDeleteable <em>Deleteable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLoadingLevel <em>Loading Level</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo()
@@ -1059,5 +1060,32 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	boolean isDeleteable();
+
+	/**
+	 * Returns the value of the '<em><b>Loading Level</b></em>' attribute.
+	 * The default value is <code>"0"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Loading Level</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Loading Level</em>' attribute.
+	 * @see #setLoadingLevel(int)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_LoadingLevel()
+	 * @model default="0"
+	 * @generated
+	 */
+	int getLoadingLevel();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLoadingLevel <em>Loading Level</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Loading Level</em>' attribute.
+	 * @see #getLoadingLevel()
+	 * @generated
+	 */
+	void setLoadingLevel(int value);
 
 } // ChangeInfo

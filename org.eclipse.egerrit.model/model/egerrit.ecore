@@ -260,6 +260,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deleteable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         changeable="false" volatile="true" transient="true" defaultValueLiteral="false"
         derived="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="loadingLevel" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+        defaultValueLiteral="0"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ProblemInfo">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="message" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

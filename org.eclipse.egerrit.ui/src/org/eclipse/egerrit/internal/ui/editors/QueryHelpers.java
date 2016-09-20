@@ -225,10 +225,10 @@ public class QueryHelpers {
 
 	private static boolean fullyLoaded(ChangeInfo toRefresh) {
 		synchronized (toRefresh) {
-			if (toRefresh.getMessages().size() != 0) {
-				return true;
+			if (toRefresh.getLoadingLevel() == 0) {
+				return false;
 			}
-			return false;
+			return true;
 		}
 	}
 
@@ -257,8 +257,9 @@ public class QueryHelpers {
 					&& newChangeInfo.getRevisions().get(newChangeInfo.getCurrent_revision()) != null) {
 				toRefresh.setCurrent_revision(newChangeInfo.getCurrent_revision());
 			} else {
-				toRefresh.setCurrent_revision(
-						toRefresh.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(toRefresh.getRevisions().values())).getId());
+				toRefresh.setCurrent_revision(toRefresh
+						.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(toRefresh.getRevisions().values()))
+						.getId());
 			}
 			//Re-init the userselected revision after a revert
 			if (toRefresh.getUserSelectedRevision() == null) {
@@ -272,6 +273,7 @@ public class QueryHelpers {
 			toRefresh.getMessages().clear();
 			toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			toRefresh.setUpdated(newChangeInfo.getUpdated());
+			toRefresh.setLoadingLevel(1);
 		}
 	}
 

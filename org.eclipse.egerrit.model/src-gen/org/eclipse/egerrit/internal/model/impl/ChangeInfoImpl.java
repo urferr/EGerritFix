@@ -91,6 +91,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isAbandonable <em>Abandonable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isRestoreable <em>Restoreable</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#isDeleteable <em>Deleteable</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getLoadingLevel <em>Loading Level</em>}</li>
  * </ul>
  *
  * @generated
@@ -695,6 +696,26 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @ordered
 	 */
 	protected static final boolean DELETEABLE_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #getLoadingLevel() <em>Loading Level</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getLoadingLevel()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int LOADING_LEVEL_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getLoadingLevel() <em>Loading Level</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getLoadingLevel()
+	 * @generated
+	 * @ordered
+	 */
+	protected int loadingLevel = LOADING_LEVEL_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1767,6 +1788,30 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public int getLoadingLevel() {
+		return loadingLevel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setLoadingLevel(int newLoadingLevel) {
+		int oldLoadingLevel = loadingLevel;
+		loadingLevel = newLoadingLevel;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.CHANGE_INFO__LOADING_LEVEL,
+					oldLoadingLevel, loadingLevel));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.CHANGE_INFO__OWNER:
@@ -1907,6 +1952,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return isRestoreable();
 		case ModelPackage.CHANGE_INFO__DELETEABLE:
 			return isDeleteable();
+		case ModelPackage.CHANGE_INFO__LOADING_LEVEL:
+			return getLoadingLevel();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -2038,6 +2085,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
 			setUserSelectedRevision((RevisionInfo) newValue);
 			return;
+		case ModelPackage.CHANGE_INFO__LOADING_LEVEL:
+			setLoadingLevel((Integer) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -2161,6 +2211,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__USER_SELECTED_REVISION:
 			setUserSelectedRevision((RevisionInfo) null);
 			return;
+		case ModelPackage.CHANGE_INFO__LOADING_LEVEL:
+			setLoadingLevel(LOADING_LEVEL_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -2258,6 +2311,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return isRestoreable() != RESTOREABLE_EDEFAULT;
 		case ModelPackage.CHANGE_INFO__DELETEABLE:
 			return isDeleteable() != DELETEABLE_EDEFAULT;
+		case ModelPackage.CHANGE_INFO__LOADING_LEVEL:
+			return loadingLevel != LOADING_LEVEL_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -2333,6 +2388,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		result.append(base_change);
 		result.append(", hashtags: "); //$NON-NLS-1$
 		result.append(hashtags);
+		result.append(", loadingLevel: "); //$NON-NLS-1$
+		result.append(loadingLevel);
 		result.append(')');
 		return result.toString();
 	}
