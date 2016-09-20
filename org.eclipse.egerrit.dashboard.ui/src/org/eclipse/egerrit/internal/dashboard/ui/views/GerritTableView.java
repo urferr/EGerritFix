@@ -102,13 +102,7 @@ import org.slf4j.LoggerFactory;
 // need our own to handle query result
 
 /**
- * This class initiate a new workbench view. The view shows data obtained from Gerrit Dashboard model. The view is
- * connected to the model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be presented in the view.
- *
- * @author Jacques Bouthillier
- * @since 1.0
+ * The gerrit dashboard
  */
 
 public class GerritTableView extends ViewPart {
@@ -268,7 +262,7 @@ public class GerritTableView extends ViewPart {
 
 		Link link = new Link(composite, SWT.NONE);
 		if (enterNewServer) {
-			link.setText("Welcome to the Gerrit dashboard. To get started, please configure a <a>Gerrit Server</a>.");
+			link.setText(Messages.Welcome_No_Server);
 			link.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -276,7 +270,7 @@ public class GerritTableView extends ViewPart {
 				}
 			});
 		} else {
-			link.setText("Welcome to the Gerrit dashboard. <a>Select a server</a> you have already entered.");
+			link.setText(Messages.Welcome_Pick_Server);
 			link.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -634,23 +628,18 @@ public class GerritTableView extends ViewPart {
 			Version version = gerritRepository.getVersion();
 
 			if (version == null) {
-				UIUtils.showErrorDialog("Invalid Gerrit server and/or User/Password",
-						"Server " + defaultServerInfo.getServerURI());
+				UIUtils.showErrorDialog(Messages.Invalid_Credentials, "Server " + defaultServerInfo.getServerURI()); //$NON-NLS-1$
 			} else if (version.equals(GerritRepository.NO_VERSION)) {
-				UIUtils.showErrorDialog("Unsupported Gerrit server version",
-						"The server you are connecting to is older than 2.8 and this tool can not connect to it. This tool can only connect to server that are more recent than " //$NON-NLS-1$
-								+ GerritFactory.MINIMAL_VERSION + ".");
+				UIUtils.showErrorDialog(Messages.Unsupported_server_version_title,
+						NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
 			} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-				UIUtils.showErrorDialog("Unsupported Gerrit server version",
-						"Server " + gerritRepository.getPath() + " runs version " + version.toString() //$NON-NLS-1$ //$NON-NLS-2$
-								+ " which is older than the minimum " + GerritFactory.MINIMAL_VERSION //$NON-NLS-1$
-								+ " supported by EGerrit.");
+				UIUtils.showErrorDialog(Messages.Unsupported_Server_Version,
+						NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
 			}
 
 		} else if (gerritRepository.getStatus() == 401) {
-			UIUtils.showErrorDialog("Cannot connect to selected Gerrit server ", //$NON-NLS-1$
-					"Server " + gerritRepository.getPath() + " Authentication failure "); //$NON-NLS-1$ //$NON-NLS-2$
-
+			UIUtils.showErrorDialog(Messages.Server_connection_401_title,
+					NLS.bind(Messages.Server_connection_401, gerritRepository.getPath()));
 		}
 
 	}
@@ -1002,7 +991,7 @@ public class GerritTableView extends ViewPart {
 			Display.getDefault().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					setRepositoryVersionLabel("Invalid Server", "NO connection"); //$NON-NLS-1$ //$NON-NLS-2$
+					setRepositoryVersionLabel(Messages.Invalid_server, Messages.No_Connection);
 				}
 			});
 			ret = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, "Error"); //$NON-NLS-1$
@@ -1096,7 +1085,7 @@ public class GerritTableView extends ViewPart {
 		if (!query.isEmpty()) {
 			if (gerritClient.getRepository().getServerInfo().isAnonymous() && (query.contains(":self") //$NON-NLS-1$
 					|| query.contains(":owner") || query.contains("is:reviewer") || query.contains("is:starred"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				throw new EGerritException("The query \"" + query + "\" can not be executed by anonymous users.");
+				throw new EGerritException(NLS.bind(Messages.Unauthorized_Query, query));
 			}
 			command.addQuery(query);
 		}

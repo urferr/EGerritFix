@@ -64,6 +64,28 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_tooltipInvalid;
 
+	public static String Invalid_Credentials;
+
+	public static String Invalid_server;
+
+	public static String No_Connection;
+
+	public static String Server_connection_401;
+
+	public static String Server_connection_401_title;
+
+	public static String Unauthorized_Query;
+
+	public static String Unsupported_Server_Version;
+
+	public static String Unsupported_server_version;
+
+	public static String Unsupported_server_version_title;
+
+	public static String Welcome_No_Server;
+
+	public static String Welcome_Pick_Server;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
