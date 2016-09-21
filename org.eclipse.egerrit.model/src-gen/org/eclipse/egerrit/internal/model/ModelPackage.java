@@ -2082,13 +2082,22 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__DELETEABLE = 41;
 
 	/**
+	 * The feature id for the '<em><b>Loading Level</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CHANGE_INFO__LOADING_LEVEL = 42;
+
+	/**
 	 * The number of structural features of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_FEATURE_COUNT = 42;
+	int CHANGE_INFO_FEATURE_COUNT = 43;
 
 	/**
 	 * The operation id for the '<em>Get Revision By Number</em>' operation.
@@ -4588,6 +4597,17 @@ public interface ModelPackage extends EPackage {
 	EAttribute getChangeInfo_Deleteable();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLoadingLevel <em>Loading Level</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Loading Level</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getLoadingLevel()
+	 * @see #getChangeInfo()
+	 * @generated
+	 */
+	EAttribute getChangeInfo_LoadingLevel();
+
+	/**
 	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRevisionByNumber(int) <em>Get Revision By Number</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6587,6 +6607,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CHANGE_INFO__DELETEABLE = eINSTANCE.getChangeInfo_Deleteable();
+
+		/**
+		 * The meta object literal for the '<em><b>Loading Level</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute CHANGE_INFO__LOADING_LEVEL = eINSTANCE.getChangeInfo_LoadingLevel();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Revision By Number</b></em>' operation.

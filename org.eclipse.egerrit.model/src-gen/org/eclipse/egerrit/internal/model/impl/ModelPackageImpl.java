@@ -2062,6 +2062,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getChangeInfo_LoadingLevel() {
+		return (EAttribute) changeInfoEClass.getEStructuralFeatures().get(42);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EOperation getChangeInfo__GetRevisionByNumber__int() {
 		return changeInfoEClass.getEOperations().get(0);
 	}
@@ -2809,6 +2819,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(changeInfoEClass, CHANGE_INFO__ABANDONABLE);
 		createEAttribute(changeInfoEClass, CHANGE_INFO__RESTOREABLE);
 		createEAttribute(changeInfoEClass, CHANGE_INFO__DELETEABLE);
+		createEAttribute(changeInfoEClass, CHANGE_INFO__LOADING_LEVEL);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING);
@@ -3343,6 +3354,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getChangeInfo_Deleteable(), ecorePackage.getEBoolean(), "deleteable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
 				ChangeInfo.class, IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				IS_DERIVED, IS_ORDERED);
+		initEAttribute(getChangeInfo_LoadingLevel(), ecorePackage.getEInt(), "loadingLevel", "0", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		EOperation op = initEOperation(getChangeInfo__GetRevisionByNumber__int(), this.getRevisionInfo(),
 				"getRevisionByNumber", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
