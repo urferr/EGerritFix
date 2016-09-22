@@ -36,7 +36,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class HyperLinkDetector implements IHyperlinkDetector {
 
-	final static String regex = "(http|https|ftp|file)://[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9 /]*.[ a-zA-Z0-9]*.[a-zA-Z0-9-/]*"; //$NON-NLS-1$
+	final static String regex = "(?:^|[\\W])((http|https|ftp|file):\\/\\/|[A-Za-z][\\.|\\/])(([\\w\\-]+[\\.|\\/]){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)";
 
 	final static Pattern pattern = Pattern.compile(regex);
 
