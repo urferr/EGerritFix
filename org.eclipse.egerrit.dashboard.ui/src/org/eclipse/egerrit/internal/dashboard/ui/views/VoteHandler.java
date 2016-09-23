@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class VoteHandler implements Listener, MouseListener {
 	private static Logger logger = LoggerFactory.getLogger(VoteHandler.class);
 
-	private final static String URLRegexp = "(http|https|ftp)://[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9]*.[a-zA-Z0-9/]*.[a-zA-Z0-9]*.[a-zA-Z0-9-/]*"; //$NON-NLS-1$
+	private final static String URLRegexp = "(?:^|[\\W])((http|https|ftp|file):\\/\\/|[A-Za-z][\\.|\\/])(([\\w\\-]+[\\.|\\/]){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)"; //$NON-NLS-1$
 
 	private final static Pattern URLpattern = Pattern.compile(URLRegexp);
 
