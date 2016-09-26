@@ -86,7 +86,7 @@ public class HistoryTabView {
 		SashForm sashForm = new SashForm(tabFolder, SWT.VERTICAL);
 		tbtmHistory.setControl(sashForm);
 
-		UIHistoryTable tableUIHistory = new UIHistoryTable();
+		UIHistoryTable tableUIHistory = new UIHistoryTable(gerritClient);
 		tableUIHistory.createTableViewerSection(sashForm);
 
 		tableHistoryViewer = tableUIHistory.getViewer();

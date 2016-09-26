@@ -208,21 +208,23 @@ public class DataConverter {
 	 */
 	private static String formatMessageWithComments(ChangeMessageInfo chmsgInfo, RevisionInfo revInfo) {
 		StringBuilder sb = new StringBuilder();
-		Collection<FileInfo> files = revInfo.getFiles().values();
-		for (FileInfo fileInfo : files) {
-			if (!fileInfo.getComments().isEmpty()) {
-				sb.append("\n"); //$NON-NLS-1$
-				sb.append(fileInfo.getPath());
-				Iterator<CommentInfo> commentsIter = fileInfo.getComments().iterator();
-				while (commentsIter.hasNext()) {
-					//List the comments
-					CommentInfo comment = commentsIter.next();
-					if (comment.getUpdated().equals(chmsgInfo.getDate())) {
-						sb.append(Messages.DataConverter_4);
-						sb.append(comment.getMessage());
+		if (revInfo != null) {
+			Collection<FileInfo> files = revInfo.getFiles().values();
+			for (FileInfo fileInfo : files) {
+				if (!fileInfo.getComments().isEmpty()) {
+					sb.append("\n"); //$NON-NLS-1$
+					sb.append(fileInfo.getPath());
+					Iterator<CommentInfo> commentsIter = fileInfo.getComments().iterator();
+					while (commentsIter.hasNext()) {
+						//List the comments
+						CommentInfo comment = commentsIter.next();
+						if (comment.getUpdated().equals(chmsgInfo.getDate())) {
+							sb.append(Messages.DataConverter_4);
+							sb.append(comment.getMessage());
+						}
 					}
+					sb.append("\n"); //$NON-NLS-1$
 				}
-				sb.append("\n"); //$NON-NLS-1$
 			}
 		}
 		return sb.toString();

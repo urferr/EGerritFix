@@ -313,4 +313,8 @@ proc "switch-user" [val to] {
 	add-gerrit-server -serverURL $serverURL -serverName $to -userName $to
 	selectActiveServer -serverName $to
 }
+proc "assert-that-itemCount-in-history-is" [val is]{
+     get-property itemCount | equals $is | verify-true
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

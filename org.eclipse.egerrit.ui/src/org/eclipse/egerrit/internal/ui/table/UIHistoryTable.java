@@ -11,9 +11,11 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.table;
 
+import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableSorter;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
+import org.eclipse.egerrit.internal.ui.table.provider.DynamicHistoryMenuBuilder;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -39,11 +41,16 @@ public class UIHistoryTable {
 	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
 
+	private DynamicHistoryMenuBuilder dynamicHistoryMenu = new DynamicHistoryMenuBuilder();
+
+	private GerritClient fGerritClient;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public UIHistoryTable() {
+	public UIHistoryTable(GerritClient gerritClient) {
+		this.fGerritClient = gerritClient;
 
 	}
 
@@ -124,6 +131,8 @@ public class UIHistoryTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setData(HISTORY_TABLE);
+
+		dynamicHistoryMenu.addPulldownMenu(fViewer, fGerritClient);
 
 		return aViewer;
 	}

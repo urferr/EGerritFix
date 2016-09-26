@@ -433,6 +433,12 @@ public class Messages extends NLS {
 	public static String SubmitHandler_generalMessage;
 
 	public static String SubmitHandler_specificMessage;
+
+	public static String UIHistoryTable_0;
+
+	public static String UIHistoryTable_1;
+
+	public static String UIHistoryTable_reset;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
