@@ -100,6 +100,12 @@ public class Messages extends NLS {
 
 	public static String CherryPickDialog_3;
 
+	public static String CompareElementBase;
+
+	public static String CompareElementPatchSet;
+
+	public static String CompareElementPatchSetWithCommitId;
+
 	public static String CompareUpperSection_PatchSet;
 
 	public static String DataConverter_0;

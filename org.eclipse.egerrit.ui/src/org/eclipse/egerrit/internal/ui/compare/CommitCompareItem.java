@@ -22,8 +22,10 @@ import org.eclipse.egerrit.internal.core.command.GetContentFromCommitCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.osgi.util.NLS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,21 +39,30 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 
 	private final String projectId, commitId;
 
+	private String showAsRevision;
+
 	private static final String PARENT = "PARENT"; //$NON-NLS-1$
 
-	CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo) {
+	CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo,
+			String showAsRevision) {
 		super(PARENT);
 		this.gerrit = gerrit;
 		this.projectId = projectId;
 		this.commitId = commitId;
 		this.fileInfo = fileInfo;
+		this.showAsRevision = showAsRevision;
 	}
 
 	@Override
 	//This name is presented in the header of the text editor area
 	public String getName() {
-		return "Base: " + GerritCompareHelper.extractFilename(getOldPathOrPath()) + ' ' //$NON-NLS-1$
-				+ '(' + GerritCompareHelper.shortenCommitId(commitId) + ')';
+		if (showAsRevision != null) {
+			return NLS.bind(Messages.CompareElementPatchSetWithCommitId,
+					new Object[] { showAsRevision, GerritCompareHelper.extractFilename(getOldPathOrPath()),
+							GerritCompareHelper.shortenCommitId(commitId) });
+		}
+		return NLS.bind(Messages.CompareElementBase, GerritCompareHelper.extractFilename(getOldPathOrPath()),
+				GerritCompareHelper.shortenCommitId(commitId));
 	}
 
 	private String getOldPathOrPath() {

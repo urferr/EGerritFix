@@ -47,7 +47,7 @@ public class CompareItemFactory {
 	 * Create a simple compare item
 	 */
 	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
-			IProgressMonitor monitor) {
-		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo);
+			String showAsRevision, IProgressMonitor monitor) {
+		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, showAsRevision);
 	}
 }

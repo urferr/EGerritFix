@@ -46,7 +46,6 @@ import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
@@ -203,11 +202,9 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		loadRevision(rightSide);
 		Map<String, FileInfo> files = loadRevisionDiff();
 
-		EMap<String, FileInfo> leftFiles = changeInfo.getRevisions().get(leftSide).getFiles();
-		EMap<String, FileInfo> rightFiles = changeInfo.getRevisions().get(rightSide).getFiles();
 		for (Entry<String, FileInfo> file : files.entrySet()) {
-			GerritDiffNode node = createRevisionRevisionNode(monitor, leftFiles, rightFiles, file.getValue(),
-					file.getKey());
+			GerritDiffNode node = createRevisionRevisionNode(monitor, changeInfo.getRevisions().get(leftSide),
+					changeInfo.getRevisions().get(rightSide), file.getValue(), file.getKey());
 			if (node != null) {
 				root.add(node);
 				setElementToReveal(node, node.getFileInfo());
@@ -227,13 +224,14 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return files;
 	}
 
-	private GerritDiffNode createRevisionRevisionNode(IProgressMonitor monitor, EMap<String, FileInfo> leftFiles,
-			EMap<String, FileInfo> rightFiles, FileInfo fileToShow, String filePathToShow) {
+	private GerritDiffNode createRevisionRevisionNode(IProgressMonitor monitor, RevisionInfo leftRevision,
+			RevisionInfo rightRevision, FileInfo fileToShow, String filePathToShow) {
 		String fileName = filePathToShow;
 		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(fileToShow));
 		FileInfo referenceFile = null;
-		FileInfo matchForRight = rightFiles.get(fileName);
-		FileInfo matchForLeft = leftFiles.get(matchForRight != null ? getOldPathOrPath(matchForRight) : filePathToShow);
+		FileInfo matchForRight = rightRevision.getFiles().get(fileName);
+		FileInfo matchForLeft = leftRevision.getFiles()
+				.get(matchForRight != null ? getOldPathOrPath(matchForRight) : filePathToShow);
 		if (matchForRight == null && matchForLeft == null) {
 			logger.debug("File " + filePathToShow + " found in either revision " + leftSide + " or " + rightSide); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 			return null;
@@ -246,7 +244,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			node.setFileInfo(matchForRight);
 		} else {
 			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					getBaseCommitId(referenceFile), referenceFile, monitor));
+					getBaseCommitId(rightRevision), referenceFile, Integer.toString(rightRevision.get_number()),
+					monitor));
 			node.setFileInfo(referenceFile);
 		}
 
@@ -255,10 +254,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 					changeInfo.getId(), matchForLeft, monitor));
 		} else if (!fileToShow.getStatus().equals("A")) { //$NON-NLS-1$
 			//The file is not in the other revision, and it is not added, so compare against the base
-			String baseCommitId = getBaseCommitId(referenceFile);
+			String baseCommitId = getBaseCommitId(leftRevision);
 			if (baseCommitId != null) {
 				node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-						getBaseCommitId(referenceFile), referenceFile, monitor));
+						getBaseCommitId(leftRevision), referenceFile, Integer.toString(leftRevision.get_number()),
+						monitor));
 			} else {
 				node.setLeft(new EmptyTypedElement(filePathToShow));
 			}
@@ -360,7 +360,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		String baseCommitId = getBaseCommitId(rightFile);
 		if (baseCommitId != null) {
 			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					baseCommitId, rightFile, monitor)); //Here we passing the right file so we have all the context necessary
+					baseCommitId, rightFile, null, monitor)); //Here we passing the right file so we have all the context necessary
 		} else {
 			node.setLeft(new EmptyTypedElement("")); //$NON-NLS-1$
 		}
@@ -377,7 +377,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		String baseCommitId = getBaseCommitId(rightFile);
 		if (baseCommitId != null) {
 			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					baseCommitId, rightFile, monitor)); //Here we passing the right file so we have all the context necessary
+					baseCommitId, rightFile, null, monitor)); //Here we passing the right file so we have all the context necessary
 		} else {
 			node.setLeft(new EmptyTypedElement("")); //$NON-NLS-1$
 		}
@@ -434,12 +434,16 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return result;
 	}
 
-	private String getBaseCommitId(FileInfo fileInfo) {
-		List<CommitInfo> parents = fileInfo.getRevision().getCommit().getParents();
+	private String getBaseCommitId(RevisionInfo revision) {
+		List<CommitInfo> parents = revision.getCommit().getParents();
 		if (parents == null || parents.isEmpty()) {
 			return null;
 		}
 		return parents.get(0).getCommit();
+	}
+
+	private String getBaseCommitId(FileInfo fileInfo) {
+		return getBaseCommitId(fileInfo.getRevision());
 	}
 
 	@Override
@@ -624,8 +628,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			} else {
 				loadRevision(leftSide);
 				loadRevision(rightSide);
-				newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide).getFiles(),
-						changeInfo.getRevisions().get(rightSide).getFiles(), savedElement.getFileInfo(),
+				newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide),
+						changeInfo.getRevisions().get(rightSide), savedElement.getFileInfo(),
 						savedElement.getFileInfo().getPath());
 			}
 		}
