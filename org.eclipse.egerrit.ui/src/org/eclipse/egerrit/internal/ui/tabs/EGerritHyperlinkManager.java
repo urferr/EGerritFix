@@ -277,8 +277,6 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 		}
 
 		fActiveHyperlinks = findHyperlinks();
-//		showHyperlinks(false);
-		showHyperlinks(true);
 	}
 
 /*
@@ -303,7 +301,6 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 			fActiveHyperlinks = findHyperlinks();
 		}
 		if (fActiveHyperlinks != null) {
-			showHyperlinks(true);
 			for (IHyperlink fActiveHyperlink : fActiveHyperlinks) {
 				IRegion region = fActiveHyperlink.getHyperlinkRegion();
 				if (region.getOffset() < cursorOffset && cursorOffset < (region.getOffset() + region.getLength())) {
@@ -313,7 +310,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 			}
 
 			if (currentHyperlink != null) {
-				currentHyperlink.open();
+				showHyperlinks(true);
 			}
 
 		}
