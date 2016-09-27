@@ -22,8 +22,10 @@ import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.command.GetContentCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * The compare item is the input to the compare editor, and it ALSO is the document that is shown in the compare editor.
@@ -40,8 +42,8 @@ public class PatchSetCompareItem extends CommentableCompareItem
 
 	@Override
 	public String getName() {
-		return "Patch Set " + fileInfo.getRevision().get_number() + ": " //$NON-NLS-1$ //$NON-NLS-2$
-				+ GerritCompareHelper.extractFilename(fileInfo.getPath());
+		return NLS.bind(Messages.CompareElementPatchSet, fileInfo.getRevision().get_number(),
+				GerritCompareHelper.extractFilename(fileInfo.getPath()));
 	}
 
 	@Override
