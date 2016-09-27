@@ -434,6 +434,7 @@ public class Messages extends NLS {
 
 	public static String SubmitHandler_specificMessage;
 
+	public static String RebaseProcess_changeIsAlreadyUpToDate;
 	public static String UIHistoryTable_0;
 
 	public static String UIHistoryTable_1;
