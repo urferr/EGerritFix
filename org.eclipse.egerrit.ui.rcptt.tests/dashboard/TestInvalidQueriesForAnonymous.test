@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _ubcSEGYjEeacLsYYjZ3eXQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/19/16 6:24 PM
+Save-Time: 9/26/16 8:41 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -21,7 +21,24 @@ selectActiveServer -serverName anonymous
 getDashboard | get-combo | set-text "owner:self"
 
 assert-dialog -named "Gerrit Server" -containsText "The query \"owner:self\" can not be executed by anonymous users."
-// Check that we got an error dialog
+// 
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow
+get-menu Changes | click
+assert-warning-dialog -named "Warning" -containsText "This operation is not allowed as Anonymous user: is:open AND (owner:self OR reviewer:self)."
+
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow
+get-menu "Draft Comments" | click
+assert-warning-dialog -named "Warning" -containsText "This operation is not allowed as Anonymous user: has:draft."
+
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow
+get-menu "Starred Changes" | click
+assert-dialog -named "Gerrit Server" -containsText "The query \"is:starred status:open\" can not be executed by anonymous users."
+
+
+get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow
+get-menu "Recently Closed Changes" | click
+assert-dialog -named "Gerrit Server" -containsText "The query \"is:closed AND (owner:self OR reviewer:self) AND limit:10\" can not be executed by anonymous users."
+
 
 delete-gerrit-server -serverName anonymous
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
