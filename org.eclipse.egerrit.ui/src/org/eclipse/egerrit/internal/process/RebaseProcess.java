@@ -57,11 +57,15 @@ public class RebaseProcess {
 								getOkButton().setEnabled(true);
 							} else {
 								getOkButton().setEnabled(false);
+								getOkButton().getParent().setToolTipText(
+										toRebase.isRebaseable() ? "" : Messages.RebaseProcess_changeIsAlreadyUpToDate); //$NON-NLS-1$
 							}
 						}
 					}
 				});
 				getOkButton().setEnabled(toRebase.isRebaseable());
+				getOkButton().getParent()
+						.setToolTipText(toRebase.isRebaseable() ? "" : Messages.RebaseProcess_changeIsAlreadyUpToDate); //$NON-NLS-1$
 				return;
 			}
 		};
