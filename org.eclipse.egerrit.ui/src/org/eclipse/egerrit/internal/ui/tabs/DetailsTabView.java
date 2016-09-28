@@ -179,6 +179,8 @@ public class DetailsTabView {
 
 	private Job activeCompletionJob;
 
+	private Button fButtonPlus;
+
 	/**
 	 * Class that provides suggestion for completion for adding a reviwer.
 	 */
@@ -429,7 +431,9 @@ public class DetailsTabView {
 					return;
 				}
 
-				handleKeyReleased(userName.getText(), reviewerProposal);
+				if (handleKeyReleased(userName.getText(), reviewerProposal) == true && event.keyCode == SWT.CR) {
+					fButtonPlus.notifyListeners(SWT.Selection, new Event());
+				}
 			}
 
 			@Override
@@ -438,17 +442,17 @@ public class DetailsTabView {
 			}
 		});
 
-		final Button buttonPlus = new Button(grpReviewers, SWT.NONE);
-		buttonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-		buttonPlus.setText("Add"); //$NON-NLS-1$
-		buttonPlus.addSelectionListener(buttonPlusListener(buttonPlus, userName));
+		fButtonPlus = new Button(grpReviewers, SWT.NONE);
+		fButtonPlus.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		fButtonPlus.setText("Add"); //$NON-NLS-1$
+		fButtonPlus.addSelectionListener(buttonPlusListener(fButtonPlus, userName));
 
 		//Set the binding for this section
 		sumReviewerDataBindings();
 		return grpReviewers;
 	}
 
-	private void handleKeyReleased(String queryText, AddReviewerContentProposal reviewerProposal) {
+	private boolean handleKeyReleased(String queryText, AddReviewerContentProposal reviewerProposal) {
 		// Don't trigger the query unless we have at least 3 characters.
 		// The query will always return empty if there is not at least 3 characters
 		if (queryText.length() < 3) {
@@ -460,10 +464,11 @@ public class DetailsTabView {
 					activeCompletionJob = null;
 				}
 			}
-			return;
+			return false;
 		}
 
 		runCompletionJob(queryText, reviewerProposal);
+		return true;
 	}
 
 	private void runCompletionJob(String queryText, AddReviewerContentProposal reviewerProposal) {
