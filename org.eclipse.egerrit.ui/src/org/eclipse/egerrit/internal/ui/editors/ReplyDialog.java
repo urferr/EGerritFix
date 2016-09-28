@@ -34,6 +34,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -163,7 +165,17 @@ public class ReplyDialog extends InputDialog {
 			public void controlMoved(ControlEvent e) {
 			}
 		});
+
+		getText().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if ((e.stateMask & SWT.CTRL) != 0 && e.keyCode == SWT.CR) {
+					getOkButton().notifyListeners(SWT.Selection, new Event());
+				}
+			}
+		});
 		return parent;
+
 	}
 
 	/**
@@ -228,6 +240,7 @@ public class ReplyDialog extends InputDialog {
 
 			scrolledDraftArea.setExpandHorizontal(true);
 			scrolledDraftArea.setExpandVertical(true);
+
 		}
 	}
 
