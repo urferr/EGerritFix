@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
@@ -26,7 +27,12 @@ import org.eclipse.egerrit.internal.model.BranchInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.CherryPickDialog;
+import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -37,8 +43,6 @@ public class CherryPickProcess {
 
 	private GerritClient fGerritClient = null;
 
-	private ChangeInfo fChangeInfo = null;
-
 	/**
 	 * The constructor.
 	 */
@@ -47,8 +51,7 @@ public class CherryPickProcess {
 
 	public void handleCherryPick(Shell shell, GerritClient gerritClient, ChangeInfo changeInfo, RevisionInfo revision) {
 		fGerritClient = gerritClient;
-		fChangeInfo = changeInfo;
-		BranchInfo[] listBranchesCmdResult = listBranches();
+		BranchInfo[] listBranchesCmdResult = listBranches(changeInfo);
 
 		List<String> listBranchesRef = new ArrayList<String>();
 		Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
@@ -60,33 +63,60 @@ public class CherryPickProcess {
 				revision.getCommit().getMessage());
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				int ret = cherryPickDialog.open();
-				if (ret == IDialogConstants.OK_ID) {
-					cherryPickRevision(fChangeInfo.getId(), revision.getId(), cherryPickDialog.getBranch(),
-							cherryPickDialog.getMessage());
+				boolean isDone = false;
+				while (!isDone) {
+					Object cherryPickCmdResult = ""; //$NON-NLS-1$
+					int ret = cherryPickDialog.open();
+					if (ret == IDialogConstants.OK_ID) {
+						cherryPickCmdResult = cherryPickRevision(changeInfo.getId(), revision.getId(),
+								cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
+						if (cherryPickCmdResult instanceof String) {
+							MessageDialog.open(MessageDialog.ERROR, null, Messages.CherryPickRevision_9,
+									(String) cherryPickCmdResult, SWT.NONE);
+						} else {
+							ChangeInfo cherryPickedChangeInfo = (ChangeInfo) cherryPickCmdResult;
+							if (cherryPickedChangeInfo.getId().equals(changeInfo.getId())) {
+								CompletableFuture
+										.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo))
+										.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
+							} else {
+								UIUtils.openAnotherEditor(cherryPickedChangeInfo, fGerritClient);
+							}
+							isDone = true;
+						}
+					} else {
+						isDone = true;
+					}
 				}
 			}
 		});
+
 	}
 
-	private ChangeInfo cherryPickRevision(String changeId, String revisionId, String branch, String message) {
+	private Object cherryPickRevision(String changeId, String revisionId, String branch, String message) {
 		CherryPickRevisionCommand cherryPickCmd = fGerritClient.cherryPickRevision(changeId, revisionId);
 		CherryPickInput cherryPickInput = new CherryPickInput();
 		cherryPickInput.setDestination(branch);
 		cherryPickInput.setMessage(message);
 
 		cherryPickCmd.setCommandInput(cherryPickInput);
-		ChangeInfo listBranchesCmdResult = null;
+		ChangeInfo cherryPickResult = null;
+		String failureReason = ""; //$NON-NLS-1$
 		try {
-			listBranchesCmdResult = cherryPickCmd.call();
+			cherryPickResult = cherryPickCmd.call();
+			if (cherryPickResult == null) {
+				return cherryPickCmd.getFailureReason();
+			} else {
+				return cherryPickResult;
+			}
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 		}
-		return listBranchesCmdResult;
+		return failureReason;
 	}
 
-	private BranchInfo[] listBranches() {
-		ListBranchesCommand listBranchesCmd = fGerritClient.listBranches(fChangeInfo.getProject());
+	private BranchInfo[] listBranches(ChangeInfo changeInfo) {
+		ListBranchesCommand listBranchesCmd = fGerritClient.listBranches(changeInfo.getProject());
 
 		BranchInfo[] listBranchesCmdResult = null;
 		try {

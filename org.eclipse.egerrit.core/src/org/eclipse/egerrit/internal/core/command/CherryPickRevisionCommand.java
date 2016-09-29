@@ -30,4 +30,9 @@ public class CherryPickRevisionCommand extends BaseCommandChangeAndRevisionWithI
 		super(gerritRepository, AuthentificationRequired.YES, HttpPost.class, ChangeInfo.class, changeId, revisionId);
 		setPathFormat("/changes/{change-id}/revisions/{revision-id}/cherrypick"); //$NON-NLS-1$
 	}
+
+	@Override
+	protected boolean errorsExpected() {
+		return true;
+	}
 }
