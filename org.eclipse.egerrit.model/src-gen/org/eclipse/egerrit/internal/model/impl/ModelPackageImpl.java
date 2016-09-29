@@ -1952,7 +1952,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EReference getChangeInfo_Reviewers() {
+	public EReference getChangeInfo_ComputedReviewers() {
 		return (EReference) changeInfoEClass.getEStructuralFeatures().get(31);
 	}
 
@@ -2808,7 +2808,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(changeInfoEClass, CHANGE_INFO__INCLUDED_IN);
 		createEAttribute(changeInfoEClass, CHANGE_INFO__HASHTAGS);
 		createEReference(changeInfoEClass, CHANGE_INFO__RELATED_CHANGES);
-		createEReference(changeInfoEClass, CHANGE_INFO__REVIEWERS);
+		createEReference(changeInfoEClass, CHANGE_INFO__COMPUTED_REVIEWERS);
 		createEReference(changeInfoEClass, CHANGE_INFO__SAME_TOPIC);
 		createEReference(changeInfoEClass, CHANGE_INFO__CONFLICTS_WITH);
 		createEReference(changeInfoEClass, CHANGE_INFO__MERGEABLE_INFO);
@@ -3321,8 +3321,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getChangeInfo_RelatedChanges(), this.getRelatedChangesInfo(), null, "relatedChanges", null, 0, 1, //$NON-NLS-1$
 				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getChangeInfo_Reviewers(), this.getReviewerInfo(), null, "reviewers", null, 0, -1, //$NON-NLS-1$
-				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+		initEReference(getChangeInfo_ComputedReviewers(), this.getReviewerInfo(), null, "computedReviewers", null, 0, //$NON-NLS-1$
+				-1, ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getChangeInfo_SameTopic(), this.getChangeInfo(), null, "sameTopic", null, 0, -1, //$NON-NLS-1$
 				ChangeInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,

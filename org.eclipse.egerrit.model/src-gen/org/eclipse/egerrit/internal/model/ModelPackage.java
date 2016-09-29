@@ -1983,13 +1983,13 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO__RELATED_CHANGES = 30;
 
 	/**
-	 * The feature id for the '<em><b>Reviewers</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Computed Reviewers</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO__REVIEWERS = 31;
+	int CHANGE_INFO__COMPUTED_REVIEWERS = 31;
 
 	/**
 	 * The feature id for the '<em><b>Same Topic</b></em>' reference list.
@@ -4476,15 +4476,15 @@ public interface ModelPackage extends EPackage {
 	EReference getChangeInfo_RelatedChanges();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getReviewers <em>Reviewers</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getComputedReviewers <em>Computed Reviewers</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Reviewers</em>'.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getReviewers()
+	 * @return the meta object for the containment reference list '<em>Computed Reviewers</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getComputedReviewers()
 	 * @see #getChangeInfo()
 	 * @generated
 	 */
-	EReference getChangeInfo_Reviewers();
+	EReference getChangeInfo_ComputedReviewers();
 
 	/**
 	 * Returns the meta object for the reference list '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getSameTopic <em>Same Topic</em>}'.
@@ -6521,12 +6521,12 @@ public interface ModelPackage extends EPackage {
 		EReference CHANGE_INFO__RELATED_CHANGES = eINSTANCE.getChangeInfo_RelatedChanges();
 
 		/**
-		 * The meta object literal for the '<em><b>Reviewers</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Computed Reviewers</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference CHANGE_INFO__REVIEWERS = eINSTANCE.getChangeInfo_Reviewers();
+		EReference CHANGE_INFO__COMPUTED_REVIEWERS = eINSTANCE.getChangeInfo_ComputedReviewers();
 
 		/**
 		 * The meta object literal for the '<em><b>Same Topic</b></em>' reference list feature.

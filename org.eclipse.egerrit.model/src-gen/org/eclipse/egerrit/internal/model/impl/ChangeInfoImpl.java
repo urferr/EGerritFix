@@ -80,7 +80,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getIncludedIn <em>Included In</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getHashtags <em>Hashtags</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getRelatedChanges <em>Related Changes</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getReviewers <em>Reviewers</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getComputedReviewers <em>Computed Reviewers</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getSameTopic <em>Same Topic</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getConflictsWith <em>Conflicts With</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ChangeInfoImpl#getMergeableInfo <em>Mergeable Info</em>}</li>
@@ -608,14 +608,14 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	protected RelatedChangesInfo relatedChanges;
 
 	/**
-	 * The cached value of the '{@link #getReviewers() <em>Reviewers</em>}' containment reference list.
+	 * The cached value of the '{@link #getComputedReviewers() <em>Computed Reviewers</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getReviewers()
+	 * @see #getComputedReviewers()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<ReviewerInfo> reviewers;
+	protected EList<ReviewerInfo> computedReviewers;
 
 	/**
 	 * The cached value of the '{@link #getSameTopic() <em>Same Topic</em>}' reference list.
@@ -1483,12 +1483,12 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
-	public EList<ReviewerInfo> getReviewers() {
-		if (reviewers == null) {
-			reviewers = new EObjectContainmentEList<ReviewerInfo>(ReviewerInfo.class, this,
-					ModelPackage.CHANGE_INFO__REVIEWERS);
+	public EList<ReviewerInfo> getComputedReviewers() {
+		if (computedReviewers == null) {
+			computedReviewers = new EObjectContainmentEList<ReviewerInfo>(ReviewerInfo.class, this,
+					ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS);
 		}
-		return reviewers;
+		return computedReviewers;
 	}
 
 	/**
@@ -1834,8 +1834,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return basicSetIncludedIn(null, msgs);
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
 			return basicSetRelatedChanges(null, msgs);
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
-			return ((InternalEList<?>) getReviewers()).basicRemove(otherEnd, msgs);
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
+			return ((InternalEList<?>) getComputedReviewers()).basicRemove(otherEnd, msgs);
 		case ModelPackage.CHANGE_INFO__MERGEABLE_INFO:
 			return basicSetMergeableInfo(null, msgs);
 		}
@@ -1924,8 +1924,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return getHashtags();
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
 			return getRelatedChanges();
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
-			return getReviewers();
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
+			return getComputedReviewers();
 		case ModelPackage.CHANGE_INFO__SAME_TOPIC:
 			return getSameTopic();
 		case ModelPackage.CHANGE_INFO__CONFLICTS_WITH:
@@ -2064,9 +2064,9 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
 			setRelatedChanges((RelatedChangesInfo) newValue);
 			return;
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
-			getReviewers().clear();
-			getReviewers().addAll((Collection<? extends ReviewerInfo>) newValue);
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
+			getComputedReviewers().clear();
+			getComputedReviewers().addAll((Collection<? extends ReviewerInfo>) newValue);
 			return;
 		case ModelPackage.CHANGE_INFO__SAME_TOPIC:
 			getSameTopic().clear();
@@ -2193,8 +2193,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
 			setRelatedChanges((RelatedChangesInfo) null);
 			return;
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
-			getReviewers().clear();
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
+			getComputedReviewers().clear();
 			return;
 		case ModelPackage.CHANGE_INFO__SAME_TOPIC:
 			getSameTopic().clear();
@@ -2289,8 +2289,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return hashtags != null && !hashtags.isEmpty();
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
 			return relatedChanges != null;
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
-			return reviewers != null && !reviewers.isEmpty();
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
+			return computedReviewers != null && !computedReviewers.isEmpty();
 		case ModelPackage.CHANGE_INFO__SAME_TOPIC:
 			return sameTopic != null && !sameTopic.isEmpty();
 		case ModelPackage.CHANGE_INFO__CONFLICTS_WITH:

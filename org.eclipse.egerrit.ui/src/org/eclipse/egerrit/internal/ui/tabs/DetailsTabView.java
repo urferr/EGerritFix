@@ -758,7 +758,7 @@ public class DetailsTabView {
 					}
 					//We need to update the list manually because the "updated" timestamp on the server is not refreshed and therefore the reload does nothing
 					if (reviewerCmdResult != null) {
-						fChangeInfo.getReviewers().addAll(reviewerCmdResult.getReviewers());
+						fChangeInfo.getComputedReviewers().addAll(reviewerCmdResult.getReviewers());
 					}
 					loader.reload();
 					textWidget.setText(""); //$NON-NLS-1$
@@ -825,7 +825,7 @@ public class DetailsTabView {
 
 							try {
 								deleteReviewerCmd.call();
-								fChangeInfo.getReviewers().remove(reviewerInfo);
+								fChangeInfo.getComputedReviewers().remove(reviewerInfo);
 							} catch (EGerritException e3) {
 								EGerritCorePlugin.logError(
 										fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
@@ -960,12 +960,12 @@ public class DetailsTabView {
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__NAME),
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL) });
 		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties));
-		tableReviewersViewer
-				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__REVIEWERS).observe(fChangeInfo));
+		tableReviewersViewer.setInput(
+				EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS).observe(fChangeInfo));
 
 		//Adjust the reviewers vote
 		final IObservableList<ReviewerInfo> observedList = EMFObservables.observeList(fChangeInfo,
-				ModelPackage.Literals.CHANGE_INFO__REVIEWERS);
+				ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS);
 
 		ComputedValue<String> cv = new ComputedValue<String>() {
 			@Override

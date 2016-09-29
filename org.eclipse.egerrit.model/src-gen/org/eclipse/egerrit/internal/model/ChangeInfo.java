@@ -56,7 +56,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getIncludedIn <em>Included In</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getHashtags <em>Hashtags</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getRelatedChanges <em>Related Changes</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getReviewers <em>Reviewers</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getComputedReviewers <em>Computed Reviewers</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getSameTopic <em>Same Topic</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getConflictsWith <em>Conflicts With</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ChangeInfo#getMergeableInfo <em>Mergeable Info</em>}</li>
@@ -806,20 +806,20 @@ public interface ChangeInfo extends EObject {
 	void setRelatedChanges(RelatedChangesInfo value);
 
 	/**
-	 * Returns the value of the '<em><b>Reviewers</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Computed Reviewers</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.egerrit.internal.model.ReviewerInfo}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Reviewers</em>' containment reference list isn't clear,
+	 * If the meaning of the '<em>Computed Reviewers</em>' containment reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Reviewers</em>' containment reference list.
-	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_Reviewers()
+	 * @return the value of the '<em>Computed Reviewers</em>' containment reference list.
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getChangeInfo_ComputedReviewers()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<ReviewerInfo> getReviewers();
+	EList<ReviewerInfo> getComputedReviewers();
 
 	/**
 	 * Returns the value of the '<em><b>Same Topic</b></em>' reference list.

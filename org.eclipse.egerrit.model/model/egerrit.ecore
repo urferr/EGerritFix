@@ -235,7 +235,7 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="relatedChanges" eType="#//RelatedChangesInfo"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="reviewers" upperBound="-1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="computedReviewers" upperBound="-1"
         eType="#//ReviewerInfo" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sameTopic" upperBound="-1"
         eType="#//ChangeInfo"/>

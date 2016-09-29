@@ -99,6 +99,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 			addAbandonablePropertyDescriptor(object);
 			addRestoreablePropertyDescriptor(object);
 			addDeleteablePropertyDescriptor(object);
+			addLoadingLevelPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -579,6 +580,22 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 	}
 
 	/**
+	 * This adds a property descriptor for the Loading Level feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addLoadingLevelPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ChangeInfo_loadingLevel_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ChangeInfo_loadingLevel_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ChangeInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.CHANGE_INFO__LOADING_LEVEL, true, false, false,
+						ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE, null, null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -600,7 +617,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__PROBLEMS);
 			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN);
 			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES);
-			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__REVIEWERS);
+			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS);
 			childrenFeatures.add(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO);
 		}
 		return childrenFeatures;
@@ -680,6 +697,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.CHANGE_INFO__ABANDONABLE:
 		case ModelPackage.CHANGE_INFO__RESTOREABLE:
 		case ModelPackage.CHANGE_INFO__DELETEABLE:
+		case ModelPackage.CHANGE_INFO__LOADING_LEVEL:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.CHANGE_INFO__OWNER:
@@ -692,7 +710,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.CHANGE_INFO__PROBLEMS:
 		case ModelPackage.CHANGE_INFO__INCLUDED_IN:
 		case ModelPackage.CHANGE_INFO__RELATED_CHANGES:
-		case ModelPackage.CHANGE_INFO__REVIEWERS:
+		case ModelPackage.CHANGE_INFO__COMPUTED_REVIEWERS:
 		case ModelPackage.CHANGE_INFO__MERGEABLE_INFO:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 			return;
@@ -747,7 +765,7 @@ public class ChangeInfoItemProvider extends ItemProviderAdapter
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
 				ModelFactory.eINSTANCE.createRelatedChangesInfo()));
 
-		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__REVIEWERS,
+		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS,
 				ModelFactory.eINSTANCE.createReviewerInfo()));
 
 		newChildDescriptors.add(createChildParameter(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO,

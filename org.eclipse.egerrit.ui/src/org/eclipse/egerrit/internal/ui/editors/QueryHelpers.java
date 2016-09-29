@@ -448,9 +448,9 @@ public class QueryHelpers {
 			ListReviewersCommand command = gerritClient.getReviewers(element.getId());
 			ReviewerInfo[] reviewers = command.call();
 			synchronized (element) {
-				element.getReviewers().clear();
+				element.getComputedReviewers().clear();
 				for (ReviewerInfo reviewerInfo : reviewers) {
-					element.getReviewers().add(reviewerInfo);
+					element.getComputedReviewers().add(reviewerInfo);
 				}
 			}
 		} catch (EGerritException e) {
