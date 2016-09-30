@@ -218,10 +218,8 @@ public class DataConverter {
 					while (commentsIter.hasNext()) {
 						//List the comments
 						CommentInfo comment = commentsIter.next();
-						if (comment.getUpdated().equals(chmsgInfo.getDate())) {
-							sb.append(Messages.DataConverter_4);
-							sb.append(comment.getMessage());
-						}
+						sb.append(Messages.DataConverter_4);
+						sb.append(comment.getMessage());
 					}
 					sb.append("\n"); //$NON-NLS-1$
 				}
