@@ -290,19 +290,19 @@
            <menu
                 id="org.eclipse.egerrit.dashboard.ui.downloadMenu"
                 label="%command.name.download">
-            <command
-                commandId="org.eclipse.egerrit.dashboard.ui.checkout"
-                id="org.eclipse.egerrit.dashboard.ui.checkout"
-                label="%command.name.checkout"
-                style="push"
-                tooltip="%command.tooltipCheckout">
-             </command>
              <command
                 commandId="org.eclipse.egerrit.dashboard.ui.cherryPick"
                 id="org.eclipse.egerrit.dashboard.ui.cherryPick"
                 label="%command.name.cherryPick"
                 style="push"
                 tooltip="%command.tooltipCherryPick">
+             </command>
+            <command
+                commandId="org.eclipse.egerrit.dashboard.ui.checkout"
+                id="org.eclipse.egerrit.dashboard.ui.checkout"
+                label="%command.name.checkout"
+                style="push"
+                tooltip="%command.tooltipCheckout">
              </command>
           </menu>
        </menuContribution>
