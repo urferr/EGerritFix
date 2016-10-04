@@ -30,10 +30,13 @@ import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.compare.CommentPrettyPrinter;
+import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.editors.ReplyDialog;
+import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -43,6 +46,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -310,4 +316,37 @@ public class UIUtils {
 		}
 		return;
 	}
+
+	/*********************************************/
+
+	/**
+	 * Open editor with the newest changeInfo
+	 *
+	 * @param changeInfo
+	 * @param gerritClient
+	 */
+	public static void openAnotherEditor(ChangeInfo changeInfo, GerritClient fGerritClient) {
+		IWorkbench workbench = EGerritUIPlugin.getDefault().getWorkbench();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		IWorkbenchPage page = null;
+		if (window != null) {
+			page = workbench.getActiveWorkbenchWindow().getActivePage();
+		}
+
+		if (page != null) {
+			try {
+				IEditorInput input = new ChangeDetailEditorInput(fGerritClient, changeInfo);
+				IEditorPart reusedEditor = page.findEditor(input);
+				page.openEditor(input, ChangeDetailEditor.EDITOR_ID);
+				if (reusedEditor instanceof ChangeDetailEditor) {
+					((ChangeDetailEditor) reusedEditor).refreshStatus();
+				}
+			} catch (PartInitException e) {
+				EGerritCorePlugin.logError(fGerritClient != null
+						? fGerritClient.getRepository().formatGerritVersion() + e.getMessage()
+						: e.getMessage());
+			}
+		}
+	}
+
 }

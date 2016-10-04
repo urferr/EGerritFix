@@ -39,7 +39,6 @@ import org.eclipse.egerrit.internal.process.CherryPickProcess;
 import org.eclipse.egerrit.internal.process.RebaseProcess;
 import org.eclipse.egerrit.internal.process.ReplyProcess;
 import org.eclipse.egerrit.internal.process.SubmitProcess;
-import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.egerrit.internal.ui.table.provider.DeleteDraftRevisionProvider;
 import org.eclipse.egerrit.internal.ui.table.provider.PatchSetHandlerProvider;
@@ -85,7 +84,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
@@ -399,20 +397,20 @@ public class ChangeDetailEditor extends EditorPart {
 					final InputDialog replyDialog = new InputDialog(revertButton.getShell(),
 							Messages.Revert_dialog_title, Messages.Revert_dialog_message, revertMsg,
 							revertErrorMessage == null ? null : new IInputValidator() {
-								//Because InputDialog does not allow us to set the text w/o disabling the ok button,
-								//we need to trick the dialog in displaying what we want with this counter.
-								private int count = 0;
+						//Because InputDialog does not allow us to set the text w/o disabling the ok button,
+						//we need to trick the dialog in displaying what we want with this counter.
+						private int count = 0;
 
-								@Override
-								public String isValid(String newText) {
-									if (count == 0) {
-										count++;
-										return errorMsg;
-									} else {
-										return null;
-									}
-								}
-							}) {
+						@Override
+						public String isValid(String newText) {
+							if (count == 0) {
+								count++;
+								return errorMsg;
+							} else {
+								return null;
+							}
+						}
+					}) {
 						@Override
 						protected int getInputTextStyle() {
 							return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
@@ -449,7 +447,7 @@ public class ChangeDetailEditor extends EditorPart {
 						return;
 					}
 				}
-				openAnotherEditor(revertResult);
+				UIUtils.openAnotherEditor(revertResult, fGerritClient);
 			}
 		});
 
@@ -854,41 +852,6 @@ public class ChangeDetailEditor extends EditorPart {
 	public boolean isSaveAsAllowed() {
 		// ignore
 		return false;
-	}
-
-	/*********************************************/
-/*                                           */
-/*       Buttons Listener                    */
-/*                                           */
-	/*********************************************/
-
-	/**
-	 * Open another editor after a revert action with the newest changeInfo
-	 *
-	 * @param changeInfo
-	 */
-	private void openAnotherEditor(ChangeInfo changeInfo) {
-		IWorkbench workbench = EGerritUIPlugin.getDefault().getWorkbench();
-		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		IWorkbenchPage page = null;
-		if (window != null) {
-			page = workbench.getActiveWorkbenchWindow().getActivePage();
-		}
-
-		if (page != null) {
-			try {
-				IEditorInput input = new ChangeDetailEditorInput(fGerritClient, changeInfo);
-				IEditorPart reusedEditor = page.findEditor(input);
-				page.openEditor(input, ChangeDetailEditor.EDITOR_ID);
-				if (reusedEditor instanceof ChangeDetailEditor) {
-					((ChangeDetailEditor) reusedEditor).refreshStatus();
-				}
-			} catch (PartInitException e) {
-				EGerritCorePlugin.logError(fGerritClient != null
-						? fGerritClient.getRepository().formatGerritVersion() + e.getMessage()
-						: e.getMessage());
-			}
-		}
 	}
 
 	@Override
