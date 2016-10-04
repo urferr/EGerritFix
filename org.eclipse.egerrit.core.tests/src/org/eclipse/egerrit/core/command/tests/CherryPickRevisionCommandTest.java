@@ -37,7 +37,8 @@ public class CherryPickRevisionCommandTest extends CommandTestWithSimpleReview {
 		CherryPickRevisionCommand command = fGerrit.cherryPickRevision(change_id, commit_id);
 		CherryPickInput cherryPickInput = new CherryPickInput();
 		cherryPickInput.setMessage("Implementing Feature X");
-		cherryPickInput.setDestination("HEAD");
+		// when the cherrypick works
+		cherryPickInput.setDestination("master");
 		command.setCommandInput(cherryPickInput);
 		try {
 			ChangeInfo result = null;
@@ -47,5 +48,16 @@ public class CherryPickRevisionCommandTest extends CommandTestWithSimpleReview {
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
+		// when the cherrypick cannot be performed because of an error
+		cherryPickInput.setDestination("HEAD");
+		command.setCommandInput(cherryPickInput);
+		try {
+			ChangeInfo result = null;
+			result = command.call();
+			assertEquals(command.getFailureReason(), "Branch HEAD does not exist.\n");
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		}
+
 	}
 }
