@@ -241,7 +241,12 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	public void mouseDown(MouseEvent event) {
 		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension2 && fActiveHyperlinks != null) {
 
+			StyledText source = (StyledText) event.getSource();
+
+			((HyperLinkPresenter) fHyperlinkPresenter).setOffset(source.getCaretOffset());
+
 			((IHyperlinkPresenterExtension2) fHyperlinkPresenter).showHyperlinks(fActiveHyperlinks, fActive);
+
 		}
 		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension) {
 			if (!((IHyperlinkPresenterExtension) fHyperlinkPresenter).canHideHyperlinks()) {
@@ -396,12 +401,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 		if (fActiveHyperlinks.length == 1 && takesFocusWhenVisible) {
 			fActiveHyperlinks[0].open();
 		} else {
-			if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension2) {
-				((IHyperlinkPresenterExtension2) fHyperlinkPresenter).showHyperlinks(fActiveHyperlinks,
-						takesFocusWhenVisible);
-			} else {
-				fHyperlinkPresenter.showHyperlinks(fActiveHyperlinks);
-			}
+			fHyperlinkPresenter.showHyperlinks(fActiveHyperlinks);
 		}
 		return true;
 

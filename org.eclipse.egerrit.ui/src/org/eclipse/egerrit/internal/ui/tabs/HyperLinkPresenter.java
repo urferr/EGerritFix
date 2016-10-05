@@ -113,6 +113,8 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	/** The optional preference store. May be <code>null</code>. */
 	private IPreferenceStore fPreferenceStore;
 
+	private int fClickedOffset;
+
 	/**
 	 * Creates a new default hyperlink presenter which uses {@link #HYPERLINK_COLOR} to read the color from the given
 	 * preference store.
@@ -166,9 +168,14 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 */
 	public void showHyperlinks(IHyperlink[] hyperlinks) {
 		Assert.isLegal(hyperlinks != null && hyperlinks.length >= 1);
-		for (IHyperlink hyperlink : hyperlinks) {
-			highlightRegion(hyperlink.getHyperlinkRegion());
+		if (hyperlinks.length > 1) {
+			for (IHyperlink hyperlink : hyperlinks) {
+				if (isWithinRegion(hyperlink.getHyperlinkRegion()) == true && fClickedOffset != -1) {
+					hyperlink.open();
+				}
+			}
 		}
+		setOffset(-1);
 	}
 
 	/**
@@ -447,6 +454,23 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 		for (IHyperlink hyperlink : activeHyperlinks) {
 			highlightRegion(hyperlink.getHyperlinkRegion());
 		}
+	}
+
+	private boolean isWithinRegion(IRegion region) {
+
+		if (fClickedOffset != -1 && fClickedOffset >= region.getOffset()
+				&& fClickedOffset <= (region.getLength() + region.getOffset())) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * save the location where the user clicked in the text area
+	 */
+	public void setOffset(int offset) {
+		fClickedOffset = offset;
 	}
 
 }
