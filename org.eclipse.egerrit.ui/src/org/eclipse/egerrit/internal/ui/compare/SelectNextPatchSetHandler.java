@@ -57,10 +57,8 @@ public class SelectNextPatchSetHandler extends AbstractHandler {
 					RevisionInfo element = iter.next();
 					patchNumber.put(new Integer(element.get_number()).toString(), element.getId());
 				}
-				patchNumber.put("WORKSPACE", "WORKSPACE"); //$NON-NLS-1$ //$NON-NLS-2$
-				if (isLeftSide) {
-					patchNumber.put("BASE", "BASE"); //$NON-NLS-1$ //$NON-NLS-2$
-				}
+				patchNumber.put(GerritMultipleInput.WORKSPACE, GerritMultipleInput.WORKSPACE);
+				patchNumber.put(GerritMultipleInput.BASE, GerritMultipleInput.BASE);
 
 				Iterator<Entry<String, String>> itr = patchNumber.entrySet().iterator();
 				Iterator<Entry<String, String>> first = patchNumber.entrySet().iterator();

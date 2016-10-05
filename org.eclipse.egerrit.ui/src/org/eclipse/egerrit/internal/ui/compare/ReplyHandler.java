@@ -48,7 +48,7 @@ public class ReplyHandler extends AbstractHandler {
 			} catch (CoreException e) {
 				return IStatus.ERROR;
 			}
-			if (input.getRightSide().equals("WORKSPACE")) {
+			if (input.getRightSide().equals(GerritMultipleInput.WORKSPACE)) {
 				//if the right side is the workspace file, the revision is null
 				UIUtils.displayInformation(null, Messages.ReplyHandlerTitle, Messages.ReplyHandlerMessage);
 			} else {

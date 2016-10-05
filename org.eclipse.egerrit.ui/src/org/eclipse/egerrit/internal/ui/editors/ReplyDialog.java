@@ -24,6 +24,7 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.common.util.EList;
@@ -257,7 +258,8 @@ public class ReplyDialog extends InputDialog {
 					public void widgetSelected(SelectionEvent e) {
 						FileInfo fileInfo = fRevisionInfo.getFiles().get(e.text);
 						if (fileInfo != null) {
-							UIUtils.open(fGerritClient, fileInfo, fRevisionInfo.getChangeInfo(), "BASE"); //$NON-NLS-1$
+							UIUtils.open(fGerritClient, fileInfo, fRevisionInfo.getChangeInfo(),
+									GerritMultipleInput.BASE);
 							cancelPressed();
 						}
 					}
