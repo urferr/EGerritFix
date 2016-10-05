@@ -196,12 +196,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			//Compute the diffs
 			prepareInput(new NullProgressMonitor());
 			upperSection.setInput(root);
-			if (left != null) {
-				upperSection.setLeftLabel(GerritCompareHelper.resolveShortName(changeInfo, left));
-			}
-			if (right != null) {
-				upperSection.setRightLabel(GerritCompareHelper.resolveShortName(changeInfo, right));
-			}
 		} catch (InvocationTargetException | InterruptedException e) {
 			logger.error("Problem while switching input to " + left + " " + right, e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
