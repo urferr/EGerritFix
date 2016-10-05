@@ -16,11 +16,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
+import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.internal.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.CherryPickInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
+import org.osgi.framework.Version;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.internal.core.command.CherryPickRevisionCommand}
@@ -54,7 +56,13 @@ public class CherryPickRevisionCommandTest extends CommandTestWithSimpleReview {
 		try {
 			ChangeInfo result = null;
 			result = command.call();
-			assertEquals(command.getFailureReason(), "Branch HEAD does not exist.\n");
+			//Before Gerrit 2.12, the return value was null
+			Version version = new Version(Common.GERRIT_VERSION);
+			if (version.getMajor() == 2 && version.getMinor() < 12) {
+				assertEquals(command.getFailureReason(), null);
+			} else {
+				assertEquals(command.getFailureReason(), "Branch HEAD does not exist.\n");
+			}
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
