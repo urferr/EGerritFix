@@ -23,6 +23,7 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -113,7 +114,7 @@ public class HyperLinkDetector implements IHyperlinkDetector {
 		 * Open a compare editor against the BASE version of the file
 		 */
 		public void open() {
-			UIUtils.open(gerritClient, fileInfo, getChangeInfo(), "BASE"); //$NON-NLS-1$
+			UIUtils.open(gerritClient, fileInfo, getChangeInfo(), GerritMultipleInput.BASE);
 		}
 
 		private ChangeInfo getChangeInfo() {

@@ -15,6 +15,7 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
@@ -37,9 +38,8 @@ public class OpenCompareProcess {
 		}
 		compareEditor = new OpenCompareEditor(gerritClient, changeInfo);
 
-		String left = "BASE"; //$NON-NLS-1$
 		String right = selectedRevision.getId();
-		compareEditor.compareFiles(left, right, selectedFile);
+		compareEditor.compareFiles(GerritMultipleInput.BASE, right, selectedFile);
 	}
 
 }

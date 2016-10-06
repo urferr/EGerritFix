@@ -263,8 +263,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
 				fillMenuItemForChangeInfo(mgr, true);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", true)); //$NON-NLS-1$
-				mgr.add(new SwitchPatchAction(compareInput, "BASE", true)); //$NON-NLS-1$
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.WORKSPACE, true));
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.BASE, true));
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
@@ -293,7 +293,8 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
 				fillMenuItemForChangeInfo(mgr, false);
-				mgr.add(new SwitchPatchAction(compareInput, "WORKSPACE", false)); //$NON-NLS-1$
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.WORKSPACE, false));
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.BASE, false));
 				mgr.createContextMenu(composite).setVisible(true);
 			}
 
