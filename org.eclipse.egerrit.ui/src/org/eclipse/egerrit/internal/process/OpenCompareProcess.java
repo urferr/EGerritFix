@@ -11,12 +11,15 @@
 
 package org.eclipse.egerrit.internal.process;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
+import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.swt.widgets.Shell;
@@ -34,12 +37,13 @@ public class OpenCompareProcess {
 		OpenCompareEditor compareEditor;
 		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
 			UIUtils.showDialogTip(EDITOR_KEY, shell, Messages.EGerriTip, Messages.FileTabView_EGerriTipValue);
-
 		}
+		//Make sure all the revisions are loaded
+		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo));
+
 		compareEditor = new OpenCompareEditor(gerritClient, changeInfo);
 
 		String right = selectedRevision.getId();
 		compareEditor.compareFiles(GerritMultipleInput.BASE, right, selectedFile);
 	}
-
 }
