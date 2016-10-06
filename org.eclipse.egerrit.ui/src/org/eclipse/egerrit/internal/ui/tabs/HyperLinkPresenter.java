@@ -168,6 +168,9 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 */
 	public void showHyperlinks(IHyperlink[] hyperlinks) {
 		Assert.isLegal(hyperlinks != null && hyperlinks.length >= 1);
+		for (IHyperlink hyperlink : hyperlinks) {
+			highlightRegion(hyperlink.getHyperlinkRegion());
+		}
 		if (hyperlinks.length > 1) {
 			for (IHyperlink hyperlink : hyperlinks) {
 				if (isWithinRegion(hyperlink.getHyperlinkRegion()) == true && fClickedOffset != -1) {
