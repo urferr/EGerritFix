@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareViewerPane;
@@ -320,6 +321,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	private void loadRevision(String revision) {
 		//Load the files synchronously so we can start filling the UI and then load the rest in the background
 		QueryHelpers.loadFiles(gerritClient, changeInfo.getRevisions().get(revision));
+
+		//Load the revision details to be able to completely fill the upper section of the compare editor
+		CompletableFuture.runAsync(
+				() -> QueryHelpers.loadRevisionDetails(gerritClient, changeInfo.getRevisions().get(revision)));
 	}
 
 	private GerritDiffNode createWorkspaceRevisionNode(IProgressMonitor monitor, FileInfo file) {
