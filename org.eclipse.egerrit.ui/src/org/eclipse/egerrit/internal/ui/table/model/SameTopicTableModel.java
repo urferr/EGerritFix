@@ -32,7 +32,7 @@ import org.eclipse.swt.SWT;
 
 public enum SameTopicTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	ID(Messages.SameTopicTableDefinition_id, 80, false, true, SWT.LEFT), //
+	ID(Messages.SameTopicTableDefinition_id, 65, false, true, SWT.LEFT), //
 	HEADLINE(Messages.SameTopicTableDefinition_headline, 200, true, true, SWT.LEFT);
 
 	private final String fHeader;

@@ -1097,7 +1097,7 @@ public class DetailsTabView {
 		IObservableList observedList = EMFObservables.observeList(fChangeInfo,
 				ModelPackage.Literals.CHANGE_INFO__SAME_TOPIC);
 		ViewerSupport.bind(tableSameTopicViewer, observedList,
-				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__CHANGE_ID),
+				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER),
 						EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT) });
 	}
 
