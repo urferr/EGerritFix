@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 9/26/16 11:35 AM
+Save-Time: 10/7/16 4:14 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -305,7 +305,8 @@ proc "assert-marker-count-is" [val is] {
 }
 
 proc "assert-sameTopic-table" [val contains] [val in -input] {
-	$in | get-group "Same Topic" | get-table | get-item [$firstReview | get lastChangeId]
+	$in | get-group "Same Topic" | get-table | get-cell -row 1 -column 0 | get-property "columns[0]" | equals $contains | verify-true
+	
 }
 
 proc "switch-user" [val to] {

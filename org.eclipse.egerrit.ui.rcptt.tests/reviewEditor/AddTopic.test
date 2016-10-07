@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _oOXtAGY9EeacLsYYjZ3eXQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/19/16 10:49 PM
+Save-Time: 10/7/16 4:12 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -26,22 +26,22 @@ proc "add-demo-topic" [val editor -input] {
 }
 
 let [val firstReview [amend-review -review [create-review -server $serverURL]]] {
-	//Create a review and set a topic to it
+	// Create a review and set a topic to it
 	runQueryAndOpenEditor $firstReview
 	get-editor | add-demo-topic
-	get-editor | close
+	let [val number [get-editor | get-group "" | get-editbox -after [get-label "ID:"] | get-text]] {
+		get-editor | close
 
-	//Create a second review and set a topic to it
-	let [val secondReview [amend-review -review [create-review -server $serverURL]]] {
-		runQueryAndOpenEditor $secondReview
-		get-editor | add-demo-topic
-		
-		//refresh the editor (though we should not)
-		get-editor | get-button "Refresh" | click
-		
-		//Finally do the check
-		get-editor | assert-sameTopic-table -contains [$firstReview | get lastChangeId]
-	}		
+		// Create a second review and set a topic to it
+		let [val secondReview [amend-review -review [create-review -server $serverURL]]] {
+			runQueryAndOpenEditor $secondReview
+			get-editor | add-demo-topic
+
+			// refresh the editor (though we should not)
+			get-editor | get-button Refresh | click
+			// Finally do the check
+			get-editor | assert-sameTopic-table $number
+		}
+	}
 }
-
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
