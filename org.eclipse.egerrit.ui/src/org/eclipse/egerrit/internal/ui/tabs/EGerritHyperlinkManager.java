@@ -194,6 +194,10 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 				}
 
 				boolean canShowMultipleHyperlinks = fHyperlinkPresenter.canShowMultipleHyperlinks();
+				if (fTextViewer.getDocument() == null) {
+					IDocument document = new Document(fTextViewer.getTextWidget().getText());
+					fTextViewer.setDocument(document);
+				}
 				IHyperlink[] hyperlinks = detector.detectHyperlinks(fTextViewer, region, canShowMultipleHyperlinks);
 				if (hyperlinks == null) {
 					continue;
