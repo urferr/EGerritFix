@@ -147,7 +147,11 @@
                description="%previousCommentDescription"
                id="org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler"
                name="%previousComment">
-         </command>          
+         </command>
+         <command
+            id="org.eclipse.egerrit.internal.ui.OpenFileSelection"
+            name="%openReviewFiles">
+         </command>
 </extension>
 <extension
        point="org.eclipse.ui.handlers">
@@ -190,6 +194,10 @@
          <handler
                class="org.eclipse.egerrit.internal.ui.compare.NextPreviousCommentAnnotationHandler"
                commandId="org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler">
+         </handler>
+         <handler
+            class="org.eclipse.egerrit.internal.ui.editors.OpenFileSelectionHandler"
+            commandId="org.eclipse.egerrit.internal.ui.OpenFileSelection">
          </handler>       
 </extension>
 <extension
@@ -248,6 +256,12 @@
               schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
               sequence="M1+U">
         </key>
+       <key
+            commandId="org.eclipse.egerrit.internal.ui.OpenFileSelection"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+5">
+      </key>
 </extension>
 
 

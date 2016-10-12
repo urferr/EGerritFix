@@ -12,23 +12,16 @@
 package org.eclipse.egerrit.internal.ui.table.provider;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.model.FileInfo;
-import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
-import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
-import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -36,9 +29,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.ui.PlatformUI;
 
 public class DynamicMenuBuilder {
 	private Menu commonMenu;
@@ -88,44 +79,8 @@ public class DynamicMenuBuilder {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-
-					ISelection selection = viewer.getSelection();
-					if (selection instanceof IStructuredSelection) {
-
-						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-						Iterator itr = structuredSelection.iterator();
-						String failedFiles = "";
-						while (itr.hasNext()) {
-							Object element = itr.next();
-							if (element == null) {
-								return;
-							}
-							FileInfo fileInfo;
-							if (viewer instanceof TableViewer) {
-								fileInfo = ((StringToFileInfoImpl) element).getValue();
-							} else {
-								fileInfo = ((GerritDiffNode) element).getFileInfo();
-							}
-							String status = fileInfo.getStatus();
-							if (status.compareTo("D") != 0) { //$NON-NLS-1$
-								if (viewer instanceof TableViewer) {
-									if (UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), client,
-											fileInfo.getRevision(), 0) == false) {
-										failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
-									}
-								} else {
-									if (UIUtils.openSingleFile(((StringToFileInfoImpl) fileInfo.eContainer()).getKey(),
-											client, fileInfo.getRevision(), 0) == false) {
-										failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
-									}
-								}
-							}
-						}
-						if (!failedFiles.isEmpty()) {
-							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-							UIUtils.displayInformation(shell, Messages.UIFilesTable_2, failedFiles);
-						}
-					}
+					HandleFileSelection handleSelection = new HandleFileSelection(client, viewer);
+					handleSelection.showFileSelection();
 				}
 
 				@Override
@@ -168,6 +123,7 @@ public class DynamicMenuBuilder {
 	 * Create the menu item to allow selection on which column should we make visible
 	 *
 	 * @param menu
+	 * @param viewer
 	 */
 	private void addVisibleColumnSelection(Menu menu, ColumnViewer viewer) {
 		new MenuItem(menu, SWT.SEPARATOR);

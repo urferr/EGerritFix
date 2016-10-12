@@ -410,4 +410,7 @@ public class ActiveWorkspaceRevision {
 		}
 	}
 
+	public GerritClient getGerritClient() {
+		return fGerritClient;
+	}
 }

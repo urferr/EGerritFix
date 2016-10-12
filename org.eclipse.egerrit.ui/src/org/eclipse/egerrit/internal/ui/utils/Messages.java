@@ -114,6 +114,10 @@ public class Messages extends NLS {
 
 	public static String DataConverter_5;
 
+	public static String FileDialog_title;
+
+	public static String FileDialog_PatchSet;
+
 	public static String FileInfoCompareCellLabelProvider_0;
 
 	public static String FileInfoCompareCellLabelProvider_1;
@@ -159,6 +163,10 @@ public class Messages extends NLS {
 	public static String MessageTabView_8;
 
 	public static String MessageTabView_9;
+
+	public static String OpenFileProblem;
+
+	public static String OpenFileProblemMessage;
 
 	public static String QuickFixDeleteDraftComment_0;
 
@@ -435,6 +443,7 @@ public class Messages extends NLS {
 	public static String SubmitHandler_specificMessage;
 
 	public static String RebaseProcess_changeIsAlreadyUpToDate;
+
 	public static String UIHistoryTable_0;
 
 	public static String UIHistoryTable_1;

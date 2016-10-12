@@ -19,6 +19,7 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.process.OpenCompareProcess;
 import org.eclipse.egerrit.internal.ui.editors.ModelLoader;
@@ -28,6 +29,9 @@ import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileTableLabelProvider;
+import org.eclipse.egerrit.internal.ui.table.provider.DeletedFilesFilter;
+import org.eclipse.egerrit.internal.ui.table.provider.HandleFileSelection;
+import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -55,16 +59,15 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 public class UIFilesTable {
 
+	private boolean popupEnabled = true;
+
+	private boolean filterDeletedFiles = false;
+
 	public static final String FILES_TABLE = "filesTable"; //$NON-NLS-1$
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
-	private final String EDITOR_KEY = "fileEditortip"; //$NON-NLS-1$
-
-	// ------------------------------------------------------------------------
-	// Variables
-	// ------------------------------------------------------------------------
-	private TableViewer fViewer;
+	private TableViewer fViewer = null;
 
 	private IDoubleClickListener fdoubleClickListener;
 
@@ -76,6 +79,10 @@ public class UIFilesTable {
 
 	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
+	private DeletedFilesFilter fileDeleteFilter = new DeletedFilesFilter();
+
+	private RevisionInfo fRevisionInfo;
+
 	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo) {
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
@@ -83,9 +90,23 @@ public class UIFilesTable {
 		loader.loadCurrentRevision();
 	}
 
+	public UIFilesTable(GerritClient gerritClient, RevisionInfo revisionInfo) {
+		this.fGerritClient = gerritClient;
+		this.fRevisionInfo = revisionInfo;
+	}
+
+	/**
+	 * Create the files table viewer
+	 *
+	 * @param aParent
+	 *            Composite
+	 * @param popup
+	 *            boolean weather the table is within a pop-up dialog or not
+	 * @return TableViewer
+	 */
 	public TableViewer createTableViewerSection(Composite aParent) {
 		// Create the table viewer to maintain the list of review files
-		fViewer = new TableViewer(aParent, TABLE_STYLE | SWT.MULTI);
+		fViewer = new TableViewer(aParent, TABLE_STYLE | SWT.MULTI | SWT.BORDER);
 		buildAndLayoutTable();
 		adjustTableData();//Set the properties for the files table
 
@@ -93,7 +114,27 @@ public class UIFilesTable {
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(2));
 		return fViewer;
+	}
 
+	/**
+	 * Allow setting for a dialog table
+	 */
+	public void enablePopup(boolean value) {
+		popupEnabled = value;
+	}
+
+	/**
+	 * Add decision weather to set the delete filter or not on the files table
+	 */
+	public void enableDeletedFilesFilter(boolean value) {
+		filterDeletedFiles = value;
+		if (fViewer != null) {
+			if (filterDeletedFiles) {
+				fViewer.addFilter(fileDeleteFilter);
+			} else {
+				fViewer.removeFilter(fileDeleteFilter);
+			}
+		}
 	}
 
 	/**
@@ -106,11 +147,12 @@ public class UIFilesTable {
 		final Table table = fViewer.getTable();
 
 		//Get the review table definition
-		final ITableModel[] tableInfo = FilesTableModel.values();
+		ITableModel[] tableInfo = FilesTableModel.values();
 		int size = tableInfo.length;
 		for (int index = 0; index < size; index++) {
 			createTableViewerColumn(tableInfo[index]);
 		}
+
 		GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gribData.minimumWidth = tableInfo[0].getWidth();
 		fViewer.getTable().setLayoutData(gribData);
@@ -120,8 +162,14 @@ public class UIFilesTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setData(FILES_TABLE);
+		if (popupEnabled) {
+			//Have the pull-down menu except for the files dialog
+			dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
+		}
 
-		dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
+		if (filterDeletedFiles) {
+			fViewer.addFilter(fileDeleteFilter);
+		}
 	}
 
 	/**
@@ -150,26 +198,40 @@ public class UIFilesTable {
 
 	private void adjustTableData() {
 		fViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		fdoubleClickListener = new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				Object element = sel.getFirstElement();
-				if (element instanceof StringToFileInfoImpl) {
-					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
-					OpenCompareProcess openCompare = new OpenCompareProcess();
-					openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
-							selectedFile, fChangeInfo.getUserSelectedRevision());
+		if (popupEnabled) {
+			fdoubleClickListener = new IDoubleClickListener() {
+				public void doubleClick(DoubleClickEvent event) {
+					if (!popupEnabled) {
+						HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
+						handleSelection.showFileSelection();
+					} else {
+						IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+						Object element = sel.getFirstElement();
+						if (element instanceof StringToFileInfoImpl) {
+							FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
+							OpenCompareProcess openCompare = new OpenCompareProcess();
+							openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
+									selectedFile, fChangeInfo.getUserSelectedRevision());
+						}
+					}
 				}
-			}
-		};
+			};
 
-		fViewer.addDoubleClickListener(fdoubleClickListener);
+			fViewer.addDoubleClickListener(fdoubleClickListener);
+		}
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fViewer.getTable().addMouseListener(toggleReviewedStateListener());
 		}
 
 		//Set the binding for this section
 		filesTabDataBindings();
+	}
+
+	/**
+	 * Select the first element in the table
+	 */
+	public void setDialogSelection() {
+		fViewer.getTable().select(0);
 	}
 
 	/**
@@ -212,11 +274,6 @@ public class UIFilesTable {
 	protected void filesTabDataBindings() {
 		//Set the FilesViewer
 		if (fViewer != null) {
-			FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
-					ModelPackage.Literals.REVISION_INFO__FILES);
-
-			IObservableList revisionsChanges = EMFProperties.list(changerev).observe(fChangeInfo);
-
 			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
 					ModelPackage.Literals.FILE_INFO__REVIEWED);
 			final FeaturePath commentsCount = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,
@@ -230,12 +287,20 @@ public class UIFilesTable {
 					new IValueProperty[] { EMFProperties.value(reviewed), EMFProperties.value(commentsCount),
 							EMFProperties.value(draftCount) });
 			fViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
-			fViewer.setInput(revisionsChanges);
+
+			IObservableList revisionFiles = null;
+			if (fChangeInfo != null) {
+				FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
+						ModelPackage.Literals.REVISION_INFO__FILES);
+				revisionFiles = EMFProperties.list(changerev).observe(fChangeInfo);
+			} else {
+				revisionFiles = EMFObservables.observeList(fRevisionInfo, ModelPackage.Literals.REVISION_INFO__FILES);
+			}
+			fViewer.setInput(revisionFiles);
 		}
 	}
 
 	public void dispose() {
 		loader.dispose();
 	}
-
 }
