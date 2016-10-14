@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.internal.ui.table;
+package org.eclipse.egerrit.internal.ui.table.filter;
 
 import java.util.ArrayList;
 

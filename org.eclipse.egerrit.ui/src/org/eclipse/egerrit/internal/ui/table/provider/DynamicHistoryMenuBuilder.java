@@ -12,8 +12,8 @@
 package org.eclipse.egerrit.internal.ui.table.provider;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.ui.table.HistoryFileFilter;
-import org.eclipse.egerrit.internal.ui.table.HistoryResetFilter;
+import org.eclipse.egerrit.internal.ui.table.filter.HistoryFileFilter;
+import org.eclipse.egerrit.internal.ui.table.filter.HistoryResetFilter;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
