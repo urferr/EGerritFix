@@ -15,9 +15,6 @@ import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.egerrit.internal.dashboard.ui.preferences.Utils;
-import org.eclipse.egerrit.internal.model.ActionConstants;
-import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.process.RebaseProcess;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.osgi.util.NLS;
@@ -33,30 +30,16 @@ public class RebaseHandler extends DashboardFactoryHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// Execute the rebase if we have the information
 		if (getChangeInfo() != null && getGerritClient() != null) {
-			ActionInfo rebaseInfo = getRevisionAction(ActionConstants.REBASE.getName());
-			if (rebaseInfo != null && rebaseInfo.isEnabled()) {
-				RebaseProcess rebaseProcess = new RebaseProcess();
-				rebaseProcess.handleRebase(HandlerUtil.getActiveShell(event), getChangeInfo(), getLatestRevision(),
-						getGerritClient());
-			} else {
-				Utils.displayInformation(null, Messages.RebaseHandler_title,
-						NLS.bind(Messages.RebaseHandler_notNecessary, getChangeInfo().getSubject()));
-			}
+			RebaseProcess rebaseProcess = new RebaseProcess();
+			rebaseProcess.handleRebase(HandlerUtil.getActiveShell(event), getChangeInfo(), getLatestRevision(),
+					getGerritClient());
 		}
 		return null;
 	}
 
 	@Override
 	public void setEnabled(Object evaluationContext) {
-		super.setEnabled(evaluationContext);
-		boolean state = true;
-		ActionInfo rebaseInfo = getRevisionAction(ActionConstants.REBASE.getName());
-		if (rebaseInfo != null && rebaseInfo.isEnabled()) {
-			state = true;
-		} else {
-			state = false;
-		}
-		setBaseEnabled(state);
+		super.setEnabled(true);
 	}
 
 	@Override

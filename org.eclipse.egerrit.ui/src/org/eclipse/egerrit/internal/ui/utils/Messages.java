@@ -408,8 +408,6 @@ public class Messages extends NLS {
 
 	public static String RebaseHandler_title;
 
-	public static String RebaseHandler_notNecessary;
-
 	public static String RebaseHandler_generalMessage;
 
 	public static String RebaseHandler_specificMessage;
