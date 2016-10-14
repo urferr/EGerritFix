@@ -461,6 +461,10 @@ public class Messages extends NLS {
 	public static String UIHistoryTable_1;
 
 	public static String UIHistoryTable_reset;
+	
+	public static String UnsupportedInput_Text;
+
+	public static String UnsupportedInput_Title;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

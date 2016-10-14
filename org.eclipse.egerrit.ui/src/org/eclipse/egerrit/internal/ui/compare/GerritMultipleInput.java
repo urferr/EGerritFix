@@ -49,6 +49,7 @@ import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.AnnotationPainter;
@@ -494,6 +495,44 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return newViewer;
 	}
 
+	@Override
+	public Viewer findStructureViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
+		if (input instanceof GerritDiffNode) {
+			nodeToReveal = (GerritDiffNode) input;
+		}
+		return super.findStructureViewer(oldViewer, input, parent);
+	}
+
+	/**
+	 * This is a total hack to handle the case where the compare editor shows the detailed structural pane. What we
+	 * refer to "the detailed structural diff" is a pane of the compare editor that shows structural differences of the
+	 * file being compared. For example, when you compare a .properties file, this pane will show a list of the
+	 * properties being added or removed.<br/>
+	 * When the user selects an item in the detailed structural pane, the compare editor framework recreates a new
+	 * document from the document already loaded and redisplays this. This causes EGerrit issues because we have our own
+	 * type of document which includes additional information like the position of comments, and losing those means that
+	 * we display the comments without the syntax coloring which is confusing to the user. At this point we assume we
+	 * can't change the compare fwk, and instead we detect the situation, and warn the user this usecase is not
+	 * supported. <br/>
+	 * The workaround we chose to implement consists in detecting the incorrect situation, present a message to the user
+	 * and reselect the input to reset the editor to an appropriate mode
+	 */
+	//Counter to detect the number of calls we have to wait before showing the dialog and refresh the input.
+	//This is the best way we had to detect this problematic situation. It is 6 because our code is called 3 times per editor pane.
+	private int call = 6;
+
+	void resetInputUponSelectionOfDetailedStructuralCompareSelected() {
+		synchronized (this) {
+			call--;
+			if (call == 0) {
+				MessageDialog.openInformation(null, Messages.UnsupportedInput_Title,
+						Messages.UnsupportedInput_Text);
+				upperSection.setInput(root);
+				call = 6;
+			}
+		}
+	}
+
 	private boolean isCommentable(ITypedElement element) {
 		if (element instanceof CommentableCompareItem) {
 			return true;
@@ -561,7 +600,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
-		return new CommentAnnotationPainter(viewer, null);
+		return new CommentAnnotationPainter(viewer, null, this);
 	}
 
 	@Override

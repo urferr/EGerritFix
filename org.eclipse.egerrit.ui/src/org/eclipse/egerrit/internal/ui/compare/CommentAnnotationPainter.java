@@ -40,9 +40,12 @@ class CommentAnnotationPainter extends AnnotationPainter {
 
 	private ISourceViewer viewer;
 
-	public CommentAnnotationPainter(ISourceViewer sourceViewer, IAnnotationAccess access) {
+	private GerritMultipleInput input;
+
+	public CommentAnnotationPainter(ISourceViewer sourceViewer, IAnnotationAccess access, GerritMultipleInput input) {
 		super(sourceViewer, access);
 		viewer = sourceViewer;
+		this.input = input;
 
 		Object strategyID = new Object();
 		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();
@@ -62,6 +65,10 @@ class CommentAnnotationPainter extends AnnotationPainter {
 
 	@Override
 	public void applyTextPresentation(TextPresentation tp) {
+		if (!(viewer.getDocument() instanceof CommentableCompareItem)) {
+			Display.getDefault().asyncExec(() -> input.resetInputUponSelectionOfDetailedStructuralCompareSelected());
+			return;
+		}
 		AnnotationModel originalCommentsModel = ((CommentableCompareItem) viewer.getDocument()).getEditableComments();
 		Iterator<?> it = originalCommentsModel.getAnnotationIterator();
 		while (it.hasNext()) {
