@@ -17,7 +17,7 @@ import org.eclipse.egerrit.internal.model.impl.ChangeMessageInfoImpl;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-public class HistoryFileFilter extends ViewerFilter {
+public class AuthorKindFilter extends ViewerFilter {
 
 	private boolean fIsMachine;
 
@@ -47,7 +47,7 @@ public class HistoryFileFilter extends ViewerFilter {
 		}
 	}
 
-	public HistoryFileFilter(boolean isMachine) {
+	public AuthorKindFilter(boolean isMachine) {
 		fIsMachine = isMachine;
 	}
 

@@ -15,7 +15,7 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableSorter;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
-import org.eclipse.egerrit.internal.ui.table.provider.DynamicHistoryMenuBuilder;
+import org.eclipse.egerrit.internal.ui.table.provider.HistoryTableMenuBuilder;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -41,7 +41,7 @@ public class UIHistoryTable {
 	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
 
-	private DynamicHistoryMenuBuilder dynamicHistoryMenu = new DynamicHistoryMenuBuilder();
+	private HistoryTableMenuBuilder dynamicHistoryMenu = new HistoryTableMenuBuilder();
 
 	private GerritClient fGerritClient;
 
