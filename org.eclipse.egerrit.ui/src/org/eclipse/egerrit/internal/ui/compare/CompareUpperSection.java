@@ -50,6 +50,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -79,24 +80,30 @@ import org.slf4j.LoggerFactory;
 public class CompareUpperSection extends CompareViewerSwitchingPane {
 	private static Logger logger = LoggerFactory.getLogger(CompareUpperSection.class);
 
+	private static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$
+
 	GerritMultipleInput compareInput;
 
 	DiffTreeViewer viewer;
 
-	Label leftPatch, rightPatch;
+	private Label leftPatch, leftPatchSwapped, rightPatch, rightPatchSwapped;
 
 	private FileInfoCompareCellLabelProvider labelProvider;
 
 	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
-	public CompareUpperSection(Composite parent, int style, boolean visibility, CompareEditorInput cei) {
+	//These three widgets are used to handle the swap side button added in Oxygen.
+	//Because of limitations in the implementation of the swap side button, we have to "implement" the swapping by changing the position of widgets.
+	//To that end, we use a stacklayout and switch to the right presentation based on the state of the property.
+	private StackLayout patchesSelectorContainer;
+
+	private Composite patchesSelector;
+
+	private Composite patchesSelectorSwapped;
+
+	public CompareUpperSection(Composite parent, int style, boolean visibility, GerritMultipleInput cei) {
 		super(parent, style, visibility);
-		compareInput = (GerritMultipleInput) cei;
-		//These two values can't be set in createTopLeft() because when it gets called fCompareEditorInput is not set yet
-		leftPatch.setText(
-				GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getLeftSide()));
-		rightPatch.setText(
-				GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getRightSide()));
+		compareInput = cei;
 		createViewer(this);
 	}
 
@@ -116,6 +123,25 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		super.setInput(input);
 		viewer.setInput(input);
 		revealFile();
+		updateLabels();
+	}
+
+	private void updateLabels() {
+		if (Boolean.TRUE.equals(compareInput.getCompareConfiguration().getProperty(MIRRORED_PROPERTY))) {
+			leftPatchSwapped.setText(
+					GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getLeftSide()));
+			rightPatchSwapped.setText(
+					GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getRightSide()));
+			patchesSelectorContainer.topControl = patchesSelectorSwapped;
+		} else {
+			leftPatch.setText(
+					GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getLeftSide()));
+			rightPatch.setText(
+					GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getRightSide()));
+
+			patchesSelectorContainer.topControl = patchesSelector;
+		}
+		patchesSelectorContainer.topControl.getParent().layout();
 	}
 
 	private void revealFile() {
@@ -145,6 +171,13 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private void createViewer(Composite parent) {
 		viewer = new DiffTreeViewer(new Tree(parent, SWT.FULL_SELECTION), getCompareConfiguration()) {
+			@Override
+			protected void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
+				if (event.getProperty().equals(MIRRORED_PROPERTY)) { //Here we use the value of the constants directly which allows us to have the code build without depending on Oxygen.
+					updateLabels();
+				}
+			}
+
 			@Override
 			protected void createToolItems(ToolBarManager toolbarManager) {
 				IServiceLocator serviceLocator = PlatformUI.getWorkbench();
@@ -237,20 +270,78 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	@Override
 	//This method is responsible for creating the drop downs for where the user can select the patchset
 	protected Control createTopLeft(Composite p) {
-		final Composite composite = new Composite(p, SWT.NONE) {
+		Composite topComposite = new Composite(p, SWT.NONE) {
 			@Override
+			//Limit the height of the toolbar
 			public Point computeSize(int wHint, int hHint, boolean changed) {
 				return super.computeSize(wHint, Math.max(24, hHint), changed);
 			}
 		};
 
-		composite.setLayout(new GridLayout(5, false));
+		patchesSelectorContainer = new StackLayout();
+		topComposite.setLayout(patchesSelectorContainer);
 
-		//Setup the text and button to select the left revision
-		leftPatch = new Label(composite, SWT.LEFT | SWT.CENTER);
+		patchesSelector = new Composite(topComposite, SWT.NONE);
+		patchesSelector.setLayout(new GridLayout(5, false));
+		createLeftDropDown(patchesSelector, false);
+		Label separator = new Label(patchesSelector, SWT.CENTER);
+		separator.setText("  /  "); //$NON-NLS-1$
+		createRightDropDown(patchesSelector, false);
+
+		patchesSelectorSwapped = new Composite(topComposite, SWT.NONE);
+		patchesSelectorSwapped.setLayout(new GridLayout(5, false));
+		createRightDropDown(patchesSelectorSwapped, true);
+		Label separator2 = new Label(patchesSelectorSwapped, SWT.CENTER);
+		separator2.setText("  /  "); //$NON-NLS-1$
+		createLeftDropDown(patchesSelectorSwapped, true);
+		return topComposite;
+	}
+
+	private void createRightDropDown(final Composite composite, boolean swapped) {
+		Label label = new Label(composite, SWT.NONE);
+		if (swapped) {
+			rightPatchSwapped = label;
+		} else {
+			rightPatch = label;
+		}
+		//Setup the text and button to select the right revision
+		GridData rightPatchData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		rightPatchData.widthHint = 90;
+		label.setLayoutData(rightPatchData);
+
+		Button rightPatchSelector = new Button(composite, SWT.DROP_DOWN | SWT.ARROW | SWT.DOWN);
+		GridData gridDataRightPatchSelector = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		gridDataRightPatchSelector.heightHint = 20;
+		gridDataRightPatchSelector.widthHint = 20;
+		rightPatchSelector.setLayoutData(gridDataRightPatchSelector);
+		rightPatchSelector.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MenuManager mgr = new MenuManager();
+				fillMenuItemForChangeInfo(mgr, false);
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.WORKSPACE, false));
+				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.BASE, false));
+				mgr.createContextMenu(composite).setVisible(true);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//Nothing to do
+			}
+		});
+	}
+
+	//Setup the text and button to select the left revision
+	private void createLeftDropDown(final Composite composite, boolean swapped) {
+		Label label = new Label(composite, SWT.LEFT | SWT.CENTER);
+		if (swapped) {
+			leftPatchSwapped = label;
+		} else {
+			leftPatch = label;
+		}
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gridData.widthHint = 90;
-		leftPatch.setLayoutData(gridData);
+		label.setLayoutData(gridData);
 
 		Button leftPatchSelector = new Button(composite, SWT.ARROW | SWT.DOWN);
 		GridData gridDataLeftPathSelector = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -273,37 +364,6 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 				//Nothing to do
 			}
 		});
-
-		Label separator = new Label(composite, SWT.CENTER);
-		separator.setText("  /  "); //$NON-NLS-1$
-
-		//Setup the text and button to select the right revision
-		rightPatch = new Label(composite, SWT.NONE);
-		GridData rightPatchData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		rightPatchData.widthHint = 90;
-		rightPatch.setLayoutData(rightPatchData);
-
-		Button rightPatchSelector = new Button(composite, SWT.DROP_DOWN | SWT.ARROW | SWT.DOWN);
-		GridData gridDataRightPatchSelector = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		gridDataRightPatchSelector.heightHint = 20;
-		gridDataRightPatchSelector.widthHint = 20;
-		rightPatchSelector.setLayoutData(gridDataRightPatchSelector);
-		rightPatchSelector.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				MenuManager mgr = new MenuManager();
-				fillMenuItemForChangeInfo(mgr, false);
-				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.WORKSPACE, false));
-				mgr.add(new SwitchPatchAction(compareInput, GerritMultipleInput.BASE, false));
-				mgr.createContextMenu(composite).setVisible(true);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				//Nothing to do
-			}
-		});
-		return composite;
 	}
 
 	@Override
@@ -418,16 +478,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		return treeColumViewer;
 	}
 
-	public void setLeftLabel(String left) {
-		leftPatch.setText(left);
-	}
-
-	public void setRightLabel(String right) {
-		rightPatch.setText(right);
-	}
-
 	public DiffTreeViewer getDiffTreeViewer() {
 		return viewer;
-
 	}
 }
