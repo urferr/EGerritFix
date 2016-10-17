@@ -24,7 +24,10 @@ import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.process.OpenCompareProcess;
 import org.eclipse.egerrit.internal.ui.editors.ModelLoader;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.internal.ui.table.filter.CommentsFilter;
+import org.eclipse.egerrit.internal.ui.table.filter.CommitMsgFileFilter;
 import org.eclipse.egerrit.internal.ui.table.filter.DeletedFilesFilter;
+import org.eclipse.egerrit.internal.ui.table.filter.ReviewedFilesFilter;
 import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
@@ -42,7 +45,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -63,6 +68,12 @@ public class UIFilesTable {
 
 	private boolean filterDeletedFiles = false;
 
+	private boolean filterCommitMsgFile = false;
+
+	private boolean filterReviewedFile = false;
+
+	private boolean filterCommentedFile = false;
+
 	public static final String FILES_TABLE = "filesTable"; //$NON-NLS-1$
 
 	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -80,6 +91,16 @@ public class UIFilesTable {
 	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
 	private DeletedFilesFilter fileDeleteFilter = new DeletedFilesFilter();
+
+	private CommitMsgFileFilter commitFileFilter = new CommitMsgFileFilter();
+
+	private ReviewedFilesFilter reviewedFileFilter = new ReviewedFilesFilter();
+
+	private CommentsFilter commentedFileFilter = new CommentsFilter();
+
+	private ViewerFilter searchFilter = null;
+
+	private String searchString = ""; //$NON-NLS-1$
 
 	private RevisionInfo fRevisionInfo;
 
@@ -125,6 +146,8 @@ public class UIFilesTable {
 
 	/**
 	 * Add decision weather to set the delete filter or not on the files table
+	 *
+	 * @param value
 	 */
 	public void enableDeletedFilesFilter(boolean value) {
 		filterDeletedFiles = value;
@@ -135,6 +158,99 @@ public class UIFilesTable {
 				fViewer.removeFilter(fileDeleteFilter);
 			}
 		}
+	}
+
+	/**
+	 * Add decision weather to set the COMMIT_MSG filter or not on the files table
+	 *
+	 * @param value
+	 */
+	public void enableCommitMsgFilter(boolean value) {
+		filterCommitMsgFile = value;
+		if (fViewer != null) {
+			if (filterCommitMsgFile) {
+				fViewer.addFilter(commitFileFilter);
+			} else {
+				fViewer.removeFilter(commitFileFilter);
+			}
+		}
+	}
+
+	/**
+	 * Add decision weather to set the Reviewed file filter or not on the files table
+	 *
+	 * @param value
+	 */
+	public void enableReviewedFilesFilter(boolean value) {
+		filterReviewedFile = value;
+		if (fViewer != null) {
+			if (filterReviewedFile) {
+				fViewer.addFilter(reviewedFileFilter);
+			} else {
+				fViewer.removeFilter(reviewedFileFilter);
+			}
+		}
+	}
+
+	/**
+	 * Add decision weather to set the commented file filter or not on the files table
+	 *
+	 * @param value
+	 */
+	public void enableCommentedFilesFilter(boolean value) {
+		filterCommentedFile = value;
+		if (fViewer != null) {
+			if (filterCommentedFile) {
+				fViewer.addFilter(commentedFileFilter);
+			} else {
+				fViewer.removeFilter(commentedFileFilter);
+			}
+		}
+	}
+
+	/**
+	 * @param fileString
+	 */
+	public void filterFileText(String fileString) {
+		searchString = fileString.toLowerCase();
+		if (fileString.isEmpty()) {
+			if (searchFilter != null) {
+				fViewer.removeFilter(searchFilter);
+				searchFilter = null;
+			}
+		} else {
+			if (searchFilter == null) {
+				searchFilter = createSearchFilter();
+			}
+			fViewer.addFilter(searchFilter);
+			//Select the first entry in the table if not empty
+			if (fViewer.getTable().getItemCount() >= 1) {
+				fViewer.getTable().select(0);
+			}
+		}
+	}
+
+	public ViewerFilter getSearchingFilter() {
+		return searchFilter;
+	}
+
+	/**
+	 * Create a search filter containing a specified string
+	 *
+	 * @return ViewerFilter
+	 */
+	private ViewerFilter createSearchFilter() {
+		searchFilter = new ViewerFilter() {
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				String file = ((StringToFileInfoImpl) element).getKey().toLowerCase();
+				if (file.contains(searchString)) {
+					return true;
+				}
+				return false;
+			}
+		};
+		return searchFilter;
 	}
 
 	/**
@@ -167,9 +283,11 @@ public class UIFilesTable {
 			dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
 		}
 
-		if (filterDeletedFiles) {
-			fViewer.addFilter(fileDeleteFilter);
-		}
+		//Adjust the filters
+		enableDeletedFilesFilter(filterDeletedFiles);
+		enableCommitMsgFilter(filterCommitMsgFile);
+		enableReviewedFilesFilter(filterReviewedFile);
+		enableCommentedFilesFilter(filterCommentedFile);
 	}
 
 	/**

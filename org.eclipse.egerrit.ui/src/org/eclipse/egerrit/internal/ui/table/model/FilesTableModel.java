@@ -31,7 +31,7 @@ public enum FilesTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	REVIEWED("", 30, true, true, SWT.LEFT), //
 	MOD_TYPE("", 30, true, true, SWT.LEFT), //
-	FILE_PATH(Messages.FilesTableDefinition_filePath, 640, true, true, SWT.LEFT), //
+	FILE_PATH(Messages.FilesTableDefinition_filePath, 540, true, true, SWT.LEFT), //
 	COMMENTS(Messages.FilesTableDefinition_comments, 220, true, true, SWT.LEFT), //
 	SIZE(Messages.FilesTableDefinition_size, 80, false, true, SWT.LEFT);
 

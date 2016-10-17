@@ -16,6 +16,12 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.ui.utils.messages"; //$NON-NLS-1$
 
+	public static String FilterClear;
+
+	public static String FilterClearTooltip;
+
+	public static String TypeFilterText;
+
 	public static String EGerriTip;
 
 	public static String ChangeDetailEditor_EGerriTipValue;
@@ -117,6 +123,14 @@ public class Messages extends NLS {
 	public static String FileDialog_title;
 
 	public static String FileDialog_PatchSet;
+
+	public static String FilesDialogDeleteFilter;
+
+	public static String FilesDialogCommitMessageFilter;
+
+	public static String FilesDialogReviewedFilesFilter;
+
+	public static String FilesDialogCommentedFilesFilter;
 
 	public static String FileInfoCompareCellLabelProvider_0;
 
