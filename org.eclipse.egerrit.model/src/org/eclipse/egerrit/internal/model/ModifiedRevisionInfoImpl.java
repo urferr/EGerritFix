@@ -12,8 +12,10 @@ package org.eclipse.egerrit.internal.model;
 
 
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreEMap;
 
 /**
  * @author Jacques Bouthillier
@@ -73,4 +75,14 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 		return isActionAllowed(ActionConstants.PUBLISH.getName());
 	}
 
+	@Override
+	public EMap<String, FileInfo> getFiles() {
+		synchronized (this) {
+			if (files == null) {
+				files = new EcoreEMap<String, FileInfo>(ModelPackage.Literals.STRING_TO_FILE_INFO,
+						StringToFileInfoImpl.class, this, ModelPackage.REVISION_INFO__FILES);
+			}
+			return files;			
+		}
+	}
 }

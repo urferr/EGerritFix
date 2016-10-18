@@ -370,7 +370,7 @@ public class QueryHelpers {
 	}
 
 	public static void loadFiles(GerritClient gerrit, RevisionInfo revision) {
-		synchronized (revision.getChangeInfo()) {
+		synchronized (revision) {
 			if (revision.isFilesLoaded()) {
 				return;
 			}
@@ -378,7 +378,7 @@ public class QueryHelpers {
 		GetFilesCommand command = gerrit.getFiles(revision.getChangeInfo().getId(), revision.getId());
 		try {
 			Map<String, FileInfo> result = command.call();
-			synchronized (revision.getChangeInfo()) {
+			synchronized (revision) {
 				revision.getFiles().putAll(result);
 				revision.setFilesLoaded(true);
 			}
