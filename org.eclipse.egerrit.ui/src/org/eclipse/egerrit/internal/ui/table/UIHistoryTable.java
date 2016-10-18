@@ -12,6 +12,8 @@
 package org.eclipse.egerrit.internal.ui.table;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.HistoryTableSorter;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
@@ -66,7 +68,6 @@ public class UIHistoryTable {
 		// Set the content sorter
 		HistoryTableSorter.bind(fViewer);
 		fViewer.setComparator(new HistoryTableSorter(1)); // sort by date, descending
-
 		//
 		fViewer.getTable().addListener(SWT.Paint, initPaintListener());
 
@@ -86,9 +87,15 @@ public class UIHistoryTable {
 			public void handleEvent(Event event) {
 				if (fViewer.getTable().getItemCount() > 0) {
 					fViewer.getTable().select(0); //initially select the first item in the table
-					fViewer.setSelection(fViewer.getSelection());
-					resizeTable(fViewer.getTable());
-					fViewer.getTable().removeListener(SWT.Paint, this);
+					ChangeMessageInfo message = (ChangeMessageInfo) fViewer.getTable().getSelection()[0].getData();
+					ChangeInfo containingChange = (ChangeInfo) message.eContainer();
+					//By the time we get here, some of the entries we are trying to show may have already been removed from their parent
+					//as part of the loading of the details review (See QueryHelpers.mergeNewInformation()) so we don't want to reveal those.
+					if (containingChange != null) {
+						fViewer.setSelection(fViewer.getSelection());
+						resizeTable(fViewer.getTable());
+						fViewer.getTable().removeListener(SWT.Paint, this);
+					}
 				}
 			}
 		};

@@ -271,9 +271,13 @@ public class QueryHelpers {
 			toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__PERMITTED_LABELS, newChangeInfo.getPermitted_labels());
 			toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__ACTIONS, newChangeInfo.getActions());
 
+			//Replace all the messages if there are new ones.
+			if (newChangeInfo.getMessages().size() != toRefresh.getMessages().size()) {
+				toRefresh.getMessages().clear();
+				toRefresh.getMessages().addAll(newChangeInfo.getMessages());
+			}
+
 			//Set the date at the end because it is used to trigger other refreshes
-			toRefresh.getMessages().clear();
-			toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			toRefresh.setUpdated(newChangeInfo.getUpdated());
 			toRefresh.setLoadingLevel(1);
 		}
