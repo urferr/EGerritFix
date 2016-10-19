@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 10/7/16 4:14 PM
+Save-Time: 10/19/16 8:10 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -289,13 +289,6 @@ proc "assert-dialog" [val named] [val containsText] [val dismiss true] {
 	get-window $named | get-label $containsText | get-property caption | equals $containsText | verify-true
 	if [$dismiss | equals true] {
 		get-window $named | get-button OK | click
-	}
-}
-
-proc "assert-warning-dialog" [val named] [val containsText] [val dismiss true] {
-	get-window $named | get-label $containsText | get-property caption | equals $containsText | verify-true
-	if [$dismiss | equals true] {
-		get-window $named | get-button Cancel | click
 	}
 }
 
