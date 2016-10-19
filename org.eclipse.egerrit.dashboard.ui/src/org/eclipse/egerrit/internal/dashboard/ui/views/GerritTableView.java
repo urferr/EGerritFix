@@ -152,7 +152,7 @@ public class GerritTableView extends ViewPart {
 
 	private Label fReviewsTotalLabel;
 
-	private Combo fSearchRequestText;
+	private Combo fSearchTextBox;
 
 	private Button fSearchRequestBtn;
 
@@ -345,20 +345,20 @@ public class GerritTableView extends ViewPart {
 		fReviewsTotalLabel.setLayoutData(totalLabelGridData);
 
 		//Create a SEARCH text data entry
-		fSearchRequestText = new Combo(searchComposite, SWT.NONE);
+		fSearchTextBox = new Combo(searchComposite, SWT.NONE);
 		// Create a content proposal for the search box
-		new SearchContentProposalAdapter(fSearchRequestText, searchProposalProvider);
+		new SearchContentProposalAdapter(fSearchTextBox, searchProposalProvider);
 
 		GridData searchGridData = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
 		searchGridData.widthHint = SEARCH_WIDTH;
 		searchGridData.minimumWidth = 100;
-		fSearchRequestText.setLayoutData(searchGridData);
-		fSearchRequestText.setToolTipText(Messages.GerritTableView_tooltipSearch);
+		fSearchTextBox.setLayoutData(searchGridData);
+		fSearchTextBox.setToolTipText(Messages.GerritTableView_tooltipSearch);
 		//Get the last saved commands
 		fRequestList = fServerUtil.getListLastCommands();
 		setSearchText(""); //$NON-NLS-1$
 
-		fSearchRequestText.addSelectionListener(new SelectionListener() {
+		fSearchTextBox.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -375,8 +375,8 @@ public class GerritTableView extends ViewPart {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				//Handle the CR in the search text
-				if (fSearchRequestText.getText().trim().length() > 0) {
-					processCommands(fSearchRequestText.getText());
+				if (fSearchTextBox.getText().trim().length() > 0) {
+					processCommands(fSearchTextBox.getText());
 				}
 			}
 		});
@@ -389,7 +389,7 @@ public class GerritTableView extends ViewPart {
 
 			@Override
 			public void handleEvent(Event event) {
-				processCommands(fSearchRequestText.getText());
+				processCommands(fSearchTextBox.getText());
 			}
 		});
 
@@ -829,7 +829,7 @@ public class GerritTableView extends ViewPart {
 						Display.getDefault().syncExec(new Runnable() {
 							@Override
 							public void run() {
-								setSearchText(getSearchText());
+								setSearchText(aQueryType);
 							}
 						});
 					}
@@ -855,11 +855,12 @@ public class GerritTableView extends ViewPart {
 		return null;
 	}
 
+	//Display a query string in the search text.
 	private void setSearchText(String aSt) {
-		if (!fSearchRequestText.isDisposed()) {
+		if (!fSearchTextBox.isDisposed()) {
 			if (aSt != null && aSt != "") { //$NON-NLS-1$
 				int index = -1;
-				String[] ar = fSearchRequestText.getItems();
+				String[] ar = fSearchTextBox.getItems();
 				for (int i = 0; i < ar.length; i++) {
 					if (ar[i].equals(aSt.trim())) {
 						index = i;
@@ -883,12 +884,12 @@ public class GerritTableView extends ViewPart {
 
 			}
 
-			fSearchRequestText.setItems(reverseOrder(fRequestList.toArray(new String[0])));
+			fSearchTextBox.setItems(reverseOrder(fRequestList.toArray(new String[0])));
 			if (aSt != null && aSt != "") { //$NON-NLS-1$
-				fSearchRequestText.select(0);
+				fSearchTextBox.select(0);
 			} else {
 				//Leave the text empty
-				fSearchRequestText.setText(""); //$NON-NLS-1$
+				fSearchTextBox.setText(""); //$NON-NLS-1$
 			}
 		}
 	}
@@ -912,11 +913,11 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private String getSearchText() {
-		if (!fSearchRequestText.isDisposed()) {
+		if (!fSearchTextBox.isDisposed()) {
 			final String[] str = new String[1];
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
-					str[0] = fSearchRequestText.getText().trim();
+					str[0] = fSearchTextBox.getText().trim();
 					logger.debug("Custom string: " + str[0]); //$NON-NLS-1$
 				}
 			});
@@ -1071,7 +1072,7 @@ public class GerritTableView extends ViewPart {
 				public void run() {
 					setRepositoryVersionLabel(defaultServerInfo.getName(),
 							gerritClient.getRepository().getVersion().toString());
-					fSearchRequestText.setText(queryText);
+					fSearchTextBox.setText(queryText);
 
 				}
 			});
@@ -1139,15 +1140,15 @@ public class GerritTableView extends ViewPart {
 			logger.debug("No new server entered by the user."); //$NON-NLS-1$
 			return;
 		}
-		if (fSearchRequestText == null || fSearchRequestText.getText().isEmpty()) {
+		if (fSearchTextBox == null || fSearchTextBox.getText().isEmpty()) {
 			processCommands("status:open"); //$NON-NLS-1$
 		} else {
-			processCommands(fSearchRequestText.getText());
+			processCommands(fSearchTextBox.getText());
 		}
 	}
 
 	public void update() {
-		rtv.processCommands(fSearchRequestText.getText());
+		rtv.processCommands(fSearchTextBox.getText());
 	}
 
 	/**
