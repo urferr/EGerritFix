@@ -213,9 +213,9 @@ public class ReviewTableSorter extends ViewerSorter {
 					table.setSortColumn(currentColumn);
 					table.setSortDirection(table.getSortDirection() == SWT.UP ? SWT.DOWN : SWT.UP);
 					aTableViewer.setComparator(sorter);
+					aTableViewer.setSelection(aTableViewer.getSelection(), true);
 				}
 			});
 		}
 	}
-
 }
