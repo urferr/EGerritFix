@@ -46,13 +46,11 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_totalReview;
 
-	public static String GerritTableView_warning;
+	public static String GerritTableView_information;
 
-	public static String GerritTableView_warningAnonymous;
+	public static String GerritTableView_informationAnonymous;
 
 	public static String GerritTableView_warningEmptyValue;
-
-	public static String GerritTableView_warningSearchAnonymous;
 
 	public static String GerritTableView_starredName;
 

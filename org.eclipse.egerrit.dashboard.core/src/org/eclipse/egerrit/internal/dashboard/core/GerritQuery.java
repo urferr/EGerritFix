@@ -62,15 +62,4 @@ public class GerritQuery {
 	 * Query : all abandoned changes
 	 */
 	public static final String QUERY_ALL_ABANDONED_CHANGES = "status:abandoned"; //$NON-NLS-1$
-
-	/**
-	 * Query type: open changes by project
-	 */
-	public static final String OPEN_CHANGES_BY_PROJECT = "open changes by project"; //$NON-NLS-1$
-
-	/**
-	 * Query type: custom
-	 */
-	public static final String CUSTOM = "custom"; //$NON-NLS-1$
-
 }

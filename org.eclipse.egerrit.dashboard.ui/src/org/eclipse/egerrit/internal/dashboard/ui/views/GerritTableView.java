@@ -39,7 +39,6 @@ import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.internal.core.command.StarChangeCommand;
 import org.eclipse.egerrit.internal.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
-import org.eclipse.egerrit.internal.dashboard.core.GerritQuery;
 import org.eclipse.egerrit.internal.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.dashboard.ui.completion.SearchContentProposalAdapter;
@@ -55,7 +54,6 @@ import org.eclipse.egerrit.internal.model.Reviews;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -611,37 +609,6 @@ public class GerritTableView extends ViewPart {
 		if (aQuery != null && !aQuery.equals("")) { //$NON-NLS-1$
 			updateTable(defaultServerInfo, aQuery);
 		}
-		String SCHEME = defaultServerInfo.getScheme();
-		String HOST = defaultServerInfo.getHostId();
-		int PORT = defaultServerInfo.getPort();
-		String PATH = defaultServerInfo.getPath();
-		String USER = defaultServerInfo.getUserName();
-		String PASSWORD = defaultServerInfo.getPassword();
-		GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
-		// Initialize
-		GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
-		gerritRepository.setCredentials(creds);
-		gerritRepository.setServerInfo(defaultServerInfo);
-		gerritRepository.acceptSelfSignedCerts(defaultServerInfo.getSelfSigned());
-		boolean connect = gerritRepository.connect();
-		if (connect) {
-			Version version = gerritRepository.getVersion();
-
-			if (version == null) {
-				UIUtils.showErrorDialog(Messages.Invalid_Credentials, "Server " + defaultServerInfo.getServerURI()); //$NON-NLS-1$
-			} else if (version.equals(GerritRepository.NO_VERSION)) {
-				UIUtils.showErrorDialog(Messages.Unsupported_server_version_title,
-						NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
-			} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-				UIUtils.showErrorDialog(Messages.Unsupported_Server_Version,
-						NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
-			}
-
-		} else if (gerritRepository.getStatus() == 401) {
-			UIUtils.showErrorDialog(Messages.Server_connection_401_title,
-					NLS.bind(Messages.Server_connection_401, gerritRepository.getPath()));
-		}
-
 	}
 
 	private void initializeDefaultServer() {
@@ -837,7 +804,6 @@ public class GerritTableView extends ViewPart {
 				} catch (GerritQueryException e) {
 					status = e.getStatus();
 					logger.error(e.getMessage());
-
 				}
 
 				aMonitor.done();
@@ -926,16 +892,10 @@ public class GerritTableView extends ViewPart {
 		return null;
 	}
 
-	// ------------------------------------------------------------------------
-	// Query handling
-	// ------------------------------------------------------------------------
-
-	private void displayWarning(final String st) {
+	private void displayInformation(final String server, final String st) {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				final MessageDialog dialog = new MessageDialog(null, Messages.GerritTableView_warning, null, st,
-						MessageDialog.WARNING, new String[] { IDialogConstants.CANCEL_LABEL }, 0);
-				dialog.open();
+				MessageDialog.openInformation(null, NLS.bind(Messages.GerritTableView_information, server), st);
 			}
 		});
 	}
@@ -951,23 +911,14 @@ public class GerritTableView extends ViewPart {
 	 * @throws GerritQueryException
 	 */
 	private IStatus getReviews(GerritServerInformation repository, String queryType) throws GerritQueryException {
-		if (repository.getUserName() == null || repository.getUserName().isEmpty()) {
-			//Test for Anonymous user
-			if (queryType.equals(GerritQuery.MY_CHANGES)
-					|| queryType.equals(GerritQuery.QUERY_MY_DRAFTS_COMMENTS_CHANGES)) {
-				displayWarning(NLS.bind(Messages.GerritTableView_warningAnonymous, queryType));
-				return Status.CANCEL_STATUS;
-			} else if (queryType == GerritQuery.CUSTOM) {
-				int foundSelf = getSearchText().toLowerCase().indexOf("self"); //$NON-NLS-1$
-				int foundhasDraft = getSearchText().toLowerCase().indexOf(GerritQuery.QUERY_MY_DRAFTS_COMMENTS_CHANGES);
-				if (foundSelf != -1 || foundhasDraft != -1) {
-					displayWarning(NLS.bind(Messages.GerritTableView_warningSearchAnonymous, getSearchText()));
-					return Status.CANCEL_STATUS;
-				}
-			}
+		if (!connectToServer(repository)) {
+			return Status.CANCEL_STATUS;
 		}
-
-		connectToServer(repository);
+		if (!isQueryAuthorized(queryType)) {
+			displayInformation(repository.getServerURI(),
+					NLS.bind(Messages.GerritTableView_informationAnonymous, queryType));
+			return Status.CANCEL_STATUS;
+		}
 
 		// Format the query id
 		String queryString = queryType;
@@ -1002,7 +953,7 @@ public class GerritTableView extends ViewPart {
 		return ret;
 	}
 
-	private void connectToServer(GerritServerInformation repository) {
+	private boolean connectToServer(GerritServerInformation repository) {
 		URI uri = null;
 		try {
 			if (!repository.getServerURI().isEmpty()) {
@@ -1030,7 +981,31 @@ public class GerritTableView extends ViewPart {
 
 			gerritClient = gerritRepository.instantiateGerrit();
 			searchProposalProvider.setGerritClient(gerritClient);
+
+			boolean connect = gerritRepository.connect();
+			if (connect) {
+				Version version = gerritRepository.getVersion();
+
+				if (version == null) {
+					UIUtils.showErrorDialog(Messages.Invalid_Credentials, "Server " + defaultServerInfo.getServerURI()); //$NON-NLS-1$
+					return false;
+				} else if (version.equals(GerritRepository.NO_VERSION)) {
+					UIUtils.showErrorDialog(Messages.Unsupported_server_version_title,
+							NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
+					return false;
+				} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+					UIUtils.showErrorDialog(Messages.Unsupported_Server_Version,
+							NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
+					return false;
+				}
+			} else if (gerritRepository.getStatus() == 401) {
+				UIUtils.showErrorDialog(Messages.Server_connection_401_title,
+						NLS.bind(Messages.Server_connection_401, gerritRepository.getPath()));
+				return false;
+			}
+			return connect;
 		}
+		return false;
 	}
 
 	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {
@@ -1046,8 +1021,9 @@ public class GerritTableView extends ViewPart {
 		return reviews;
 	}
 
-	public ChangeInfo[] performQuery(String query, IProgressMonitor monitor) throws MalformedURLException {
+	private ChangeInfo[] performQuery(String query, IProgressMonitor monitor) throws MalformedURLException {
 		try {
+
 			monitor.beginTask("Executing query", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 
 			ChangeInfo[] res = null;
@@ -1061,7 +1037,7 @@ public class GerritTableView extends ViewPart {
 			command.addOption(ChangeOption.CURRENT_ACTIONS);
 
 			try {
-				setQuery(query, command);
+				command.addQuery(query);
 				res = command.call();
 			} catch (EGerritException e) {
 				Utils.displayInformation(null, TITLE, e.getLocalizedMessage());
@@ -1082,14 +1058,15 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
-	private void setQuery(String query, QueryChangesCommand command) throws EGerritException {
+	private boolean isQueryAuthorized(String query) {
 		if (!query.isEmpty()) {
 			if (gerritClient.getRepository().getServerInfo().isAnonymous() && (query.contains(":self") //$NON-NLS-1$
-					|| query.contains(":owner") || query.contains("is:reviewer") || query.contains("is:starred"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				throw new EGerritException(NLS.bind(Messages.Unauthorized_Query, query));
+					|| query.contains(":owner") || query.contains("is:reviewer") || query.contains("is:starred") //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+					|| query.contains(":draft"))) { //$NON-NLS-1$
+				return false;
 			}
-			command.addQuery(query);
 		}
+		return true;
 	}
 
 	private void setRepositoryVersionLabel(String aRepo, String aVersion) {
