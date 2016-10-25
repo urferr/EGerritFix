@@ -29,7 +29,7 @@ import org.eclipse.swt.SWT;
 public enum HistoryTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	COMMENT("", 20, false, true, SWT.LEFT), //
-	DATE(Messages.HistoryTableModel_date, 95, false, true, SWT.LEFT), //
+	DATE(Messages.HistoryTableModel_date, 95, true, true, SWT.LEFT), //
 	AUTHOR(Messages.HistoryTableModel_author, 170, true, true, SWT.LEFT), //
 	MESSAGE(Messages.HistoryTableModel_message, 1500, true, true, SWT.LEFT);//
 
