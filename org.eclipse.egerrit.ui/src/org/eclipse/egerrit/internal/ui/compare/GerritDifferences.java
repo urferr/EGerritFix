@@ -38,4 +38,14 @@ public class GerritDifferences extends Differencer {
 	 * Difference constant (value 4) indicating renaming.
 	 */
 	public static final int RENAMED = 4;
+
+	/**
+	 * Difference constant (value 5) indicating renaming.
+	 */
+	public static final int COPIED = 5;
+
+	/**
+	 * Difference constant (value 6) indicating renaming.
+	 */
+	public static final int REWRITTEN = 6;
 }

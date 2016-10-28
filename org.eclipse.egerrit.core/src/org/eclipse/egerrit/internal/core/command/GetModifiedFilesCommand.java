@@ -33,9 +33,9 @@ public class GetModifiedFilesCommand extends GetFilesCommand {
 	 */
 	public GetModifiedFilesCommand(GerritRepository gerritRepository, String changeId, String revisionId,
 			String compareAgainst) {
-		super(gerritRepository, changeId, revisionId);
+		super(gerritRepository, changeId, compareAgainst);
 		if (compareAgainst != null) {
-			addQueryParameter("base", compareAgainst); //$NON-NLS-1$
+			addQueryParameter("base", revisionId); //$NON-NLS-1$
 		}
 	}
 

@@ -32,7 +32,7 @@ public class CompareItemFactory {
 
 	public PatchSetCompareItem createCompareItemFromRevision(String filename, String change_id, FileInfo fileInfo,
 			IProgressMonitor monitor) {
-		if (fileInfo == null) {
+		if (fileInfo == null || fileInfo.getRevision() == null) {
 			throw new IllegalArgumentException();
 		}
 		if (COMMIT_MSG.equals(fileInfo.getPath())) {
@@ -47,7 +47,17 @@ public class CompareItemFactory {
 	 * Create a simple compare item
 	 */
 	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
-			String showAsRevision, IProgressMonitor monitor) {
-		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, showAsRevision);
+			IProgressMonitor monitor) {
+		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, null, null);
+	}
+
+	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
+			String fileName, IProgressMonitor monitor) {
+		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, fileName, null);
+	}
+
+	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
+			String fileName, String showAsRevision, IProgressMonitor monitor) {
+		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, fileName, showAsRevision);
 	}
 }

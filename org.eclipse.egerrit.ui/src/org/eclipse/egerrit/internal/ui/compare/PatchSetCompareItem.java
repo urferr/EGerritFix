@@ -50,8 +50,7 @@ public class PatchSetCompareItem extends CommentableCompareItem
 	protected byte[] loadFileContent() {
 		String fileContent = null;
 		// Create query
-		GetContentCommand command = gerrit.getContent(getChangeId(), fileInfo.getRevision().getId(),
-				fileInfo.getPath());
+		GetContentCommand command = gerrit.getContent(getChangeId(), fileInfo.getRevision().getId(), fileInfo.getPath());
 
 		if (!"D".equals(fileInfo.getStatus())) { //$NON-NLS-1$
 			try {

@@ -1,0 +1,47 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: FileRenamedAcrossRevision
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _4c2NYKA-Eea965xUntu3wg
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 11/2/16 5:36 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 82400 -serverName EF
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "BASE"
+		switchRightInput -to "6.*"
+		
+		assert-that-status-in-compare -atLine 5 -is "A"
+		assert-that-filename-in-compare -atLine 5 -is "IGdbTerminalControlConnector.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console"
+	}
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "5.*"
+		switchRightInput -to "6.*"
+	
+		assert-that-status-in-compare -atLine 4 -is R
+		assert-that-filename-in-compare -atLine 4 -is "IGdbTerminalControlConnector.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGDBTerminalControlManager.java)"
+	}
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "6.*"
+		switchRightInput -to "5.*"
+	
+		assert-that-status-in-compare -atLine 4 -is R
+		assert-that-filename-in-compare -atLine 4 -is "IGDBTerminalControlManager.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGdbTerminalControlConnector.java)"
+	}
+} -finally {
+	delete-gerrit-server -serverName EF
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

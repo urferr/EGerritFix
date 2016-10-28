@@ -197,15 +197,6 @@ public abstract class CommentableCompareItem extends Document
 	}
 
 	/**
-	 * Return the file info object for which this compare item is created
-	 *
-	 * @return {@link FileInfo}
-	 */
-	public FileInfo getFileInfo() {
-		return fileInfo;
-	}
-
-	/**
 	 * Return an annotation model representing the comments
 	 *
 	 * @return {@link AnnotationModel}

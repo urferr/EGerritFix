@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 10/19/16 8:10 PM
+Save-Time: 11/2/16 5:36 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -23,7 +23,9 @@ proc "add-gerrit-server" [val serverURL] [val serverName] [val userName] [val us
 			with [get-editbox -after [get-label "Label:"]] {
 				set-text $serverName
 			}
-			get-editbox -after [get-label "User:"] | set-text $userName
+			try {
+				get-editbox -after [get-label "User:"] | set-text $userName
+			}
 			get-button OK | click
 		}
 		get-button Apply | click
@@ -95,8 +97,8 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 	}
 }
 
-proc openCompareEditor [val query] {
-	runQueryAndOpenEditor $query
+proc openCompareEditor [val query] [val serverName $serverName] {
+	runQueryAndOpenEditor $query $serverName
 
 	with [get-table -index 1 | get-column-header "File Path"] {
 		click
@@ -105,8 +107,10 @@ proc openCompareEditor [val query] {
 	with [get-editor | get-table -index 1] {
 		get-cell -row 0 -column 2 | double-click
 	}
-	// Click ok on tip
-	get-window "EGerrit Tip" | get-button OK | click
+	try {
+		// Click ok on tip
+		get-window "EGerrit Tip" | get-button OK | click
+	} -catch {}
 }
 
 proc switchLeftInput [val to] [val in -input] {
@@ -309,6 +313,18 @@ proc "switch-user" [val to] {
 }
 proc "assert-that-itemCount-in-history-is" [val is]{
      get-property itemCount | equals $is | verify-true
+}
+
+proc "assert-that-status-in-compare" [val atLine] [val is] [val in -input] {
+	with [$in | get-tree] {
+		get-item "" -index $atLine | get-property "columns[1]" | equals $is | verify-true
+	}
+}
+
+proc "assert-that-filename-in-compare" [val atLine] [val is] [val in -input] {
+	with [$in | get-tree] {
+		get-item "" -index $atLine | get-property "columns[2]" | equals $is | verify-true
+	}
 }
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

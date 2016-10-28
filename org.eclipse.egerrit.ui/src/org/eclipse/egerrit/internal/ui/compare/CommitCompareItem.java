@@ -37,14 +37,16 @@ import org.slf4j.LoggerFactory;
 class CommitCompareItem extends CommentableCompareItem implements IStreamContentAccessor, ITypedElement {
 	private static Logger logger = LoggerFactory.getLogger(CommitCompareItem.class);
 
+	private static final String PARENT = "PARENT"; //$NON-NLS-1$
+
 	private final String projectId, commitId;
 
 	private String showAsRevision;
+	
+	private String filePath;
 
-	private static final String PARENT = "PARENT"; //$NON-NLS-1$
-
-	CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo,
-			String showAsRevision) {
+	public CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo,
+			String fileName, String showAsRevision) {
 		super(PARENT);
 		this.gerrit = gerrit;
 		this.projectId = projectId;
@@ -66,6 +68,9 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 	}
 
 	private String getOldPathOrPath() {
+		if (filePath != null) {
+			return filePath;
+		}
 		if (fileInfo.getOld_path() == null) {
 			return fileInfo.getPath();
 		}
@@ -87,8 +92,7 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 
 	@Override
 	protected EList<CommentInfo> filterComments(EList<CommentInfo> eList) {
-		return eList.stream()
-				.filter(comment -> PARENT.equals(comment.getSide()))
-				.collect(Collectors.toCollection(BasicEList::new));
+		return eList.stream().filter(comment -> PARENT.equals(comment.getSide())).collect(
+				Collectors.toCollection(BasicEList::new));
 	}
 }

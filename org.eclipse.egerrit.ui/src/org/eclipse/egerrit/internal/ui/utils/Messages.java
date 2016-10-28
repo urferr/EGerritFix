@@ -138,10 +138,6 @@ public class Messages extends NLS {
 
 	public static String FileInfoCompareCellLabelProvider_2;
 
-	public static String FileInfoCompareCellLabelProvider_3;
-
-	public static String FileInfoCompareCellLabelProvider_4;
-
 	public static String FileTableLabelProvider_0;
 
 	public static String FileTableLabelProvider_1;

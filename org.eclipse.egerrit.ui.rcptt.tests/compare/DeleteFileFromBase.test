@@ -1,0 +1,39 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: DeleteFileFromBase
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _8IdZgKCsEea_cdUF3tDi1A
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 11/2/16 5:36 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 83696 -serverName EF
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "BASE"
+		switchRightInput -to "3.*"
+		
+		assert-that-status-in-compare -atLine 1 -is "D"
+		assert-that-filename-in-compare -atLine 1 -is "FilterHistory.test - org.eclipse.egerrit.ui.rcptt.tests/reviewEditor" 
+	}
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "3.*"
+		switchRightInput -to "1.*"
+		
+		assert-that-status-in-compare -atLine 1 -is "A"
+		assert-that-filename-in-compare -atLine 1 -is "FilterHistory.test - org.eclipse.egerrit.ui.rcptt.tests/reviewEditor" 
+	}
+} -finally {
+	delete-gerrit-server -serverName EF
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

@@ -19,6 +19,7 @@ import org.eclipse.core.databinding.observable.map.MapChangeEvent;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
+import org.eclipse.egerrit.internal.ui.compare.GerritDifferences;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
@@ -62,29 +63,27 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		FileInfo fileInfo = gerrritNode.getFileInfo();
 		switch (columnIdx) {
 		case 0:
-			if (fileInfo.isReviewed()) {
-				return "1"; //$NON-NLS-1$
-			}
 			return ""; //$NON-NLS-1$ //Here we return an empty string to make sure that nothing shows in the coluimn when the user anonymous
-		case 1:
-			return fileInfo.getStatus();
+		case 1: {
+			switch (gerrritNode.getKind()) {
+			case GerritDifferences.NO_CHANGE:
+				return "";
+			case GerritDifferences.ADDITION:
+				return "A";
+			case GerritDifferences.DELETION:
+				return "D";
+			case GerritDifferences.CHANGE:
+				return "M";
+			case GerritDifferences.RENAMED:
+				return "R";
+			case GerritDifferences.COPIED:
+				return "C";
+			default:
+				return "M";
+			}
+		}
 		case 2:
-			String path = null;
-			if (nameFirst) {
-				path = fileInfo.getPath();
-				int index = path.lastIndexOf("/"); //$NON-NLS-1$
-				if (index != -1) {
-					String fileName = path.substring(index + 1);
-					String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
-					path = firstName;
-				}
-			} else {
-				path = fileInfo.getPath();
-			}
-			if (fileInfo.getOld_path() != null) {
-				path += Messages.FileTableLabelProvider_3 + fileInfo.getOld_path() + Messages.FileTableLabelProvider_4;
-			}
-			return path;
+			return gerrritNode.getLabelName(nameFirst);
 		case 3:
 			String commentString = ""; //$NON-NLS-1$
 			int commentsCount = fileInfo.getCommentsCount();
@@ -104,11 +103,14 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 			return commentString;
 		case 4:
 			StringBuilder modifySize = new StringBuilder();
+			FileInfo file = gerrritNode.getDiffFileInfo() != null
+					? gerrritNode.getDiffFileInfo()
+					: gerrritNode.getFileInfo();
 			modifySize.append('+');
-			modifySize.append(Integer.toString(fileInfo.getLines_inserted()));
+			modifySize.append(Integer.toString(file.getLines_inserted()));
 			modifySize.append('/');
 			modifySize.append('-');
-			modifySize.append(Integer.toString(fileInfo.getLines_deleted()));
+			modifySize.append(Integer.toString(file.getLines_deleted()));
 			return modifySize.toString();
 		default:
 			return ""; //$NON-NLS-1$

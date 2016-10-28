@@ -112,6 +112,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		root = new GerritDiffNode(GerritDifferences.NO_CHANGE) {
 
 			@Override
+			public String getName() {
+				return GerritMultipleInput.this.getName();
+			}
+
+			@Override
 			public boolean hasChildren() {
 				return true;
 			}
@@ -127,7 +132,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			}
 
 		};
-		root.setInput(GerritMultipleInput.this);
 	}
 
 	private static CompareConfiguration initConfiguration() {
@@ -238,45 +242,100 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	private GerritDiffNode createRevisionRevisionNode(IProgressMonitor monitor, RevisionInfo leftRevision,
 			RevisionInfo rightRevision, FileInfo fileToShow, String filePathToShow) {
-		String fileName = filePathToShow;
-		GerritDiffNode node = new GerritDiffNode(getDifferenceFlag(fileToShow));
-		FileInfo referenceFile = null;
-		FileInfo matchForRight = rightRevision.getFiles().get(fileName);
-		FileInfo matchForLeft = leftRevision.getFiles()
-				.get(matchForRight != null ? getOldPathOrPath(matchForRight) : filePathToShow);
-		if (matchForRight == null && matchForLeft == null) {
-			logger.debug("File " + filePathToShow + " found in either revision " + leftSide + " or " + rightSide); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+		int differenceKind = getDifferenceFlag(fileToShow);
+		GerritDiffNode node = new GerritDiffNode(differenceKind);
+		node.setDiffFileInfo(fileToShow);
+		ITypedElement leftFile = null;
+		ITypedElement rightFile = null;
+
+		switch (differenceKind) {
+		case GerritDifferences.ADDITION:
+			node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
+			FileInfo potentialLeft = leftRevision.getFiles().get(filePathToShow);
+			if (potentialLeft == null) {
+				//Real addition
+				leftFile = new EmptyTypedElement(filePathToShow);
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+			} else {
+				//Deal with the case where a deletion that happened between revision 1 and 3 is shown as an addition
+				//because we are comparing revision 3 with 1 (E.g. review 83696).
+				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+			}
+			break;
+		case GerritDifferences.RENAMED:
+		case GerritDifferences.COPIED:
+			if (leftRevision.getFiles().get(fileToShow.getOld_path()) != null) {
+				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), leftRevision.getFiles().get(fileToShow.getOld_path()), monitor);
+			} else {
+				OrphanedFileInfo o = new OrphanedFileInfo();
+				o.setFilePath(fileToShow.getOld_path());
+				o.setRevisionInfo(leftRevision);
+				String baseCommitId = getBaseCommitId(o);
+				if (baseCommitId != null) {
+					leftFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+							baseCommitId, o, fileToShow.getOld_path(), monitor);
+				} else {
+					leftFile = new EmptyTypedElement(fileToShow.getOld_path());
+				}
+			}
+
+			if (rightRevision.getFiles().get(filePathToShow) != null) {
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+				node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
+			} else {
+				OrphanedFileInfo o = new OrphanedFileInfo();
+				o.setFilePath(filePathToShow);
+				o.setOld_path(fileToShow.getOld_path());
+				o.setRevisionInfo(rightRevision);
+				o.setStatus(fileToShow.getStatus());
+				o.setReviewed(fileToShow.isReviewed());
+				String baseCommitId = getBaseCommitId(o);
+				if (baseCommitId != null) {
+					rightFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(
+							changeInfo.getProject(), baseCommitId, o, filePathToShow, monitor);
+					node.setFileInfo(o);
+				} else {
+					rightFile = new EmptyTypedElement(filePathToShow);
+				}
+			}
+			break;
+		case GerritDifferences.CHANGE:
+			if (leftRevision.getFiles().get(filePathToShow) == null) {
+				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+						getBaseCommitId(leftRevision), rightRevision.getFiles().get(filePathToShow), null,
+						Integer.toString(leftRevision.get_number()), monitor);
+			} else {
+				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
+			}
+			if (rightRevision.getFiles().get(filePathToShow) == null) {
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
+						getBaseCommitId(rightRevision), leftRevision.getFiles().get(filePathToShow), null,
+						Integer.toString(rightRevision.get_number()), monitor);
+				node.setFileInfo(leftRevision.getFiles().get(filePathToShow));
+			} else {
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+				node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
+			}
+			break;
+		case GerritDifferences.DELETION:
+			leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+					changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
+			rightFile = new EmptyTypedElement(filePathToShow);
+			node.setFileInfo(leftRevision.getFiles().get(filePathToShow));
+			break;
+		default:
 			return null;
 		}
-		referenceFile = matchForRight != null ? matchForRight : matchForLeft;
-
-		if (matchForRight != null) {
-			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), matchForRight, monitor));
-			node.setFileInfo(matchForRight);
-		} else {
-			node.setRight(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					getBaseCommitId(rightRevision), referenceFile, Integer.toString(rightRevision.get_number()),
-					monitor));
-			node.setFileInfo(referenceFile);
-		}
-
-		if (matchForLeft != null) {
-			node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileName,
-					changeInfo.getId(), matchForLeft, monitor));
-		} else if (!fileToShow.getStatus().equals("A")) { //$NON-NLS-1$
-			//The file is not in the other revision, and it is not added, so compare against the base
-			String baseCommitId = getBaseCommitId(leftRevision);
-			if (baseCommitId != null) {
-				node.setLeft(new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-						getBaseCommitId(leftRevision), referenceFile, Integer.toString(leftRevision.get_number()),
-						monitor));
-			} else {
-				node.setLeft(new EmptyTypedElement(filePathToShow));
-			}
-		} else {
-			node.setLeft(new EmptyTypedElement(filePathToShow));
-		}
+		node.setLeft(leftFile);
+		node.setRight(rightFile);
 		return node;
 	}
 
@@ -284,22 +343,19 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		switch (file.getStatus()) {
 		case "A": //$NON-NLS-1$
 			return GerritDifferences.ADDITION;
-		case "R": //$NON-NLS-1$
-			return GerritDifferences.RENAMED;
 		case "D": //$NON-NLS-1$
 			return GerritDifferences.DELETION;
-		case "C": //$NON-NLS-1$
+		case "M": //$NON-NLS-1$
 			return GerritDifferences.CHANGE;
+		case "C": //$NON-NLS-1$
+			return GerritDifferences.COPIED;
+		case "W": //$NON-NLS-1$
+			return GerritDifferences.REWRITTEN;
+		case "R": //$NON-NLS-1$
+			return GerritDifferences.RENAMED;
 		default:
 			return GerritDifferences.CHANGE;
 		}
-	}
-
-	private String getOldPathOrPath(FileInfo file) {
-		if (file.getOld_path() == null) {
-			return file.getPath();
-		}
-		return file.getOld_path();
 	}
 
 	private void compareRevisionWithWorkspace(IProgressMonitor monitor) {
@@ -373,7 +429,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		ITypedElement baseElement = null;
 		if (baseCommitId != null) {
 			baseElement = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					baseCommitId, file, null, monitor); //Here we passing the right file so we have all the context necessary
+					baseCommitId, file, monitor); //Here we passing the right file so we have all the context necessary
 		} else {
 			baseElement = new EmptyTypedElement(""); //$NON-NLS-1$
 		}
@@ -399,7 +455,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		ITypedElement baseElement = null;
 		if (baseCommitId != null) {
 			baseElement = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-					baseCommitId, file, null, monitor); //Here we passing the right file so we have all the context necessary
+					baseCommitId, file, monitor); //Here we passing the right file so we have all the context necessary
 		} else {
 			baseElement = new EmptyTypedElement(""); //$NON-NLS-1$
 		}
@@ -457,6 +513,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		}
 		if (rightSide.equals(WORKSPACE)) {
 			result += Messages.GerritMultipleInput_9;
+		} else if (rightSide.equals(BASE)) {
+			result += rightSide;
 		} else {
 			result += Messages.GerritMultipleInput_10 + changeInfo.getRevisions().get(rightSide).get_number();
 		}
@@ -525,8 +583,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		synchronized (this) {
 			call--;
 			if (call == 0) {
-				MessageDialog.openInformation(null, Messages.UnsupportedInput_Title,
-						Messages.UnsupportedInput_Text);
+				MessageDialog.openInformation(null, Messages.UnsupportedInput_Title, Messages.UnsupportedInput_Text);
 				upperSection.setInput(root);
 				call = 6;
 			}
@@ -696,7 +753,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			loadRevision(leftSide);
 			loadRevision(rightSide);
 			newEntry = createRevisionRevisionNode(pm, changeInfo.getRevisions().get(leftSide),
-					changeInfo.getRevisions().get(rightSide), savedElement.getFileInfo(),
+					changeInfo.getRevisions().get(rightSide), savedElement.getDiffFileInfo(),
 					savedElement.getFileInfo().getPath());
 		}
 

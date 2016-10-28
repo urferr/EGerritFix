@@ -23,9 +23,12 @@ import org.eclipse.egerrit.internal.model.FileInfo;
  */
 public class GerritDiffNode extends DiffNode {
 
-	private FileInfo fileInfo;
+	//The FileInfo object obtained from a server side diff.
+	private FileInfo diffFileInfo;
 
-	private GerritMultipleInput input;
+	//The FileInfo object corresponding to the diffFileInfo but found in the revision.
+	//This object is used through the compare editor operations like posting/retrieving comments, marking files as viewed, etc.
+	private FileInfo fileInfo;
 
 	public GerritDiffNode(int kind) {
 		super(kind);
@@ -47,16 +50,35 @@ public class GerritDiffNode extends DiffNode {
 
 	@Override
 	public String getName() {
-		if (fileInfo == null) {
-			if (input != null) {
-				return input.getName();
-			} else {
-				return "<no name>"; //$NON-NLS-1$
-			}
-		} else if (getKind() != GerritDifferences.RENAMED) {
-			return fileInfo.getPath();
+		return getLabelName(false);
+	}
+
+	public String getLabelName(boolean nameFirt) {
+		String path = ""; //$NON-NLS-1$
+		String oldPath = null;
+		if (diffFileInfo != null) {
+			path = diffFileInfo.getPath();
+			oldPath = diffFileInfo.getOld_path();
+		} else {
+			path = fileInfo.getPath();
+			oldPath = fileInfo.getOld_path();
 		}
-		return String.format("%s (was %s)", fileInfo.getPath(), fileInfo.getOld_path()); //$NON-NLS-1$
+		if (fileInfo.getPath() != null) {
+			path = fileInfo.getPath();
+		} else {
+			path = ""; //$NON-NLS-1$
+		}
+		if (nameFirt) {
+			int index = path.lastIndexOf("/"); //$NON-NLS-1$
+			if (index != -1) {
+				String fileName = path.substring(index + 1);
+				path = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
+			}
+		}
+		if (getKind() != GerritDifferences.RENAMED) {
+			return path;
+		}
+		return String.format("%s (was %s)", path, oldPath); //$NON-NLS-1$
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -67,9 +89,11 @@ public class GerritDiffNode extends DiffNode {
 		//Do nothing. This is just here to make sure databinding is not throwing exception
 	}
 
-	// save the GerritMultipleInput for this instance.
-	public void setInput(GerritMultipleInput gerritMultipleInput) {
-		input = gerritMultipleInput;
+	public FileInfo getDiffFileInfo() {
+		return diffFileInfo;
+	}
 
+	public void setDiffFileInfo(FileInfo diffFileInfo) {
+		this.diffFileInfo = diffFileInfo;
 	}
 }
