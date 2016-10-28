@@ -226,6 +226,7 @@ public class MessageTabView {
 
 			msgAuthorData = new Link(messagesComposite, SWT.NONE);
 			msgAuthorData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+			msgAuthorData.setToolTipText(Messages.MessageTabView_7);
 			msgAuthorData.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -246,6 +247,7 @@ public class MessageTabView {
 
 			msgCommitterData = new Link(messagesComposite, SWT.NONE);
 			msgCommitterData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+			msgCommitterData.setToolTipText(Messages.MessageTabView_10);
 			msgCommitterData.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -266,6 +268,7 @@ public class MessageTabView {
 			lblCommit.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
 			msgCommitidData = new Link(messagesComposite, SWT.NONE);
+			msgCommitidData.setToolTipText(Messages.MessageTabView_11);
 			msgCommitidData.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -291,6 +294,7 @@ public class MessageTabView {
 
 			msgChangeIdData = new Link(messagesComposite, SWT.NONE);
 			msgChangeIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+			msgChangeIdData.setToolTipText(Messages.MessageTabView_12);
 			msgChangeIdData.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {

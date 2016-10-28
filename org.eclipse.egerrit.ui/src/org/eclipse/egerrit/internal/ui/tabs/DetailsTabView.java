@@ -321,6 +321,7 @@ public class DetailsTabView {
 
 		genProjectData = new Link(composite, SWT.NONE);
 		genProjectData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		genProjectData.setToolTipText(Messages.SummaryTabView_26);
 		genProjectData.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -336,6 +337,7 @@ public class DetailsTabView {
 
 		genBranchData = new Link(composite, SWT.NONE);
 		genBranchData.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		genBranchData.setToolTipText(Messages.SummaryTabView_25);
 		genBranchData.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -956,7 +958,7 @@ public class DetailsTabView {
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableReviewersViewer.setContentProvider(contentProvider);
 		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
-				new IValueProperty[] { new SelfValueProperty<String>("x"),
+				new IValueProperty[] { new SelfValueProperty<String>("x"), //$NON-NLS-1$
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__NAME),
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL) });
 		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties));

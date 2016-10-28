@@ -174,9 +174,17 @@ public class Messages extends NLS {
 
 	public static String MessageTabView_6;
 
+	public static String MessageTabView_7;
+
 	public static String MessageTabView_8;
 
 	public static String MessageTabView_9;
+
+	public static String MessageTabView_10;
+
+	public static String MessageTabView_11;
+
+	public static String MessageTabView_12;
 
 	public static String OpenFileProblem;
 
@@ -220,6 +228,22 @@ public class Messages extends NLS {
 
 	public static String SummaryTabView_1;
 
+	public static String SummaryTabView_2;
+
+	public static String SummaryTabView_3;
+
+	public static String SummaryTabView_4;
+
+	public static String SummaryTabView_5;
+
+	public static String SummaryTabView_6;
+
+	public static String SummaryTabView_7;
+
+	public static String SummaryTabView_8;
+
+	public static String SummaryTabView_9;
+
 	public static String SummaryTabView_10;
 
 	public static String SummaryTabView_11;
@@ -240,8 +264,6 @@ public class Messages extends NLS {
 
 	public static String SummaryTabView_19;
 
-	public static String SummaryTabView_2;
-
 	public static String SummaryTabView_20;
 
 	public static String SummaryTabView_21;
@@ -252,19 +274,9 @@ public class Messages extends NLS {
 
 	public static String SummaryTabView_24;
 
-	public static String SummaryTabView_3;
+	public static String SummaryTabView_25;
 
-	public static String SummaryTabView_4;
-
-	public static String SummaryTabView_5;
-
-	public static String SummaryTabView_6;
-
-	public static String SummaryTabView_7;
-
-	public static String SummaryTabView_8;
-
-	public static String SummaryTabView_9;
+	public static String SummaryTabView_26;
 
 	public static String UIFilesTable_0;
 
@@ -461,7 +473,7 @@ public class Messages extends NLS {
 	public static String UIHistoryTable_1;
 
 	public static String UIHistoryTable_reset;
-	
+
 	public static String UnsupportedInput_Text;
 
 	public static String UnsupportedInput_Title;
