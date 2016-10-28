@@ -30,8 +30,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -121,47 +119,6 @@ public class UIReviewTable {
 
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
-		table.addControlListener(new ControlListener() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				table.setRedraw(false);
-				Point parentSize = table.getParent().getSize();
-				//Adjust the width  according to its parent
-				int minimumTableWidth = ReviewTableDefinition.getMinimumWidth();
-				int mimimumSubjectWidth = ReviewTableDefinition.SUBJECT.getWidth();
-				int minProjectWidth = ReviewTableDefinition.PROJECT.getWidth();
-
-				//Adjust the subject and project column to take the remaining space
-				int scrollWidth = table.getVerticalBar().getSize().x;
-				//If not visible, take the extra space
-				if (!table.getVerticalBar().isVisible()) {
-					scrollWidth = 0;
-				}
-
-				int computeExtraWidth = parentSize.x - 10 - (minimumTableWidth) - scrollWidth;
-				int newSubjectWidth = mimimumSubjectWidth;
-				int newProjectWidth = minProjectWidth;
-				//If extra space, redistribute it to specific column
-				if (computeExtraWidth > 0) {
-					//Assign some to subject and some to Project
-					int value = 2 * computeExtraWidth / 3;
-					newSubjectWidth = mimimumSubjectWidth + value; // 2/3 of the extra
-					newProjectWidth = minProjectWidth + computeExtraWidth - value; // 1/3 of the extra
-				}
-
-				//Subject column
-				table.getColumn(ReviewTableDefinition.SUBJECT.ordinal()).setWidth(newSubjectWidth);
-				//Project column
-				table.getColumn(ReviewTableDefinition.PROJECT.ordinal()).setWidth(newProjectWidth);
-
-				table.setRedraw(true);
-			}
-
-			@Override
-			public void controlMoved(ControlEvent e) {
-
-			}
-		});
 
 		String os = org.eclipse.core.runtime.Platform.getOS();
 		// nothing to do on windows
