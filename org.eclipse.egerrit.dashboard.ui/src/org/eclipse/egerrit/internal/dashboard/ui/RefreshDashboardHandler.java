@@ -37,6 +37,8 @@ public class RefreshDashboardHandler extends AbstractHandler implements IElement
 			return Status.OK_STATUS;
 		}
 
+		// open view, since the command can have been called from other places, like the gerrit review editor
+		reviewTableView.openView();
 		if (!aEvent.getParameters().isEmpty()) {
 			Map<String, String> map = aEvent.getParameters();
 			Iterator<Entry<String, String>> key = map.entrySet().iterator();
