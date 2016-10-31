@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *     Guy Perron - initial API and implementation
  *     Jacques Bouthillier - Fill the message tab
  *     Jacques Bouthillier - Refactor the class
- *
+ *     Patrick-Jeffrey Pollo Guilbert - Add hover message on subject
  *******************************************************************************/
 
 package org.eclipse.egerrit.internal.ui.editors;
@@ -79,6 +79,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolTip;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -212,6 +213,27 @@ public class ChangeDetailEditor extends EditorPart {
 		subjectData.setLayoutData(gd_lblSubjectData);
 		subjectData.setEditable(false);
 		subjectData.setBackground(parent.getBackground());
+
+		final ToolTip tip = new ToolTip(parent.getShell(), SWT.NONE);
+
+		subjectData.addListener(SWT.MouseMove, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				tip.setVisible(false);
+
+			}
+		});
+		subjectData.addListener(SWT.MouseHover, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+
+				tip.setMessage(subjectData.getText());
+				tip.setVisible(true);
+			}
+		});
+
 		subjectData.addListener(SWT.Modify, new Listener() {
 
 			@Override
@@ -397,20 +419,20 @@ public class ChangeDetailEditor extends EditorPart {
 					final InputDialog replyDialog = new InputDialog(revertButton.getShell(),
 							Messages.Revert_dialog_title, Messages.Revert_dialog_message, revertMsg,
 							revertErrorMessage == null ? null : new IInputValidator() {
-						//Because InputDialog does not allow us to set the text w/o disabling the ok button,
-						//we need to trick the dialog in displaying what we want with this counter.
-						private int count = 0;
+								//Because InputDialog does not allow us to set the text w/o disabling the ok button,
+								//we need to trick the dialog in displaying what we want with this counter.
+								private int count = 0;
 
-						@Override
-						public String isValid(String newText) {
-							if (count == 0) {
-								count++;
-								return errorMsg;
-							} else {
-								return null;
-							}
-						}
-					}) {
+								@Override
+								public String isValid(String newText) {
+									if (count == 0) {
+										count++;
+										return errorMsg;
+									} else {
+										return null;
+									}
+								}
+							}) {
 						@Override
 						protected int getInputTextStyle() {
 							return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
