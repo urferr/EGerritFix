@@ -19,6 +19,9 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * This class implements the handler to open a dialog of the files associated to the active review
@@ -32,7 +35,13 @@ public class OpenFileSelectionHandler extends AbstractHandler {
 		ActiveWorkspaceRevision activeRevision = ActiveWorkspaceRevision.getInstance();
 		RevisionInfo revInfo = activeRevision.getActiveRevision();
 		if (revInfo != null) {
-			FilesDialog filesDialog = new FilesDialog(revInfo, activeRevision.getGerritClient());
+			//Fist get the current selected file from eclipse and test if this file belongs to the active review
+			FileEditorInput fileInput = null;
+			IEditorInput editorInput = HandlerUtil.getActiveEditorInput(event);
+			if (editorInput != null && editorInput instanceof FileEditorInput) {
+				fileInput = (FileEditorInput) editorInput;
+			}
+			FilesDialog filesDialog = new FilesDialog(revInfo, activeRevision.getGerritClient(), fileInput);
 			filesDialog.open();
 		} else {
 			UIUtils.displayInformation(null, Messages.OpenFileProblem, Messages.OpenFileProblemMessage);

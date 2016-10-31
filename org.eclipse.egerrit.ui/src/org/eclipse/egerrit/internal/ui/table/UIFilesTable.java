@@ -316,27 +316,25 @@ public class UIFilesTable {
 
 	private void adjustTableData() {
 		fViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		if (popupEnabled) {
-			fdoubleClickListener = new IDoubleClickListener() {
-				public void doubleClick(DoubleClickEvent event) {
-					if (!popupEnabled) {
-						HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
-						handleSelection.showFileSelection();
-					} else {
-						IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-						Object element = sel.getFirstElement();
-						if (element instanceof StringToFileInfoImpl) {
-							FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
-							OpenCompareProcess openCompare = new OpenCompareProcess();
-							openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
-									selectedFile, fChangeInfo.getUserSelectedRevision());
-						}
+		fdoubleClickListener = new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				if (!popupEnabled) {
+					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
+					handleSelection.showFileSelection();
+				} else {
+					IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+					Object element = sel.getFirstElement();
+					if (element instanceof StringToFileInfoImpl) {
+						FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
+						OpenCompareProcess openCompare = new OpenCompareProcess();
+						openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
+								selectedFile, fChangeInfo.getUserSelectedRevision());
 					}
 				}
-			};
+			}
+		};
 
-			fViewer.addDoubleClickListener(fdoubleClickListener);
-		}
+		fViewer.addDoubleClickListener(fdoubleClickListener);
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fViewer.getTable().addMouseListener(toggleReviewedStateListener());
 		}

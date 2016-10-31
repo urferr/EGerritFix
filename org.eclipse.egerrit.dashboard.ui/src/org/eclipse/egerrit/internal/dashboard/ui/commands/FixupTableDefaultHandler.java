@@ -48,6 +48,16 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
+		Display disp = Display.getCurrent();
+		Control control = disp.getFocusControl();
+		if (control instanceof Table) {
+			if (control.getData().equals(UIFilesTable.FILES_TABLE)) {
+				FilesTableModel[] tableInfo = FilesTableModel.values();
+				((Table) control).setColumnOrder(FilesTableModel.getDefaultOrder());
+				setTableDefaultWidth(control, tableInfo);
+				return null;
+			}
+		}
 		IWorkbenchPage wbp = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		String id = wbp.getActivePartReference().getId();
 		if (id.compareTo(GerritTableView.VIEW_ID) == 0) {

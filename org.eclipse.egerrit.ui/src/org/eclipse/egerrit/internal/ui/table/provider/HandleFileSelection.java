@@ -17,6 +17,7 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
+import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -76,6 +77,7 @@ public class HandleFileSelection {
 							failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
 						}
 					}
+					QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
 				}
 			}
 			if (!failedFiles.isEmpty()) {

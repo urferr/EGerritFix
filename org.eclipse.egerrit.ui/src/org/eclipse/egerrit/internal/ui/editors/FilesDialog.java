@@ -11,14 +11,25 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
+import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.table.UIFilesTable;
 import org.eclipse.egerrit.internal.ui.table.provider.HandleFileSelection;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -45,6 +56,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * This class is used to open the list of files associated to specific patch-set of the active review
@@ -52,6 +64,14 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 public class FilesDialog extends Dialog {
+
+	private static final String FILES_DIALOG = "egerrit.FilesDialog"; //$NON-NLS-1$
+
+	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
+
+	private static final String VIEW_COLUMN_WIDTH = "egerritViewColumnWidth"; //$NON-NLS-1$
+
+	private static final String VIEW_FILTER = "egerritViewFilter"; //$NON-NLS-1$
 
 	private RevisionInfo fRevisionInfo;
 
@@ -65,15 +85,26 @@ public class FilesDialog extends Dialog {
 
 	private static final int HEIGHT = 500;
 
+	private FileEditorInput fFileInput = null;
+
+	private TableViewer fViewer;
+
+	private List<Button> listFilter = new ArrayList<>(5);
+
 	/**
 	 * The constructor.
+	 *
+	 * @param revisionInfo
+	 * @param gerritClient
+	 * @param fileInput
 	 */
-	public FilesDialog(RevisionInfo revisionInfo, GerritClient gerritClient) {
+	public FilesDialog(RevisionInfo revisionInfo, GerritClient gerritClient, FileEditorInput fileInput) {
 		super(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell());
 		setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
 
 		fRevisionInfo = revisionInfo;
 		fGerritClient = gerritClient;
+		fFileInput = fileInput;
 	}
 
 	private static String buildDefaultMessage(RevisionInfo revisionInfo) {
@@ -107,11 +138,20 @@ public class FilesDialog extends Dialog {
 		createTextMsgHandling(composite);
 		tableUIFiles = new UIFilesTable(fGerritClient, fRevisionInfo);
 		tableUIFiles.enablePopup(false);
-		tableUIFiles.enableDeletedFilesFilter(true);
-		tableUIFiles.enableCommitMsgFilter(true);
 		tableUIFiles.createTableViewerSection(composite);
+		fViewer = tableUIFiles.getViewer();
+		//Create a second listener to close the dialog
+		fViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				storeDialogSettings();
+				FilesDialog.this.close();
+			}
+		});
 		tableUIFiles.setDialogSelection();
 		createFilterArea(composite, tableUIFiles);
+		restoreDialogSettings();
 
 		// Add a control listener to initialize a default minimum size
 		parent.getShell().addControlListener(new ControlListener() {
@@ -130,12 +170,11 @@ public class FilesDialog extends Dialog {
 			}
 		});
 
-		tableUIFiles.getViewer().getTable().addKeyListener(new KeyAdapter() {
+		fViewer.getTable().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.SPACE) {
-					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient,
-							tableUIFiles.getViewer());
+					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
 					handleSelection.showFileSelection();
 					getOKButton().notifyListeners(SWT.Selection, new Event());
 				}
@@ -144,18 +183,29 @@ public class FilesDialog extends Dialog {
 		return parent;
 	}
 
+	@Override
+	protected void buttonPressed(int buttonId) {
+		if (buttonId == IDialogConstants.OK_ID) {
+			HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
+			handleSelection.showFileSelection();
+			storeDialogSettings();
+		}
+
+		super.buttonPressed(buttonId);
+	}
+
 	private void createFilterArea(Composite parent, UIFilesTable tableUIFiles) {
 		Composite composite = new Composite(parent, SWT.BORDER);
 		composite.setLayout(new GridLayout(4, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		createDeleteFilterHandling(composite, tableUIFiles);
-		createCommitMsgHandling(composite, tableUIFiles);
-		createReviewedFilesHandling(composite, tableUIFiles);
-		createCommentedFilesHandling(composite, tableUIFiles);
+		listFilter.add(createDeleteFilterHandling(composite, tableUIFiles));
+		listFilter.add(createCommitMsgHandling(composite, tableUIFiles));
+		listFilter.add(createReviewedFilesHandling(composite, tableUIFiles));
+		listFilter.add(createCommentedFilesHandling(composite, tableUIFiles));
 	}
 
-	private void createDeleteFilterHandling(Composite composite, UIFilesTable tableUIFiles) {
+	private Button createDeleteFilterHandling(Composite composite, UIFilesTable tableUIFiles) {
 		Button deleteFilter = new Button(composite, SWT.CHECK);
 		deleteFilter.setText(Messages.FilesDialogDeleteFilter);
 		deleteFilter.setSelection(false);
@@ -177,30 +227,33 @@ public class FilesDialog extends Dialog {
 				// ignore
 			}
 		});
+		return deleteFilter;
 	}
 
-	private void createCommitMsgHandling(Composite composite, UIFilesTable tableUIFiles) {
+	private Button createCommitMsgHandling(Composite composite, UIFilesTable tableUIFiles) {
 		Button commitMsgFilter = new Button(composite, SWT.CHECK);
 		commitMsgFilter.setText(Messages.FilesDialogCommitMessageFilter);
-		commitMsgFilter.setSelection(false);
+		commitMsgFilter.setSelection(true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, false);
 		commitMsgFilter.setLayoutData(data);
 		commitMsgFilter.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				//When selected, show the file, --> remove the filter
 				if (commitMsgFilter.getSelection()) {
 					tableUIFiles.enableCommitMsgFilter(false);
-					int index = getcommitMessageIndex(tableUIFiles.getViewer().getTable());
+					int index = getcommitMessageIndex(fViewer.getTable());
 					if (index >= 0) {
-						tableUIFiles.getViewer().getTable().setSelection(index);
-						tableUIFiles.getViewer().setSelection(tableUIFiles.getViewer().getSelection(), true);
+						fViewer.getTable().setSelection(index);
+						fViewer.setSelection(fViewer.getSelection(), true);
 					}
 				} else {
+					//if toggle not selected, hide the file --> enable the filter
 					tableUIFiles.enableCommitMsgFilter(true);
-					if (tableUIFiles.getViewer().getTable().getItemCount() >= 1) {
-						tableUIFiles.getViewer().getTable().setSelection(0);
-						tableUIFiles.getViewer().setSelection(tableUIFiles.getViewer().getSelection(), true);
+					if (fViewer.getTable().getItemCount() >= 1) {
+						fViewer.getTable().setSelection(0);
+						fViewer.setSelection(fViewer.getSelection(), true);
 					}
 				}
 			}
@@ -210,12 +263,13 @@ public class FilesDialog extends Dialog {
 				// ignore
 			}
 		});
+		return commitMsgFilter;
 	}
 
 	private int getcommitMessageIndex(Table table) {
 		TableItem[] items = table.getItems();
 		int size = items.length;
-		String COMMIT_MSG = "COMMIT_MSG".toLowerCase();
+		String COMMIT_MSG = "COMMIT_MSG".toLowerCase(); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
 			StringToFileInfoImpl data = (StringToFileInfoImpl) items[index].getData();
 			if (data.getKey().toLowerCase().contains(COMMIT_MSG)) {
@@ -225,7 +279,7 @@ public class FilesDialog extends Dialog {
 		return -1;
 	}
 
-	private void createReviewedFilesHandling(Composite composite, UIFilesTable tableUIFiles) {
+	private Button createReviewedFilesHandling(Composite composite, UIFilesTable tableUIFiles) {
 		Button reviewedFilesFilter = new Button(composite, SWT.CHECK);
 		reviewedFilesFilter.setText(Messages.FilesDialogReviewedFilesFilter);
 		reviewedFilesFilter.setSelection(true);
@@ -249,9 +303,10 @@ public class FilesDialog extends Dialog {
 			}
 		});
 		tableUIFiles.enableReviewedFilesFilter(false);
+		return reviewedFilesFilter;
 	}
 
-	private void createCommentedFilesHandling(Composite composite, UIFilesTable tableUIFiles) {
+	private Button createCommentedFilesHandling(Composite composite, UIFilesTable tableUIFiles) {
 		Button commentedFilesFilter = new Button(composite, SWT.CHECK);
 		commentedFilesFilter.setText(Messages.FilesDialogCommentedFilesFilter);
 		commentedFilesFilter.setSelection(false);
@@ -273,6 +328,7 @@ public class FilesDialog extends Dialog {
 				// ignore
 			}
 		});
+		return commentedFilesFilter;
 	}
 
 	private void createTextMsgHandling(Composite parent) {
@@ -339,4 +395,110 @@ public class FilesDialog extends Dialog {
 		return textModifyListener;
 	}
 
+	private int findActiveFileInReview() {
+		if (tableUIFiles == null) {
+			create();
+		}
+		String filepath = fFileInput.getFile().getFullPath().toString();
+		if (filepath.startsWith("/")) { //$NON-NLS-1$
+			filepath = filepath.substring(1, filepath.length());
+		}
+		TableItem[] tableItems = fViewer.getTable().getItems();
+		for (int index = 0; index < tableItems.length; index++) {
+			if (tableItems[index].getData() instanceof StringToFileInfoImpl) {
+				StringToFileInfoImpl entry = (StringToFileInfoImpl) tableItems[index].getData();
+				if (entry.getKey().equalsIgnoreCase(filepath)) {
+					return index;
+				}
+			}
+		}
+
+		return -1;//Did not find the selected file
+	}
+
+	private void selectNextFile(int currentIndex) {
+		Table table = fViewer.getTable();
+		table.deselectAll();
+		if (currentIndex < (table.getItemCount() - 1)) {
+			table.setSelection((currentIndex + 1));
+		}
+	}
+
+	@Override
+	public int open() {
+		if (fFileInput != null) {
+			int currentIndex = findActiveFileInReview();
+			if (currentIndex != -1) {
+				//Automatically select the next file
+				selectNextFile(currentIndex);
+			}
+		}
+
+		return super.open();
+	}
+
+	private void storeDialogSettings() {
+		if (fViewer == null) {
+			return;
+		}
+		int[] columnOrder = fViewer.getTable().getColumnOrder();
+		int numColumn = fViewer.getTable().getColumns().length;
+
+		int[] columnWidth = new int[numColumn];
+		for (int i = 0; i < numColumn; i++) {
+			columnWidth[i] = fViewer.getTable().getColumn(i).getWidth();
+		}
+
+		getDialogSettings().put(VIEW_COLUMN_ORDER,
+				Arrays.stream(columnOrder).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
+		getDialogSettings().put(VIEW_COLUMN_WIDTH,
+				Arrays.stream(columnWidth).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
+
+		//Adjust the filter
+		String[] arrayBoolean = new String[listFilter.size()];
+		for (int i = 0; i < listFilter.size(); i++) {
+			arrayBoolean[i] = String.valueOf(listFilter.get(i).getSelection());
+		}
+		getDialogSettings().put(VIEW_FILTER, arrayBoolean);
+	}
+
+	private void restoreDialogSettings() {
+		if (fViewer == null) {
+			return;
+		}
+		String[] backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_ORDER);
+		if (backedUpValue == null) {
+			return;
+		}
+		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		fViewer.getTable().setColumnOrder(columnOrder);
+
+		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
+		if (backedUpValue == null) {
+			return;
+		}
+		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		int numColumn = fViewer.getTable().getColumns().length;
+		for (int i = 0; i < numColumn; i++) {
+			fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
+		}
+
+		backedUpValue = getDialogSettings().getArray(VIEW_FILTER);
+		if (backedUpValue == null) {
+			return;
+		}
+		for (int i = 0; i < backedUpValue.length; i++) {
+			listFilter.get(i).setSelection(StringConverter.asBoolean(backedUpValue[i]));
+			listFilter.get(i).notifyListeners(SWT.Selection, new Event());
+		}
+	}
+
+	private IDialogSettings getDialogSettings() {
+		IDialogSettings settings = EGerritUIPlugin.getDefault().getDialogSettings();
+		IDialogSettings section = settings.getSection(FILES_DIALOG);
+		if (section == null) {
+			section = settings.addNewSection(FILES_DIALOG);
+		}
+		return section;
+	}
 }
