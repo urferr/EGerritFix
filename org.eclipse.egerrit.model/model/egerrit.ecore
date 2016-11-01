@@ -351,12 +351,12 @@
     <eLiterals name="abandon" literal="Abandon"/>
     <eLiterals name="checkout" value="1" literal="Che&amp;ckout"/>
     <eLiterals name="cherrypick" value="2" literal="Cherry-Pic&amp;k"/>
-    <eLiterals name="draft" value="3" literal="&amp;Draft ..."/>
+    <eLiterals name="draft" value="3" literal="&amp;Draft..."/>
     <eLiterals name="followup" value="4" literal="Followup"/>
     <eLiterals name="publish" value="5" literal="P&amp;ublish"/>
     <eLiterals name="rebase" value="6" literal="Re&amp;base"/>
     <eLiterals name="refresh" value="7" literal="Refre&amp;sh"/>
-    <eLiterals name="reply" value="8" literal="Repl&amp;y ..."/>
+    <eLiterals name="reply" value="8" literal="Repl&amp;y..."/>
     <eLiterals name="restore" value="9" literal="Rest&amp;ore"/>
     <eLiterals name="revert" value="10" literal="Rever&amp;t"/>
     <eLiterals name="submit" value="11" literal="S&amp;ubmit"/>

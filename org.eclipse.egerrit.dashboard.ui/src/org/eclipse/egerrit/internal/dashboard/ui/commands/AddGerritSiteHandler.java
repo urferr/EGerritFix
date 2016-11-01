@@ -30,6 +30,8 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  */
 public class AddGerritSiteHandler extends AbstractHandler {
 
+	private static final String JOB_FAMILY = "DASHBOARD_UI"; //$NON-NLS-1$
+
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 		//Open the dialog to enter a new Gerrit URL
@@ -47,7 +49,7 @@ public class AddGerritSiteHandler extends AbstractHandler {
 
 			@Override
 			public boolean belongsTo(Object aFamily) {
-				return Messages.AddGerritSiteHandler_uiJOB.equals(aFamily);
+				return JOB_FAMILY.equals(aFamily);
 			}
 
 			@Override

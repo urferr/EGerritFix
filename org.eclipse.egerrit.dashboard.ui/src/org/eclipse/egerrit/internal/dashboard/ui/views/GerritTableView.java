@@ -124,6 +124,8 @@ public class GerritTableView extends ViewPart {
 
 	public static final String INVALID_IMAGE = "personInvalid.png"; //$NON-NLS-1$
 
+	protected static final String JOB_FAMILY = "DASHBOARD_UI"; //$NON-NLS-1$
+
 	// For the images
 
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
@@ -782,7 +784,7 @@ public class GerritTableView extends ViewPart {
 
 			@Override
 			public boolean belongsTo(Object aFamily) {
-				return Messages.GerritTableView_dashboardUiJob.equals(aFamily);
+				return JOB_FAMILY.equals(aFamily);
 			}
 
 			@Override

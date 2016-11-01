@@ -16,7 +16,7 @@ Entry-Name: .content
 runQueryAndOpenEditor [create-review -server $serverURL -isDraft]
 
 // delete a draft
-get-editor  | get-button "Draft ..." | click
+get-editor  | get-button "Draft..." | click
 get-menu Delete | click
 
 get-window "Delete draft review" | get-button OK | click

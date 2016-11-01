@@ -18,8 +18,8 @@ let [val review [create-review -server $serverURL]] {
    runQueryAndOpenEditor $review
 
    // do a reply and vote +1
-   get-editor | get-button "Reply ..." | click
-   get-menu "Reply ..." | click
+   get-editor | get-button "Reply..." | click
+   get-menu "Reply..." | click
    with [get-window "Reply to comment"] {
        get-button "Looks good to me, but someone else must approve" | click
        get-button OK | click
@@ -32,8 +32,8 @@ let [val review [create-review -server $serverURL]] {
    runQueryAndOpenEditor $review -serverName "test1"
    delete-gerrit-server "test1"
    
-   get-editor | get-button "Reply ..." | click
-   get-menu "Reply ..." | click
+   get-editor | get-button "Reply..." | click
+   get-menu "Reply..." | click
    with [get-window "Reply to comment"] {
    	   assert-that-radio-button "No score" -is enabled
        get-button "I would prefer this is not merged as is" | click
@@ -47,8 +47,8 @@ let [val review [create-review -server $serverURL]] {
    runQueryAndOpenEditor $review -serverName $defaultUser
    delete-gerrit-server $defaultUser
    
-   get-editor | get-button "Reply ..." | click
-   get-menu "Reply ..." | click
+   get-editor | get-button "Reply..." | click
+   get-menu "Reply..." | click
    with [get-window "Reply to comment"] {
       // ensure that the default is the same as the first vote
       assert-that-radio-button "Looks good to me, but someone else must approve" -is enabled

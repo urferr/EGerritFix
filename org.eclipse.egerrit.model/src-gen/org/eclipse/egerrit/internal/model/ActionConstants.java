@@ -65,7 +65,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	DRAFT(3, "draft", "&Draft ..."), //$NON-NLS-1$ //$NON-NLS-2$
+	DRAFT(3, "draft", "&Draft..."), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Followup</b></em>' literal object.
@@ -115,7 +115,7 @@ public enum ActionConstants implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	REPLY(8, "reply", "Repl&y ..."), //$NON-NLS-1$ //$NON-NLS-2$
+	REPLY(8, "reply", "Repl&y..."), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Restore</b></em>' literal object.
@@ -211,7 +211,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #DRAFT
-	 * @model name="draft" literal="&Draft ..."
+	 * @model name="draft" literal="&Draft..."
 	 * @generated
 	 * @ordered
 	 */
@@ -286,7 +286,7 @@ public enum ActionConstants implements Enumerator {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @see #REPLY
-	 * @model name="reply" literal="Repl&y ..."
+	 * @model name="reply" literal="Repl&y..."
 	 * @generated
 	 * @ordered
 	 */

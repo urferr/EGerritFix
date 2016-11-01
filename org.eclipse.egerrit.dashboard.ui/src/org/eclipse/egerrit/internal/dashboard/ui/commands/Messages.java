@@ -24,14 +24,6 @@ public class Messages extends NLS {
 
 	public static String AddGerritSiteHandler_commandAdd;
 
-	public static String AddGerritSiteHandler_uiJOB;
-
-	public static String SelectReviewSiteHandler_exception;
-
-	public static String SelectReviewSiteHandler_searchCommand;
-
-	public static String SelectReviewSiteHandler_dashboardUiJob;
-
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

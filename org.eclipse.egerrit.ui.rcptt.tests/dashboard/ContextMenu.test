@@ -32,12 +32,12 @@ proc "assert-context-menu" [val contains] {
 	}
 }
 
-assert-context-menu -contains "Rebase ..."
+assert-context-menu -contains "Rebase..."
 assert-context-menu -contains "Download"
-assert-context-menu -contains "Download/Checkout ..."
-assert-context-menu -contains "Download/Cherry Pick ..."
+assert-context-menu -contains "Download/Checkout..."
+assert-context-menu -contains "Download/Cherry Pick..."
 assert-context-menu -contains "Reply"
-assert-context-menu -contains "Reply/Reply ..."
+assert-context-menu -contains "Reply/Reply..."
 assert-context-menu -contains "Reply/Code-Review +2"
 assert-context-menu -contains "Open Compare"
 assert-context-menu -contains "Submit"

@@ -16,8 +16,8 @@ Entry-Name: .content
 runQueryAndOpenEditor [create-review -server $serverURL]
 
 // testing reply +1
-get-editor | get-button "Reply ..." | click
-get-menu "Reply ..." | click
+get-editor | get-button "Reply..." | click
+get-menu "Reply..." | click
 with [get-window "Reply to comment"] {
     get-editbox -after [get-label "Enter the reply to patchset 1/1"] | set-text "On the right track !"
     get-button "Looks good to me, but someone else must approve" | click
@@ -27,7 +27,7 @@ with [get-window "Reply to comment"] {
 assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+1  On the right track !" -in [get-editor]
 
 // testing reply +2
-get-editor | get-button "Reply ..." | click
+get-editor | get-button "Reply..." | click
 get-menu "Code-Review+2" | click
 
 assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+2" -in [get-editor]

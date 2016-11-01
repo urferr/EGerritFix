@@ -54,8 +54,6 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_starredName;
 
-	public static String GerritTableView_dashboardUiJob;
-
 	public static String GerritTableView_tooltipAnonymous;
 
 	public static String GerritTableView_tooltipLoggedOnAs;

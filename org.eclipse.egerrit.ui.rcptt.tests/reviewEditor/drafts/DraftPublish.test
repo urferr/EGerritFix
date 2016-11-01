@@ -17,18 +17,18 @@ Entry-Name: .content
 runQueryAndOpenEditor [create-review -server $serverURL -isDraft]
 assert-that-status-in-dashboard -is DRAFT
 with [get-editor] {
-	assert-that-button -button "Draft ..." -is enabled -in [get-editor]
+	assert-that-button -button "Draft..." -is enabled -in [get-editor]
 	assert-that-status-in-editor-header -is DRAFT -in [get-editor]
 }
 
 // publish a draft
-get-editor | get-button "Draft ..." | click
+get-editor | get-button "Draft..." | click
 get-menu Publish | click
 
 // check that its state has been changed accordingly
 assert-that-status-in-dashboard -is NEW
 with [get-editor] {
-	assert-that-button -button "Draft ..." -is disabled
+	assert-that-button -button "Draft..." -is disabled
 	assert-that-status-in-editor-header -is NEW
 }
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

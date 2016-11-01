@@ -31,7 +31,7 @@ let [val review [amend-review -review [create-review -server $serverURL] -isDraf
 with [get-editor] {
 	assert-that-patchset-counter-in-editor -is "1/1"
 	assert-that-button -button "Delete Revision" -is disabled
-	assert-that-button -button "Draft ..." -is disabled
+	assert-that-button -button "Draft..." -is disabled
 	assert-that-status-in-editor-header -is NEW
 	assert-that-first-entry-in-history-table -atColumn 3 -is 1
 }

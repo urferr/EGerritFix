@@ -18,7 +18,7 @@ let [val review [create-review -server $serverURL]] {
 }
 
 // first do a +2
-get-editor | get-button "Reply ..." | click
+get-editor | get-button "Reply..." | click
 get-menu "Code-Review+2" | click
 
 assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+2" -in [get-editor]
@@ -54,7 +54,7 @@ with [get-editor] {
 //// Now test in the newly opened editor that the submit button is enabled
 //    assert-that-button Submit -is disabled
 //    // and submit the reverted review
-//    with [get-button "Reply ..."] {
+//    with [get-button "Reply..."] {
 //        click
 //        get-menu "Code-Review+2" | click
 //    }
