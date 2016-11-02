@@ -15,7 +15,6 @@ import java.util.HashMap;
 
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.IMenuListener;
@@ -29,7 +28,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.TreeColumn;
 
 public class DynamicMenuBuilder {
 	private Menu commonMenu;
@@ -108,55 +106,6 @@ public class DynamicMenuBuilder {
 								.setFileNameFirst(menuItem.getSelection());
 					}
 					viewer.refresh();
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-			//Add Menu item to select which column to be visible
-			addVisibleColumnSelection(menu, viewer);
-		}
-	}
-
-	/**
-	 * Create the menu item to allow selection on which column should we make visible
-	 *
-	 * @param menu
-	 * @param viewer
-	 */
-	private void addVisibleColumnSelection(Menu menu, ColumnViewer viewer) {
-		new MenuItem(menu, SWT.SEPARATOR);
-		final MenuItem visible = new MenuItem(menu, SWT.MENU);
-		visible.setText("Visible column");
-		final ITableModel[] tableInfo = FilesTableModel.values();
-		for (ITableModel element : tableInfo) {
-			final MenuItem menuItem = new MenuItem(menu, SWT.CHECK);
-			if (element.getName().isEmpty()) {
-				menuItem.setText("Column: " + ((FilesTableModel) element).ordinal());
-			} else {
-				menuItem.setText(element.getName());
-			}
-			menuItem.setData(element);
-			menuItem.setSelection(((FilesTableModel) element).isColumnVisible());
-			menuItem.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					MenuItem subMenuItem = (MenuItem) e.getSource();
-					FilesTableModel tablemodel = (FilesTableModel) subMenuItem.getData();
-					tablemodel.setColumnVisible(subMenuItem.getSelection());
-					if (viewer instanceof TableViewer) {
-						((TableViewer) viewer).getTable()
-								.getColumn(tablemodel.ordinal())
-								.setWidth(tablemodel.getWidth());
-					} else if (viewer instanceof DiffTreeViewer) {
-						TreeViewerColumn columnName = treeViewerColumn.get(tablemodel);
-						if (columnName != null) {
-							TreeColumn column = columnName.getColumn();
-							column.setWidth(tablemodel.getWidth());
-						}
-					}
 				}
 
 				@Override
