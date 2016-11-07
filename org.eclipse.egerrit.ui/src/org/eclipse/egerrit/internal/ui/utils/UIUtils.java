@@ -140,7 +140,7 @@ public class UIUtils {
 						}
 					}).thenRun(() -> {
 						//Here we don't use the model loader because we need the re-loading of the comments to be done synchronously
-						QueryHelpers.loadBasicInformation(client, revisionInfo.getChangeInfo());
+						QueryHelpers.loadBasicInformation(client, revisionInfo.getChangeInfo(), false);
 					});
 					if (waitForDataRefresh) {
 						reloading.join();
@@ -197,10 +197,8 @@ public class UIUtils {
 				//Use the Author
 				sb.append(revisionInfo.getCommit().getAuthor().getName());
 			}
-			if (!revisionInfo.getCommit()
-					.getAuthor()
-					.getName()
-					.equals(revisionInfo.getCommit().getCommitter().getName())) {
+			if (!revisionInfo.getCommit().getAuthor().getName().equals(
+					revisionInfo.getCommit().getCommitter().getName())) {
 				//Add the committer if different than the Author
 				sb.append("/"); //$NON-NLS-1$
 				sb.append(revisionInfo.getCommit().getCommitter().getName());

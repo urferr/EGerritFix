@@ -93,7 +93,7 @@ public class DeleteDraftRevisionProvider {
 						changeInfo.setUserSelectedRevision(
 								changeInfo.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(revisions)));
 						ModelLoader ml = ModelLoader.initialize(gerritClient, changeInfo);
-						ml.reload();
+						ml.reload(false);
 						ml.dispose();
 					}
 				} catch (EGerritException e1) {

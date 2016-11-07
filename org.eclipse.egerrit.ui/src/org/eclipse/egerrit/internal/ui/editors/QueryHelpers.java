@@ -234,11 +234,13 @@ public class QueryHelpers {
 		}
 	}
 
-	private static void mergeNewInformation(ChangeInfo toRefresh, ChangeInfo newChangeInfo) {
+	private static void mergeNewInformation(ChangeInfo toRefresh, ChangeInfo newChangeInfo, boolean forceReload) {
 		synchronized (toRefresh) {
-			if (toRefresh.getUpdated() != null && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())
-					&& fullyLoaded(toRefresh)) {
-				return;
+			if (!forceReload) {
+				if (toRefresh.getUpdated() != null && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())
+						&& fullyLoaded(toRefresh)) {
+					return;
+				}
 			}
 			toRefresh.set_number(newChangeInfo.get_number());
 			toRefresh.setChange_id(newChangeInfo.getChange_id());
@@ -319,9 +321,9 @@ public class QueryHelpers {
 		toRefresh.getRevisions().putAll(newChangeInfo.getRevisions());
 	}
 
-	public static void loadBasicInformation(GerritClient gerrit, ChangeInfo toRefresh) {
+	public static void loadBasicInformation(GerritClient gerrit, ChangeInfo toRefresh, boolean forceReload) {
 		ChangeInfo newChangeInfo = QueryHelpers.queryBasicInformation(gerrit, toRefresh.getId());
-		mergeNewInformation(toRefresh, newChangeInfo);
+		mergeNewInformation(toRefresh, newChangeInfo, forceReload);
 	}
 
 	private static ChangeInfo queryBasicInformation(GerritClient gerrit, String id) {

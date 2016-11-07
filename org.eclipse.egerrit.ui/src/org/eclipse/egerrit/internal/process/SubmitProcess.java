@@ -40,7 +40,7 @@ public class SubmitProcess {
 			submitCmd.call();
 			//After a submit, we reload and reset the user selected revision
 			//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
-			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo))
+			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 					.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e3.getMessage());

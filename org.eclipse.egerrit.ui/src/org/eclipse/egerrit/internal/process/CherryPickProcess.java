@@ -76,8 +76,8 @@ public class CherryPickProcess {
 						} else {
 							ChangeInfo cherryPickedChangeInfo = (ChangeInfo) cherryPickCmdResult;
 							if (cherryPickedChangeInfo.getId().equals(changeInfo.getId())) {
-								CompletableFuture
-										.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo))
+								CompletableFuture.runAsync(
+										() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 										.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
 							} else {
 								UIUtils.openAnotherEditor(cherryPickedChangeInfo, fGerritClient);

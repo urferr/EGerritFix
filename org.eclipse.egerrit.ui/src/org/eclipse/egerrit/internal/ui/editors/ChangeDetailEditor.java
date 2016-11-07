@@ -150,7 +150,7 @@ public class ChangeDetailEditor extends EditorPart {
 	@Override
 	public void createPartControl(final Composite parent) {
 		loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
-		loader.loadBasicInformation();
+		loader.loadBasicInformation(false);
 		parent.setLayout(new GridLayout(1, false));
 		parent.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
@@ -804,7 +804,8 @@ public class ChangeDetailEditor extends EditorPart {
 	 * Refreshes the ChangeEditor
 	 */
 	public void refreshStatus() {
-		loader.reload();
+		//Force change the updated timestamp to cause a full reload to happen
+		loader.reload(true);
 	}
 
 	protected void headerSectionDataBindings() {

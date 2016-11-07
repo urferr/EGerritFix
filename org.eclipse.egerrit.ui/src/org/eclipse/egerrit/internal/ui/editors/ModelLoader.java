@@ -61,8 +61,8 @@ public class ModelLoader {
 	}
 
 	//load the basic information
-	public void loadBasicInformation() {
-		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo));
+	public void loadBasicInformation(boolean forceReload) {
+		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, forceReload));
 		initializeBasicInformationTracker();
 	}
 
@@ -104,7 +104,8 @@ public class ModelLoader {
 					}
 
 					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)) {
-						CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo));
+						CompletableFuture
+								.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false));
 					}
 				}
 			};
@@ -161,9 +162,9 @@ public class ModelLoader {
 		}
 	}
 
-	public void reload() {
+	public void reload(boolean forceReload) {
 		//Calling loadBasicInformation will refresh the "updated" timestamp
 		//which will cause other loads to occur
-		loadBasicInformation();
+		loadBasicInformation(forceReload);
 	}
 }

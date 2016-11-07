@@ -39,7 +39,7 @@ public class OpenCompareProcess {
 			UIUtils.showDialogTip(EDITOR_KEY, shell, Messages.EGerriTip, Messages.FileTabView_EGerriTipValue);
 		}
 		//Make sure all the revisions are loaded
-		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo));
+		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false));
 
 		compareEditor = new OpenCompareEditor(gerritClient, changeInfo);
 

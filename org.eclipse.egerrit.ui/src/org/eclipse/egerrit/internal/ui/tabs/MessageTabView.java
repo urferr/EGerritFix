@@ -328,7 +328,7 @@ public class MessageTabView {
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
 					ModelLoader loader = ModelLoader.initialize(fGerritClient, changeInfo);
-					loader.loadBasicInformation();
+					loader.loadBasicInformation(false);
 					loader.dispose();
 				}
 			});

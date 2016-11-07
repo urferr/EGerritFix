@@ -52,7 +52,7 @@ public class ReplyProcess {
 	public void handleReplyDialog(Shell shell, ChangeInfo changeInfo, GerritClient gerritClient,
 			RevisionInfo selectedRevision) {
 		UIUtils.replyToChange(shell, selectedRevision, null, gerritClient, false);
-		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo))
+		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 				.thenRun(() -> changeInfo.setUserSelectedRevision(selectedRevision));
 	}
 
@@ -146,7 +146,7 @@ public class ReplyProcess {
 
 			try {
 				reviewToEmit.call();
-				CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo))
+				CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 						.thenRun(() -> changeInfo.setUserSelectedRevision(selectedRevision));//keep the user working revision active
 			} catch (EGerritException e1) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
