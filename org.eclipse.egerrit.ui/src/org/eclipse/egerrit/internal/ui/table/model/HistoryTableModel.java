@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -28,7 +28,7 @@ import org.eclipse.swt.SWT;
 // Definition of the history table {date, author, message}
 public enum HistoryTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	COMMENT("", 20, false, true, SWT.LEFT), //
+	COMMENT("", 20, false, true, SWT.LEFT), // //$NON-NLS-1$
 	DATE(Messages.HistoryTableModel_date, 95, true, true, SWT.LEFT), //
 	AUTHOR(Messages.HistoryTableModel_author, 170, true, true, SWT.LEFT), //
 	MESSAGE(Messages.HistoryTableModel_message, 1500, true, true, SWT.LEFT);//

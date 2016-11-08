@@ -186,6 +186,8 @@ public class Messages extends NLS {
 
 	public static String OpenFileProblemMessage;
 
+	public static String QueryHelpers_executingQuery;
+
 	public static String QuickFixDeleteDraftComment_0;
 
 	public static String QuickFixDeleteDraftComment_1;

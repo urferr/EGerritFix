@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,7 @@ public class EnterHttpInSearchTest {
 	//This tests the case where no server information was known by the plugin
 	public void enterANonExistantURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
+		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/"); //$NON-NLS-1$
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -52,14 +52,14 @@ public class EnterHttpInSearchTest {
 	//This tests the case where the server was already entered
 	public void enterAnExistingURL() throws URISyntaxException {
 		//Setup, we create a server
-		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
+		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server"); //$NON-NLS-1$ //$NON-NLS-2$
 		List<GerritServerInformation> servers = new ArrayList<>();
 		servers.add(anonymousServer);
 		ServersStore.saveServers(servers);
 
 		//Open the view enter something in it
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
+		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/"); //$NON-NLS-1$
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -72,9 +72,9 @@ public class EnterHttpInSearchTest {
 	@Test
 	public void preferServerWithUsername() throws URISyntaxException {
 		//Setup, we create two servers, one anonymous, the other with a user
-		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server");
-		final GerritServerInformation userServer = new GerritServerInformation("https://git.eclipse.org/r", "server2");
-		userServer.setUserName("bob");
+		GerritServerInformation anonymousServer = new GerritServerInformation("https://git.eclipse.org/r", "server"); //$NON-NLS-1$ //$NON-NLS-2$
+		final GerritServerInformation userServer = new GerritServerInformation("https://git.eclipse.org/r", "server2"); //$NON-NLS-1$ //$NON-NLS-2$
+		userServer.setUserName("bob"); //$NON-NLS-1$
 		List<GerritServerInformation> servers = new ArrayList<>();
 		servers.add(anonymousServer);
 		servers.add(userServer);
@@ -82,7 +82,7 @@ public class EnterHttpInSearchTest {
 
 		//Open the view enter something in it
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/");
+		reviewTableView.processCommands("https://git.eclipse.org/r/#/c/54796/"); //$NON-NLS-1$
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -96,7 +96,7 @@ public class EnterHttpInSearchTest {
 	@Test
 	public void enterTheDashboardURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-		reviewTableView.processCommands("https://git.eclipse.org/r/#/q/status:open");
+		reviewTableView.processCommands("https://git.eclipse.org/r/#/q/status:open"); //$NON-NLS-1$
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -109,7 +109,7 @@ public class EnterHttpInSearchTest {
 	@Test
 	public void enterJustTheRootURL() {
 		final GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-		reviewTableView.processCommands("https://git.eclipse.org/r/");
+		reviewTableView.processCommands("https://git.eclipse.org/r/"); //$NON-NLS-1$
 		Display.findDisplay(Thread.currentThread()).asyncExec(new Runnable() {
 			@Override
 			public void run() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Ericsson
+ * Copyright (c) 2013-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -32,7 +32,7 @@ import org.osgi.service.prefs.Preferences;
 
 public class UIUtils {
 
-	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs";
+	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
 
 	private final static int TITLE_LENGTH = 75;
 
@@ -57,7 +57,7 @@ public class UIUtils {
 	public static void showNoServerMessage() {
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, null,
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID,
-						org.eclipse.egerrit.internal.dashboard.ui.views.Messages.GerritTableView_defineRepository),
+						Messages.UIUtils_configureMessage),
 				IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
@@ -102,7 +102,7 @@ public class UIUtils {
 		}
 
 		MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(shell, title, value,
-				"Don't show this message again", false, null, null);
+				Messages.UIUtils_dontShowAgain, false, null, null);
 
 		if (dialog.getToggleState()) {
 			editorPrefs.putBoolean(key, true);

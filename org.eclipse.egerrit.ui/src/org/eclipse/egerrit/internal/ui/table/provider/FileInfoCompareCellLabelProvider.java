@@ -67,19 +67,19 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		case 1: {
 			switch (gerrritNode.getKind()) {
 			case GerritDifferences.NO_CHANGE:
-				return "";
+				return ""; //$NON-NLS-1$
 			case GerritDifferences.ADDITION:
-				return "A";
+				return "A"; //$NON-NLS-1$
 			case GerritDifferences.DELETION:
-				return "D";
+				return "D"; //$NON-NLS-1$
 			case GerritDifferences.CHANGE:
-				return "M";
+				return "M"; //$NON-NLS-1$
 			case GerritDifferences.RENAMED:
-				return "R";
+				return "R"; //$NON-NLS-1$
 			case GerritDifferences.COPIED:
-				return "C";
+				return "C"; //$NON-NLS-1$
 			default:
-				return "M";
+				return "M"; //$NON-NLS-1$
 			}
 		}
 		case 2:

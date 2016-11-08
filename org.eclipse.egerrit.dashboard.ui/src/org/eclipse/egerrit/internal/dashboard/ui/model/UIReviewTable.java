@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Ericsson
+ * Copyright (c) 2013-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * This class handles the creation of the table widget shown in the dashboard.
  */
 public class UIReviewTable {
-	private final String DASHBOARD_CONTEXT_MENU = "org.eclipse.egerrit.dashboard.contextMenu";
+	private final String DASHBOARD_CONTEXT_MENU = "org.eclipse.egerrit.dashboard.contextMenu"; //$NON-NLS-1$
 
 	private static final String EGERRIT_DASHBOARD = "egerrit.dashboard"; //$NON-NLS-1$
 

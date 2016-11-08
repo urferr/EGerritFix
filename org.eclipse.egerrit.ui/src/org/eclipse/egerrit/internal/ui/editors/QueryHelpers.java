@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,12 +49,12 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.utils.Messages;
 
 /**
  * A helper class wrapping the common server queries. All calls in this class are expected to be synchronous.
  */
 public class QueryHelpers {
-	private static final String EXECUTING_QUERY = "Executing query";
 
 	/**
 	 * Get the changes that have a given subject
@@ -62,7 +62,7 @@ public class QueryHelpers {
 	public static ChangeInfo[] lookupPartialChangeInfoFromSubject(GerritClient gerritClient, String subject,
 			IProgressMonitor monitor) throws MalformedURLException {
 		try {
-			monitor.beginTask(EXECUTING_QUERY, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.QueryHelpers_executingQuery, IProgressMonitor.UNKNOWN);
 
 			QueryChangesCommand command = gerritClient.queryChanges();
 			command.addOption(ChangeOption.LABELS);
@@ -97,7 +97,7 @@ public class QueryHelpers {
 	public static ChangeInfo lookupPartialChangeInfoFromChangeId(GerritClient gerrit, String change_id,
 			IProgressMonitor monitor) {
 		try {
-			monitor.beginTask(EXECUTING_QUERY, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(Messages.QueryHelpers_executingQuery, IProgressMonitor.UNKNOWN);
 
 			GetChangeCommand command = null;
 			command = gerrit.getChange(change_id);

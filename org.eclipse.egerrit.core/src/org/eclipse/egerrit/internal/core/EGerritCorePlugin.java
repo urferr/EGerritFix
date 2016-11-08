@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -218,8 +218,8 @@ public class EGerritCorePlugin extends Plugin {
 	 */
 	String getUserAgent() {
 		if (userAgent == null) {
-			String productId = System.getProperty("eclipse.product", "unknownProduct");
-			String buildId = System.getProperty("eclipse.buildId", "unknownBuildId"); //$NON-NLS-1$ //$NON-NLS-2
+			String productId = System.getProperty("eclipse.product", "unknownProduct"); //$NON-NLS-1$//$NON-NLS-2$
+			String buildId = System.getProperty("eclipse.buildId", "unknownBuildId"); //$NON-NLS-1$//$NON-NLS-2$
 			String pluginVersion = getBundle().getVersion().toString();
 			userAgent = productId + '/' + buildId + ' ' + PLUGIN_ID + '/' + pluginVersion;
 		}
@@ -233,7 +233,7 @@ public class EGerritCorePlugin extends Plugin {
 	 */
 	public static String getBundleVersion() {
 		//Testing for the eclipse runtime here
-		String ret = "";
+		String ret = ""; //$NON-NLS-1$
 		final Bundle bdleEgerritUi = Platform.getBundle(PLUGIN_ID);
 		if (bdleEgerritUi != null) {
 			Version version = bdleEgerritUi.getVersion();

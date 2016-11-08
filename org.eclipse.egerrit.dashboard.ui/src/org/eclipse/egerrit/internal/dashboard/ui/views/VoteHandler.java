@@ -126,7 +126,7 @@ public class VoteHandler implements Listener, MouseListener {
 		if (messageToShow.isPresent()) {
 			final ToolTip tooltip = new ToolTip(shell, SWT.None);
 			String authorName = ((ChangeMessageInfo) messageToShow.get()).getAuthor().getName();
-			tooltip.setMessage(((ChangeMessageInfo) messageToShow.get()).getMessage() + "\nby " + authorName);
+			tooltip.setMessage(((ChangeMessageInfo) messageToShow.get()).getMessage() + "\nby " + authorName); //$NON-NLS-1$
 			tooltip.setVisible(true);
 			tooltip.setAutoHide(true);
 		}
@@ -136,10 +136,10 @@ public class VoteHandler implements Listener, MouseListener {
 		ViewerCell viewerCell = table.getCell(new Point(event.x, event.y));
 		if (viewerCell != null) {
 			if (viewerCell.getColumnIndex() == ReviewTableDefinition.VERIFY.ordinal()) {
-				return "Verified";
+				return "Verified"; //$NON-NLS-1$
 			}
 			if (viewerCell.getColumnIndex() == ReviewTableDefinition.CR.ordinal()) {
-				return "Code-Review";
+				return "Code-Review"; //$NON-NLS-1$
 			}
 		}
 		return null;

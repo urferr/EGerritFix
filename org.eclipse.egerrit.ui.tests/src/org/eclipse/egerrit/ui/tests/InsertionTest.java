@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -94,8 +94,8 @@ public class InsertionTest extends EditionLimiterTests {
 //				expectations(1, new Position(40, 4)) });
 		{
 			//Insert in existing draft comment
-			final String documentWithDraftComment = "000000000\naaaa\n111111111\n222222222\n333333333";
-			final String[] comments = new String[] { "aaaa" };
+			final String documentWithDraftComment = "000000000\naaaa\n111111111\n222222222\n333333333"; //$NON-NLS-1$
+			final String[] comments = new String[] { "aaaa" }; //$NON-NLS-1$
 //			things.add(new Object[] { inputData(documentWithDraftComment, comments, 1, 0, "b"),
 //					expectations(1, "baaaa", 1, new Position(10, 5)) });
 //			things.add(new Object[] { inputData(documentWithDraftComment, comments, 1, 1, "b"),
@@ -110,8 +110,8 @@ public class InsertionTest extends EditionLimiterTests {
 
 		{
 			//Insert in published comment
-			final String documentWithPublishedComment = "000000000\nauthor\n111111111\n222222222\n333333333";
-			final String[] publishedComments = new String[] { "author" };
+			final String documentWithPublishedComment = "000000000\nauthor\n111111111\n222222222\n333333333"; //$NON-NLS-1$
+			final String[] publishedComments = new String[] { "author" }; //$NON-NLS-1$
 //			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 1, 0, "b"),
 //					expectations(1, "author", 2, new Position(10, 6), new Position(17, 1)) });
 //			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 1, 1, "b"),
@@ -125,8 +125,8 @@ public class InsertionTest extends EditionLimiterTests {
 
 		{
 			//Bug 481048
-			final String documentWithPublishedComment = "aaa\r\nauthor\n";
-			final String[] publishedComments = new String[] { "author" };
+			final String documentWithPublishedComment = "aaa\r\nauthor\n"; //$NON-NLS-1$
+			final String[] publishedComments = new String[] { "author" }; //$NON-NLS-1$
 //			things.add(new Object[] { inputData(documentWithPublishedComment, publishedComments, 0, 3, "b", "b"),
 //					expectations(1, "bb", 2, new Position(5, 2), new Position(9, 6)) });
 

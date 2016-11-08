@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -202,7 +202,7 @@ public class GerritRepository {
 	 * @return the host name
 	 */
 	public String getHostname() {
-		return fHost != null ? fHost.getHostName() : "";
+		return fHost != null ? fHost.getHostName() : ""; //$NON-NLS-1$
 	}
 
 	/**
@@ -351,7 +351,7 @@ public class GerritRepository {
 			}
 		} catch (SSLHandshakeException e) {
 			fStatus = SSL_PROBLEM;
-			if (e.getCause().getClass().getName().equals("sun.security.validator.ValidatorException")) {
+			if (e.getCause().getClass().getName().equals("sun.security.validator.ValidatorException")) { //$NON-NLS-1$
 				fStatus = SSL_INVALID_ROOT_CERTIFICATE;
 			}
 			EGerritCorePlugin.logError(e.getLocalizedMessage(), e);
@@ -413,9 +413,9 @@ public class GerritRepository {
 	public String formatGerritVersion() {
 		String gerritVersion;
 		StringBuilder sb = new StringBuilder();
-		sb.append("Gerrit server: " + (serverInfo != null ? serverInfo.getServerURI() : "Unknown")); //$NON-NLS-2$
-		sb.append("\nVersion: ");
-		gerritVersion = fVersion != null ? fVersion.toString() : "Unknown";
+		sb.append("Gerrit server: " + (serverInfo != null ? serverInfo.getServerURI() : "Unknown")); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append("\nVersion: "); //$NON-NLS-1$
+		gerritVersion = fVersion != null ? fVersion.toString() : "Unknown"; //$NON-NLS-1$
 		sb.append(gerritVersion);
 		sb.append("\n"); //$NON-NLS-1$
 		return sb.toString();

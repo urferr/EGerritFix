@@ -121,7 +121,7 @@ public class CheckoutRevision extends Action {
 			//Get only potential branches
 			potentialBranches = mapPotentialBranch(mapBranchesChangeId);
 		} catch (GitAPIException e) {
-			EGerritCorePlugin.logError("find All Potential Branches()" + e.getMessage());
+			EGerritCorePlugin.logError("find All Potential Branches()" + e.getMessage()); //$NON-NLS-1$
 		}
 		gitRepo.close();
 		return potentialBranches;

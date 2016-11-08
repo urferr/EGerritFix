@@ -42,9 +42,9 @@ public class ReviewFactory {
 
 	private static final String A_PROJECT_A_JAVA = "A.java"; //$NON-NLS-1$
 
-	private static final String INITIAL_CONTENT_FILE_A = "Hello";
+	private static final String INITIAL_CONTENT_FILE_A = "Hello"; //$NON-NLS-1$
 
-	private static final String NEW_CONTENT_FILE_A = "Hello reviewer community \n\n Now is the time to do some testing \n \n";
+	private static final String NEW_CONTENT_FILE_A = "Hello reviewer community \n\n Now is the time to do some testing \n \n"; //$NON-NLS-1$
 
 //	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 //			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
@@ -138,7 +138,7 @@ public class ReviewFactory {
 					+ System.currentTimeMillis();
 
 			gitAccess.addFile(filename, fileContent);
-			gitAccess.pushFile("Another revision\n\nChange-Id: " + changeId, draft, true);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + changeId, draft, true); //$NON-NLS-1$
 		} catch (Exception e1) {
 			fail(e1.getMessage());
 		}

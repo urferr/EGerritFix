@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,8 +44,8 @@ public class HyperLinkDetectorTest {
 	//Test the case where the URL is a local file
 	public void fileUrlTest() {
 		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
-		String testData = "The file of interest resides here: file://home/root/documents/project/sourcefile.java have a look at it.";
-		String expected = "Open ' file://home/root/documents/project/sourcefile.java' in a browser";
+		String testData = "The file of interest resides here: file://home/root/documents/project/sourcefile.java have a look at it."; //$NON-NLS-1$
+		String expected = "Open ' file://home/root/documents/project/sourcefile.java' in a browser"; //$NON-NLS-1$
 		HyperLinkDetector detector = new HyperLinkDetector(null, ci);
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -65,12 +65,12 @@ public class HyperLinkDetectorTest {
 	//Test the case where the string contains 2 urls
 	public void twoURLsTest() {
 		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
-		String testData = "Patch Set 1:"
-				+ "BTW, it doesn't look like http://istmffastyet.dorsal.polymtl.ca/ still updates"
-				+ "It also looks like http://jenkins.dorsal.polymtl.ca/ is down?";
+		String testData = "Patch Set 1:" //$NON-NLS-1$
+				+ "BTW, it doesn't look like http://istmffastyet.dorsal.polymtl.ca/ still updates" //$NON-NLS-1$
+				+ "It also looks like http://jenkins.dorsal.polymtl.ca/ is down?"; //$NON-NLS-1$
 
-		String expected1 = "Open ' http://istmffastyet.dorsal.polymtl.ca/' in a browser";
-		String expected2 = "Open ' http://jenkins.dorsal.polymtl.ca/' in a browser";
+		String expected1 = "Open ' http://istmffastyet.dorsal.polymtl.ca/' in a browser"; //$NON-NLS-1$
+		String expected2 = "Open ' http://jenkins.dorsal.polymtl.ca/' in a browser"; //$NON-NLS-1$
 		HyperLinkDetector detector = new HyperLinkDetector(null, ci);
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -91,10 +91,10 @@ public class HyperLinkDetectorTest {
 	//Test the case where the string contains 1 url
 	public void normalURLTest() {
 		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
-		String testData = "Patch Set 1: Code-Review+1" + "Build Successful "
-				+ "https://hudson.eclipse.org/tracecompass/job/tracecompass-gerrit/8538/ : SUCCESS";
+		String testData = "Patch Set 1: Code-Review+1" + "Build Successful " //$NON-NLS-1$ //$NON-NLS-2$
+				+ "https://hudson.eclipse.org/tracecompass/job/tracecompass-gerrit/8538/ : SUCCESS"; //$NON-NLS-1$
 
-		String expected = "Open ' https://hudson.eclipse.org/tracecompass/job/tracecompass-gerrit/8538/' in a browser";
+		String expected = "Open ' https://hudson.eclipse.org/tracecompass/job/tracecompass-gerrit/8538/' in a browser"; //$NON-NLS-1$
 		HyperLinkDetector detector = new HyperLinkDetector(null, ci);
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());

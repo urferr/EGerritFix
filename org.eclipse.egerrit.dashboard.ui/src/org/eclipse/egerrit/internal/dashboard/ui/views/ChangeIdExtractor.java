@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -135,7 +135,7 @@ public class ChangeIdExtractor {
 	 */
 	private String removeTrailingSlash(String serverAddress) {
 		//Handle the second format found when Hudson put information in message
-		if (serverAddress.endsWith("/")) {
+		if (serverAddress.endsWith("/")) { //$NON-NLS-1$
 			//Remove the "/" at the end if it exists
 			serverAddress = serverAddress.substring(0, serverAddress.length() - 1);
 		}

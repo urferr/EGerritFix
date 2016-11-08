@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,10 +17,10 @@ package org.eclipse.egerrit.internal.ui.utils;
  */
 public class EGerritConstants {
 
-	public static final String PROJECT = "project";
+	public static final String PROJECT = "project"; //$NON-NLS-1$
 
-	public static final String BRANCH = "branch";
+	public static final String BRANCH = "branch"; //$NON-NLS-1$
 
-	public static final String OWNER = "owner";
+	public static final String OWNER = "owner"; //$NON-NLS-1$
 
 }

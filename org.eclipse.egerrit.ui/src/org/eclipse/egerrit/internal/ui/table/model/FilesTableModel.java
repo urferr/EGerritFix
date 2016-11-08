@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -29,8 +29,8 @@ import org.eclipse.swt.SWT;
 // Moveable, Alignment}
 public enum FilesTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	REVIEWED("", 30, true, true, SWT.LEFT), //
-	MOD_TYPE("", 30, true, true, SWT.LEFT), //
+	REVIEWED("", 30, true, true, SWT.LEFT), //$NON-NLS-1$
+	MOD_TYPE("", 30, true, true, SWT.LEFT), //$NON-NLS-1$
 	FILE_PATH(Messages.FilesTableDefinition_filePath, 540, true, true, SWT.LEFT), //
 	COMMENTS(Messages.FilesTableDefinition_comments, 220, true, true, SWT.LEFT), //
 	SIZE(Messages.FilesTableDefinition_size, 80, false, true, SWT.LEFT);

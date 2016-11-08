@@ -198,27 +198,27 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 				toolbarManager.appendToGroup("merge", new CommandContributionItem(replyContributionParameter)); //$NON-NLS-1$
 
-				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer));
+				toolbarManager.appendToGroup("modes", new ShowCommentedFileAction(() -> viewer)); //$NON-NLS-1$
 
 				CommandContributionItemParameter showFileContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.showFilePath", //$NON-NLS-1$
 						CommandContributionItem.STYLE_CHECK);
 				showFileContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.TOGGLE_FILEPATH);
-				toolbarManager.appendToGroup("modes", new CommandContributionItem(showFileContributionParameter));
+				toolbarManager.appendToGroup("modes", new CommandContributionItem(showFileContributionParameter)); //$NON-NLS-1$
 
 				CommandContributionItemParameter nextContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectNextFile", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				nextContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.DOWN_ARROW);
 
-				toolbarManager.appendToGroup("navigation", new CommandContributionItem(nextContributionParameter));
+				toolbarManager.appendToGroup("navigation", new CommandContributionItem(nextContributionParameter)); //$NON-NLS-1$
 
 				CommandContributionItemParameter previousContributionParameter = new CommandContributionItemParameter(
 						serviceLocator, null, "org.eclipse.egerrit.internal.ui.compare.selectPreviousFile", //$NON-NLS-1$
 						CommandContributionItem.STYLE_PUSH);
 				previousContributionParameter.icon = EGerritImages.getDescriptor(EGerritImages.UP_ARROW);
 
-				toolbarManager.appendToGroup("navigation", new CommandContributionItem(previousContributionParameter));
+				toolbarManager.appendToGroup("navigation", new CommandContributionItem(previousContributionParameter)); //$NON-NLS-1$
 
 			}
 		};

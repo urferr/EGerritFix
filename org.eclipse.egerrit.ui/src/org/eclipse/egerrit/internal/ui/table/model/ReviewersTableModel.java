@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -31,7 +31,7 @@ import org.eclipse.swt.SWT;
 // Moveable, Alignment}
 public enum ReviewersTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
-	SELECT("", 24, false, true, SWT.LEFT), //
+	SELECT("", 24, false, true, SWT.LEFT), // //$NON-NLS-1$
 	ID(Messages.ReviewersTableDefinition_id, 120, true, true, SWT.LEFT), //
 	ROLE(Messages.ReviewersTableDefinition_role, 170, true, true, SWT.LEFT), //
 	CR(Messages.ReviewersTableDefinition_cr, 45, false, true, SWT.LEFT), //

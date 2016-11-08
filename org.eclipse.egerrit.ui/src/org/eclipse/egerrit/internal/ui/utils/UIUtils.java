@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2016 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -69,7 +69,7 @@ public class UIUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
 
-	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs";
+	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
 
 	private final static int TITLE_LENGTH = 75;
 

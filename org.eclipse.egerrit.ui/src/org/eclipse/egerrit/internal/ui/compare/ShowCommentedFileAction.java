@@ -35,7 +35,7 @@ public class ShowCommentedFileAction extends Action {
 		setToolTipText(Messages.ShowCommentedFileAction_1);
 		setChecked(filterOn);
 		setImageDescriptor(EGerritImages.getDescriptor(EGerritImages.COMMENT_FILTER));
-		setActionDefinitionId("org.eclipse.egerrit.internal.ui.compare.showCommentedFile");
+		setActionDefinitionId("org.eclipse.egerrit.internal.ui.compare.showCommentedFile"); //$NON-NLS-1$
 	}
 
 	@Override

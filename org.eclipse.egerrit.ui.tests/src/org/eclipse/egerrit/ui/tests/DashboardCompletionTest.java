@@ -39,9 +39,9 @@ public class DashboardCompletionTest {
 	@Before
 	public void setUp() throws Exception {
 		ChangeInfo ci = ModelFactory.eINSTANCE.createChangeInfo();
-		EStructuralFeature l = ci.eClass().getEStructuralFeature("labels");
+		EStructuralFeature l = ci.eClass().getEStructuralFeature("labels"); //$NON-NLS-1$
 		HashMap<String, LabelInfo> labels = new HashMap<String, LabelInfo>();
-		labels.put("a", ModelFactory.eINSTANCE.createLabelInfo());
+		labels.put("a", ModelFactory.eINSTANCE.createLabelInfo()); //$NON-NLS-1$
 		ci.eSet(ModelPackage.eINSTANCE.getChangeInfo_Labels(), labels);
 		GerritServerInformation serverInfo = new GerritServerInformation(
 				new URI(Common.SCHEME, null, Common.HOST, Common.PORT, Common.PATH, null, null).toASCIIString(),
@@ -70,7 +70,7 @@ public class DashboardCompletionTest {
 	public void testBuiltInCompletion() {
 		SearchContentProposalProvider provider = new SearchContentProposalProvider(null);
 		provider.setGerritClient(fGerrit);
-		IContentProposal[] proposals = provider.getProposals("s", 1); //Here we test "s" without any specific reason
+		IContentProposal[] proposals = provider.getProposals("s", 1); //Here we test "s" without any specific reason //$NON-NLS-1$
 		assertEquals(10, proposals.length);
 	}
 
@@ -78,7 +78,7 @@ public class DashboardCompletionTest {
 	public void testDefaultProposals() {
 		SearchContentProposalProvider provider = new SearchContentProposalProvider(null);
 		provider.setGerritClient(fGerrit);
-		IContentProposal[] proposals = provider.getProposals("", 0);
+		IContentProposal[] proposals = provider.getProposals("", 0); //$NON-NLS-1$
 		assertEquals(3, proposals.length);
 	}
 
@@ -86,7 +86,7 @@ public class DashboardCompletionTest {
 	public void testAccountCompletion() {
 		SearchContentProposalProvider provider = new SearchContentProposalProvider(null);
 		provider.setGerritClient(fGerrit);
-		IContentProposal[] proposals = provider.getProposals("owner:tes", 9);
+		IContentProposal[] proposals = provider.getProposals("owner:tes", 9); //$NON-NLS-1$
 		assertEquals(2, proposals.length);
 	}
 

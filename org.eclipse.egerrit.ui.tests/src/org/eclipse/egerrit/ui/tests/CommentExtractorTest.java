@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -424,9 +424,9 @@ public class CommentExtractorTest {
 
 	@Test
 	public void insertOnFirstLineWithCommentsBelow() {
-		setupOriginalDocument("000000000\naaaa\nbbbb\n111111111\n222222222\n333333333\n", "aaaa", "bbbb"); //$NON-NLS-1$ //$NON-NLS-2$
+		setupOriginalDocument("000000000\naaaa\nbbbb\n111111111\n222222222\n333333333\n", "aaaa", "bbbb"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setupNewDocument("000000000\ncccc\naaaa\nbbbb\n111111111\n222222222\n333333333\n", //$NON-NLS-1$
-				new String[] { "aaaa", "bbbb" }, new String[] { "cccc" }); //$NON-NLS-3$
+				new String[] { "aaaa", "bbbb" }, new String[] { "cccc" }); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 
 		CommentExtractor extractor = new CommentExtractor();
 		extractor.extractComments(initialDocument, initialComments, newDocument, newComments);
@@ -484,7 +484,7 @@ public class CommentExtractorTest {
 				int line = -1;
 				try {
 					line = document.getLineOfOffset(offset);
-					commentModel.addAnnotation(new GerritCommentAnnotation(null, ""),
+					commentModel.addAnnotation(new GerritCommentAnnotation(null, ""), //$NON-NLS-1$
 							new Position(offset, comment.length()));
 					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
 				} catch (BadLocationException e) {
@@ -499,15 +499,15 @@ public class CommentExtractorTest {
 
 	private GerritCommentAnnotation createGerritComment(String comment, int line, int offset, int length) {
 		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
-		info.setId("ID-" + comment);
+		info.setId("ID-" + comment); //$NON-NLS-1$
 		info.setLine(line);
 		info.setMessage(comment);
-		if (comment.startsWith("author") || comment.startsWith("done")) {
+		if (comment.startsWith("author") || comment.startsWith("done")) { //$NON-NLS-1$ //$NON-NLS-2$
 			AccountInfo author = ModelFactory.eINSTANCE.createAccountInfo();
 			info.setAuthor(author);
 		}
-		info.setUpdated("2015-09-23 16:05:16.000000000");
-		return new GerritCommentAnnotation(info, "");
+		info.setUpdated("2015-09-23 16:05:16.000000000"); //$NON-NLS-1$
+		return new GerritCommentAnnotation(info, ""); //$NON-NLS-1$
 	}
 
 }

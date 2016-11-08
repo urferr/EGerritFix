@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,9 +33,9 @@ class InputData {
 	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer();
-		result.append("insert from ").append(line).append(' ').append(offset).append(" keys:").append('>');
+		result.append("insert from ").append(line).append(' ').append(offset).append(" keys:").append('>'); //$NON-NLS-1$ //$NON-NLS-2$
 		for (String string : keys) {
-			result.append(string.replace("\n", "<enter>")).append(' ');
+			result.append(string.replace("\n", "<enter>")).append(' '); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		result.append('<');
 		return result.toString();

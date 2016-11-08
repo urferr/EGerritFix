@@ -115,7 +115,7 @@ public class CheckoutRevisionTest extends CommandTestWithSimpleReview {
 	 */
 	@Test
 	public void testTwoPerfectMatches() {
-		createAnotherBranch("secondBranch");
+		createAnotherBranch("secondBranch"); //$NON-NLS-1$
 		CheckoutRevision checkoutRevision = new CheckoutRevision(changeInfo.getRevision(), fGerrit);
 		Map<String, BranchMatch> potentialBranches = checkoutRevision.findAllPotentialBranches(gitRepo.getRepository());
 		assertEquals(2, potentialBranches.size());

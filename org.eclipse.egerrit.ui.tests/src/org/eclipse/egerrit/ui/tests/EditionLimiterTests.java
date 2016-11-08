@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2016 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -108,7 +108,7 @@ public class EditionLimiterTests {
 			for (Position position : positions) {
 				posList.append(position).append(' ');
 			}
-			fail("Could not find position: " + expected + " Positions available are " + posList.toString());
+			fail("Could not find position: " + expected + " Positions available are " + posList.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (BadPositionCategoryException e) {
 			fail();
 		}
@@ -200,10 +200,10 @@ public class EditionLimiterTests {
 
 	private GerritCommentAnnotation createGerritComment(String comment, int line) {
 		CommentInfo info = ModelFactory.eINSTANCE.createCommentInfo();
-		info.setId("ID-" + comment);
+		info.setId("ID-" + comment); //$NON-NLS-1$
 		info.setLine(line);
 		info.setMessage(comment);
-		if (comment.startsWith("author") || comment.startsWith("done")) {
+		if (comment.startsWith("author") || comment.startsWith("done")) { //$NON-NLS-1$ //$NON-NLS-2$
 			AccountInfo author = ModelFactory.eINSTANCE.createAccountInfo();
 			info.setAuthor(author);
 		}
@@ -214,7 +214,7 @@ public class EditionLimiterTests {
 		try {
 			widgetUT.setFocus();
 			Method keyboardMethod = org.eclipse.swtbot.swt.finder.widgets.AbstractSWTBot.class
-					.getDeclaredMethod("keyboard", new Class[0]);
+					.getDeclaredMethod("keyboard", new Class[0]); //$NON-NLS-1$
 			keyboardMethod.setAccessible(true);
 			Keyboard keyboard = (Keyboard) keyboardMethod.invoke(widgetUT, null);
 			KeyboardLayout layout = KeyboardLayout.getDefaultKeyboardLayout();
@@ -233,11 +233,11 @@ public class EditionLimiterTests {
 			fail();
 		}
 		for (String key : inputData.keys) {
-			if (key.equals("<DEL>")) {
+			if (key.equals("<DEL>")) { //$NON-NLS-1$
 				typeKeystroke(Keystrokes.DELETE);
 				continue;
 			}
-			if (key.equals("<UNDO>")) {
+			if (key.equals("<UNDO>")) { //$NON-NLS-1$
 				textViewer.getUndoManager().undo();
 				continue;
 			}

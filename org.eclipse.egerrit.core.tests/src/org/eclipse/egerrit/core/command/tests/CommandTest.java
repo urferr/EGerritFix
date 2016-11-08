@@ -143,7 +143,7 @@ public abstract class CommandTest {
 			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n"; //$NON-NLS-1$
 
 			gitAccess.addFile(filename, fileContent);
-			gitAccess.pushFile("Another revision\n\nChange-Id: " + gitAccess.getChangeId(), draft, true);
+			gitAccess.pushFile("Another revision\n\nChange-Id: " + gitAccess.getChangeId(), draft, true); //$NON-NLS-1$
 
 		} catch (Exception e1) {
 			fail(e1.getMessage());
@@ -157,7 +157,7 @@ public abstract class CommandTest {
 			}
 		}
 		if (!f.delete()) {
-			throw new FileNotFoundException("Failed to delete file: " + f);
+			throw new FileNotFoundException("Failed to delete file: " + f); //$NON-NLS-1$
 		}
 	}
 
