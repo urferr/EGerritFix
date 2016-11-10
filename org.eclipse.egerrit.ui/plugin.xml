@@ -152,6 +152,10 @@
             id="org.eclipse.egerrit.internal.ui.OpenFileSelection"
             name="%openReviewFiles">
          </command>
+         <command
+            id="org.eclipse.egerrit.internal.ui.SelectPreviousFile"
+            name="%seletPreviousFile">
+         </command>         
 </extension>
 <extension
        point="org.eclipse.ui.handlers">
@@ -198,7 +202,13 @@
          <handler
             class="org.eclipse.egerrit.internal.ui.editors.OpenFileSelectionHandler"
             commandId="org.eclipse.egerrit.internal.ui.OpenFileSelection">
-         </handler>       
+         </handler>   
+   
+         <handler
+            class="org.eclipse.egerrit.internal.ui.editors.OpenFileSelectionHandler"
+            commandId="org.eclipse.egerrit.internal.ui.SelectPreviousFile ">
+         </handler>         
+            
 </extension>
 <extension
        point="org.eclipse.ui.bindings">
@@ -258,9 +268,15 @@
         </key>
        <key
             commandId="org.eclipse.egerrit.internal.ui.OpenFileSelection"
-            contextId="org.eclipse.ui.contexts.window"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+5">
+      </key>
+      <key
+            commandId="org.eclipse.egerrit.internal.ui.SelectPreviousFile"
+            contextId="org.eclipse.ui.contexts.dialogAndWindow"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+Shift+5">
       </key>
 </extension>
 

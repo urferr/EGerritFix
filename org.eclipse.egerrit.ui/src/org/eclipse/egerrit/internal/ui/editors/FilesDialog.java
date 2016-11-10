@@ -20,6 +20,7 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.table.UIFilesTable;
+import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.HandleFileSelection;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
@@ -53,6 +54,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -73,6 +75,10 @@ public class FilesDialog extends Dialog {
 
 	private static final String VIEW_FILTER = "egerritViewFilter"; //$NON-NLS-1$
 
+	private static final String COLUMN_SELECTION = "egerritSelectColumn"; //$NON-NLS-1$
+
+	private static final String SORT_DIRECTION = "sortDirection"; //$NON-NLS-1$
+
 	private RevisionInfo fRevisionInfo;
 
 	private GerritClient fGerritClient;
@@ -91,6 +97,8 @@ public class FilesDialog extends Dialog {
 
 	private List<Button> listFilter = new ArrayList<>(5);
 
+	private static FilesDialog openedDialog;
+
 	/**
 	 * The constructor.
 	 *
@@ -105,6 +113,7 @@ public class FilesDialog extends Dialog {
 		fRevisionInfo = revisionInfo;
 		fGerritClient = gerritClient;
 		fFileInput = fileInput;
+		openedDialog = this;
 	}
 
 	private static String buildDefaultMessage(RevisionInfo revisionInfo) {
@@ -176,11 +185,35 @@ public class FilesDialog extends Dialog {
 				if (e.keyCode == SWT.SPACE) {
 					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
 					handleSelection.showFileSelection();
-					getOKButton().notifyListeners(SWT.Selection, new Event());
+					return;
 				}
 			}
 		});
+		//Add Navigation Listener
+		Control[] children = getChildren(composite);
+		addNavigationListener(children);
+		for (Control element : children) {
+			if (element instanceof Composite) {
+				Control[] subChildren = getChildren((Composite) element);
+				addNavigationListener(subChildren);
+			}
+		}
 		return parent;
+	}
+
+	private void addNavigationListener(Control[] control) {
+		for (Control element : control) {
+			element.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					handleKeyboardEvent(e);
+				}
+			});
+		}
+	}
+
+	private Control[] getChildren(Composite composite) {
+		return composite.getChildren();
 	}
 
 	@Override
@@ -368,6 +401,7 @@ public class FilesDialog extends Dialog {
 				}
 			}
 		});
+
 		Button clearBtn = new Button(composite, SWT.Arm);
 		data = new GridData(SWT.RIGHT, SWT.FILL, false, false);
 		clearBtn.setLayoutData(data);
@@ -380,6 +414,20 @@ public class FilesDialog extends Dialog {
 				textMsgFilter.notifyListeners(SWT.FocusOut, new Event());
 			}
 		});
+	}
+
+	private void handleKeyboardEvent(KeyEvent e) {
+		if (e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP) {
+			//Setting the focus will allow the command "SHIFT + ARROW_DOWN or ARROW_UP
+			//to select other elements from the table after the second hit
+			//Just the ARROW_DOWN or ARROW_UP allows the selection of the next/previous element in the table
+			fViewer.getTable().setFocus();
+		}
+
+		//Key enter
+		if (e.keyCode == SWT.CR) {
+			buttonPressed(IDialogConstants.OK_ID);
+		}
 	}
 
 	private ModifyListener modifyListener(Text textMsgFilter) {
@@ -407,7 +455,7 @@ public class FilesDialog extends Dialog {
 		for (int index = 0; index < tableItems.length; index++) {
 			if (tableItems[index].getData() instanceof StringToFileInfoImpl) {
 				StringToFileInfoImpl entry = (StringToFileInfoImpl) tableItems[index].getData();
-				if (entry.getKey().equalsIgnoreCase(filepath)) {
+				if (entry.getKey().endsWith(filepath)) {
 					return index;
 				}
 			}
@@ -416,12 +464,22 @@ public class FilesDialog extends Dialog {
 		return -1;//Did not find the selected file
 	}
 
-	private void selectNextFile(int currentIndex) {
+	private void revealElementAt(int currentIndex) {
 		Table table = fViewer.getTable();
 		table.deselectAll();
-		if (currentIndex < (table.getItemCount() - 1)) {
-			table.setSelection((currentIndex + 1));
+		int maxTableItem = table.getItemCount() - 1; //index start at 0
+		int nextIndex = currentIndex + 1;
+		if (nextIndex < 0) {
+			//Happen when moving backward and select the first element
+			nextIndex = 0;
 		}
+		if (nextIndex <= maxTableItem) {
+			table.setSelection((nextIndex));
+		} else {
+			//Select the last item in the table (Even the Commit MSG )
+			table.setSelection(maxTableItem);
+		}
+		table.showSelection();
 	}
 
 	@Override
@@ -430,10 +488,9 @@ public class FilesDialog extends Dialog {
 			int currentIndex = findActiveFileInReview();
 			if (currentIndex != -1) {
 				//Automatically select the next file
-				selectNextFile(currentIndex);
+				revealElementAt(currentIndex);
 			}
 		}
-
 		return super.open();
 	}
 
@@ -459,7 +516,14 @@ public class FilesDialog extends Dialog {
 		for (int i = 0; i < listFilter.size(); i++) {
 			arrayBoolean[i] = String.valueOf(listFilter.get(i).getSelection());
 		}
+		//Save the column sorting
 		getDialogSettings().put(VIEW_FILTER, arrayBoolean);
+		ReviewTableSorter comparator = (ReviewTableSorter) fViewer.getComparator();
+		if (comparator != null) {
+			int direction = fViewer.getTable().getSortDirection();
+			getDialogSettings().put(COLUMN_SELECTION, comparator.getColumnSorter());
+			getDialogSettings().put(SORT_DIRECTION, direction);
+		}
 	}
 
 	private void restoreDialogSettings() {
@@ -467,29 +531,46 @@ public class FilesDialog extends Dialog {
 			return;
 		}
 		String[] backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_ORDER);
-		if (backedUpValue == null) {
-			return;
+		if (backedUpValue != null) {
+			int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+			fViewer.getTable().setColumnOrder(columnOrder);
 		}
-		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-		fViewer.getTable().setColumnOrder(columnOrder);
 
 		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
-		if (backedUpValue == null) {
-			return;
-		}
-		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-		int numColumn = fViewer.getTable().getColumns().length;
-		for (int i = 0; i < numColumn; i++) {
-			fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
+		if (backedUpValue != null) {
+			int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+			int numColumn = fViewer.getTable().getColumns().length;
+			for (int i = 0; i < numColumn; i++) {
+				fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
+			}
 		}
 
 		backedUpValue = getDialogSettings().getArray(VIEW_FILTER);
-		if (backedUpValue == null) {
-			return;
+		if (backedUpValue != null) {
+			for (int i = 0; i < backedUpValue.length; i++) {
+				listFilter.get(i).setSelection(StringConverter.asBoolean(backedUpValue[i]));
+				listFilter.get(i).notifyListeners(SWT.Selection, new Event());
+			}
 		}
-		for (int i = 0; i < backedUpValue.length; i++) {
-			listFilter.get(i).setSelection(StringConverter.asBoolean(backedUpValue[i]));
-			listFilter.get(i).notifyListeners(SWT.Selection, new Event());
+
+		//Adjust the column sorting
+		int columnSelected = -1;
+		try {
+			columnSelected = getDialogSettings().getInt(COLUMN_SELECTION);
+		} catch (NumberFormatException e) {
+			//no data stored yet
+		}
+		if (columnSelected >= 0) {
+			try {
+				int direction = getDialogSettings().getInt(SORT_DIRECTION);
+				TableColumn tableColumn = fViewer.getTable().getColumn(columnSelected);
+				fViewer.getTable().setSortColumn(tableColumn);
+				fViewer.getTable().setSortDirection(direction);
+				fViewer.setComparator(new ReviewTableSorter(columnSelected));
+			} catch (NumberFormatException e) {
+				//no data stored yet
+			}
+			return;
 		}
 	}
 
@@ -500,5 +581,23 @@ public class FilesDialog extends Dialog {
 			section = settings.addNewSection(FILES_DIALOG);
 		}
 		return section;
+	}
+
+	@Override
+	public boolean close() {
+		openedDialog = null;
+		return super.close();
+	}
+
+	public static FilesDialog openedDialog() {
+		return openedDialog;
+	}
+
+	public void selectNextFile() {
+		revealElementAt(fViewer.getTable().getSelectionIndex());
+	}
+
+	public void selectPreviousFile() {
+		revealElementAt(fViewer.getTable().getSelectionIndex() - 2);
 	}
 }

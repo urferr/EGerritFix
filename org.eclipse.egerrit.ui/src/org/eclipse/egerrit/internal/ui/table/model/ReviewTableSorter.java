@@ -39,6 +39,10 @@ public class ReviewTableSorter extends ViewerComparator {
 		this.fColumnIndex = columnIndex;
 	}
 
+	public int getColumnSorter() {
+		return fColumnIndex;
+	}
+
 	@Override
 	public int compare(Viewer viewer, Object item1, Object item2) {
 		int sortDirection = SWT.NONE;

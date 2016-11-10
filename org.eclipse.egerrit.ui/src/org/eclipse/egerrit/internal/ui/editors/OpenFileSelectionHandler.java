@@ -38,6 +38,21 @@ public class OpenFileSelectionHandler extends AbstractHandler {
 			//Fist get the current selected file from eclipse and test if this file belongs to the active review
 			FileEditorInput fileInput = null;
 			IEditorInput editorInput = HandlerUtil.getActiveEditorInput(event);
+
+			//Deal with the case where the dialog is already opened (editorInput is null) and the command is used again
+			if (editorInput == null) {
+				FilesDialog dialog = FilesDialog.openedDialog();
+				if (dialog != null) {
+					if (event.getCommand().getId().equals("org.eclipse.egerrit.internal.ui.SelectPreviousFile")) { //$NON-NLS-1$
+						dialog.selectPreviousFile();
+					} else {
+						dialog.selectNextFile();
+					}
+					return null;
+				}
+			}
+
+			//Deal with the default case. Note that in this case editorInput can be null if the user used the command from a workbench with no opened editor
 			if (editorInput != null && editorInput instanceof FileEditorInput) {
 				fileInput = (FileEditorInput) editorInput;
 			}
