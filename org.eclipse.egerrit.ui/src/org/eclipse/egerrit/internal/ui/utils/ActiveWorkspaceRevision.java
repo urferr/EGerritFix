@@ -88,6 +88,8 @@ public class ActiveWorkspaceRevision {
 
 	private boolean fIsQuickDiffOn;
 
+	private String fDefaultProvider;
+
 	private final class CommentAndDraftListener extends EContentAdapter {
 		@Override
 		public void notifyChanged(Notification msg) {
@@ -140,10 +142,8 @@ public class ActiveWorkspaceRevision {
 
 	private void openMarkerView() {
 		try {
-			PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow()
-					.getActivePage()
-					.showView("org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
+					"org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
 		} catch (PartInitException e1) {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
@@ -265,15 +265,7 @@ public class ActiveWorkspaceRevision {
 	}
 
 	private void deactivateQuickDiff() {
-		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"quickdiff.quickDiff", false, null); //$NON-NLS-1$
-		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"additionIndicationInOverviewRule", false, null); //$NON-NLS-1$
-		fIsChangeIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"changeIndicationInOverviewRuler", false, null); //$NON-NLS-1$
-		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"deletionIndicationInOverviewRuler", false, null); //$NON-NLS-1$
-
+		//Restore the values captured when we enabled the quickdiff
 		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 
 		preferences.put("quickdiff.quickDiff", new Boolean(fIsQuickDiffOn).toString());//$NON-NLS-1$
@@ -282,6 +274,7 @@ public class ActiveWorkspaceRevision {
 		preferences.put("changeIndicationInOverviewRuler", new Boolean(fIsChangeIndicationInOverviewRuler).toString());//$NON-NLS-1$
 		preferences.put("deletionIndicationInOverviewRuler", //$NON-NLS-1$
 				new Boolean(fIsDeletionIndicationInOverviewRuler).toString());
+		preferences.put("quickdiff.defaultProvider", fDefaultProvider); //$NON-NLS-1$
 
 		try {
 			// forces the application to save the preferences
@@ -370,9 +363,9 @@ public class ActiveWorkspaceRevision {
 	 * enables the quickdiff feature inside the editor
 	 */
 	private void enableQuickDiff() {
-
 		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
 
+		//Remember the value of the preferences we are modifying
 		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
 				"quickdiff.quickDiff", false, null); //$NON-NLS-1$
 		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
@@ -381,20 +374,22 @@ public class ActiveWorkspaceRevision {
 				"changeIndicationInOverviewRuler", false, null); //$NON-NLS-1$
 		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
 				"deletionIndicationInOverviewRuler", false, null); //$NON-NLS-1$
+		fDefaultProvider = Platform.getPreferencesService().getString("org.eclipse.ui.editors", //$NON-NLS-1$
+				"quickdiff.defaultProvider", "", null); //$NON-NLS-1$  //$NON-NLS-2$
 
-		if (!fIsQuickDiffOn) {
-			preferences.put("quickdiff.quickDiff", "true");//$NON-NLS-1$ //$NON-NLS-2$
-			preferences.put("additionIndicationInOverviewRule", "true");//$NON-NLS-1$ //$NON-NLS-2$
-			preferences.put("changeIndicationInOverviewRuler", "true");//$NON-NLS-1$ //$NON-NLS-2$
-			preferences.put("deletionIndicationInOverviewRuler", "true");//$NON-NLS-1$ //$NON-NLS-2$
-
-			try {
-				// forces the application to save the preferences
-				preferences.flush();
-			} catch (BackingStoreException e1) {
-				EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-			}
+		preferences.putBoolean("quickdiff.quickDiff", true);//$NON-NLS-1$
+		preferences.putBoolean("additionIndicationInOverviewRule", true);//$NON-NLS-1$
+		preferences.putBoolean("changeIndicationInOverviewRuler", true);//$NON-NLS-1$
+		preferences.putBoolean("deletionIndicationInOverviewRuler", true);//$NON-NLS-1$
+		preferences.put("quickdiff.defaultProvider", //$NON-NLS-1$
+				"org.eclipse.egit.ui.internal.decorators.GitQuickDiffProvider");//$NON-NLS-1$
+		try {
+			// forces the application to save the preferences
+			preferences.flush();
+		} catch (BackingStoreException e1) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
+
 		Repository repo = new FindLocalRepository(fGerritClient, fChangeInfo.getProject()).getRepository();
 		IWorkbenchPartSite site = EGerritUIPlugin.getDefault()
 				.getWorkbench()
