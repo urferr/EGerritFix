@@ -110,14 +110,13 @@ public class CheckoutRevision extends Action {
 
 	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
 		Git gitRepo = new Git(localRepo);
-		String changeIdKey = "Change-Id"; //$NON-NLS-1$
 		//Map <Key,value> = Map<Short branch name, commit id>
 		Map<String, String> mapBranches = new HashMap<String, String>();
 		Map<String, BranchMatch> potentialBranches = null;
 		//Map <Key,Map<keycommit, ListChangeIdvalue> = Map<Short branch name, commit id, list of changeId>
 		Map<String, Map<String, List<String>>> mapBranchesChangeId = new HashMap<String, Map<String, List<String>>>();
 		try (RevWalk walk = new RevWalk(localRepo)) {
-			mapBranchNameWithCommitId(gitRepo, changeIdKey, mapBranches, mapBranchesChangeId, walk);
+			mapBranchNameWithCommitId(gitRepo, mapBranches, mapBranchesChangeId, walk);
 			//Get only potential branches
 			potentialBranches = mapPotentialBranch(mapBranchesChangeId);
 		} catch (GitAPIException e) {
@@ -127,7 +126,9 @@ public class CheckoutRevision extends Action {
 		return potentialBranches;
 	}
 
-	private void mapBranchNameWithCommitId(Git gitRepo, String changeIdKey, Map<String, String> mapBranches,
+	//Build a map of all branches --> commit ID -> List of changeId
+	//This goes over all the branches in the repo
+	private void mapBranchNameWithCommitId(Git gitRepo, Map<String, String> mapBranches,
 			Map<String, Map<String, List<String>>> mapBranchesChangeId, RevWalk walk) throws GitAPIException {
 		for (Ref current : gitRepo.branchList().call()) {
 			RevCommit commit;
@@ -137,7 +138,7 @@ public class CheckoutRevision extends Action {
 
 				//Map branch -> commitId -> List of changeId
 				Map<String, List<String>> mapCommitChangeid = new HashMap<String, List<String>>();
-				List<String> footerLines = commit.getFooterLines(changeIdKey);
+				List<String> footerLines = commit.getFooterLines("Change-Id"); //$NON-NLS-1$
 
 				mapCommitChangeid.put(commit.getName(), footerLines);
 				mapBranchesChangeId.put(Repository.shortenRefName(current.getName()), mapCommitChangeid);
@@ -183,6 +184,7 @@ public class CheckoutRevision extends Action {
 		return returnOK;
 	}
 
+	//Filter the branches that need to be shown and indicate the level of matching for these branches
 	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
 		String lookingChangeId = revisionCheckedOut.getChangeInfo().getChange_id().trim();
 		String lookingCommitIdForRevision = revisionCheckedOut.getCommit().getCommit().trim();
@@ -200,6 +202,9 @@ public class CheckoutRevision extends Action {
 				Iterator<String> iterChangeId = listChangeIds.iterator();
 				while (iterChangeId.hasNext()) {
 					String changeId = iterChangeId.next().trim();
+					if (matchesPerfectlyAnotherRevision(revisionCheckedOut, entryCommitIds.getKey())) {
+						continue;
+					}
 					if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
 						mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
 						continue;
@@ -216,6 +221,21 @@ public class CheckoutRevision extends Action {
 			}
 		}
 		return mapBranches;
+	}
+
+	//Check if the given commitId matches the commitId of a revision that is not the current one
+	private boolean matchesPerfectlyAnotherRevision(RevisionInfo revisionToCheckOut, String commitId) {
+		ChangeInfo review = revisionToCheckOut.getChangeInfo();
+		for (RevisionInfo aRevision : review.getRevisions().values()) {
+			if (aRevision == revisionToCheckOut) {
+				continue;
+			}
+
+			if (commitId.equals(aRevision.getCommit().getCommit().trim())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void checkoutBranch(String branchName, Repository repo) throws Exception {
