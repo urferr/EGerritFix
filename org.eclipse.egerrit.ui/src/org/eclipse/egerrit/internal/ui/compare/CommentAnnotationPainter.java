@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 class CommentAnnotationPainter extends AnnotationPainter {
-	private Map<String, Color> authorToColor = new HashMap<>();
+	private Map<Integer, Color> authorToColor = new HashMap<>();
 
 	private final Color COLOR_ORANGE = new Color(Display.getCurrent(), 242, 145, 10);
 
@@ -81,10 +81,10 @@ class CommentAnnotationPainter extends AnnotationPainter {
 				//Case for drafts.
 				selectedColor = Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW);
 			} else {
-				colorForAuthor = authorToColor.get(object.getComment().getAuthor().getUsername());
+				colorForAuthor = authorToColor.get(object.getComment().getAuthor().get_account_id());
 				if (colorForAuthor == null) {
 					colorForAuthor = getNextColor();
-					authorToColor.put(object.getComment().getAuthor().getUsername(), colorForAuthor);
+					authorToColor.put(object.getComment().getAuthor().get_account_id(), colorForAuthor);
 				}
 				selectedColor = colorForAuthor;
 			}
