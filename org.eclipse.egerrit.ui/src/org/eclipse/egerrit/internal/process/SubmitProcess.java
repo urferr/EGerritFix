@@ -20,6 +20,7 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.SubmitInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.internal.ui.editors.RefreshRelatedEditors;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -42,6 +43,8 @@ public class SubmitProcess {
 			//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
 			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 					.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
+
+			new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
 		} catch (EGerritException e3) {
 			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 			MessageDialog.open(MessageDialog.INFORMATION, null, Messages.SubmitProcess_failed, e3.getLocalizedMessage(),

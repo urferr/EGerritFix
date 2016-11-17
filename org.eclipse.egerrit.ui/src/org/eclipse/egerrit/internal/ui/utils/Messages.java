@@ -84,6 +84,8 @@ public class Messages extends NLS {
 
 	public static String ChangeDetailEditor_cherryPickBranch;
 
+	public static String ChangeDetailEditor_updatingRelatedChanges;
+
 	public static String CheckoutRevision_0;
 
 	public static String CheckoutRevision_1;

@@ -543,6 +543,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 				try {
 					abandonCmd.call();
+					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
 				} catch (EGerritException e3) {
 					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 				}
@@ -568,6 +569,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 				try {
 					restoreCmd.call();
+					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
 				} catch (EGerritException e3) {
 					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 				}
@@ -585,6 +587,7 @@ public class ChangeDetailEditor extends EditorPart {
 				RebaseProcess rebaseProcess = new RebaseProcess();
 				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
 						fGerritClient);
+
 			}
 		});
 

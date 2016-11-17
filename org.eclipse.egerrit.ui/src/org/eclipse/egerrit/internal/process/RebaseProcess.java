@@ -21,6 +21,7 @@ import org.eclipse.egerrit.internal.core.rest.RebaseInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
+import org.eclipse.egerrit.internal.ui.editors.RefreshRelatedEditors;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -81,10 +82,13 @@ public class RebaseProcess {
 
 		try {
 			rebaseCmd.call();
+
 			//After a rebase, we reload and reset the user selected revision
 			//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
 			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 					.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
+
+			new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
 		} catch (EGerritException e1) {
 			if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
