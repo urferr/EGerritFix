@@ -813,28 +813,26 @@ public class DetailsTabView {
 						if (element instanceof ReviewerInfo) {
 
 							ReviewerInfo reviewerInfo = (ReviewerInfo) element;
-							//Verify is the current use can be deleted or not
-							if (UIUtils.isRemoveable(reviewerInfo)) {
-								//Add a safety dialog to confirm the deletion
 
-								if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
-										Messages.SummaryTabView_22, Messages.SummaryTabView_23 + reviewerInfo.getName()
-												+ Messages.SummaryTabView_24)) {
-									return;
-								}
+							//Add a safety dialog to confirm the deletion
 
-								DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(
-										fChangeInfo.getId(), String.valueOf(reviewerInfo.get_account_id()));
-
-								try {
-									deleteReviewerCmd.call();
-									fChangeInfo.getComputedReviewers().remove(reviewerInfo);
-								} catch (EGerritException e3) {
-									EGerritCorePlugin.logError(
-											fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-								}
-								loader.reload(false);
+							if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
+									Messages.SummaryTabView_22,
+									Messages.SummaryTabView_23 + reviewerInfo.getName() + Messages.SummaryTabView_24)) {
+								return;
 							}
+
+							DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(fChangeInfo.getId(),
+									String.valueOf(reviewerInfo.get_account_id()));
+
+							try {
+								deleteReviewerCmd.call();
+								fChangeInfo.getComputedReviewers().remove(reviewerInfo);
+							} catch (EGerritException e3) {
+								EGerritCorePlugin.logError(
+										fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+							}
+							loader.reload(false);
 						}
 					}
 				}
@@ -893,36 +891,42 @@ public class DetailsTabView {
 	protected DataBindingContext sumGenDataBindings() {
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genProjectData), projectbytesFChangeInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show branch
 		IObservableValue<String> branchFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genBranchData), branchFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show topic
 		IObservableValue<String> topicFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genTopicData), topicFChangeInfoObserveValue, null,
 				null);
 
 		//Show updated status
 		IObservableValue updatedFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
 		//Show mergeableinfo
 		IObservableValue<String> mergeSubmitValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO)
+				.observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fChangeInfo)));
 
 		//Show mergeable status
 		IObservableValue mergeableMergeableInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableMergeableInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
