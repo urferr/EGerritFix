@@ -14,7 +14,6 @@ package org.eclipse.egerrit.internal.ui.table.provider;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
-import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 
 /**
  * This class implements the File table UI label provider.
@@ -50,10 +49,7 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 			ReviewerInfo reviewerInfo = (ReviewerInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				if (UIUtils.isRemoveable(reviewerInfo)) {
-					return "x"; //$NON-NLS-1$
-				}
-				return ""; //$NON-NLS-1$
+				return "x"; //$NON-NLS-1$
 			case 1:
 				return super.getColumnText(aObj, aIndex);
 			case 2:

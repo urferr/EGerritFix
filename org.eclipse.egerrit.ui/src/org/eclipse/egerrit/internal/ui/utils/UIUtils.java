@@ -24,13 +24,11 @@ import org.eclipse.egerrit.internal.core.command.SetReviewCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.core.utils.Utils;
-import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
-import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.compare.CommentPrettyPrinter;
@@ -39,7 +37,6 @@ import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.editors.ReplyDialog;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -200,10 +197,8 @@ public class UIUtils {
 				//Use the Author
 				sb.append(revisionInfo.getCommit().getAuthor().getName());
 			}
-			if (!revisionInfo.getCommit()
-					.getAuthor()
-					.getName()
-					.equals(revisionInfo.getCommit().getCommitter().getName())) {
+			if (!revisionInfo.getCommit().getAuthor().getName().equals(
+					revisionInfo.getCommit().getCommitter().getName())) {
 				//Add the committer if different than the Author
 				sb.append("/"); //$NON-NLS-1$
 				sb.append(revisionInfo.getCommit().getCommitter().getName());
@@ -352,22 +347,4 @@ public class UIUtils {
 		}
 	}
 
-	/**
-	 * Test to see if the reviewers in the review can be deleted or not
-	 *
-	 * @param reviewerInfo
-	 * @return boolean
-	 */
-	public static boolean isRemoveable(ReviewerInfo reviewerInfo) {
-		ChangeInfo changeInfo = (ChangeInfo) reviewerInfo.eContainer();
-		if (changeInfo != null) {
-			EList<AccountInfo> removalList = changeInfo.getRemovable_reviewers();
-			for (int i = 0; i < removalList.size(); i++) {
-				if (reviewerInfo.get_account_id() == removalList.get(i).get_account_id()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 }
