@@ -196,7 +196,11 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 			switch (aIndex) {
 			case 0:
 				Boolean starred = reviewSummary.isStarred();
-				return starred.toString(); // Needed for the sorter
+				if (starred) {
+					return Messages.Starred;
+				} else {
+					return Messages.Not_Starred;
+				}
 			case 1:
 				return Integer.toString(reviewSummary.get_number());
 			case 2:

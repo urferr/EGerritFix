@@ -41,6 +41,10 @@ public class Messages extends NLS {
 
 	public static String ReviewTableDefinition_verify;
 
+	public static String Starred;
+
+	public static String Not_Starred;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
