@@ -27,7 +27,6 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * This class implements the adjustment of the selection of the My starred handler. in the review table view
@@ -72,12 +71,6 @@ public class AdjustMyStarredHandler extends AbstractHandler {
 						} catch (CoreException e) {
 							UIUtils.showErrorDialog(e.getMessage(), e.getStatus().getException().getMessage());
 						}
-
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								viewer.update(fItem, null);
-							}
-						});
 					}
 				}
 				return Status.OK_STATUS;
