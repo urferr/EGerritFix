@@ -42,7 +42,7 @@ public class UnstarCommandTest extends CommandTestWithSimpleReview {
 	public void testCall() throws EGerritException {
 
 		// Code with a star indicator first
-		StarChangeCommand starCommand = fGerrit.starChange(changeInfo.get_number());
+		StarChangeCommand starCommand = fGerrit.starChange(changeInfo);
 		try {
 			starCommand.call();
 		} catch (EGerritException e) {
@@ -60,7 +60,7 @@ public class UnstarCommandTest extends CommandTestWithSimpleReview {
 		}
 
 		// Now we remove Code with a star indicator
-		UnstarChangeCommand unstarCommand = fGerrit.unstarChange(changeInfo.get_number());
+		UnstarChangeCommand unstarCommand = fGerrit.unstarChange(changeInfo);
 		try {
 			unstarCommand.call();
 		} catch (EGerritException e) {

@@ -14,6 +14,8 @@ package org.eclipse.egerrit.internal.core.command;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * The command: DELETE /accounts/{account-id}/starred.changes/{change-id}
@@ -25,6 +27,8 @@ import org.eclipse.egerrit.internal.core.GerritRepository;
 // There is no return type, the return value:  HTTP/1.1 204 No Content
 public class UnstarChangeCommand extends BaseCommandChange<NoResult> {
 
+	private ChangeInfo fChangeInfo;
+
 	/**
 	 * Construct a unstar change command
 	 *
@@ -33,10 +37,22 @@ public class UnstarChangeCommand extends BaseCommandChange<NoResult> {
 	 * @param id
 	 *            the change-id
 	 */
-	public UnstarChangeCommand(GerritRepository gerritRepository, int numericChangeId) {
+	public UnstarChangeCommand(GerritRepository gerritRepository, ChangeInfo changeInfo) {
 		super(gerritRepository, AuthentificationRequired.YES, HttpDelete.class, String.class,
-				Integer.toString(numericChangeId));
+				Integer.toString(changeInfo.get_number()));
+		fChangeInfo = changeInfo;
 		setPathFormat("/accounts/self/starred.changes/{change-id}"); //$NON-NLS-1$
 	}
 
+	@Override
+	public NoResult call() throws EGerritException {
+		boolean previousValue = fChangeInfo.isStarred();
+		try {
+			fChangeInfo.setStarred(false);
+			return super.call();
+		} catch (EGerritException e) {
+			fChangeInfo.setStarred(previousValue);
+			throw e;
+		}
+	}
 }
