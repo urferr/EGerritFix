@@ -56,6 +56,7 @@ import org.eclipse.egerrit.internal.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.internal.core.command.UpdateDraftCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 
 /**
  * Provides an API to interact with a Gerrit repository using its REST API. The set of available commands is based on
@@ -462,8 +463,8 @@ public abstract class GerritClient {
 	 * @param fileName
 	 * @return {@link SetReviewedCommand}
 	 */
-	public SetReviewedCommand setReviewed(String change_id, String revision_id, String fileName) {
-		return new SetReviewedCommand(fGerritRepository, change_id, revision_id, fileName);
+	public SetReviewedCommand setReviewed(String change_id, String revision_id, FileInfo file) {
+		return new SetReviewedCommand(fGerritRepository, change_id, revision_id, file);
 	}
 
 	/**
@@ -474,8 +475,8 @@ public abstract class GerritClient {
 	 * @param fileName
 	 * @return {@link DeleteReviewedCommand}
 	 */
-	public DeleteReviewedCommand deleteReviewed(String change_id, String revision_id, String fileName) {
-		return new DeleteReviewedCommand(fGerritRepository, change_id, revision_id, fileName);
+	public DeleteReviewedCommand deleteReviewed(String change_id, String revision_id, FileInfo file) {
+		return new DeleteReviewedCommand(fGerritRepository, change_id, revision_id, file);
 	}
 
 	/**

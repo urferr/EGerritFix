@@ -34,7 +34,7 @@ public class UnstarCommandTest extends CommandTestWithSimpleReview {
 
 	@Before
 	public void createDraftReview() {
-		createReviewWithSimpleFile(true);
+		createReviewWithSimpleFile(false);
 		amendLastCommit(true);
 	}
 

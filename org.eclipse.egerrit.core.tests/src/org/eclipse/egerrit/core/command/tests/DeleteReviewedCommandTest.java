@@ -24,7 +24,7 @@ public class DeleteReviewedCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() throws Exception {
 		// Create a review for setup
-		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, filename);
+		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, fileInfo);
 		try {
 			command.call();
 		} catch (EGerritException e) {
@@ -41,7 +41,7 @@ public class DeleteReviewedCommandTest extends CommandTestWithSimpleReview {
 		}
 
 		//Now test the delete command
-		DeleteReviewedCommand deleteCommand = fGerrit.deleteReviewed(change_id, commit_id, filename);
+		DeleteReviewedCommand deleteCommand = fGerrit.deleteReviewed(change_id, commit_id, fileInfo);
 		try {
 			deleteCommand.call();
 		} catch (EGerritException e) {

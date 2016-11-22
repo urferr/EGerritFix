@@ -11,6 +11,8 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.table;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.property.Properties;
@@ -379,12 +381,13 @@ public class UIFilesTable {
 	}
 
 	private void toggleReviewed(FileInfo fileInfo) {
-		if (fileInfo.isReviewed()) {
-			QueryHelpers.markAsNotReviewed(fGerritClient, fileInfo);
-		} else {
-			QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
-		}
-		fViewer.refresh();
+		CompletableFuture.runAsync(() -> {
+			if (fileInfo.isReviewed()) {
+				QueryHelpers.markAsNotReviewed(fGerritClient, fileInfo);
+			} else {
+				QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
+			}
+		});
 	}
 
 	protected void filesTabDataBindings() {

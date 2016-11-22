@@ -26,7 +26,6 @@ import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.ChangeOption;
 import org.eclipse.egerrit.internal.core.command.ChangeStatus;
 import org.eclipse.egerrit.internal.core.command.DeleteDraftCommand;
-import org.eclipse.egerrit.internal.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
 import org.eclipse.egerrit.internal.core.command.GetFilesCommand;
 import org.eclipse.egerrit.internal.core.command.GetIncludedInCommand;
@@ -37,7 +36,6 @@ import org.eclipse.egerrit.internal.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.internal.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.internal.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.internal.core.command.SetReviewedCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
@@ -194,11 +192,9 @@ public class QueryHelpers {
 			if (fileInfo.isReviewed()) {
 				return;
 			}
-			SetReviewedCommand command = gerrit.setReviewed(fileInfo.getRevision().getChangeInfo().getId(),
-					fileInfo.getRevision().getId(), fileInfo.getPath());
 			try {
-				command.call();
-				fileInfo.setReviewed(true);
+				gerrit.setReviewed(fileInfo.getRevision().getChangeInfo().getId(), fileInfo.getRevision().getId(),
+						fileInfo).call();
 			} catch (EGerritException ex) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + ex.getMessage());
 			}
@@ -214,11 +210,9 @@ public class QueryHelpers {
 				return;
 			}
 
-			DeleteReviewedCommand command = gerrit.deleteReviewed(fileInfo.getRevision().getChangeInfo().getId(),
-					fileInfo.getRevision().getId(), fileInfo.getPath());
 			try {
-				command.call();
-				fileInfo.setReviewed(false);
+				gerrit.deleteReviewed(fileInfo.getRevision().getChangeInfo().getId(), fileInfo.getRevision().getId(),
+						fileInfo).call();
 			} catch (EGerritException ex) {
 				EGerritCorePlugin.logError(gerrit.getRepository().formatGerritVersion() + ex.getMessage());
 			}

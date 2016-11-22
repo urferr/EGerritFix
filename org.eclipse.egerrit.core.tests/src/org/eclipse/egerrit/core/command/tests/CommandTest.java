@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpHost;
 import org.eclipse.egerrit.core.tests.Common;
@@ -31,9 +32,11 @@ import org.eclipse.egerrit.internal.core.command.ChangeOption;
 import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
 import org.eclipse.egerrit.internal.model.ModelPackage;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
@@ -57,6 +60,8 @@ public abstract class CommandTest {
 	protected GitAccess gitAccess;
 
 	protected Git gitRepo;
+
+	protected FileInfo fileInfo;
 
 	@Before
 	public void setUp() throws Exception {
@@ -124,7 +129,18 @@ public abstract class CommandTest {
 			command.addOption(ChangeOption.ALL_COMMITS);
 			changeInfo = command.call();
 			change_id = changeInfo.getChange_id();
-			changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+			RevisionInfo currentRevision = changeInfo.getRevision();
+			changeInfo.setUserSelectedRevision(currentRevision);
+
+			if (!currentRevision.isDraft()) {
+				Map<String, FileInfo> files = fGerrit
+						.getFiles(changeInfo.getId(), changeInfo.getUserSelectedRevision().getId())
+						.call();
+				currentRevision.getFiles().putAll(files);
+				currentRevision.setFilesLoaded(true);
+				fileInfo = currentRevision.getFiles().get(filename);
+				fileInfo.getPath();
+			}
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
