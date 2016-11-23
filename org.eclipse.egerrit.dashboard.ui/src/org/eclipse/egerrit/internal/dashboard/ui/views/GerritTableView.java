@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,8 +37,6 @@ import org.eclipse.egerrit.internal.core.GerritServerInformation;
 import org.eclipse.egerrit.internal.core.ServersStore;
 import org.eclipse.egerrit.internal.core.command.ChangeOption;
 import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
-import org.eclipse.egerrit.internal.core.command.StarChangeCommand;
-import org.eclipse.egerrit.internal.core.command.UnstarChangeCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.dashboard.core.GerritQueryException;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
@@ -705,21 +704,22 @@ public class GerritTableView extends ViewPart {
 			UIUtils.showNoServerMessage();
 		} else {
 			if (starred) {
-				StarChangeCommand starChangeCmd = gerritClient.starChange(changeInfo.get_number());
-				try {
-					starChangeCmd.call();
-				} catch (EGerritException e1) {
-					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-				}
+				CompletableFuture.runAsync(() -> {
+					try {
+						gerritClient.starChange(changeInfo).call();
+					} catch (EGerritException e) {
+						EGerritCorePlugin.logInfo(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+					}
+				});
 
 			} else {
-				UnstarChangeCommand unstarChangeCmd = gerritClient.unstarChange(changeInfo.get_number());
-				try {
-					unstarChangeCmd.call();
-				} catch (EGerritException e1) {
-					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-				}
-
+				CompletableFuture.runAsync(() -> {
+					try {
+						gerritClient.unstarChange(changeInfo).call();
+					} catch (EGerritException e) {
+						EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+					}
+				});
 			}
 		}
 	}

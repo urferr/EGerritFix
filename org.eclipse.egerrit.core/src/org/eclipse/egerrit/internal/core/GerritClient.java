@@ -560,8 +560,8 @@ public abstract class GerritClient {
 	 * @param change_id
 	 * @return StarChangeCommand
 	 */
-	public StarChangeCommand starChange(int numericChangeId) {
-		return new StarChangeCommand(fGerritRepository, numericChangeId);
+	public StarChangeCommand starChange(ChangeInfo changeInfo) {
+		return new StarChangeCommand(fGerritRepository, changeInfo);
 	}
 
 	/**
@@ -570,8 +570,8 @@ public abstract class GerritClient {
 	 * @param change_id
 	 * @return UnstarChangeCommand
 	 */
-	public UnstarChangeCommand unstarChange(int numericChangeId) {
-		return new UnstarChangeCommand(fGerritRepository, numericChangeId);
+	public UnstarChangeCommand unstarChange(ChangeInfo changeInfo) {
+		return new UnstarChangeCommand(fGerritRepository, changeInfo);
 	}
 
 	/**

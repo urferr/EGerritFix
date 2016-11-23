@@ -14,6 +14,8 @@ package org.eclipse.egerrit.internal.core.command;
 
 import org.apache.http.client.methods.HttpPut;
 import org.eclipse.egerrit.internal.core.GerritRepository;
+import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 
 /**
  * The command: PUT /accounts/{account-id}/starred.changes/{change-id}
@@ -24,6 +26,7 @@ import org.eclipse.egerrit.internal.core.GerritRepository;
  */
 // There is no return type, the return value:  HTTP/1.1 204 No Content
 public class StarChangeCommand extends BaseCommandChange<NoResult> {
+	private ChangeInfo fChangeInfo = null;
 
 	/**
 	 * Construct a star change command
@@ -33,10 +36,22 @@ public class StarChangeCommand extends BaseCommandChange<NoResult> {
 	 * @param id
 	 *            the change-id
 	 */
-	public StarChangeCommand(GerritRepository gerritRepository, int numericChangeId) {
+	public StarChangeCommand(GerritRepository gerritRepository, ChangeInfo changeInfo) {
 		super(gerritRepository, AuthentificationRequired.YES, HttpPut.class, String.class,
-				Integer.toString(numericChangeId));
+				Integer.toString(changeInfo.get_number()));
+		fChangeInfo = changeInfo;
 		setPathFormat("/accounts/self/starred.changes/{change-id}"); //$NON-NLS-1$
 	}
 
+	@Override
+	public NoResult call() throws EGerritException {
+		boolean previousValue = fChangeInfo.isStarred();
+		try {
+			fChangeInfo.setStarred(true);
+			return super.call();
+		} catch (EGerritException e) {
+			fChangeInfo.setStarred(previousValue);
+			throw e;
+		}
+	}
 }

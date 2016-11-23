@@ -31,7 +31,7 @@ public class StarCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
 		// Code with a star indicator
-		StarChangeCommand starCommand = fGerrit.starChange(changeInfo.get_number());
+		StarChangeCommand starCommand = fGerrit.starChange(changeInfo);
 		try {
 			starCommand.call();
 		} catch (EGerritException e) {
