@@ -189,10 +189,17 @@ public class ActiveWorkspaceRevision {
 		}
 	}
 
-	private FileInfo getFileInfoInRevision(String path) {
+	private FileInfo getFileInfoInRevision(String workspacePath) {
 		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
 		for (FileInfo aFile : files) {
-			if (aFile.getPath() != null && ("/" + aFile.getPath()).compareTo(path) == 0) { //$NON-NLS-1$
+			if (aFile.getPath() != null && ("/" + aFile.getPath()).compareTo(workspacePath) == 0) { //$NON-NLS-1$
+				return aFile;
+			}
+		}
+
+		//Looking for an approximate match.
+		for (FileInfo aFile : files) {
+			if (aFile.getPath() != null && (aFile.getPath().endsWith(workspacePath))) {
 				return aFile;
 			}
 		}
