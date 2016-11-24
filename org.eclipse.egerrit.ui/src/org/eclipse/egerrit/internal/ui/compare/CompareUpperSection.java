@@ -38,6 +38,7 @@ import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
+import org.eclipse.egerrit.internal.ui.utils.PersistentStorage;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -52,6 +53,8 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -80,6 +83,12 @@ import org.slf4j.LoggerFactory;
  */
 public class CompareUpperSection extends CompareViewerSwitchingPane {
 	private static Logger logger = LoggerFactory.getLogger(CompareUpperSection.class);
+
+	private static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$
+
+	private static final String COMPARE_FILES = "egerrit.CompareFiles"; //$NON-NLS-1$
+
+	private PersistentStorage persistStorage;
 
 	GerritMultipleInput compareInput;
 
@@ -258,6 +267,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
 		viewer.setLabelProvider(labelProvider);
 		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient);
+
+		persistStorage = new PersistentStorage(viewer, COMPARE_FILES);
+		persistStorage.restoreDialogSettings();
 	}
 
 	private void fillMenuItemForChangeInfo(MenuManager menu, boolean side) {
@@ -476,6 +488,17 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		column.setAlignment(tableInfo.getAlignment());
 		column.setResizable(tableInfo.getResize());
 		column.setMoveable(tableInfo.getMoveable());
+		column.addControlListener(new ControlListener() {
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				persistStorage.storeDialogSettings();
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+			}
+		});
 
 		return treeColumViewer;
 	}
@@ -483,4 +506,5 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	public DiffTreeViewer getDiffTreeViewer() {
 		return viewer;
 	}
+
 }

@@ -12,21 +12,17 @@
 package org.eclipse.egerrit.internal.ui.editors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
-import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.table.UIFilesTable;
-import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.HandleFileSelection;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -54,7 +50,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -69,15 +64,7 @@ public class FilesDialog extends Dialog {
 
 	private static final String FILES_DIALOG = "egerrit.FilesDialog"; //$NON-NLS-1$
 
-	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
-
-	private static final String VIEW_COLUMN_WIDTH = "egerritViewColumnWidth"; //$NON-NLS-1$
-
 	private static final String VIEW_FILTER = "egerritViewFilter"; //$NON-NLS-1$
-
-	private static final String COLUMN_SELECTION = "egerritSelectColumn"; //$NON-NLS-1$
-
-	private static final String SORT_DIRECTION = "sortDirection"; //$NON-NLS-1$
 
 	private RevisionInfo fRevisionInfo;
 
@@ -145,7 +132,7 @@ public class FilesDialog extends Dialog {
 		label.setLayoutData(data);
 
 		createTextMsgHandling(composite);
-		tableUIFiles = new UIFilesTable(fGerritClient, fRevisionInfo);
+		tableUIFiles = new UIFilesTable(fGerritClient, fRevisionInfo, FILES_DIALOG);
 		tableUIFiles.enablePopup(false);
 		tableUIFiles.createTableViewerSection(composite);
 		fViewer = tableUIFiles.getViewer();
@@ -495,92 +482,23 @@ public class FilesDialog extends Dialog {
 	}
 
 	private void storeDialogSettings() {
-		if (fViewer == null) {
-			return;
-		}
-		int[] columnOrder = fViewer.getTable().getColumnOrder();
-		int numColumn = fViewer.getTable().getColumns().length;
-
-		int[] columnWidth = new int[numColumn];
-		for (int i = 0; i < numColumn; i++) {
-			columnWidth[i] = fViewer.getTable().getColumn(i).getWidth();
-		}
-
-		getDialogSettings().put(VIEW_COLUMN_ORDER,
-				Arrays.stream(columnOrder).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
-		getDialogSettings().put(VIEW_COLUMN_WIDTH,
-				Arrays.stream(columnWidth).mapToObj(i -> String.valueOf(i)).toArray(String[]::new));
-
 		//Adjust the filter
 		String[] arrayBoolean = new String[listFilter.size()];
 		for (int i = 0; i < listFilter.size(); i++) {
 			arrayBoolean[i] = String.valueOf(listFilter.get(i).getSelection());
 		}
-		//Save the column sorting
-		getDialogSettings().put(VIEW_FILTER, arrayBoolean);
-		ReviewTableSorter comparator = (ReviewTableSorter) fViewer.getComparator();
-		if (comparator != null) {
-			int direction = fViewer.getTable().getSortDirection();
-			getDialogSettings().put(COLUMN_SELECTION, comparator.getColumnSorter());
-			getDialogSettings().put(SORT_DIRECTION, direction);
-		}
+		tableUIFiles.getDialogSettings().put(VIEW_FILTER, arrayBoolean);
 	}
 
 	private void restoreDialogSettings() {
-		if (fViewer == null) {
-			return;
-		}
-		String[] backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_ORDER);
-		if (backedUpValue != null) {
-			int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-			fViewer.getTable().setColumnOrder(columnOrder);
-		}
-
-		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
-		if (backedUpValue != null) {
-			int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-			int numColumn = fViewer.getTable().getColumns().length;
-			for (int i = 0; i < numColumn; i++) {
-				fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
-			}
-		}
-
-		backedUpValue = getDialogSettings().getArray(VIEW_FILTER);
+		//Just the filter, the column are taken care of by the UIFiles
+		String[] backedUpValue = tableUIFiles.getDialogSettings().getArray(VIEW_FILTER);
 		if (backedUpValue != null) {
 			for (int i = 0; i < backedUpValue.length; i++) {
 				listFilter.get(i).setSelection(StringConverter.asBoolean(backedUpValue[i]));
 				listFilter.get(i).notifyListeners(SWT.Selection, new Event());
 			}
 		}
-
-		//Adjust the column sorting
-		int columnSelected = -1;
-		try {
-			columnSelected = getDialogSettings().getInt(COLUMN_SELECTION);
-		} catch (NumberFormatException e) {
-			//no data stored yet
-		}
-		if (columnSelected >= 0) {
-			try {
-				int direction = getDialogSettings().getInt(SORT_DIRECTION);
-				TableColumn tableColumn = fViewer.getTable().getColumn(columnSelected);
-				fViewer.getTable().setSortColumn(tableColumn);
-				fViewer.getTable().setSortDirection(direction);
-				fViewer.setComparator(new ReviewTableSorter(columnSelected));
-			} catch (NumberFormatException e) {
-				//no data stored yet
-			}
-			return;
-		}
-	}
-
-	private IDialogSettings getDialogSettings() {
-		IDialogSettings settings = EGerritUIPlugin.getDefault().getDialogSettings();
-		IDialogSettings section = settings.getSection(FILES_DIALOG);
-		if (section == null) {
-			section = settings.addNewSection(FILES_DIALOG);
-		}
-		return section;
 	}
 
 	@Override

@@ -50,6 +50,7 @@ Export-Package: org.eclipse.egerrit.internal.process,
  org.eclipse.egerrit.internal.ui.tabs,
  org.eclipse.egerrit.internal.ui.utils
 Import-Package: org.apache.commons.codec.binary,
+ org.apache.http;version="4.3.3",
  org.apache.http.client.utils;version="4.3.6",
  org.eclipse.ui,
  org.eclipse.ui.forms,

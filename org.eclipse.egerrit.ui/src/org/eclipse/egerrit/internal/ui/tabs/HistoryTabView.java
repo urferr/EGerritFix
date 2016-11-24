@@ -50,6 +50,8 @@ import org.eclipse.swt.widgets.TabItem;
  */
 public class HistoryTabView {
 
+	private static final String HISTORY_FILES = "egerrit.HistoryFiles"; //$NON-NLS-1$
+
 	private TableViewer tableHistoryViewer;
 
 	private TextViewerWithLinks msgTextData;
@@ -94,8 +96,9 @@ public class HistoryTabView {
 
 		msgTextData = new TextViewerWithLinks(sashFormHorizon, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		msgTextData.setEditable(false);
-		tableUIFiles = new UIFilesTable(gerritClient, changeInfo);
+		tableUIFiles = new UIFilesTable(gerritClient, changeInfo, HISTORY_FILES);
 		tableUIFiles.createTableViewerSection(sashFormHorizon);
+
 		//Set the % of display data.40% table and 60% for the comment message
 		sashFormHorizon.setWeights(new int[] { 40, 60 });
 

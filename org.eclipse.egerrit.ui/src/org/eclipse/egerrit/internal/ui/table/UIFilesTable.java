@@ -36,10 +36,12 @@ import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
 import org.eclipse.egerrit.internal.ui.table.provider.FileTableLabelProvider;
 import org.eclipse.egerrit.internal.ui.table.provider.HandleFileSelection;
+import org.eclipse.egerrit.internal.ui.utils.PersistentStorage;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -51,6 +53,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
@@ -65,6 +69,13 @@ import org.eclipse.swt.widgets.TableColumn;
  * @since 1.0
  */
 public class UIFilesTable {
+	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
+
+	private static final String VIEW_COLUMN_WIDTH = "egerritViewColumnWidth"; //$NON-NLS-1$
+
+	private static final String COLUMN_SELECTION = "egerritSelectColumn"; //$NON-NLS-1$
+
+	private static final String SORT_DIRECTION = "sortDirection"; //$NON-NLS-1$
 
 	private boolean popupEnabled = true;
 
@@ -106,16 +117,22 @@ public class UIFilesTable {
 
 	private RevisionInfo fRevisionInfo;
 
-	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo) {
+	private String storageSectionName;
+
+	private PersistentStorage persistStorage;
+
+	public UIFilesTable(GerritClient gerritClient, ChangeInfo changeInfo, String name) {
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
+		this.storageSectionName = name;
 		this.loader = ModelLoader.initialize(gerritClient, changeInfo);
 		loader.loadCurrentRevision();
 	}
 
-	public UIFilesTable(GerritClient gerritClient, RevisionInfo revisionInfo) {
+	public UIFilesTable(GerritClient gerritClient, RevisionInfo revisionInfo, String name) {
 		this.fGerritClient = gerritClient;
 		this.fRevisionInfo = revisionInfo;
+		this.storageSectionName = name;
 	}
 
 	/**
@@ -136,6 +153,8 @@ public class UIFilesTable {
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(2));
+		persistStorage = new PersistentStorage(fViewer, storageSectionName);
+		persistStorage.restoreDialogSettings();
 		return fViewer;
 	}
 
@@ -306,6 +325,18 @@ public class UIFilesTable {
 		column.setAlignment(tableInfo.getAlignment());
 		column.setResizable(tableInfo.getResize());
 		column.setMoveable(tableInfo.getMoveable());
+		column.addControlListener(new ControlListener() {
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				persistStorage.storeDialogSettings();
+			}
+
+			@Override
+			public void controlMoved(ControlEvent e) {
+			}
+		});
+
 		return viewerColumn;
 	}
 
@@ -422,4 +453,12 @@ public class UIFilesTable {
 	public void dispose() {
 		loader.dispose();
 	}
+
+	public IDialogSettings getDialogSettings() {
+		if (persistStorage == null) {
+			persistStorage = new PersistentStorage(fViewer, storageSectionName);
+		}
+		return persistStorage.getDialogSettings(storageSectionName);
+	}
+
 }
