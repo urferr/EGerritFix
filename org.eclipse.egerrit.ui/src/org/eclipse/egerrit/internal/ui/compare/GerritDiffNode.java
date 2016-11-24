@@ -53,7 +53,7 @@ public class GerritDiffNode extends DiffNode {
 		return getLabelName(false);
 	}
 
-	public String getLabelName(boolean nameFirt) {
+	public String getLabelName(boolean nameFirst) {
 		String path = ""; //$NON-NLS-1$
 		String oldPath = null;
 		if (diffFileInfo != null) {
@@ -68,7 +68,7 @@ public class GerritDiffNode extends DiffNode {
 		} else {
 			path = ""; //$NON-NLS-1$
 		}
-		if (nameFirt) {
+		if (nameFirst) {
 			int index = path.lastIndexOf("/"); //$NON-NLS-1$
 			if (index != -1) {
 				String fileName = path.substring(index + 1);
