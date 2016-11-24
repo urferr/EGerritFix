@@ -28,7 +28,7 @@ public class GetReviewedCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() throws Exception {
 		// Create a review for setup
-		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, filename);
+		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, fileInfo);
 		try {
 			command.call();
 		} catch (EGerritException e) {

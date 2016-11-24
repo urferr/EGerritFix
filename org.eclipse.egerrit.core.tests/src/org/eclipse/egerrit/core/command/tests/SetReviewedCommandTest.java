@@ -28,7 +28,7 @@ import org.junit.Test;
 public class SetReviewedCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() throws Exception {
-		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, filename);
+		SetReviewedCommand command = fGerrit.setReviewed(change_id, commit_id, fileInfo);
 		try {
 			command.call();
 		} catch (EGerritException e) {

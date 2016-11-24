@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareEditorInput;
@@ -429,11 +430,13 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	}
 
 	private void toggleReviewed(FileInfo fileInfo) {
-		if (fileInfo.isReviewed()) {
-			QueryHelpers.markAsNotReviewed(compareInput.gerritClient, fileInfo);
-		} else {
-			QueryHelpers.markAsReviewed(compareInput.gerritClient, fileInfo);
-		}
+		CompletableFuture.runAsync(() -> {
+			if (fileInfo.isReviewed()) {
+				QueryHelpers.markAsNotReviewed(compareInput.gerritClient, fileInfo);
+			} else {
+				QueryHelpers.markAsReviewed(compareInput.gerritClient, fileInfo);
+			}
+		});
 	}
 
 	private static class TreeFactoryImpl implements IObservableFactory {
