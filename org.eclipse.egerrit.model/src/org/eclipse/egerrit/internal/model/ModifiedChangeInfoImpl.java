@@ -12,6 +12,7 @@ package org.eclipse.egerrit.internal.model;
  */
 
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,7 +79,18 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__ACTIONS)) {
 					recomputeChangeInfoActions(msg);
 				}
+				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__REMOVABLE_REVIEWERS)) {
+					recomputeChangeInfoRemovalReviewer(msg);
+				}
 			}
+
+			private void recomputeChangeInfoRemovalReviewer(Notification msg) {
+				InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
+				if ((msg.getEventType() == Notification.ADD) || (msg.getEventType() == Notification.ADD_MANY)) {
+					deriveReviewerRemovalPresence ();
+				}
+			}
+
 
 			private void recomputeChangeInfoActions(Notification msg) {
 				InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
@@ -316,6 +328,20 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 				RevisionInfo rev = ((ChangeInfo)m.eContainer()).getRevisionByNumber(m.get_revision_number());
 				if (rev != null)
 					rev.setCommented(m.isComment());
+			}
+		}
+	}
+
+	//Helper method setting if a reviewer is removeable or not
+	//Also update the isDeleatable in Revisioninfo
+	private void deriveReviewerRemovalPresence() {
+		EList<AccountInfo> removalList = getRemovable_reviewers();
+		EList<ReviewerInfo> reviewersInfo = getComputedReviewers();
+		for (int i = 0; i < removalList.size(); i++) {
+			for (ReviewerInfo revInfo: reviewersInfo ) {
+				if (revInfo.get_account_id() == removalList.get(i).get_account_id()) {
+					revInfo.setDeleteable(true);
+				}
 			}
 		}
 	}

@@ -37,6 +37,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ReviewerInfoImpl#getEmail <em>Email</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ReviewerInfoImpl#getUsername <em>Username</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.ReviewerInfoImpl#getApprovals <em>Approvals</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.ReviewerInfoImpl#isDeleteable <em>Deleteable</em>}</li>
  * </ul>
  *
  * @generated
@@ -131,6 +132,26 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @ordered
 	 */
 	protected EMap<String, String> approvals;
+
+	/**
+	 * The default value of the '{@link #isDeleteable() <em>Deleteable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDeleteable()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean DELETEABLE_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isDeleteable() <em>Deleteable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDeleteable()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean deleteable = DELETEABLE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -265,6 +286,30 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @generated
 	 */
 	@Override
+	public boolean isDeleteable() {
+		return deleteable;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDeleteable(boolean newDeleteable) {
+		boolean oldDeleteable = deleteable;
+		deleteable = newDeleteable;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.REVIEWER_INFO__DELETEABLE, oldDeleteable,
+					deleteable));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.REVIEWER_INFO__APPROVALS:
@@ -294,6 +339,8 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 				return getApprovals();
 			else
 				return getApprovals().map();
+		case ModelPackage.REVIEWER_INFO__DELETEABLE:
+			return isDeleteable();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -320,6 +367,9 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return;
 		case ModelPackage.REVIEWER_INFO__APPROVALS:
 			((EStructuralFeature.Setting) getApprovals()).set(newValue);
+			return;
+		case ModelPackage.REVIEWER_INFO__DELETEABLE:
+			setDeleteable((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -348,6 +398,9 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 		case ModelPackage.REVIEWER_INFO__APPROVALS:
 			getApprovals().clear();
 			return;
+		case ModelPackage.REVIEWER_INFO__DELETEABLE:
+			setDeleteable(DELETEABLE_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -370,6 +423,8 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return USERNAME_EDEFAULT == null ? username != null : !USERNAME_EDEFAULT.equals(username);
 		case ModelPackage.REVIEWER_INFO__APPROVALS:
 			return approvals != null && !approvals.isEmpty();
+		case ModelPackage.REVIEWER_INFO__DELETEABLE:
+			return deleteable != DELETEABLE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -393,6 +448,8 @@ public class ReviewerInfoImpl extends MinimalEObjectImpl.Container implements Re
 		result.append(email);
 		result.append(", username: "); //$NON-NLS-1$
 		result.append(username);
+		result.append(", deleteable: "); //$NON-NLS-1$
+		result.append(deleteable);
 		result.append(')');
 		return result.toString();
 	}

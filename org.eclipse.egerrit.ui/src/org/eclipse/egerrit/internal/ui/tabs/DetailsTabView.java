@@ -759,11 +759,8 @@ public class DetailsTabView {
 						addReviewerInput.setConfirmed(true);
 						reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
 					}
-					//We need to update the list manually because the "updated" timestamp on the server is not refreshed and therefore the reload does nothing
-					if (reviewerCmdResult != null) {
-						fChangeInfo.getComputedReviewers().addAll(reviewerCmdResult.getReviewers());
-					}
-					loader.reload(false);
+
+					loader.reload(true);
 					textWidget.setText(""); //$NON-NLS-1$
 				}
 			}
@@ -814,26 +811,28 @@ public class DetailsTabView {
 						if (element instanceof ReviewerInfo) {
 
 							ReviewerInfo reviewerInfo = (ReviewerInfo) element;
+							//Verify is the current use can be deleted or not
+							if (reviewerInfo.isDeleteable()) {
+								//Add a safety dialog to confirm the deletion
 
-							//Add a safety dialog to confirm the deletion
+								if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
+										Messages.SummaryTabView_22, Messages.SummaryTabView_23 + reviewerInfo.getName()
+												+ Messages.SummaryTabView_24)) {
+									return;
+								}
 
-							if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
-									Messages.SummaryTabView_22,
-									Messages.SummaryTabView_23 + reviewerInfo.getName() + Messages.SummaryTabView_24)) {
-								return;
+								DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(
+										fChangeInfo.getId(), String.valueOf(reviewerInfo.get_account_id()));
+
+								try {
+									deleteReviewerCmd.call();
+									fChangeInfo.getComputedReviewers().remove(reviewerInfo);
+								} catch (EGerritException e3) {
+									EGerritCorePlugin.logError(
+											fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+								}
+								loader.reload(false);
 							}
-
-							DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(fChangeInfo.getId(),
-									String.valueOf(reviewerInfo.get_account_id()));
-
-							try {
-								deleteReviewerCmd.call();
-								fChangeInfo.getComputedReviewers().remove(reviewerInfo);
-							} catch (EGerritException e3) {
-								EGerritCorePlugin.logError(
-										fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-							}
-							loader.reload(false);
 						}
 					}
 				}
@@ -963,7 +962,8 @@ public class DetailsTabView {
 		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
 				new IValueProperty[] { new SelfValueProperty<String>("x"), //$NON-NLS-1$
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__NAME),
-						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL) });
+						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL),
+						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__DELETEABLE) });
 		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties));
 		tableReviewersViewer.setInput(
 				EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS).observe(fChangeInfo));

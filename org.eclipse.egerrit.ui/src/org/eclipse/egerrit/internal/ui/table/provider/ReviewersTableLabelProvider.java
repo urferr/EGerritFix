@@ -49,7 +49,10 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 			ReviewerInfo reviewerInfo = (ReviewerInfo) aObj;
 			switch (aIndex) {
 			case 0:
-				return "x"; //$NON-NLS-1$
+				if (reviewerInfo.isDeleteable()) {
+					return "x"; //$NON-NLS-1$
+				}
+				return ""; //$NON-NLS-1$
 			case 1:
 				return super.getColumnText(aObj, aIndex);
 			case 2:

@@ -73,6 +73,7 @@ public class ReviewerInfoItemProvider extends ItemProviderAdapter
 			addNamePropertyDescriptor(object);
 			addEmailPropertyDescriptor(object);
 			addUsernamePropertyDescriptor(object);
+			addDeleteablePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -139,6 +140,22 @@ public class ReviewerInfoItemProvider extends ItemProviderAdapter
 								"_UI_ReviewerInfo_type"), //$NON-NLS-1$
 						ModelPackage.Literals.REVIEWER_INFO__USERNAME, true, false, false,
 						ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Deleteable feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addDeleteablePropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+				.add(createItemPropertyDescriptor(((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+						getResourceLocator(), getString("_UI_ReviewerInfo_deleteable_feature"), //$NON-NLS-1$
+						getString("_UI_PropertyDescriptor_description", "_UI_ReviewerInfo_deleteable_feature", //$NON-NLS-1$//$NON-NLS-2$
+								"_UI_ReviewerInfo_type"), //$NON-NLS-1$
+						ModelPackage.Literals.REVIEWER_INFO__DELETEABLE, true, false, false,
+						ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -211,6 +228,7 @@ public class ReviewerInfoItemProvider extends ItemProviderAdapter
 		case ModelPackage.REVIEWER_INFO__NAME:
 		case ModelPackage.REVIEWER_INFO__EMAIL:
 		case ModelPackage.REVIEWER_INFO__USERNAME:
+		case ModelPackage.REVIEWER_INFO__DELETEABLE:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		case ModelPackage.REVIEWER_INFO__APPROVALS:

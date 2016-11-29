@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.ReviewerInfo#getEmail <em>Email</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ReviewerInfo#getUsername <em>Username</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.ReviewerInfo#getApprovals <em>Approvals</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.ReviewerInfo#isDeleteable <em>Deleteable</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getReviewerInfo()
@@ -156,5 +157,32 @@ public interface ReviewerInfo extends EObject {
 	 * @generated
 	 */
 	EMap<String, String> getApprovals();
+
+	/**
+	 * Returns the value of the '<em><b>Deleteable</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Deleteable</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deleteable</em>' attribute.
+	 * @see #setDeleteable(boolean)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getReviewerInfo_Deleteable()
+	 * @model default="false" derived="true"
+	 * @generated
+	 */
+	boolean isDeleteable();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.ReviewerInfo#isDeleteable <em>Deleteable</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Deleteable</em>' attribute.
+	 * @see #isDeleteable()
+	 * @generated
+	 */
+	void setDeleteable(boolean value);
 
 } // ReviewerInfo

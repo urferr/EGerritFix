@@ -37,6 +37,7 @@ import org.eclipse.egerrit.internal.core.command.ListDraftsCommand;
 import org.eclipse.egerrit.internal.core.command.ListReviewersCommand;
 import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -48,6 +49,7 @@ import org.eclipse.egerrit.internal.model.RelatedChangesInfo;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.emf.common.util.EList;
 
 /**
  * A helper class wrapping the common server queries. All calls in this class are expected to be synchronous.
@@ -259,7 +261,7 @@ public class QueryHelpers {
 						.getRevisionByNumber(ModelHelpers.getHighestRevisionNumber(toRefresh.getRevisions().values()))
 						.getId());
 			}
-			//Re-init the userselected revision after a revert
+			//Re-init the user selected revision after a revert
 			if (toRefresh.getUserSelectedRevision() == null) {
 				//Initial setting for the user selected revision if not done yet
 				toRefresh.setUserSelectedRevision(toRefresh.getRevisions().get(toRefresh.getCurrent_revision()));
@@ -272,6 +274,10 @@ public class QueryHelpers {
 				toRefresh.getMessages().clear();
 				toRefresh.getMessages().addAll(newChangeInfo.getMessages());
 			}
+
+			//Reset the removal reviewers list
+			toRefresh.eSet(ModelPackage.Literals.CHANGE_INFO__REMOVABLE_REVIEWERS,
+					newChangeInfo.getRemovable_reviewers());
 
 			//Set the date at the end because it is used to trigger other refreshes
 			if (forceReload && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())) {
@@ -457,11 +463,28 @@ public class QueryHelpers {
 			synchronized (element) {
 				element.getComputedReviewers().clear();
 				for (ReviewerInfo reviewerInfo : reviewers) {
+					adjustRemovableReviewers(element, reviewerInfo);
 					element.getComputedReviewers().add(reviewerInfo);
 				}
 			}
 		} catch (EGerritException e) {
 			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+		}
+	}
+
+	/**
+	 * Set the flag if the reviewer can be deleted
+	 * 
+	 * @param changeInfo
+	 * @param reviewerInfo
+	 */
+	private static void adjustRemovableReviewers(ChangeInfo changeInfo, ReviewerInfo reviewerInfo) {
+		EList<AccountInfo> removalList = changeInfo.getRemovable_reviewers();
+		for (int i = 0; i < removalList.size(); i++) {
+			if (reviewerInfo.get_account_id() == removalList.get(i).get_account_id()) {
+				reviewerInfo.setDeleteable(true);
+				return;
+			}
 		}
 	}
 

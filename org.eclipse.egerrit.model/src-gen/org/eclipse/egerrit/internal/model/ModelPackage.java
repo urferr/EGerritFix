@@ -1419,13 +1419,22 @@ public interface ModelPackage extends EPackage {
 	int REVIEWER_INFO__APPROVALS = 4;
 
 	/**
+	 * The feature id for the '<em><b>Deleteable</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVIEWER_INFO__DELETEABLE = 5;
+
+	/**
 	 * The number of structural features of the '<em>Reviewer Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVIEWER_INFO_FEATURE_COUNT = 5;
+	int REVIEWER_INFO_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>Reviewer Info</em>' class.
@@ -3928,6 +3937,17 @@ public interface ModelPackage extends EPackage {
 	EReference getReviewerInfo_Approvals();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.ReviewerInfo#isDeleteable <em>Deleteable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Deleteable</em>'.
+	 * @see org.eclipse.egerrit.internal.model.ReviewerInfo#isDeleteable()
+	 * @see #getReviewerInfo()
+	 * @generated
+	 */
+	EAttribute getReviewerInfo_Deleteable();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.GitPersonInfo <em>Git Person Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -6107,6 +6127,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference REVIEWER_INFO__APPROVALS = eINSTANCE.getReviewerInfo_Approvals();
+
+		/**
+		 * The meta object literal for the '<em><b>Deleteable</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REVIEWER_INFO__DELETEABLE = eINSTANCE.getReviewerInfo_Deleteable();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.GitPersonInfoImpl <em>Git Person Info</em>}' class.

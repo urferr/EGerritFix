@@ -1452,6 +1452,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getReviewerInfo_Deleteable() {
+		return (EAttribute) reviewerInfoEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getGitPersonInfo() {
 		return gitPersonInfoEClass;
 	}
@@ -2752,6 +2762,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(reviewerInfoEClass, REVIEWER_INFO__EMAIL);
 		createEAttribute(reviewerInfoEClass, REVIEWER_INFO__USERNAME);
 		createEReference(reviewerInfoEClass, REVIEWER_INFO__APPROVALS);
+		createEAttribute(reviewerInfoEClass, REVIEWER_INFO__DELETEABLE);
 
 		gitPersonInfoEClass = createEClass(GIT_PERSON_INFO);
 		createEAttribute(gitPersonInfoEClass, GIT_PERSON_INFO__NAME);
@@ -3198,6 +3209,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getReviewerInfo_Approvals(), this.getStringToString(), null, "approvals", null, 0, -1, //$NON-NLS-1$
 				ReviewerInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getReviewerInfo_Deleteable(), ecorePackage.getEBoolean(), "deleteable", "false", 0, 1, //$NON-NLS-1$//$NON-NLS-2$
+				ReviewerInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				IS_DERIVED, IS_ORDERED);
 
 		initEClass(gitPersonInfoEClass, GitPersonInfo.class, "GitPersonInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);
