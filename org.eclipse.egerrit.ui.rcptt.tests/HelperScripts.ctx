@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 11/2/16 5:36 PM
+Save-Time: 11/29/16 2:27 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -150,11 +150,11 @@ proc doInsertComment [val idx] [val text] [val atLine] [val col 0] [val in -inpu
 }
 
 proc "assert-that-status-in-dashboard" [val is] {
-	getDashboard | get-table | get-item false | get-property "columns[3]" | equals $is | verify-true
+	getDashboard | get-table | get-item "Not starred review" | get-property "columns[3]" | equals $is | verify-true
 }
 
 proc "assert-that-subject-in-dashboard" [val is] {
-	getDashboard | get-table | get-item false | get-property "columns[2]" | equals $is | verify-true
+	getDashboard | get-table | get-item "Not starred review" | get-property "columns[2]" | equals $is | verify-true
 }
 
 proc "assert-that-first-entry-in-history-table" [val atColumn] [val is] [val in -input] {
