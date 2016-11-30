@@ -23,13 +23,27 @@ public class Common {
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
+	static String initHost() {
+		String host = System.getProperty("EGerritGerritTestServerHost");
+		if (host == null || host.trim().length() == 0) {
+			return "localhost";
+		}
+		return host;
+	}
+
+	static int initPort() {
+		String port = System.getProperty("EGerritGerritTestServerPort");
+		if (port == null || port.trim().length() == 0) {
+			return 28112;
+		}
+		return Integer.valueOf(port);
+	}
 
 	public static final String SCHEME = "http";
 
-	public static final String HOST = "localhost";
+	public static final String HOST = initHost();
 
-//	public static final int PORT = 28212;
-	public static final int PORT = 28112;
+	public static final int PORT = initPort();
 
 	public static final String PATH = "";
 
@@ -45,7 +59,6 @@ public class Common {
 
 	public static final String EMAIL = "admin@localhost";
 
-//	public static final String GERRIT_VERSION = "2.12.2";
 	public static final String GERRIT_VERSION = "2.11.5";
 
 	public static final String CHANGES_PATH = PATH + "/changes/";

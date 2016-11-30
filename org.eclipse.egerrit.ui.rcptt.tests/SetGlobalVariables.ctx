@@ -6,13 +6,23 @@ Element-Type: context
 Element-Version: 2.0
 Id: _P5YQQFRDEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 9/12/16 8:54 PM
+Save-Time: 11/29/16 11:27 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
 Entry-Name: .ecl.context
 
-global [val serverURL "http://localhost:28112"]
+//Build the address of the default test gerrit server to run the tests against
+let [val server [substitute-variables "${system_property:EGerritGerritTestServerHost}"]] {
+	if [$server | equals ""] -then { global [val server_address "localhost"] } -else { global [val server_address [substitute-variables "${system_property:EGerritGerritTestServerHost}"]] }
+	
+	let [val port [substitute-variables "${system_property:EGerritGerritTestServerPort}"]] {
+		if [$port | equals ""] -then { global [val server_port "28112"] } -else { global [val server_port [substitute-variables "${system_property:EGerritGerritTestServerPort}"]] }
+	}
+	
+	global [val serverURL [concat "http://" $server_address ":" $server_port]]
+}
+
 global [val serverName DefaultGerritServer]
 global [val gerritProject "egerrit/RCPTTtest"]
 global [val defaultUser "admin@localhost"]

@@ -27,4 +27,16 @@
 		<sonar.tests>src</sonar.tests>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+          			<argLine>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost} -DEGerritGerritTestServerPort=${EGerritGerritTestServerPort}</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

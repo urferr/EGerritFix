@@ -54,12 +54,15 @@
 		<sonar.java.source>1.8</sonar.java.source>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.exclusions>**/tests/**,**/test/**,**/Messages*,**/stubs/**,**/model/**</sonar.exclusions>
-        <sonar.junit.reportsPath>target/test-reports,target/surefire-reports</sonar.junit.reportsPath>
-		<base.test.vmargs>-Xms256m -Xmx1024m -XX:MaxPermSize=256m</base.test.vmargs>
-		<base.ui.test.vmargs>${base.test.vmargs} -Dorg.eclipse.swt.browser.DefaultType=mozilla</base.ui.test.vmargs>
+		<sonar.junit.reportsPath>target/test-reports,target/surefire-reports</sonar.junit.reportsPath>
 
 		<download-publish-path>/home/data/httpd/download.eclipse.org/egerrit/updates/nightly</download-publish-path>
 		<tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/egerrit/org.eclipse.egerrit</tycho.scmUrl>
+
+		<!-- Configuration of the Test gerrit server to use for the tests.-->
+		<!-- The default values are specified in the code -->
+		<EGerritGerritTestServerHost/>
+		<EGerritGerritTestServerPort/>
 	</properties>
 
 	<pluginRepositories>
