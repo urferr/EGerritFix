@@ -34,9 +34,29 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-          			<argLine>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost} -DEGerritGerritTestServerPort=${EGerritGerritTestServerPort}</argLine>
+					<argLine>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost} -DEGerritGerritTestServerPort=${EGerritGerritTestServerPort}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>hudson</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<argLine>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost} -DEGerritGerritTestServerPort=${EGerritGerritTestServerPort} -DEGerritUseDefinedProxy=true -Declipse.pluginCustomization=${project.basedir}/../org.eclipse.egerrit.releng/eclipseFoundation-proxy-settings.ini</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
 </project>

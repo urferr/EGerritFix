@@ -47,10 +47,6 @@ public class Common {
 
 	public static final String PATH = "";
 
-	public static final String PROXY_HOST = null;
-
-	public static final int PROXY_PORT = 0;
-
 	public static final String TEST_PROJECT = "egerrit/test";
 
 	public static final String USER = "admin";

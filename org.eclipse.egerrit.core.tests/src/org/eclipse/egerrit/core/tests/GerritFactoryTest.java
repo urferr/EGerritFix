@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.apache.http.HttpHost;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritFactory;
@@ -47,10 +46,6 @@ public class GerritFactoryTest {
 
 	private final String PATH = Common.PATH;
 
-	private final String PROXY_HOST = Common.PROXY_HOST;
-
-	private final int PROXY_PORT = Common.PROXY_PORT;
-
 	private final String USER = Common.USER;
 
 	private final String PASSWORD = Common.PASSWORD;
@@ -67,9 +62,6 @@ public class GerritFactoryTest {
 
 		public MyGerritRepository(String version) {
 			super(SCHEME, HOST, PORT, PATH);
-			if (PROXY_HOST != null) {
-				setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
-			}
 			setCredentials(new GerritCredentials(USER, PASSWORD));
 			fVersion = (version != null) ? new Version(version) : null;
 		}
@@ -85,7 +77,8 @@ public class GerritFactoryTest {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * with null repository
 	 */
 	@Test
@@ -107,7 +100,8 @@ public class GerritFactoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * with unknown repository version
 	 */
 	@Test
@@ -129,7 +123,8 @@ public class GerritFactoryTest {
 	}
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.GerritFactory#create(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * Normal case
 	 */
 	@Test
@@ -137,9 +132,6 @@ public class GerritFactoryTest {
 
 		// Initialize
 		GerritRepository repo = new GerritRepository(SCHEME, HOST, PORT, PATH);
-		if (PROXY_HOST != null) {
-			repo.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
-		}
 		repo.setCredentials(new GerritCredentials(USER, PASSWORD));
 
 		// Run test

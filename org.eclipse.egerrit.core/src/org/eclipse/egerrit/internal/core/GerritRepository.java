@@ -69,9 +69,6 @@ public class GerritRepository {
 	/** The gerrit host */
 	private final HttpHost fHost;
 
-	/** The proxy host (if applicable) */
-	private HttpHost fProxy = null;
-
 	/** The user credentials for the repository */
 	private GerritCredentials fCredentials = null;
 
@@ -140,11 +137,6 @@ public class GerritRepository {
 	// Setters
 	// ------------------------------------------------------------------------
 
-	public GerritRepository setProxy(HttpHost proxy) {
-		fProxy = proxy;
-		return this;
-	}
-
 	public GerritRepository acceptSelfSignedCerts(boolean accept) {
 		fAcceptSelfSignedCerts = accept;
 		return this;
@@ -189,13 +181,6 @@ public class GerritRepository {
 	 */
 	public String getPath() {
 		return fPath;
-	}
-
-	/**
-	 * @return
-	 */
-	public HttpHost getProxy() {
-		return fProxy;
 	}
 
 	/**

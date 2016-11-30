@@ -12,7 +12,6 @@
 
 package org.eclipse.egerrit.internal.core;
 
-import org.apache.http.HttpHost;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
@@ -32,14 +31,6 @@ public class GerritCredentials {
 	private boolean fIsHttpAuthenticated = false;
 
 	private Credentials fHttpCredentials = null;
-
-	private final boolean fIsProxied = false;
-
-	private final HttpHost fProxy = null;
-
-	private final boolean fIsProxyAuthenticated = false;
-
-	private final Credentials fProxyCredentials = null;
 
 	// ------------------------------------------------------------------------
 	//

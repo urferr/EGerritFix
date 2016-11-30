@@ -123,14 +123,9 @@ public class GerritHttpClient implements IProxyChangeListener {
 					.setHostnameVerifier(fHostNameVerifier)
 					.setUserAgent(EGerritCorePlugin.getDefault().getUserAgent());
 			// Handle proxy settings
-			HttpHost proxy = fRepository.getProxy();
-			if (proxy != null) {
-				builder.setProxy(proxy);
-			} else {
-				HttpHost proxyHost = EGerritCorePlugin.getDefault().getProxyForHost(fRepository.getHostname());
-				if (proxyHost != null) {
-					builder.setProxy(proxyHost);
-				}
+			HttpHost proxyHost = EGerritCorePlugin.getDefault().getProxyForHost(fRepository.getHostname());
+			if (proxyHost != null) {
+				builder.setProxy(proxyHost);
 			}
 
 			// Handle self-signed certificates (SSC)
@@ -443,7 +438,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	/*
 	 * return the error code of the http connection
-
+	
 	 * @return
 	 */
 	public int getStatus() {

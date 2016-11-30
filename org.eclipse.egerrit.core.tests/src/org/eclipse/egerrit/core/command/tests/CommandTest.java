@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.HttpHost;
 import org.eclipse.egerrit.core.tests.Common;
 import org.eclipse.egerrit.core.tests.support.GitAccess;
 import org.eclipse.egerrit.internal.core.GerritClient;
@@ -75,9 +74,6 @@ public abstract class CommandTest {
 		serverInfo.setUserName(Common.USER);
 		serverInfo.setPassword(Common.PASSWORD);
 		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
-		if (Common.PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
-		}
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 		fRepository.getCredentials().setHttpCredentials(Common.USER, Common.PASSWORD);
 		fRepository.setServerInfo(serverInfo);
@@ -134,8 +130,7 @@ public abstract class CommandTest {
 
 			if (!currentRevision.isDraft()) {
 				Map<String, FileInfo> files = fGerrit
-						.getFiles(changeInfo.getId(), changeInfo.getUserSelectedRevision().getId())
-						.call();
+						.getFiles(changeInfo.getId(), changeInfo.getUserSelectedRevision().getId()).call();
 				currentRevision.getFiles().putAll(files);
 				currentRevision.setFilesLoaded(true);
 				fileInfo = currentRevision.getFiles().get(filename);

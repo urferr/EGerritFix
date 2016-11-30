@@ -19,7 +19,6 @@ import static org.junit.Assert.assertNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.http.HttpHost;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritRepository;
 import org.junit.After;
@@ -29,7 +28,7 @@ import org.osgi.framework.Version;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.GerritRepo}
- * 
+ *
  * @since 1.0
  */
 @SuppressWarnings("nls")
@@ -47,10 +46,6 @@ public class GerritRepositoryTest {
 
 	private final String PATH = Common.PATH;
 
-	private final String PROXY_HOST = Common.PROXY_HOST;
-
-	private final int PROXY_PORT = Common.PROXY_PORT;
-
 	private final String USER = Common.USER;
 
 	private final String PASSWORD = Common.PASSWORD;
@@ -64,9 +59,6 @@ public class GerritRepositoryTest {
 	@Before
 	public void setUp() throws Exception {
 		fRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
-		if (PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(PROXY_HOST, PROXY_PORT));
-		}
 		fRepository.setCredentials(new GerritCredentials(USER, PASSWORD));
 		assertNotNull(fRepository);
 	}
@@ -163,11 +155,9 @@ public class GerritRepositoryTest {
 	 */
 	@Test
 	public void testGetGenericURIFailed() {
-
 		// Initialize with invalid protocol (scheme)
-		HttpHost proxy = (PROXY_HOST != null) ? new HttpHost(PROXY_HOST, PROXY_PORT) : null;
 		GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
-		GerritRepository repo = new GerritRepository("", HOST, PORT, PATH).setProxy(proxy).setCredentials(creds);
+		GerritRepository repo = new GerritRepository("", HOST, PORT, PATH).setCredentials(creds);
 		assertNotNull(repo);
 
 		// Run test

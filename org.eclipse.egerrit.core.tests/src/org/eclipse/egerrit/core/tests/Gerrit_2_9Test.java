@@ -51,9 +51,6 @@ public class Gerrit_2_9Test {
 	@Before
 	public void setUp() throws Exception {
 		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_9.PORT, Common_2_9.PATH);
-		if (Common.PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
-		}
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 	}
 
@@ -66,7 +63,8 @@ public class Gerrit_2_9Test {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Test method for {@link org.eclipse.egerrit.internal.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.internal.core.GerritRepository)}
+	 * Test method for
+	 * {@link org.eclipse.egerrit.internal.core.Gerrit_2_9#Gerrit_2_9(org.eclipse.egerrit.internal.core.GerritRepository)}
 	 * . and {@link org.eclipse.egerrit.internal.core.GerritClient#getRepository()}.
 	 */
 	@Test

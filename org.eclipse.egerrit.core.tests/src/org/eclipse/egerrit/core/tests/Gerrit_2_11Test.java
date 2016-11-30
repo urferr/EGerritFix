@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.apache.http.HttpHost;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.GerritCredentials;
 import org.eclipse.egerrit.internal.core.GerritFactory;
@@ -51,9 +50,6 @@ public class Gerrit_2_11Test {
 	@Before
 	public void setUp() throws Exception {
 		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_11.PORT, Common_2_11.PATH);
-		if (Common.PROXY_HOST != null) {
-			fRepository.setProxy(new HttpHost(Common.PROXY_HOST, Common.PROXY_PORT));
-		}
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 	}
 
