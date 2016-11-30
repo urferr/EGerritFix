@@ -1,0 +1,33 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Context-Type: org.eclipse.rcptt.ctx.ecl
+Element-Name: InitialSubmit
+Element-Type: context
+Element-Version: 2.0
+Id: _faIt4LvJEeawKoti9_0qpQ
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 12/6/16 11:00 AM
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+This context creates a new revision and submits it to the server. This allows new reviews to have a parent (this change) so that they can then be rebased.
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
+Content-Type: text/ecl
+Entry-Name: .ecl.context
+
+/* Creates a new review and open the corresponding editor */
+let [val review [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $review
+}
+
+/* +2 the review and submits it to the server */
+get-editor ".*Test commit message" | get-button "Reply..." | click
+get-menu "Code-Review+2" | click
+get-editor "Test commit message" | get-button Submit | click
+
+/* Close the editor */
+get-editor "Test commit message" | close
+------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

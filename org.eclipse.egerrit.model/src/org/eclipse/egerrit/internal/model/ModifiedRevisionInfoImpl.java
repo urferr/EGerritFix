@@ -31,9 +31,19 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 			ActionInfo actionInfo = actionsAvailable.get(action);
 
 			if (actionInfo != null) {
-				//Checking if the action is defined. If so, then just return true, 
-				//Not checking the value "isEnabled()", sometimes, 
-				//it return false even if the action is defined
+				if (action.equals(ActionConstants.REBASE.getName())) {
+					/*
+					 * Checking if the action is defined. If so, then just
+					 * return true, not checking the value "isEnabled()",
+					 * sometimes, it return false even if the action is defined.
+					 * For example, rebase "ActionInfo" sometimes doesn't have
+					 * the "enabled" attribute even though it's possible to
+					 * rebase the revision. This is why we decided to return
+					 * true when the action is defined, disregarding the status
+					 * of the "enabled" attribute.
+					 */
+					return true;
+				}
 				return actionInfo.isEnabled();
 			}
 		}

@@ -580,6 +580,17 @@ public class ChangeDetailEditor extends EditorPart {
 		Button rebaseButton = new Button(c, SWT.PUSH);
 		rebaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rebaseButton.setText(ActionConstants.REBASE.getLiteral());
+
+		//Bind the rebase button
+		{
+			IObservableValue observeRebasable = EMFProperties
+					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+					.value(ModelPackage.Literals.REVISION_INFO__REBASEABLE)
+					.observe(fChangeInfo);
+
+			bindingContext.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebasable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+		}
 		rebaseButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override

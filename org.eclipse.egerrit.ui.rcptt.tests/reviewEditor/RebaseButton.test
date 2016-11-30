@@ -1,0 +1,43 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _faIt4LvJEeawKoti9_0qpQ
+Element-Name: RebaseButton
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _05iHkLi8Eea2OeMIfPIKmw
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 12/6/16 12:30 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+/* Create a new review on the server, amend it, push it and then open it in the editor */
+let [val review [amend-review -review [create-review -server $serverURL]]] {
+	runQueryAndOpenEditor $review
+}
+
+/* Select the editor */
+with [get-editor] {
+	/* Check that the latest patch set can be rebased */
+	assert-that-button -button Rebase -is enabled
+	
+	/* Select the first patch set and check that this one is not rebaseable */
+	with [get-button -after [get-label "Patch Sets.*"]] {
+		click
+		get-menu "1.*" | click
+		wait -ms 700
+	}
+	assert-that-button -button Rebase -is disabled
+
+	/* Go back to latest patch set and check that it can be rebased */
+	with [get-button -after [get-label "Patch Sets.*"]] {
+		click
+		get-menu "2.*" | click
+		wait -ms 700
+	}
+	assert-that-button -button Rebase -is enabled
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
