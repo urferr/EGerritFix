@@ -391,6 +391,7 @@ public class QueryHelpers {
 		ChangeInfo[] sameTopicChangeInfo = null;
 		synchronized (element) {
 			if (element.getTopic() == null) {
+				element.getSameTopic().clear();
 				return;
 			}
 		}

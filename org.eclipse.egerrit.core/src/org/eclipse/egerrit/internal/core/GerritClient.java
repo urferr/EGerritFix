@@ -22,6 +22,7 @@ import org.eclipse.egerrit.internal.core.command.DeleteDraftCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteDraftRevisionCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteReviewedCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand;
+import org.eclipse.egerrit.internal.core.command.DeleteTopicCommand;
 import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
 import org.eclipse.egerrit.internal.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.internal.core.command.GetContentCommand;
@@ -499,6 +500,16 @@ public abstract class GerritClient {
 	 */
 	public SetTopicCommand setTopic(String change_id) {
 		return new SetTopicCommand(fGerritRepository, change_id);
+	}
+
+	/**
+	 * Return a command that allows to delete the topic of a review
+	 *
+	 * @param change_id
+	 * @return {@link DeleteTopicCommand}
+	 */
+	public DeleteTopicCommand deleteTopic(String change_id) {
+		return new DeleteTopicCommand(fGerritRepository, change_id);
 	}
 
 	/**

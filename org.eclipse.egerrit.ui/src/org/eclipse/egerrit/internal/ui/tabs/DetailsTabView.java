@@ -41,6 +41,7 @@ import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.AddReviewerCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand;
+import org.eclipse.egerrit.internal.core.command.DeleteTopicCommand;
 import org.eclipse.egerrit.internal.core.command.SetTopicCommand;
 import org.eclipse.egerrit.internal.core.command.SuggestReviewersCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
@@ -854,33 +855,35 @@ public class DetailsTabView {
 
 				String topic = topicData.getText().trim();
 				setTopic(topic);
-				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				Map<String, String> parameters = new LinkedHashMap<String, String>();
-				parameters.put(EGerritConstants.BRANCH, fChangeInfo.getBranch());
-				parameters.put(EGerritConstants.PROJECT, UIUtils.getLinkText(genProjectData.getText()));
-
-				linkDash.invokeRefreshDashboardCommand(parameters);
+				loader.loadBasicInformation(false);
 			}
-
 		};
 	}
 
 	private void setTopic(String topic) {
-		SetTopicCommand command = fGerritClient.setTopic(fChangeInfo.getChange_id());
-		TopicInput topicInput = new TopicInput();
-		if (topic != null) {
+		if (topic == null) {
+			return;
+		}
+
+		if (!topic.trim().equals("")) { //$NON-NLS-1$
+			SetTopicCommand command = fGerritClient.setTopic(fChangeInfo.getChange_id());
+			TopicInput topicInput = new TopicInput();
 			topicInput.setTopic(topic);
+			command.setCommandInput(topicInput);
+			try {
+				command.call();
+			} catch (EGerritException ex) {
+				EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + ex.getMessage());
+			}
 		} else {
-			topicInput.setTopic(""); //$NON-NLS-1$
+			DeleteTopicCommand command = fGerritClient.deleteTopic(fChangeInfo.getChange_id());
+			try {
+				command.call();
+			} catch (EGerritException ex) {
+				EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + ex.getMessage());
+			}
 		}
 
-		command.setCommandInput(topicInput);
-
-		try {
-			command.call();
-		} catch (EGerritException ex) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + ex.getMessage());
-		}
 	}
 
 	/************************************************************* */
@@ -891,42 +894,36 @@ public class DetailsTabView {
 	protected DataBindingContext sumGenDataBindings() {
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genProjectData), projectbytesFChangeInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show branch
 		IObservableValue<String> branchFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genBranchData), branchFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show topic
 		IObservableValue<String> topicFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genTopicData), topicFChangeInfoObserveValue, null,
 				null);
 
 		//Show updated status
 		IObservableValue updatedFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
 		//Show mergeableinfo
 		IObservableValue<String> mergeSubmitValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fChangeInfo)));
 
 		//Show mergeable status
 		IObservableValue mergeableMergeableInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableMergeableInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 

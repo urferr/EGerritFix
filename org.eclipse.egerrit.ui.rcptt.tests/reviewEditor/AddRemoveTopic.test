@@ -1,12 +1,12 @@
 --- RCPTT testcase ---
 Format-Version: 1.0
-Element-Name: AddTopic
+Element-Name: AddRemoveTopic
 Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _oOXtAGY9EeacLsYYjZ3eXQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 10/7/16 4:12 PM
+Save-Time: 12/1/16 11:21 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -25,23 +25,40 @@ proc "add-demo-topic" [val editor -input] {
 	}
 }
 
-let [val firstReview [amend-review -review [create-review -server $serverURL]]] {
+proc "remove-topic" [val editor -input] {
+	with [$editor] {
+		with [get-tab-folder] {
+			get-tab-item Details | click
+		}
+		with [get-group General] {
+			get-editbox -after [get-label "Topic:"] | set-text ""
+			get-button Save | click
+		}
+	}
+}
+
+let [val firstReview [create-review -server $serverURL]] {
 	// Create a review and set a topic to it
 	runQueryAndOpenEditor $firstReview
 	get-editor | add-demo-topic
-	let [val number [get-editor | get-group "" | get-editbox -after [get-label "ID:"] | get-text]] {
+
+	let [val firstReviewNumber [get-editor | get-group "" | get-editbox -after [get-label "ID:"] | get-text]] {
 		get-editor | close
 
 		// Create a second review and set a topic to it
-		let [val secondReview [amend-review -review [create-review -server $serverURL]]] {
+		let [val secondReview [create-review -server $serverURL]] {
 			runQueryAndOpenEditor $secondReview
 			get-editor | add-demo-topic
 
-			// refresh the editor (though we should not)
-			get-editor | get-button Refresh | click
 			// Finally do the check
-			get-editor | assert-sameTopic-table $number
+			get-editor | assert-sameTopic-table $firstReviewNumber
 		}
+		get-editor | close
 	}
+
+	// Now test the removal of the topic and make sure the same topic list is refreshed
+	runQueryAndOpenEditor $firstReview
+	get-editor | remove-topic
+	get-editor | assert-noEntry-in-topic-table
 }
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
