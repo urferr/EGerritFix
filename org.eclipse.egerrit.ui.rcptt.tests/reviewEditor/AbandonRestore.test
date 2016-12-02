@@ -5,8 +5,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _JPUCYFT7Eeak2Y1KpcW4TQ
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 7/29/16 11:51 AM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 12/6/16 12:18 PM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -26,6 +26,7 @@ get-editor | get-button Abandon | click
 with [get-window "Abandon message"] {
 	get-editbox | set-text "Abandon the review"
 	get-button OK | click
+	wait -ms 700
 }
 
 with [get-editor] {
@@ -44,6 +45,7 @@ get-editor | get-button Restore | click
 with [get-window "Restore message"] {
 	get-editbox | set-text "Restore the review"
 	get-button OK | click
+	wait -ms 700
 }
 
 with [get-editor] {

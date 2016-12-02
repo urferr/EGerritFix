@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/1/16 11:19 AM
+Save-Time: 12/6/16 1:16 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -99,7 +99,8 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 
 proc openCompareEditor [val query] [val serverName $serverName] {
 	runQueryAndOpenEditor $query $serverName
-
+	wait -ms 700
+	
 	with [get-table -index 1 | get-column-header "File Path"] {
 		click
 	}
@@ -118,7 +119,7 @@ proc switchLeftInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
-	wait 200
+	wait 500
 }
 
 proc switchRightInput [val to] [val in -input] {
@@ -126,7 +127,7 @@ proc switchRightInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
-	wait 200
+	wait 500
 }
 
 proc insertComment [val on] [val text] [val atLine] [val save false] [val column 0] [val in -input] {
@@ -138,6 +139,7 @@ proc insertComment [val on] [val text] [val atLine] [val save false] [val column
 	if [$save] {
 		with [$in] {
 			key-type "M1+s"
+			wait -ms 700
 		}
 	}
 }
