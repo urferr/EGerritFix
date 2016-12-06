@@ -5,8 +5,8 @@ Element-Name: InitialSubmit
 Element-Type: context
 Element-Version: 2.0
 Id: _faIt4LvJEeawKoti9_0qpQ
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 12/6/16 11:00 AM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 12/6/16 3:44 PM
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
 Content-Type: text/plain
@@ -24,10 +24,12 @@ let [val review [create-review -server $serverURL]] {
 }
 
 /* +2 the review and submits it to the server */
-get-editor ".*Test commit message" | get-button "Reply..." | click
+get-editor | get-button "Reply..." | click
 get-menu "Code-Review+2" | click
-get-editor "Test commit message" | get-button Submit | click
+wait -ms 1000
+
+get-editor | get-button Submit | click
 
 /* Close the editor */
-get-editor "Test commit message" | close
+get-editor | close
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
