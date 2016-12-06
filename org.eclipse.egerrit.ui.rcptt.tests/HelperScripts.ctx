@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/6/16 1:16 PM
+Save-Time: 12/6/16 3:35 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -330,6 +330,17 @@ proc "assert-that-filename-in-compare" [val atLine] [val is] [val in -input] {
 	with [$in | get-tree] {
 		get-item "" -index $atLine | get-property "columns[2]" | equals $is | verify-true
 	}
+}
+	
+proc "assert-that-filename-in-dialog" [val atLine] [val is] [val in -input] {
+	with [$in | get-table] {
+		get-item "" -index $atLine | get-property "columns[2]" | equals $is | verify-true
+	}
+}
+
+proc "activate-review" [val in -input] {
+	$in | get-button "Activate Comment Markers" | check
+	get-window "EGerrit Tip" | get-button OK | click
 }
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

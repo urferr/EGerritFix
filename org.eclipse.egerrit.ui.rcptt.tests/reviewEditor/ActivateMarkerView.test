@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _kZWPIGYwEeayT_mC1nsHtA
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 8/19/16 8:38 PM
+Save-Time: 12/6/16 3:36 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -16,9 +16,7 @@ Entry-Name: .content
 let [val review [create-review -server $serverURL]] {
 	runQueryAndOpenEditor $review
 
-	//activate the review without comment and check that there is no markers
-	get-editor | get-button "Activate Comment Markers" | check
-	get-window "EGerrit Tip" | get-button OK | click
+	get-editor | activate-review
 
 	assert-marker-count-is -is 0
 	openCompareEditor $review
