@@ -62,8 +62,16 @@ public class ModelLoader {
 
 	//load the basic information
 	public void loadBasicInformation(boolean forceReload) {
-		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, forceReload));
-		initializeBasicInformationTracker();
+		if (forceReload) {
+			synchronized (this) {
+				if (basicInfoTracker != null) {
+					changeInfo.eAdapters().remove(basicInfoTracker);
+					basicInfoTracker = null;
+				}
+			}
+		}
+		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, forceReload))
+				.thenRun(() -> initializeBasicInformationTracker());
 	}
 
 	private void initializeDetailsTracker() {
@@ -94,21 +102,23 @@ public class ModelLoader {
 
 	private void initializeBasicInformationTracker() {
 		if (basicInfoTracker == null) {
-			basicInfoTracker = new EContentAdapter() {
-				@Override
-				public void notifyChanged(Notification msg) {
-					super.notifyChanged(msg);
+			synchronized (this) {
+				basicInfoTracker = new EContentAdapter() {
+					@Override
+					public void notifyChanged(Notification msg) {
+						super.notifyChanged(msg);
 
-					if (msg.getFeature() == null) {
-						return;
-					}
+						if (msg.getFeature() == null) {
+							return;
+						}
 
-					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)) {
-						CompletableFuture
-								.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false));
+						if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__UPDATED)) {
+							CompletableFuture
+									.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false));
+						}
 					}
-				}
-			};
+				};
+			}
 			changeInfo.eAdapters().add(basicInfoTracker);
 		}
 	}

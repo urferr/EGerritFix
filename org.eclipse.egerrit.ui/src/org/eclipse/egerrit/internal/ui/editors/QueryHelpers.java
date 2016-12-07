@@ -274,7 +274,13 @@ public class QueryHelpers {
 			}
 
 			//Set the date at the end because it is used to trigger other refreshes
-			toRefresh.setUpdated(newChangeInfo.getUpdated());
+			if (forceReload && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())) {
+				//slightly modify the date to make sure that listeners on the "last updated" fields are called
+				toRefresh.setUpdated(
+						newChangeInfo.getUpdated().substring(0, newChangeInfo.getUpdated().length() - 2) + "1"); //$NON-NLS-1$
+			} else {
+				toRefresh.setUpdated(newChangeInfo.getUpdated());
+			}
 			toRefresh.setLoadingLevel(1);
 		}
 	}
