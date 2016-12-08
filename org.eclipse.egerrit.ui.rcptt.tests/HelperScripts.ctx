@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/8/16 10:16 AM
+Save-Time: 12/8/16 10:38 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -237,15 +237,6 @@ proc "assert-that-left-editor-content" [val is] [val in -input] {
 proc "assert-that-right-editor-content" [val is] [val in -input] {
 	with [$in] {
 		get-editbox -index 1 | get-property text | contains $is | verify-true
-	}
-}
-
-proc "assert-that-first-entry-in-reviewer-table" [val atColumn] [val is] [val in -input] {
-	with [$in] {
-		get-tab-folder | get-tab-item Details | click
-	}
-	with [get-table -index 0] {
-		get-cell -row 0 -column 1 | get-property [concat "columns[" $atColumn "]"] | contains $is | verify-true
 	}
 }
 
