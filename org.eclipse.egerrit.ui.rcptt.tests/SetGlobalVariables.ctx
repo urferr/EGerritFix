@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _P5YQQFRDEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 11/29/16 11:27 PM
+Save-Time: 12/8/16 10:17 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -26,4 +26,5 @@ let [val server [substitute-variables "${system_property:EGerritGerritTestServer
 global [val serverName DefaultGerritServer]
 global [val gerritProject "egerrit/RCPTTtest"]
 global [val defaultUser "admin@localhost"]
+global [val defaultWaitTime 1500]
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

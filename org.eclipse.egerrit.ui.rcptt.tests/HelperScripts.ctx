@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/6/16 3:35 PM
+Save-Time: 12/8/16 10:16 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -89,7 +89,7 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 	} -catch {
 		runQuery [$query] -serverName $serverName
 	}
-	wait -ms 500
+	wait -ms $defaultWaitTime
 	with [getDashboard] {
 		with [get-table] {
 			get-cell -row 0 -column 1 | double-click
@@ -99,7 +99,7 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 
 proc openCompareEditor [val query] [val serverName $serverName] {
 	runQueryAndOpenEditor $query $serverName
-	wait -ms 700
+	wait -ms $defaultWaitTime
 	
 	with [get-table -index 1 | get-column-header "File Path"] {
 		click
@@ -119,7 +119,7 @@ proc switchLeftInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
-	wait 500
+	wait -ms $defaultWaitTime
 }
 
 proc switchRightInput [val to] [val in -input] {
@@ -127,7 +127,7 @@ proc switchRightInput [val to] [val in -input] {
 		click
 		get-menu $to | click
 	}
-	wait 500
+	wait -ms $defaultWaitTime
 }
 
 proc insertComment [val on] [val text] [val atLine] [val save false] [val column 0] [val in -input] {
@@ -139,7 +139,7 @@ proc insertComment [val on] [val text] [val atLine] [val save false] [val column
 	if [$save] {
 		with [$in] {
 			key-type "M1+s"
-			wait -ms 700
+			wait -ms $defaultWaitTime
 		}
 	}
 }

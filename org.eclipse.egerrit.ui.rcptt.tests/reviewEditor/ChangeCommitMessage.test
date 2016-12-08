@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _4NUTQFT1Eeak2Y1KpcW4TQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/1/16 11:49 AM
+Save-Time: 12/8/16 10:16 AM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -31,7 +31,7 @@ with [get-editor] {
 	get-button Save | click
 }
 
-wait -ms 700
+wait -ms $defaultWaitTime
 
 // Confirm that the subject has changed in the editor
 assert-that-subject-in-editor -is "Commit message from test by RCPTT" -in [get-editor]

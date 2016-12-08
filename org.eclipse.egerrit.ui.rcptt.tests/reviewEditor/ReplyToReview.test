@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _8b_jwF20Eea0aLCZHBxUOw
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/6/16 12:16 PM
+Save-Time: 12/8/16 10:16 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -22,7 +22,7 @@ with [get-window "Reply to comment"] {
     get-editbox -after [get-label "Enter the reply to patchset 1/1"] | set-text "On the right track !"
     get-button "Looks good to me, but someone else must approve" | click
     get-button OK | click
-    wait -ms 700
+    wait -ms $defaultWaitTime
 }
 
 assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+1  On the right track !" -in [get-editor]
@@ -30,7 +30,7 @@ assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+1  On the 
 // testing reply +2
 get-editor | get-button "Reply..." | click
 get-menu "Code-Review+2" | click
-wait -ms 700
+wait -ms $defaultWaitTime
 
 assert-that-first-entry-in-history-table -atColumn 3 -is "Code-Review+2" -in [get-editor]
 
