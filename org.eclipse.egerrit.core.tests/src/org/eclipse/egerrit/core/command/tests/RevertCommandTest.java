@@ -38,6 +38,8 @@ import org.junit.Test;
 public class RevertCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
+		//Create and submit an initial value for the git server,
+		//so we guarantee to have a baseline version of the code store in git
 		// Code-Review +2
 		SetReviewCommand setReviewcommand = fGerrit.setReview(change_id, commit_id);
 		ReviewInput reviewInput = new ReviewInput();
@@ -66,6 +68,37 @@ public class RevertCommandTest extends CommandTestWithSimpleReview {
 			fail(e.getMessage());
 		}
 
+		//Now we have at least one base parent, lets create a new submit review
+		// Code-Review +2
+		createReviewWithSimpleFile(false);
+
+		setReviewcommand = fGerrit.setReview(change_id, commit_id);
+		reviewInput = new ReviewInput();
+		reviewInput.setMessage("This second review is NOW ready to go ...");
+		obj = new HashMap();
+		obj.put("Code-Review", "2");
+		reviewInput.setLabels(obj);
+		setReviewcommand.setCommandInput(reviewInput);
+		try {
+			setReviewcommand.call();
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		}
+
+		//  submit ...
+		submitCmd = fGerrit.submit(change_id);
+		submitInput = new SubmitInput();
+		submitInput.setWait_for_merge(true);
+		submitCmd.setCommandInput(submitInput);
+
+		submitCmdResult = null;
+		try {
+			submitCmdResult = submitCmd.call();
+			assertEquals(submitCmdResult.getChange_id(), change_id);
+		} catch (EGerritException e) {
+			fail(e.getMessage());
+		}
+
 		// now do test and revert ...
 		RevertCommand revertCmd = fGerrit.revert(change_id);
 		RevertInput revertInput = new RevertInput();
@@ -81,6 +114,5 @@ public class RevertCommandTest extends CommandTestWithSimpleReview {
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
-
 	}
 }
