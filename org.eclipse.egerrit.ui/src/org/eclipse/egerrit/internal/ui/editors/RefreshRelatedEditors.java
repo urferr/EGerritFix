@@ -47,9 +47,11 @@ public class RefreshRelatedEditors extends Job {
 	public IStatus run(IProgressMonitor monitor) {
 		/* Get list of related changes and remove current one */
 		List<String> changeIds = new ArrayList<String>();
-		for (RelatedChangeAndCommitInfo change : fChangeInfo.getRelatedChanges().getChanges()) {
-			if (change.getChange_id() != null && !change.getChange_id().equals(fChangeInfo.getChange_id())) {
-				changeIds.add(change.getChange_id());
+		if (fChangeInfo.getRelatedChanges() != null) {
+			for (RelatedChangeAndCommitInfo change : fChangeInfo.getRelatedChanges().getChanges()) {
+				if (change.getChange_id() != null && !change.getChange_id().equals(fChangeInfo.getChange_id())) {
+					changeIds.add(change.getChange_id());
+				}
 			}
 		}
 		if (changeIds.size() == 0) {
