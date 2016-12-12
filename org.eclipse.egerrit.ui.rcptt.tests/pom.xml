@@ -83,6 +83,7 @@
 							<vmArg>${argLine}</vmArg>
 							<vmArg>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost}</vmArg>
 							<vmArg>-DEGerritGerritTestServerPort=${EGerritGerritTestServerPort}</vmArg>
+							<vmArg>-DRCPTTWaitTime=${RCPTTWaitTime}</vmArg>
 							<!-- Argument to enable remote debugging of the AUT -->
 							<!-- <vmArg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=6677</vmArg> -->
 						</vmArgs>
@@ -182,6 +183,7 @@
 									<vmArg>${argLine}</vmArg>
 									<vmArg>-DEGerritGerritTestServerHost=${EGerritGerritTestServerHost}</vmArg>
 									<vmArg>-DEGerritGerritTestServerPort=${EGerritGerritTestServerPort}</vmArg>
+									<vmArg>-DRCPTTWaitTime=${RCPTTWaitTime}</vmArg>
 									<vmArg>-Declipse.pluginCustomization=${project.basedir}/../org.eclipse.egerrit.releng/eclipseFoundation-proxy-settings.ini</vmArg>
 									<vmArg>-DEGerritUseDefinedProxy=true</vmArg>
 									<!-- Argument to enable remote debugging of the AUT -->
