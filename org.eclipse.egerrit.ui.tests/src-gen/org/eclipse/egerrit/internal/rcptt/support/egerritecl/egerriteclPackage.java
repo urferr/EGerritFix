@@ -42,21 +42,21 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The package namespace URI. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	String eNS_URI = "http://www.eclipse.org/egerrit/2016/egerritecl.ecore"; //$NON-NLS-1$
 
 	/**
 	 * The package namespace name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	String eNS_PREFIX = "org.eclipse.egerrit.ecl"; //$NON-NLS-1$
 
 	/**
 	 * The singleton instance of the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	egerriteclPackage eINSTANCE = org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl
@@ -65,7 +65,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl
 	 * <em>Create Review</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getCreateReview()
 	 * @generated
@@ -74,7 +74,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Host</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -83,7 +83,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * The feature id for the '<em><b>Bindings</b></em>' containment reference list. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -91,7 +91,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Server</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -99,7 +99,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Project</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -107,24 +107,32 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Is Draft</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
 	int CREATE_REVIEW__IS_DRAFT = CorePackage.COMMAND_FEATURE_COUNT + 2;
 
 	/**
-	 * The number of structural features of the '<em>Create Review</em>' class. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
+	 * The feature id for the '<em><b>Filename</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 * @ordered
 	 */
-	int CREATE_REVIEW_FEATURE_COUNT = CorePackage.COMMAND_FEATURE_COUNT + 3;
+	int CREATE_REVIEW__FILENAME = CorePackage.COMMAND_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of structural features of the '<em>Create Review</em>' class. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int CREATE_REVIEW_FEATURE_COUNT = CorePackage.COMMAND_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>Create Review</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -134,7 +142,7 @@ public interface egerriteclPackage extends EPackage {
 	 * The meta object id for the
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl <em>Review
 	 * Description</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getReviewDescription()
 	 * @generated
@@ -152,7 +160,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Project Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -160,7 +168,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Local Clone</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -168,7 +176,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Last Change Id</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -176,7 +184,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Is Draft</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -185,7 +193,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * The number of structural features of the '<em>Review Description</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -203,7 +211,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl
 	 * <em>Amend Review</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getAmendReview()
 	 * @generated
@@ -212,7 +220,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Host</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -221,7 +229,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * The feature id for the '<em><b>Bindings</b></em>' containment reference list. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -229,7 +237,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Review</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -237,7 +245,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The feature id for the '<em><b>Is Draft</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -254,7 +262,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * The number of operations of the '<em>Amend Review</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 * @ordered
 	 */
@@ -263,7 +271,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview
 	 * <em>Create Review</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for class '<em>Create Review</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview
 	 * @generated
@@ -298,7 +306,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#isIsDraft <em>Is Draft</em>}'. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Is Draft</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#isIsDraft()
 	 * @see #getCreateReview()
@@ -307,9 +315,21 @@ public interface egerriteclPackage extends EPackage {
 	EAttribute getCreateReview_IsDraft();
 
 	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFilename <em>Filename</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for the attribute '<em>Filename</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFilename()
+	 * @see #getCreateReview()
+	 * @generated
+	 */
+	EAttribute getCreateReview_Filename();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription
 	 * <em>Review Description</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for class '<em>Review Description</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription
 	 * @generated
@@ -320,7 +340,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getGerritServerURL <em>Gerrit
 	 * Server URL</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Gerrit Server URL</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getGerritServerURL()
 	 * @see #getReviewDescription()
@@ -332,7 +352,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName <em>Project
 	 * Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Project Name</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName()
 	 * @see #getReviewDescription()
@@ -344,7 +364,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone <em>Local
 	 * Clone</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Local Clone</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone()
 	 * @see #getReviewDescription()
@@ -356,7 +376,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId <em>Last Change
 	 * Id</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Last Change Id</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId()
 	 * @see #getReviewDescription()
@@ -368,7 +388,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Is Draft</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft()
 	 * @see #getReviewDescription()
@@ -379,7 +399,7 @@ public interface egerriteclPackage extends EPackage {
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview
 	 * <em>Amend Review</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for class '<em>Amend Review</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview
 	 * @generated
@@ -402,7 +422,7 @@ public interface egerriteclPackage extends EPackage {
 	 * Returns the meta object for the attribute
 	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview#isIsDraft <em>Is Draft</em>}'. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the meta object for the attribute '<em>Is Draft</em>'.
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview#isIsDraft()
 	 * @see #getAmendReview()
@@ -412,7 +432,7 @@ public interface egerriteclPackage extends EPackage {
 
 	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the factory that creates the instances of the model.
 	 * @generated
 	 */
@@ -428,7 +448,7 @@ public interface egerriteclPackage extends EPackage {
 	 * <li>and each data type</li>
 	 * </ul>
 	 * <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	interface Literals {
@@ -436,7 +456,7 @@ public interface egerriteclPackage extends EPackage {
 		 * The meta object literal for the
 		 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl <em>Create Review</em>}'
 		 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 *
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getCreateReview()
 		 * @generated
@@ -446,7 +466,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Server</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute CREATE_REVIEW__SERVER = eINSTANCE.getCreateReview_Server();
@@ -454,7 +474,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Project</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute CREATE_REVIEW__PROJECT = eINSTANCE.getCreateReview_Project();
@@ -462,16 +482,24 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Is Draft</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute CREATE_REVIEW__IS_DRAFT = eINSTANCE.getCreateReview_IsDraft();
 
 		/**
+		 * The meta object literal for the '<em><b>Filename</b></em>' attribute feature. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 *
+		 * @generated
+		 */
+		EAttribute CREATE_REVIEW__FILENAME = eINSTANCE.getCreateReview_Filename();
+
+		/**
 		 * The meta object literal for the
 		 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl <em>Review
 		 * Description</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 *
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ReviewDescriptionImpl
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getReviewDescription()
 		 * @generated
@@ -481,7 +509,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Gerrit Server URL</b></em>' attribute feature. <!-- begin-user-doc
 		 * --> <!-- end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute REVIEW_DESCRIPTION__GERRIT_SERVER_URL = eINSTANCE.getReviewDescription_GerritServerURL();
@@ -489,7 +517,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Project Name</b></em>' attribute feature. <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute REVIEW_DESCRIPTION__PROJECT_NAME = eINSTANCE.getReviewDescription_ProjectName();
@@ -497,7 +525,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Local Clone</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute REVIEW_DESCRIPTION__LOCAL_CLONE = eINSTANCE.getReviewDescription_LocalClone();
@@ -505,7 +533,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Last Change Id</b></em>' attribute feature. <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute REVIEW_DESCRIPTION__LAST_CHANGE_ID = eINSTANCE.getReviewDescription_LastChangeId();
@@ -513,7 +541,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Is Draft</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute REVIEW_DESCRIPTION__IS_DRAFT = eINSTANCE.getReviewDescription_IsDraft();
@@ -522,7 +550,7 @@ public interface egerriteclPackage extends EPackage {
 		 * The meta object literal for the
 		 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl <em>Amend Review</em>}'
 		 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
-		 * 
+		 *
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.AmendReviewImpl
 		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getAmendReview()
 		 * @generated
@@ -532,7 +560,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Review</b></em>' reference feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EReference AMEND_REVIEW__REVIEW = eINSTANCE.getAmendReview_Review();
@@ -540,7 +568,7 @@ public interface egerriteclPackage extends EPackage {
 		/**
 		 * The meta object literal for the '<em><b>Is Draft</b></em>' attribute feature. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
-		 * 
+		 *
 		 * @generated
 		 */
 		EAttribute AMEND_REVIEW__IS_DRAFT = eINSTANCE.getAmendReview_IsDraft();

@@ -40,12 +40,6 @@ public class ReviewFactory {
 
 	private GitAccess gitAccess;
 
-	private static final String A_PROJECT_A_JAVA = "A.java"; //$NON-NLS-1$
-
-	private static final String INITIAL_CONTENT_FILE_A = "Hello"; //$NON-NLS-1$
-
-	private static final String NEW_CONTENT_FILE_A = "Hello reviewer community \n\n Now is the time to do some testing \n \n"; //$NON-NLS-1$
-
 //	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 //			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
 //			+ "	</projects>\n" + "	<buildSpec>\n" + "		<buildCommand>\n"
@@ -72,9 +66,10 @@ public class ReviewFactory {
 		gitAccess.close();
 	}
 
-	public static ReviewDescription createReview(String server, String project, boolean isDraft) throws Exception {
+	public static ReviewDescription createReview(String server, String project, boolean isDraft, String changedFilename)
+			throws Exception {
 		ReviewFactory factory = new ReviewFactory();
-		String changeId = factory.doCreateReview(server, project, isDraft);
+		String changeId = factory.doCreateReview(server, project, isDraft, changedFilename);
 
 		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
 		commandResult.setGerritServerURL(server);
@@ -96,12 +91,11 @@ public class ReviewFactory {
 		return gitAccess.getChangeId();
 	}
 
-	private String doCreateReview(String server, String project, boolean isDraft) throws Exception {
+	private String doCreateReview(String server, String project, boolean isDraft, String changedFilename)
+			throws Exception {
 		this.server = server;
 		this.project = project;
-		if (filename == null) {
-			filename = A_PROJECT_A_JAVA;
-		}
+		this.filename = changedFilename;
 		initGitAccess();
 		initGerritConnection();
 		createReviewWithSimpleFile(isDraft);
@@ -122,7 +116,6 @@ public class ReviewFactory {
 
 	private void createReviewWithSimpleFile(boolean draft) {
 		try {
-			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
 			fileContent = "Hello reviewers {community} !\n This is the second line \n" + System.currentTimeMillis(); //$NON-NLS-1$
 			gitAccess.addFile(filename, fileContent);
 			gitAccess.pushFile(draft, false);

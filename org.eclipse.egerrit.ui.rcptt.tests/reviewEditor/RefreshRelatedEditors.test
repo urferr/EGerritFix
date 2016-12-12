@@ -1,0 +1,46 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: RefreshRelatedEditors
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _647qsLvcEeawKoti9_0qpQ
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 12/13/16 10:09 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val firstReview [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $firstReview
+
+	let [val firstReviewNumber [get-editor | get-group "" | get-editbox -after [get-label "ID:"] | get-text]] {
+
+		/* Create a second change with a different filename so that it can be rebased on the first one */
+		let [val secondReview [create-review -server $serverURL -filename "src/RCPTTRebase.java"]] {
+			runQueryAndOpenEditor $secondReview
+
+			get-button Rebase | click
+
+			/* Rebase on top of the first change */
+			with [get-window "Code Review - Rebase Change"] {
+				get-editbox -after [get-label "Change parent revision (leave empty to rebase on targeted branch)"]
+					| set-text $firstReviewNumber
+				get-button OK | click
+			}
+			
+			/* Open the first review and see it was correctly refreshed */
+			get-editor -index 0 | get-tab-folder | get-tab-item Details | click
+			
+		}
+	}
+}
+
+wait -ms $defaultWaitTime
+
+/* Assert that there is now 2 changes in the related changes group */
+get-editor | get-group "Related Changes" | get-table | get-property itemCount | equals 2 
+    | verify-true
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

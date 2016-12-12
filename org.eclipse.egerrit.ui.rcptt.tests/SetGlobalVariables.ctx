@@ -5,8 +5,8 @@ Element-Name: SetGlobalVariables
 Element-Type: context
 Element-Version: 2.0
 Id: _P5YQQFRDEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/12/16 2:30 PM
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 12/12/16 5:14 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -32,6 +32,4 @@ global [val defaultUser "admin@localhost"]
 let [val waitTime [substitute-variables "${system_property:RCPTTWaitTime}"]] {
 	if [$waitTime | equals ""] -then { global [val defaultWaitTime 1500] } -else { global [val defaultWaitTime [substitute-variables "${system_property:RCPTTWaitTime}" | int]] }
 }
-
-
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

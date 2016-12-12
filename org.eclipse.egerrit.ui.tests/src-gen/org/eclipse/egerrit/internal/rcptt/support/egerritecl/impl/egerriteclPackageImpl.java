@@ -160,6 +160,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getCreateReview_Filename() {
+		return (EAttribute)createReviewEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getReviewDescription() {
 		return reviewDescriptionEClass;
 	}
@@ -268,6 +277,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		createEAttribute(createReviewEClass, CREATE_REVIEW__SERVER);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__PROJECT);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__IS_DRAFT);
+		createEAttribute(createReviewEClass, CREATE_REVIEW__FILENAME);
 
 		reviewDescriptionEClass = createEClass(REVIEW_DESCRIPTION);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__GERRIT_SERVER_URL);
@@ -321,6 +331,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		initEAttribute(getCreateReview_Server(), ecorePackage.getEString(), "server", "", 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 		initEAttribute(getCreateReview_Project(), ecorePackage.getEString(), "project", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getCreateReview_IsDraft(), ecorePackage.getEBoolean(), "isDraft", "false", 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
+		initEAttribute(getCreateReview_Filename(), theEcorePackage.getEString(), "filename", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(reviewDescriptionEClass, ReviewDescription.class, "ReviewDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_GerritServerURL(), ecorePackage.getEString(), "gerritServerURL", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$

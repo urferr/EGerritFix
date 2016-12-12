@@ -44,9 +44,15 @@ public class CreateReviewService implements ICommandService {
 			project = "egerrit/RCPTTtest"; //$NON-NLS-1$
 		}
 
+		String filename = ((CreateReview) cmd).getFilename();
+
+		if (filename == null) {
+			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
+		}
+
 		boolean isDraft = createCmd.isIsDraft();
 		try {
-			result.getOutput().write(ReviewFactory.createReview(httpServer, project, isDraft));
+			result.getOutput().write(ReviewFactory.createReview(httpServer, project, isDraft, filename));
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID,
 					"An error occurred while creating the review", e); //$NON-NLS-1$

@@ -19,10 +19,13 @@ import org.eclipse.egerrit.internal.core.command.RebaseRevisionCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.RebaseInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.editors.RefreshRelatedEditors;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -83,13 +86,29 @@ public class RebaseProcess {
 		try {
 			rebaseCmd.call();
 
-			//After a rebase, we reload and reset the user selected revision
-			//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
-			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
-					.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
+			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true))
+					.thenRun(() -> {
+						changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+					});
+			/* Add listener for when the loadBasicInformation method will have finished updating the related changes */
+			changeInfo.eAdapters().add(new EContentAdapter() {
+				@Override
+				public void notifyChanged(Notification msg) {
+					if (msg.getFeature() == null) {
+						return;
+					}
+					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES)
+							&& msg.getEventType() == Notification.SET) {
+						new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
+						/* We remove the adapter once the refresh has been started because it now has enough information to correctly
+						 * refresh related opened editors */
+						changeInfo.eAdapters().remove(this);
+					}
+				}
+			});
+		} catch (
 
-			new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
-		} catch (EGerritException e1) {
+		EGerritException e1) {
 			if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
 						Messages.RebaseProcess_notPerform, SWT.NONE);
