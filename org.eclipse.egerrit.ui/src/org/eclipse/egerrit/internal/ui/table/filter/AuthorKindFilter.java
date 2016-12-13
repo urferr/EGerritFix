@@ -25,7 +25,7 @@ public class AuthorKindFilter extends ViewerFilter {
 	enum AuthorCiName {
 		// 	Name
 		HUDSON("Hudson"), //$NON-NLS-1$
-		JENKIN("Jenkin"), // //$NON-NLS-1$
+		JENKINS("Jenkins"), // //$NON-NLS-1$
 		CI(" CI"); //$NON-NLS-1$
 
 		private final String name;
