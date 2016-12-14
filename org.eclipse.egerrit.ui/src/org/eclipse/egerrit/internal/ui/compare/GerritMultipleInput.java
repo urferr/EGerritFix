@@ -56,6 +56,7 @@ import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
@@ -500,25 +501,22 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	@Override
 	public String getTitle() {
-		return Messages.GerritMultipleInput_1 + changeInfo.get_number() + " - " + changeInfo.getSubject() + " -- " //$NON-NLS-1$//$NON-NLS-2$
-				+ getComparisonTitle();
+		return NLS.bind(Messages.CompareEditorTitle,
+				new Object[] { changeInfo.get_number(), changeInfo.getSubject(), getComparisonTitle() });
 	}
 
 	private String getComparisonTitle() {
-		String result = ""; //$NON-NLS-1$
-		if (leftSide.equals(BASE) || leftSide.equals(WORKSPACE)) {
-			result += leftSide;
-		} else {
-			result += Messages.GerritMultipleInput_7 + changeInfo.getRevisions().get(leftSide).get_number();
+		if (UICompareUtils.isMirroredOn(this)) {
+			return getUserReadableString(rightSide) + " / " + getUserReadableString(leftSide); //$NON-NLS-1$
 		}
-		if (rightSide.equals(WORKSPACE)) {
-			result += Messages.GerritMultipleInput_9;
-		} else if (rightSide.equals(BASE)) {
-			result += rightSide;
-		} else {
-			result += Messages.GerritMultipleInput_10 + changeInfo.getRevisions().get(rightSide).get_number();
+		return getUserReadableString(leftSide) + " / " + getUserReadableString(rightSide); //$NON-NLS-1$
+	}
+
+	private String getUserReadableString(String string) {
+		if (string.equals(BASE) || string.equals(WORKSPACE)) {
+			return string;
 		}
-		return result;
+		return Messages.Patchset + changeInfo.getRevisions().get(string).get_number();
 	}
 
 	private String getBaseCommitId(RevisionInfo revision) {

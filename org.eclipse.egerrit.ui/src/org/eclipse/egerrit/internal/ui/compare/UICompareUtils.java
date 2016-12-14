@@ -12,6 +12,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.compare.CompareEditorInput;
 import org.eclipse.compare.ICompareNavigator;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.internal.CompareContentViewerSwitchingPane;
@@ -46,6 +47,8 @@ public class UICompareUtils {
 	private static final String COMPARE_EDITOR_TEXT_FIELD_RIGHT = "fRight"; //$NON-NLS-1$
 
 	private static final String DEFAULT_OBJECT_CLASS_NAME = "Object"; //$NON-NLS-1$
+
+	public static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$ The constant used by oxygen to indicate the status of the swap side option of the compare editor
 
 	/**
 	 * Method insertAnnotationNavigationCommands.
@@ -124,4 +127,7 @@ public class UICompareUtils {
 		return null;
 	}
 
+	public static boolean isMirroredOn(CompareEditorInput input) {
+		return Boolean.TRUE.equals(input.getCompareConfiguration().getProperty(MIRRORED_PROPERTY));
+	}
 }

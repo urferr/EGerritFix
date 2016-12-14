@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import org.eclipse.compare.CompareUI;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
@@ -25,11 +26,16 @@ import org.eclipse.egerrit.internal.ui.compare.GerritMultipleInput;
 import org.eclipse.egerrit.internal.ui.utils.GerritToGitMapping;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OpenCompareEditor {
 	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
+
+	final static boolean OXYGEN_OR_MORE_RECENT_RUNNING = Platform.getBundle("org.eclipse.team.ui") //$NON-NLS-1$
+			.getVersion()
+			.compareTo(new Version("3.8.1")) > 0; //$NON-NLS-1$
 
 	private final GerritClient gerrit;
 
@@ -41,7 +47,12 @@ public class OpenCompareEditor {
 	}
 
 	public void compareFiles(String leftSide, String rightSide, FileInfo fileToReveal) {
-		CompareUI.openCompareEditor(new GerritMultipleInput(leftSide, rightSide, changeInfo, gerrit, fileToReveal));
+		if (!OXYGEN_OR_MORE_RECENT_RUNNING) {
+			CompareUI.openCompareEditor(new GerritMultipleInput(leftSide, rightSide, changeInfo, gerrit, fileToReveal));
+			return;
+		}
+
+		CompareUI.openCompareEditor(new GerritMultipleInput(rightSide, leftSide, changeInfo, gerrit, fileToReveal));
 	}
 
 	public IFile getCorrespondingWorkspaceFile(FileInfo reviewFile) {

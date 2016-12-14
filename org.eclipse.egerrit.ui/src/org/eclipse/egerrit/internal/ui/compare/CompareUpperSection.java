@@ -81,8 +81,6 @@ import org.slf4j.LoggerFactory;
 public class CompareUpperSection extends CompareViewerSwitchingPane {
 	private static Logger logger = LoggerFactory.getLogger(CompareUpperSection.class);
 
-	private static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$
-
 	GerritMultipleInput compareInput;
 
 	DiffTreeViewer viewer;
@@ -128,7 +126,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	}
 
 	private void updateLabels() {
-		if (Boolean.TRUE.equals(compareInput.getCompareConfiguration().getProperty(MIRRORED_PROPERTY))) {
+		if (UICompareUtils.isMirroredOn(compareInput)) {
 			leftPatchSwapped.setText(
 					GerritCompareHelper.resolveShortName(compareInput.getChangeInfo(), compareInput.getLeftSide()));
 			rightPatchSwapped.setText(
@@ -142,6 +140,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 			patchesSelectorContainer.topControl = patchesSelector;
 		}
+		compareInput.setTitle(compareInput.getTitle());
 		patchesSelectorContainer.topControl.getParent().layout();
 	}
 
@@ -174,7 +173,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		viewer = new DiffTreeViewer(new Tree(parent, SWT.FULL_SELECTION), getCompareConfiguration()) {
 			@Override
 			protected void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
-				if (event.getProperty().equals(MIRRORED_PROPERTY)) { //Here we use the value of the constants directly which allows us to have the code build without depending on Oxygen.
+				if (event.getProperty().equals(UICompareUtils.MIRRORED_PROPERTY)) {
 					updateLabels();
 				}
 			}

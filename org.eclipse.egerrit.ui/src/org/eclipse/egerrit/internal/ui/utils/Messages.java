@@ -16,6 +16,10 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.ui.utils.messages"; //$NON-NLS-1$
 
+	public static String Patchset;
+
+	public static String CompareEditorTitle;
+
 	public static String FilterClear;
 
 	public static String FilterClearTooltip;
@@ -386,15 +390,7 @@ public class Messages extends NLS {
 
 	public static String CherryPickRevision_9;
 
-	public static String GerritMultipleInput_1;
-
-	public static String GerritMultipleInput_10;
-
 	public static String GerritMultipleInput_11;
-
-	public static String GerritMultipleInput_7;
-
-	public static String GerritMultipleInput_9;
 
 	public static String QuickFixer_0;
 
