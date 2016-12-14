@@ -85,11 +85,6 @@ public class RebaseProcess {
 
 		try {
 			rebaseCmd.call();
-
-			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true))
-					.thenRun(() -> {
-						changeInfo.setUserSelectedRevision(changeInfo.getRevision());
-					});
 			/* Add listener for when the loadBasicInformation method will have finished updating the related changes */
 			changeInfo.eAdapters().add(new EContentAdapter() {
 				@Override
@@ -106,9 +101,11 @@ public class RebaseProcess {
 					}
 				}
 			});
-		} catch (
-
-		EGerritException e1) {
+			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true))
+					.thenRun(() -> {
+						changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+					});
+		} catch (EGerritException e1) {
 			if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
 						Messages.RebaseProcess_notPerform, SWT.NONE);
