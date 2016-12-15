@@ -30,25 +30,12 @@ import org.eclipse.swt.widgets.TableColumn;
  * @author Jacques Bouthillier
  * @since 1.0
  */
-public class BranchListLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
+public class BranchListLabelProvider extends LabelProvider implements ITableLabelProvider {
 	private final String[] fTitles = { Messages.BranchSelectionTableModel_branch,
 			Messages.BranchSelectionTableModel_match };
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
-
-	// ------------------------------------------------------------------------
-	// Constructors
-	// ------------------------------------------------------------------------
-	public BranchListLabelProvider() {
-	}
-
-	// ------------------------------------------------------------------------
-	// Methods
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Return the text associated to the column
@@ -60,7 +47,6 @@ public class BranchListLabelProvider extends LabelProvider implements ITableLabe
 	 * @return String text associated to the column
 	 */
 	public String getColumnText(Object aObj, int aIndex) {
-
 		if (aObj instanceof Entry) {
 			Map.Entry<String, BranchMatch> map = (Map.Entry<String, BranchMatch>) aObj;
 
