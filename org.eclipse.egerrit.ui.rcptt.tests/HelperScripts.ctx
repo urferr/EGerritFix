@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/8/16 10:38 AM
+Save-Time: 12/15/16 12:09 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -75,6 +75,7 @@ proc runQuery [val query] [val serverName $serverName] {
 	selectActiveServer -serverName $serverName
 	get-view "Gerrit Dashboard (EGerrit)" | get-combo | set-text $query
 	get-button Search | click
+	wait -ms $defaultWaitTime
 }
 
 proc selectActiveServer [val serverName] {
@@ -89,12 +90,12 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 	} -catch {
 		runQuery [$query] -serverName $serverName
 	}
-	wait -ms $defaultWaitTime
 	with [getDashboard] {
 		with [get-table] {
 			get-cell -row 0 -column 1 | double-click
 		}
 	}
+	wait -ms $defaultWaitTime
 }
 
 proc openCompareEditor [val query] [val serverName $serverName] {
