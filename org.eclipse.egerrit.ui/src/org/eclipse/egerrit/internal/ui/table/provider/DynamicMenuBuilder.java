@@ -11,10 +11,17 @@
 
 package org.eclipse.egerrit.internal.ui.table.provider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
+import org.eclipse.compare.structuremergeviewer.IDiffElement;
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
+import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
+import org.eclipse.egerrit.internal.ui.editors.ClearReviewedFlag;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.IMenuListener;
@@ -28,6 +35,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.TableItem;
 
 public class DynamicMenuBuilder {
 	private Menu commonMenu;
@@ -43,7 +51,7 @@ public class DynamicMenuBuilder {
 	public DynamicMenuBuilder() {
 	}
 
-	public void addPulldownMenu(ColumnViewer viewer, GerritClient client) {
+	public void addPulldownMenu(ColumnViewer viewer, GerritClient client, boolean available) {
 		MenuManager menuManager = new MenuManager();
 		if (viewer instanceof TableViewer) {
 			commonMenu = menuManager.createContextMenu(((TableViewer) viewer).getTable());
@@ -56,62 +64,113 @@ public class DynamicMenuBuilder {
 		menuManager.addMenuListener(new IMenuListener() {
 			@Override
 			public void menuAboutToShow(IMenuManager manager) {
-				addMenuItem(commonMenu, viewer, client);
+				addMenuItem(commonMenu, viewer, client, available);
 			}
 		});
 
 		menuManager.update(true);
 	}
 
-	private void addMenuItem(Menu menu, ColumnViewer viewer, GerritClient client) {
+	/**
+	 * Select the menu item according to the available flag
+	 *
+	 * @param menu
+	 * @param viewer
+	 * @param client
+	 * @param available
+	 */
+	private void addMenuItem(Menu menu, ColumnViewer viewer, GerritClient client, boolean available) {
 		if (menu.getItemCount() == 0) {
 
-			final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
-			openFile.setText(Messages.UIFilesTable_0);
-			if (viewer instanceof TableViewer) {
-				tableLabelProvider = (FileTableLabelProvider) viewer.getLabelProvider();
-				openFile.setSelection(tableLabelProvider.getFileOrder());
-			}
-
-			openFile.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					HandleFileSelection handleSelection = new HandleFileSelection(client, viewer);
-					handleSelection.showFileSelection();
+			if (available) {
+				//Menu item: Open Workspace file
+				final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
+				openFile.setText(Messages.UIFilesTable_0);
+				if (viewer instanceof TableViewer) {
+					tableLabelProvider = (FileTableLabelProvider) viewer.getLabelProvider();
+					openFile.setSelection(tableLabelProvider.getFileOrder());
 				}
 
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
+				openFile.addSelectionListener(new SelectionListener() {
 
-			final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
-			nameFirst.setText(Messages.UIFilesTable_1);
-			if (viewer instanceof TableViewer) {
-				nameFirst.setSelection(tableLabelProvider.getFileOrder());
-			} else {
-
-				nameFirst.setSelection(((FileInfoCompareCellLabelProvider) viewer.getLabelProvider()).getFileOrder());
-			}
-			nameFirst.addSelectionListener(new SelectionListener() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					MenuItem menuItem = (MenuItem) e.getSource();
-					if (viewer instanceof TableViewer) {
-						tableLabelProvider.setFileNameFirst(menuItem.getSelection());
-					} else {
-						((FileInfoCompareCellLabelProvider) viewer.getLabelProvider())
-								.setFileNameFirst(menuItem.getSelection());
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						HandleFileSelection handleSelection = new HandleFileSelection(client, viewer);
+						handleSelection.showFileSelection();
 					}
-					viewer.refresh();
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+				});
+			}
+
+			//Menu item: Remove all Check Marks
+			final MenuItem removeCheckMark = new MenuItem(menu, SWT.PUSH);
+			removeCheckMark.setText(Messages.UIFilesTable_clearReviewedFlag);
+			removeCheckMark.addSelectionListener(new SelectionListener() {
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					List<FileInfo> listFiles = new ArrayList<FileInfo>();
+					if (viewer instanceof TableViewer) {
+						TableItem[] tableItems = ((TableViewer) viewer).getTable().getItems();
+						for (TableItem tableItem : tableItems) {
+							listFiles.add(((StringToFileInfoImpl) tableItem.getData()).getValue());
+						}
+					} else {
+						//Looking at the tree table in the upper section of the compare editor
+						Object obj = viewer.getInput();
+						if (obj instanceof GerritDiffNode) {
+							GerritDiffNode diffNode = (GerritDiffNode) obj;
+							IDiffElement[] children = diffNode.getChildren();
+							for (IDiffElement element : children) {
+								listFiles.add(((GerritDiffNode) element).getFileInfo());
+							}
+						}
+					}
+					ClearReviewedFlag reviewCheck = new ClearReviewedFlag(client, listFiles);
+					reviewCheck.removeCheckMark();
 				}
 
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
+
+			if (available) {
+				//Menu item: Separator
+				new MenuItem(menu, SWT.SEPARATOR);
+
+				//Menu item: Show File name first
+				final MenuItem nameFirst = new MenuItem(menu, SWT.CHECK);
+				nameFirst.setText(Messages.UIFilesTable_1);
+				if (viewer instanceof TableViewer) {
+					nameFirst.setSelection(tableLabelProvider.getFileOrder());
+				} else {
+
+					nameFirst.setSelection(
+							((FileInfoCompareCellLabelProvider) viewer.getLabelProvider()).getFileOrder());
+				}
+				nameFirst.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						MenuItem menuItem = (MenuItem) e.getSource();
+						if (viewer instanceof TableViewer) {
+							tableLabelProvider.setFileNameFirst(menuItem.getSelection());
+						} else {
+							((FileInfoCompareCellLabelProvider) viewer.getLabelProvider())
+									.setFileNameFirst(menuItem.getSelection());
+						}
+						viewer.refresh();
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+				});
+			}
 		}
 	}
 }

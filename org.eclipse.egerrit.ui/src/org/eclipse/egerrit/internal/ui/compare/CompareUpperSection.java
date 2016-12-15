@@ -266,7 +266,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 				new IValueProperty[] { reviewedFlag, comments, draftComments });
 		labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
 		viewer.setLabelProvider(labelProvider);
-		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient);
+		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient, true);
 
 		persistStorage = new PersistentStorage(viewer, COMPARE_FILES);
 		persistStorage.restoreDialogSettings();

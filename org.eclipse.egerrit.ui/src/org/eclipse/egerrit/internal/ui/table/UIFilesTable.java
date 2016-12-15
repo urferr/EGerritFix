@@ -299,10 +299,9 @@ public class UIFilesTable {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setData(FILES_TABLE);
-		if (popupEnabled) {
-			//Have the pull-down menu except for the files dialog
-			dynamicMenu.addPulldownMenu(fViewer, fGerritClient);
-		}
+
+		//Have the pull-down menu adjusted for the files dialog
+		dynamicMenu.addPulldownMenu(fViewer, fGerritClient, popupEnabled);
 
 		//Adjust the filters
 		enableDeletedFilesFilter(filterDeletedFiles);
