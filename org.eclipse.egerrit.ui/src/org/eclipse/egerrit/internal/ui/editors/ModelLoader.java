@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.util.EContentAdapter;
  * asynchronous
  */
 public class ModelLoader {
-	private static Map<ChangeInfo, ModelLoader> loaders = new HashMap<>();
+	private static Map<GerritClient, Map<ChangeInfo, ModelLoader>> loaders = new HashMap<>();
 
 	private ChangeInfo changeInfo;
 
@@ -51,13 +51,18 @@ public class ModelLoader {
 	}
 
 	public static ModelLoader initialize(GerritClient client, ChangeInfo changeInfo) {
-		ModelLoader match = loaders.get(changeInfo);
-		if (match == null) {
-			match = new ModelLoader(client, changeInfo);
-			loaders.put(changeInfo, match);
+		Map<ChangeInfo, ModelLoader> clientMatch = loaders.get(client);
+		if (clientMatch == null) {
+			clientMatch = new HashMap<>();
+			loaders.put(client, clientMatch);
 		}
-		match.refCount++;
-		return match;
+		ModelLoader loader = clientMatch.get(changeInfo);
+		if (loader == null) {
+			loader = new ModelLoader(client, changeInfo);
+			clientMatch.put(changeInfo, loader);
+		}
+		loader.refCount++;
+		return loader;
 	}
 
 	//load the basic information
