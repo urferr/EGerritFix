@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _W-G1wGuFEea6IpDGk_8D6A
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/8/16 10:16 AM
+Save-Time: 12/15/16 12:11 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -16,6 +16,8 @@ Entry-Name: .content
 let [val review [create-review -server $serverURL]] {
 	openCompareEditor $review
 	get-editor "Compare.*" | get-button "Open review editor.*" | click
+	wait -ms $defaultWaitTime
+	
 	get-editor "Compare.*" | close
 
 	with [get-editor] {
