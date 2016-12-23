@@ -83,8 +83,7 @@ public class RebaseProcess {
 
 		rebaseCmd.setCommandInput(rebaseInput);
 
-		try {
-			rebaseCmd.call();
+		CompletableFuture.runAsync(() -> {
 			/* Add listener for when the loadBasicInformation method will have finished updating the related changes */
 			changeInfo.eAdapters().add(new EContentAdapter() {
 				@Override
@@ -101,18 +100,20 @@ public class RebaseProcess {
 					}
 				}
 			});
-			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true))
-					.thenRun(() -> {
-						changeInfo.setUserSelectedRevision(changeInfo.getRevision());
-					});
-		} catch (EGerritException e1) {
-			if (e1.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
-						Messages.RebaseProcess_notPerform, SWT.NONE);
-			} else {
-				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+			try {
+				rebaseCmd.call();
+			} catch (EGerritException e) {
+				if (e.getCode() == EGerritException.SHOWABLE_MESSAGE) {
+					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
+							Messages.RebaseProcess_notPerform, SWT.NONE);
+				} else {
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+				}
 			}
-		}
+		}).thenRun(() -> {
+			QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true);
+			changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+		});
 	}
 
 }

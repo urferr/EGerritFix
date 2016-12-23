@@ -14,6 +14,8 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -541,13 +543,17 @@ public class ChangeDetailEditor extends EditorPart {
 
 				abandonCmd.setCommandInput(abandonInput);
 
-				try {
-					abandonCmd.call();
+				CompletableFuture.runAsync(() -> {
+					try {
+						abandonCmd.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+					refreshStatus();
+				}).thenRun(() -> {
 					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-				}
-				refreshStatus();
+				});
 			}
 		});
 
@@ -567,13 +573,17 @@ public class ChangeDetailEditor extends EditorPart {
 
 				restoreCmd.setCommandInput(restoreInput);
 
-				try {
-					restoreCmd.call();
+				CompletableFuture.runAsync(() -> {
+					try {
+						restoreCmd.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+					refreshStatus();
+				}).thenRun(() -> {
 					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
-				} catch (EGerritException e3) {
-					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-				}
-				refreshStatus();
+				});
 			}
 		});
 
@@ -598,7 +608,6 @@ public class ChangeDetailEditor extends EditorPart {
 				RebaseProcess rebaseProcess = new RebaseProcess();
 				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
 						fGerritClient);
-
 			}
 		});
 

@@ -37,20 +37,18 @@ public class SubmitProcess {
 
 		submitCmd.setCommandInput(submitInput);
 
-		try {
-			submitCmd.call();
-			//After a submit, we reload and reset the user selected revision
-			//Note that here we are not using the model loader because we want a synchronous call so we can set the user selection
-			CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
-					.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
-
+		CompletableFuture.runAsync(() -> {
+			try {
+				submitCmd.call();
+			} catch (EGerritException e) {
+				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.SubmitProcess_failed,
+						e.getLocalizedMessage(), SWT.NONE);
+			}
+		}).thenRun(() -> {
+			QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false);
 			new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
-		} catch (EGerritException e3) {
-			EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-			MessageDialog.open(MessageDialog.INFORMATION, null, Messages.SubmitProcess_failed, e3.getLocalizedMessage(),
-					SWT.NONE);
-		}
-
+		});
 	}
 
 }
