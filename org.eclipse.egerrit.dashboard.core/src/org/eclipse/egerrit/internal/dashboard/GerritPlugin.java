@@ -12,9 +12,7 @@
 
 package org.eclipse.egerrit.internal.dashboard;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -99,41 +97,5 @@ public class GerritPlugin extends Plugin {
 	 */
 	public static GerritPlugin getDefault() {
 		return Fplugin;
-	}
-
-	/**
-	 * Method logError.
-	 *
-	 * @param aMsg
-	 *            String
-	 * @param ae
-	 *            Exception
-	 */
-	public void logError(String aMsg, Exception ae) {
-		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, aMsg, ae));
-	}
-
-	/**
-	 * Method logWarning.
-	 *
-	 * @param aMsg
-	 *            String
-	 * @param ae
-	 *            Exception
-	 */
-	public void logWarning(String aMsg, Exception ae) {
-		getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, IStatus.OK, aMsg, ae));
-	}
-
-	/**
-	 * Method logInfo.
-	 *
-	 * @param aMsg
-	 *            String
-	 * @param ae
-	 *            Exception
-	 */
-	public void logInfo(String aMsg, Exception ae) {
-		getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, aMsg, ae));
 	}
 }
