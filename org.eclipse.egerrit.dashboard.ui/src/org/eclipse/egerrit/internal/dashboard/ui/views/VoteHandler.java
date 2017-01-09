@@ -96,9 +96,8 @@ public class VoteHandler implements Listener, MouseListener {
 				return;
 			}
 			try {
-				IWebBrowser browser = PlatformUI.getWorkbench()
-						.getBrowserSupport()
-						.createBrowser("org.eclipse.egerrit.browser"); //$NON-NLS-1$
+				IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser(
+						"org.eclipse.egerrit.browser"); //$NON-NLS-1$
 				browser.openURL(new URL(uriToServer));
 			} catch (PartInitException | MalformedURLException e1) {
 				logger.debug("Error opening URL :" + e1.toString()); //$NON-NLS-1$

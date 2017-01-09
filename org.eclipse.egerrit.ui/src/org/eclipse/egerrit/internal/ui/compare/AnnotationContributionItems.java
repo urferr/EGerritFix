@@ -51,9 +51,8 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 						.getActivePart()
 						.getSite(),
 				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND, UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND, null,
-				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault()
-						.getBundle()
-						.getEntry(EGerritImages.NEXT_COMMENT_ANNOTATION_ICON_FILE)),
+				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault().getBundle().getEntry(
+						EGerritImages.NEXT_COMMENT_ANNOTATION_ICON_FILE)),
 				null, null, Messages.NextCommentAnnotationCommandName,
 				UICompareUtils.NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC, Messages.NextCommentAnnotationCommandTooltip,
 				CommandContributionItem.STYLE_PUSH, null, true);
@@ -69,9 +68,8 @@ public class AnnotationContributionItems extends CompoundContributionItem {
 						.getSite(),
 				UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_COMMAND, UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_COMMAND,
 				null,
-				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault()
-						.getBundle()
-						.getEntry(EGerritImages.PREVIOUS_COMMENT_ANNOTATION_ICON_FILE)),
+				ImageDescriptor.createFromURL(EGerritUIPlugin.getDefault().getBundle().getEntry(
+						EGerritImages.PREVIOUS_COMMENT_ANNOTATION_ICON_FILE)),
 				null, null, Messages.PreviousCommentAnnotationCommandName,
 				UICompareUtils.PREVIOUS_COMMENT_ANNOTATION_COMMAND_MNEMONIC,
 				Messages.PreviousCommentAnnotationCommandTooltip, CommandContributionItem.STYLE_PUSH, null, true);

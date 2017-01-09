@@ -151,7 +151,8 @@ public class HistoryTabView {
 
 		//Automatically update the user selected revision as the user changes the selection
 		IObservableValue settableUserRevision = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(changeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+				.observe(changeInfo);
 		dataBindingContext.bindValue(settableUserRevision, selection, null, new UpdateValueStrategy() {
 			@Override
 			public Object convert(Object value) {

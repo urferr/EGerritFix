@@ -56,9 +56,7 @@ public class UIUtils {
 
 	public static void showNoServerMessage() {
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, null,
-				new Status(IStatus.INFO, GerritUi.PLUGIN_ID,
-						Messages.UIUtils_configureMessage),
-				IStatus.INFO);
+				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, Messages.UIUtils_configureMessage), IStatus.INFO);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				dialog.open();

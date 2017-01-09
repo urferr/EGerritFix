@@ -7,7 +7,7 @@ public class ModifiedEGerritFactory extends ModelFactoryImpl {
 	public ChangeInfo createChangeInfo() {
 		return new ModifiedChangeInfoImpl();
 	}
-	
+
 	@Override
 	public CommitInfo createCommitInfo() {
 		return new ModifiedCommitInfoImpl();

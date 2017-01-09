@@ -44,8 +44,10 @@ public class GetModifiedFilesCommandTest extends CommandTestWithSimpleReview {
 		//Obtain the newest revision (the second) and compare with the first one.
 		//Two files should have changed: the commit message and one of the data file
 		RevisionInfo latestRevision = changeInfo.getRevisionByNumber(2);
-		Map<String, FileInfo> changedFiles = fGerrit.getFilesModifiedSince(changeInfo.getId(), latestRevision.getId(),
-				changeInfo.getRevisionByNumber(1).getId()).call();
+		Map<String, FileInfo> changedFiles = fGerrit
+				.getFilesModifiedSince(changeInfo.getId(), latestRevision.getId(),
+						changeInfo.getRevisionByNumber(1).getId())
+				.call();
 		assertEquals(2, changedFiles.size());
 	}
 

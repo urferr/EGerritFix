@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.egerrit.internal.model;
 
-
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
@@ -19,10 +18,9 @@ import org.eclipse.emf.ecore.util.EcoreEMap;
 
 /**
  * @author Jacques Bouthillier
- *
  */
 public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
-	
+
 	@Override
 	public boolean isActionAllowed(String action) {
 		EMap<String, ActionInfo> actionsAvailable = getActions();
@@ -49,7 +47,7 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String getId() {
 		return ((StringToRevisionInfoImpl) this.eContainer()).getKey();
@@ -59,17 +57,17 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 	public ChangeInfo getChangeInfo() {
 		return (ChangeInfo) this.eContainer().eContainer();
 	}
-	
+
 	@Override
 	public boolean isRebaseable() {
 		return isActionAllowed(ActionConstants.REBASE.getName());
 	}
-	
+
 	@Override
 	public boolean isSubmitable() {
 		return isActionAllowed(ActionConstants.SUBMIT.getName());
 	}
-	
+
 	@Override
 	public boolean isCherrypickable() {
 		return isActionAllowed(ActionConstants.CHERRYPICK.getName());
@@ -79,7 +77,7 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 	public boolean isDeleteable() {
 		return isActionAllowed("/");
 	}
-	
+
 	@Override
 	public boolean isPublishable() {
 		return isActionAllowed(ActionConstants.PUBLISH.getName());
@@ -92,7 +90,7 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 				files = new EcoreEMap<String, FileInfo>(ModelPackage.Literals.STRING_TO_FILE_INFO,
 						StringToFileInfoImpl.class, this, ModelPackage.REVISION_INFO__FILES);
 			}
-			return files;			
+			return files;
 		}
 	}
 }

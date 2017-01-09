@@ -12,12 +12,12 @@ import org.eclipse.emf.ecore.util.EContentAdapter;
 public class ModifiedFileInfoImpl extends FileInfoImpl {
 	@Override
 	public String getPath() {
-		 StringToFileInfoImpl container = (StringToFileInfoImpl) this.eContainer();
-		 if (container != null) {
-				return container.getKey();
-		 } else {
-			 return null;
-		 }
+		StringToFileInfoImpl container = (StringToFileInfoImpl) this.eContainer();
+		if (container != null) {
+			return container.getKey();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class ModifiedFileInfoImpl extends FileInfoImpl {
 	public int getCommentsCount() {
 		return getComments().size();
 	}
-	
+
 	@Override
 	public int getDraftsCount() {
 		return getDraftComments().size();

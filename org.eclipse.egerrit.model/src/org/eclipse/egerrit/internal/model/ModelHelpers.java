@@ -17,7 +17,6 @@ import org.eclipse.emf.common.util.EList;
 
 /**
  * A bunch of helpers to deal with the model objects to facilitate navigation or other common operations
- *
  */
 public class ModelHelpers {
 

@@ -554,10 +554,8 @@ public class ReplyDialog extends InputDialog {
 					ApprovalInfo candidate = null;
 					//Find the most recent vote for the current user
 					for (ApprovalInfo oneApproval : listApproval) {
-						if (fGerritClient.getRepository()
-								.getServerInfo()
-								.getUserName()
-								.equals(oneApproval.getEmail())) {
+						if (fGerritClient.getRepository().getServerInfo().getUserName().equals(
+								oneApproval.getEmail())) {
 							if (candidate == null) {
 								candidate = oneApproval;
 							}

@@ -130,7 +130,8 @@ public abstract class CommandTest {
 
 			if (!currentRevision.isDraft()) {
 				Map<String, FileInfo> files = fGerrit
-						.getFiles(changeInfo.getId(), changeInfo.getUserSelectedRevision().getId()).call();
+						.getFiles(changeInfo.getId(), changeInfo.getUserSelectedRevision().getId())
+						.call();
 				currentRevision.getFiles().putAll(files);
 				currentRevision.setFilesLoaded(true);
 				fileInfo = currentRevision.getFiles().get(filename);

@@ -87,8 +87,9 @@ public class EMFTypeAdapterFactory implements TypeAdapterFactory {
 					valueType = valueFeature.getEType().getInstanceClass();
 				} else {
 					//Deal with the case where the value of the map is a list
-					valueType = TypeToken.get(
-							new MapType(BasicEList.class, new Type[] { valueFeature.getEType().getInstanceClass() }))
+					valueType = TypeToken
+							.get(new MapType(BasicEList.class,
+									new Type[] { valueFeature.getEType().getInstanceClass() }))
 							.getType();
 				}
 

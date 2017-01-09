@@ -28,7 +28,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * This class implements a handler to open a review editor from the 
+ * This class implements a handler to open a review editor from the
  *
  * @since 1.0
  */

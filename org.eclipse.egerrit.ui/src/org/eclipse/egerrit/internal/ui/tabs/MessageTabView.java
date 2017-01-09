@@ -203,10 +203,9 @@ public class MessageTabView {
 		if (isEditingAllowed()) {
 			ModifyListener textModifiedListener = new ModifyListener() {
 				public void modifyText(ModifyEvent event) {
-					if (changeInfo.getUserSelectedRevision() != null && changeInfo.getUserSelectedRevision()
-							.getCommit()
-							.getMessage()
-							.compareTo(msgTextData.getText()) != 0) {
+					if (changeInfo.getUserSelectedRevision() != null
+							&& changeInfo.getUserSelectedRevision().getCommit().getMessage().compareTo(
+									msgTextData.getText()) != 0) {
 						fBtnSave.setEnabled(true);
 						btnCancel.setEnabled(true);
 					} else {

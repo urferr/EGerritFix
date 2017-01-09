@@ -37,8 +37,7 @@ public class HistoryTableMenuBuilder {
 		if (viewer instanceof TableViewer) {
 			commonMenu = menuManager.createContextMenu(((TableViewer) viewer).getTable());
 			((TableViewer) viewer).getTable().setMenu(commonMenu);
-			humanOnlyfilter = new FilterSelectionAction(Messages.UIHistoryTable_0, viewer,
-					new AuthorKindFilter(false));
+			humanOnlyfilter = new FilterSelectionAction(Messages.UIHistoryTable_0, viewer, new AuthorKindFilter(false));
 			machineOnlyfilter = new FilterSelectionAction(Messages.UIHistoryTable_1, viewer,
 					new AuthorKindFilter(true));
 		}

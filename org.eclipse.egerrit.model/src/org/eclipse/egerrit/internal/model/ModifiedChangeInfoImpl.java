@@ -40,7 +40,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 				if (msg.getFeature() == null)
 					return;
-				
+
 				if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)) {
 					InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
 					notifySet(modifiedChangeInfo, ModelPackage.Literals.CHANGE_INFO__REVISION);
@@ -87,10 +87,9 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			private void recomputeChangeInfoRemovalReviewer(Notification msg) {
 				InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
 				if ((msg.getEventType() == Notification.ADD) || (msg.getEventType() == Notification.ADD_MANY)) {
-					deriveReviewerRemovalPresence ();
+					deriveReviewerRemovalPresence();
 				}
 			}
-
 
 			private void recomputeChangeInfoActions(Notification msg) {
 				InternalEObject modifiedChangeInfo = (InternalEObject) msg.getNotifier();
@@ -159,8 +158,8 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 
 	private void notifySet(InternalEObject modifiedObject, EStructuralFeature attr) {
 		if (eNotificationRequired()) {
-			modifiedObject.eNotify(new ENotificationImpl(modifiedObject, Notification.SET, attr, null,
-					modifiedObject.eGet(attr)));
+			modifiedObject.eNotify(
+					new ENotificationImpl(modifiedObject, Notification.SET, attr, null, modifiedObject.eGet(attr)));
 		}
 	}
 
@@ -280,36 +279,36 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			super.setUpdated(newUpdated);
 		}
 	}
-	
+
 	private static ApprovalInfo NO_VOTE = ModelFactory.eINSTANCE.createApprovalInfo();
-	
+
 	@Override
 	public ApprovalInfo getMostRelevantVote(String label) {
-			if (labels == null) {
-				return NO_VOTE;
-			}
-			LabelInfo labelInfo = labels.get(label);
-			if (labelInfo == null) {
-				return NO_VOTE;
-			}
-			//As per the gerrit doc, the votes are always considered in this order of priority.
-			//https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail
-			//The combined label vote is calculated in the following order (from highest to lowest): REJECTED > APPROVED > DISLIKED > RECOMMENDED.
-			if (labelInfo.getRejected() != null) {
-				return fromVoteToValue(labelInfo, labelInfo.getRejected());
-			}
-			if (labelInfo.getApproved() != null) {
-				return fromVoteToValue(labelInfo, labelInfo.getApproved());
-			}
-			if (labelInfo.getDisliked() != null) {
-				return fromVoteToValue(labelInfo, labelInfo.getDisliked());
-			}
-			if (labelInfo.getRecommended() != null) {
-				return fromVoteToValue(labelInfo, labelInfo.getRecommended());
-			}
+		if (labels == null) {
 			return NO_VOTE;
+		}
+		LabelInfo labelInfo = labels.get(label);
+		if (labelInfo == null) {
+			return NO_VOTE;
+		}
+		//As per the gerrit doc, the votes are always considered in this order of priority.
+		//https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail
+		//The combined label vote is calculated in the following order (from highest to lowest): REJECTED > APPROVED > DISLIKED > RECOMMENDED.
+		if (labelInfo.getRejected() != null) {
+			return fromVoteToValue(labelInfo, labelInfo.getRejected());
+		}
+		if (labelInfo.getApproved() != null) {
+			return fromVoteToValue(labelInfo, labelInfo.getApproved());
+		}
+		if (labelInfo.getDisliked() != null) {
+			return fromVoteToValue(labelInfo, labelInfo.getDisliked());
+		}
+		if (labelInfo.getRecommended() != null) {
+			return fromVoteToValue(labelInfo, labelInfo.getRecommended());
+		}
+		return NO_VOTE;
 	}
-	
+
 	private ApprovalInfo fromVoteToValue(LabelInfo match, AccountInfo voter) {
 		for (ApprovalInfo candidate : match.getAll()) {
 			if (candidate.get_account_id() == voter.get_account_id())
@@ -317,7 +316,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		}
 		return NO_VOTE;
 	}
-	
+
 	//Helper method setting if a comment is contained in a message
 	//Also update the comment flag on a revision
 	private void deriveCommentPresence() {
@@ -325,7 +324,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		for (ChangeMessageInfo m : messages) {
 			m.setComment(hasComments(m.getMessage()));
 			if (m.isComment()) {
-				RevisionInfo rev = ((ChangeInfo)m.eContainer()).getRevisionByNumber(m.get_revision_number());
+				RevisionInfo rev = ((ChangeInfo) m.eContainer()).getRevisionByNumber(m.get_revision_number());
 				if (rev != null)
 					rev.setCommented(m.isComment());
 			}
@@ -338,7 +337,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		EList<AccountInfo> removalList = getRemovable_reviewers();
 		EList<ReviewerInfo> reviewersInfo = getComputedReviewers();
 		for (int i = 0; i < removalList.size(); i++) {
-			for (ReviewerInfo revInfo: reviewersInfo ) {
+			for (ReviewerInfo revInfo : reviewersInfo) {
 				if (revInfo.get_account_id() == removalList.get(i).get_account_id()) {
 					revInfo.setDeleteable(true);
 				}

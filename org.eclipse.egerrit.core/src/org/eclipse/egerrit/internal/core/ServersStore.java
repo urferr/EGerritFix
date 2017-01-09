@@ -63,7 +63,7 @@ public class ServersStore {
 	}
 
 	/**
-	 * Returns a server object whose identifier matches the identifier passed in 
+	 * Returns a server object whose identifier matches the identifier passed in
 	 */
 	public static GerritServerInformation getServer(String identifier) {
 		if (identifier == null) {

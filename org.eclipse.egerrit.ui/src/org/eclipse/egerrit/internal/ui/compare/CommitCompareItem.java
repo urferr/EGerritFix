@@ -42,11 +42,11 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 	private final String projectId, commitId;
 
 	private String showAsRevision;
-	
+
 	private String filePath;
 
-	public CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo,
-			String fileName, String showAsRevision) {
+	public CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo, String fileName,
+			String showAsRevision) {
 		super(PARENT);
 		this.gerrit = gerrit;
 		this.projectId = projectId;
