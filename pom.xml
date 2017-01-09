@@ -53,7 +53,7 @@
 		<sonar.language>java</sonar.language>
 		<sonar.java.source>1.8</sonar.java.source>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.exclusions>**/rcptt/**,**/tests/**,**/test/**,**/Messages*,**/stubs/**,**/model/**</sonar.exclusions>
+		<sonar.exclusions>**/rcptt/**,**/tests/**,**/test/**,**/Messages*,**/stubs/**,**/model/**,**/EGerritConstants.java,**/core/GerritQuery.java</sonar.exclusions>
 		<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
 		<sonar.squid.analyse.property.accessors>true</sonar.squid.analyse.property.accessors>
 		<sonar.junit.reportsPath>target/test-reports,target/surefire-reports</sonar.junit.reportsPath>
