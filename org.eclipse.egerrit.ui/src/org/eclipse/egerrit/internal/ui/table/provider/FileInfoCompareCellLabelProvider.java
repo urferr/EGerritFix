@@ -18,6 +18,7 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.MapChangeEvent;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.ui.EGerritImages;
+import org.eclipse.egerrit.internal.ui.compare.CommentableCompareItem;
 import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
 import org.eclipse.egerrit.internal.ui.compare.GerritDifferences;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
@@ -29,8 +30,6 @@ import org.eclipse.swt.graphics.Image;
 public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 
 	final String EMPTY_STRING = ""; //$NON-NLS-1$
-
-	private static final String NEW = Messages.FileInfoCompareCellLabelProvider_0;
 
 	private static final String COMMENTS = Messages.FileInfoCompareCellLabelProvider_1;
 
@@ -60,7 +59,6 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 
 	public String getLabel(Object element, int columnIdx) {
 		GerritDiffNode gerrritNode = (GerritDiffNode) element;
-		FileInfo fileInfo = gerrritNode.getFileInfo();
 		switch (columnIdx) {
 		case 0:
 			return ""; //$NON-NLS-1$ //Here we return an empty string to make sure that nothing shows in the coluimn when the user anonymous
@@ -85,23 +83,16 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 		case 2:
 			return gerrritNode.getLabelName(nameFirst);
 		case 3:
-			String commentString = ""; //$NON-NLS-1$
-			int commentsCount = fileInfo.getCommentsCount();
-			int draftsCount = fileInfo.getDraftsCount();
-			if (draftsCount != 0) {
-				commentString += DRAFTS + draftsCount;
-				if (commentsCount != 0) {
-					commentString += " "; //$NON-NLS-1$
-				}
-			} else {
-				commentString = "                     "; //$NON-NLS-1$
+			if (gerrritNode.getLeft() == null || !(gerrritNode.getLeft() instanceof CommentableCompareItem)) {
+				return ""; //$NON-NLS-1$
 			}
-
-			if (commentsCount != 0) {
-				commentString += COMMENTS + commentsCount;
-			}
-			return commentString;
+			return prettyPrintComments(((CommentableCompareItem) gerrritNode.getLeft()));
 		case 4:
+			if (gerrritNode.getRight() == null || !(gerrritNode.getRight() instanceof CommentableCompareItem)) {
+				return ""; //$NON-NLS-1$
+			}
+			return prettyPrintComments(((CommentableCompareItem) gerrritNode.getRight()));
+		case 5:
 			StringBuilder modifySize = new StringBuilder();
 			FileInfo file = gerrritNode.getDiffFileInfo() != null
 					? gerrritNode.getDiffFileInfo()
@@ -116,6 +107,25 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 			return ""; //$NON-NLS-1$
 		}
 
+	}
+
+	private String prettyPrintComments(CommentableCompareItem commentableCompareItem) {
+		String result = ""; //$NON-NLS-1$
+		int commentsCount = commentableCompareItem.getComments().size();
+		int draftsCount = commentableCompareItem.getDrafts().size();
+		if (draftsCount != 0) {
+			result += DRAFTS + draftsCount;
+			if (commentsCount != 0) {
+				result += " "; //$NON-NLS-1$
+			}
+		} else {
+			result = "                     "; //$NON-NLS-1$
+		}
+
+		if (commentsCount != 0) {
+			result += COMMENTS + commentsCount;
+		}
+		return result;
 	}
 
 	@Override

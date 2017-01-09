@@ -1,0 +1,46 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CommentsOnTwoSide
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _GeHaIN6EEeazRdus0LPc_A
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 1/23/17 11:42 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [amend-review -review [create-review -server $serverURL]]] {
+	openCompareEditor $review
+}
+
+// Switch to patchset 1 and enter a comment
+with [get-editor "Compare.*"] {
+	switchRightInput -to "1.*"
+	insertComment -on right -text part1 -atLine 0 -save
+	insertComment -on right -text part2 -atLine 2 -save
+	insertComment -on left -text part3 -atLine 1 -save
+}
+
+//Assert that the "against" comment contains one draft
+with [get-editor "Compare.*"] {
+	assert-that-rightCommentCount-in-compare -atLine 1 -is "drafts : 2"
+	assert-that-leftCommentCount-in-compare -atLine 1 -is "drafts : 1"
+}
+
+//Swap the sides of the patches
+with [get-editor "Compare.*"] {
+	switchLeftInput -to "1.*"
+	switchRightInput -to "2.*"
+}
+
+//Assert that the "against" comment contains one draft
+with [get-editor "Compare.*"] {
+	assert-that-rightCommentCount-in-compare -atLine 1 -is "drafts : 1"
+	assert-that-leftCommentCount-in-compare -atLine 1 -is "drafts : 2"
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

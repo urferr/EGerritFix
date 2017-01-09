@@ -33,7 +33,6 @@ import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
-import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.provider.DynamicMenuBuilder;
@@ -213,7 +212,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		viewer.setContentProvider(cp);
 
 		//Create the tree columns with the Cell provider
-		final ITableModel[] tableInfo = FilesTableModel.values();
+		final ITableModel[] tableInfo = CompareUpperSectionColumn.values();
 		int size = tableInfo.length;
 
 		for (int index = 0; index < size; index++) {
@@ -233,13 +232,22 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		ReviewTableSorter.bind(viewer);
 		viewer.setComparator(new ReviewTableSorter(2)); // sort by File Path, descending. This way we are sorted like in the files tab
 
-		IBeanValueProperty fileInfo = PojoProperties.value("fileInfo"); //$NON-NLS-1$
-		IValueProperty reviewedFlag = fileInfo.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
-		IValueProperty comments = fileInfo.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
-		IValueProperty draftComments = fileInfo
+		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$
+		IValueProperty leftReviewedFlag = leftFileInfo
+				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
+		IValueProperty leftComments = leftFileInfo
+				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
+		IValueProperty leftDraftComments = leftFileInfo
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT));
-		final IObservableMap[] watchedProperties = Properties.observeEach(cp.getKnownElements(),
-				new IValueProperty[] { reviewedFlag, comments, draftComments });
+
+		IBeanValueProperty rightFileInfo = PojoProperties.value("right").value("fileInfo"); //$NON-NLS-1$
+		IValueProperty rightComments = rightFileInfo
+				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
+		IValueProperty rightDraftComments = rightFileInfo
+				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT));
+
+		final IObservableMap[] watchedProperties = Properties.observeEach(cp.getKnownElements(), new IValueProperty[] {
+				leftReviewedFlag, leftComments, leftDraftComments, rightComments, rightDraftComments });
 		labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
 		viewer.setLabelProvider(labelProvider);
 		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient, true);
@@ -430,7 +438,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	/**
 	 * Create each column in the review tree list
 	 *
-	 * @param FilesTableModel
+	 * @param CompareUpperSectionColumn
 	 * @return TreeViewerColumn
 	 */
 	private TreeViewerColumn createTreeViewerColumn(ITableModel tableInfo) {

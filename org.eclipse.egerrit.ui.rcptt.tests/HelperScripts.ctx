@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/13/17 2:49 PM
+Save-Time: 1/23/17 11:02 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -319,6 +319,18 @@ proc "assert-that-itemCount-in-history-is" [val is]{
 proc "assert-that-status-in-compare" [val atLine] [val is] [val in -input] {
 	with [$in | get-tree] {
 		get-item "" -index $atLine | get-property "columns[1]" | equals $is | verify-true
+	}
+}
+
+proc "assert-that-leftCommentCount-in-compare" [val atLine] [val is] [val in -input] {
+	with [$in | get-tree] {
+		get-item "" -index $atLine | get-property "columns[3]" | equals $is | verify-true
+	}
+}
+
+proc "assert-that-rightCommentCount-in-compare" [val atLine] [val is] [val in -input] {
+	with [$in | get-tree] {
+		get-item "" -index $atLine | get-property "columns[4]" | equals $is | verify-true
 	}
 }
 

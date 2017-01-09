@@ -16,7 +16,6 @@ import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.egerrit.internal.ui.table.model.FilesTableModel;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -47,7 +46,8 @@ public class ShowFilePathHandler extends AbstractHandler {
 				viewer = input.getUpperSection().getDiffTreeViewer();
 				TreeViewer treeViewer = viewer;
 				//Get the label provider for the FilePath column
-				IBaseLabelProvider labelProvider = treeViewer.getLabelProvider(FilesTableModel.FILE_PATH.ordinal());
+				IBaseLabelProvider labelProvider = treeViewer
+						.getLabelProvider(CompareUpperSectionColumn.FILE_PATH.ordinal());
 				if (labelProvider instanceof FileInfoCompareCellLabelProvider) {
 					FileInfoCompareCellLabelProvider infoProvider = (FileInfoCompareCellLabelProvider) labelProvider;
 					infoProvider.setFileNameFirst(!infoProvider.getFileOrder());

@@ -1,0 +1,32 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CommentsAgainstBaseInPS
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: __h3IgOGKEeaqXbFsgICLXQ
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 1/23/17 11:43 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 89144 -serverName EF
+	
+	//For the UIFilesTable file, there are no comments in patchset 3 (in fact the file shown comes from base)
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "3.*"
+		switchRightInput -to "2.*"
+		
+		assert-that-leftCommentCount-in-compare -atLine 4 -is "" 
+		assert-that-rightCommentCount-in-compare -atLine 4 -is "comments : 2"
+	}
+} -finally {
+	delete-gerrit-server -serverName EF
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

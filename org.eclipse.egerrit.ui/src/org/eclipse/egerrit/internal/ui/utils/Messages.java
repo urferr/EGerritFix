@@ -142,8 +142,6 @@ public class Messages extends NLS {
 
 	public static String FilesDialogCommentedFilesFilter;
 
-	public static String FileInfoCompareCellLabelProvider_0;
-
 	public static String FileInfoCompareCellLabelProvider_1;
 
 	public static String FileInfoCompareCellLabelProvider_2;
@@ -359,6 +357,8 @@ public class Messages extends NLS {
 	public static String FilesTableDefinition_filePath;
 
 	public static String FilesTableDefinition_comments;
+
+	public static String FilesTableDefinition_against_comments;
 
 	public static String FilesTableDefinition_size;
 

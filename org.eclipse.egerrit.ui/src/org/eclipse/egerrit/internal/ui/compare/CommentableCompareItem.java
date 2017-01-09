@@ -98,6 +98,10 @@ public abstract class CommentableCompareItem extends Document
 		this.fileInfo = fileInfo;
 	}
 
+	public FileInfo getFileInfo() {
+		return fileInfo;
+	}
+
 	@Override
 	public Image getImage() {
 		return null;
@@ -253,7 +257,7 @@ public abstract class CommentableCompareItem extends Document
 			return;
 		}
 
-		EList<CommentInfo> sortedComments = ModelHelpers.sortComments(filterComments(fileInfo.getAllComments()));
+		EList<CommentInfo> sortedComments = ModelHelpers.sortComments(getAllComments());
 		Collections.reverse(sortedComments);
 
 		for (CommentInfo commentInfo : sortedComments) {
@@ -287,6 +291,20 @@ public abstract class CommentableCompareItem extends Document
 				logger.debug("Exception merging text and comments.", e); //$NON-NLS-1$
 			}
 		}
+	}
+
+	private EList<CommentInfo> getAllComments() {
+		EList<CommentInfo> result = getComments();
+		result.addAll(getDrafts());
+		return result;
+	}
+
+	public EList<CommentInfo> getComments() {
+		return filterComments(fileInfo.getComments());
+	}
+
+	public EList<CommentInfo> getDrafts() {
+		return filterComments(fileInfo.getDraftComments());
 	}
 
 	protected abstract EList<CommentInfo> filterComments(EList<CommentInfo> eList);
