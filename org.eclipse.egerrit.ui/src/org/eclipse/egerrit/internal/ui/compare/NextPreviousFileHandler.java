@@ -15,10 +15,10 @@ package org.eclipse.egerrit.internal.ui.compare;
 import org.eclipse.compare.INavigatable;
 import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.compare.internal.CompareEditorInputNavigator;
-import org.eclipse.compare.internal.Utilities;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -36,7 +36,7 @@ public class NextPreviousFileHandler extends AbstractHandler {
 	private Object getTopPane() {
 		Object topPane = ((CompareEditorInputNavigator) compareInput.getNavigator()).getPanes()[0];
 		if (topPane != null) {
-			return Utilities.getAdapter(topPane, INavigatable.class);
+			return Adapters.adapt(topPane, INavigatable.class);
 		}
 		return null;
 	}
