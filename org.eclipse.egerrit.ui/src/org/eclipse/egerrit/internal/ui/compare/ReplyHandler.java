@@ -48,11 +48,13 @@ public class ReplyHandler extends AbstractHandler {
 			} catch (CoreException e) {
 				return IStatus.ERROR;
 			}
-			if (input.getRightSide().equals(GerritMultipleInput.WORKSPACE)) {
-				//if the right side is the workspace file, the revision is null
+			if (input.getSelectionDisplayedOnRight().equals(GerritMultipleInput.WORKSPACE)
+					|| input.getSelectionDisplayedOnRight().equals(GerritMultipleInput.BASE)) {
+				//if the right side is the workspace or base file, the revision is null
 				UIUtils.displayInformation(null, Messages.ReplyHandlerTitle, Messages.ReplyHandlerMessage);
 			} else {
-				RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(input.getRightSide());
+				RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(
+						input.getSelectionDisplayedOnRight());
 				UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient, true);
 				input.fireInputChange();
 			}

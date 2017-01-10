@@ -65,7 +65,7 @@ public class SelectNextPatchSetHandler extends AbstractHandler {
 
 				while (itr.hasNext()) {
 					Entry<String, String> entry = itr.next();
-					if (isLeftSide && entry.getValue().compareTo(input.getLeftSide()) == 0) {
+					if (isLeftSide && entry.getValue().compareTo(input.getSelectionDisplayedOnLeft()) == 0) {
 						if (itr.hasNext()) {
 							entry = itr.next();
 							input.switchInputs(entry.getValue(), null);
@@ -76,7 +76,7 @@ public class SelectNextPatchSetHandler extends AbstractHandler {
 							break;
 						}
 					}
-					if (!isLeftSide && (entry).getValue().compareTo(input.getRightSide()) == 0) {
+					if (!isLeftSide && (entry).getValue().compareTo(input.getSelectionDisplayedOnRight()) == 0) {
 						if (itr.hasNext()) {
 							entry = itr.next();
 							input.switchInputs(null, entry.getValue());
