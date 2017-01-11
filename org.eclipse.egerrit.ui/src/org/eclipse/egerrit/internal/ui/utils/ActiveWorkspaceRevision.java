@@ -49,8 +49,12 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -101,6 +105,7 @@ public class ActiveWorkspaceRevision {
 					|| msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS)) {
 				if (msg.getEventType() == Notification.ADD) {
 					addMarker((CommentInfo) msg.getNewValue(), null);
+					openMarkerView(IWorkbenchPage.VIEW_CREATE);
 				}
 				if (msg.getEventType() == Notification.REMOVE) {
 					deleteMarker((CommentInfo) msg.getOldValue());
@@ -136,16 +141,45 @@ public class ActiveWorkspaceRevision {
 		createMarkers();
 		hookListeners();
 		firePropertyChange("activeRevision", null, fRevisionInContext); //$NON-NLS-1$
-		openMarkerView();
+		boolean b = revisionInfo.isCommented();
+		if (b) {
+			openMarkerView(IWorkbenchPage.VIEW_CREATE);
+		}
 		enableQuickDiff();
 	}
 
-	private void openMarkerView() {
-		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
-					"org.eclipse.ui.views.AllMarkersView"); //$NON-NLS-1$
-		} catch (PartInitException e1) {
-			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+	private boolean isProblemViewOpen() {
+		IViewPart problemView = null;
+		IWorkbenchWindow[] listWW = PlatformUI.getWorkbench().getWorkbenchWindows();
+		for (IWorkbenchWindow element : listWW) {
+			problemView = element.getActivePage().findView("org.eclipse.ui.views.ProblemView"); //$NON-NLS-1$
+			if (problemView != null) {
+				break;
+			}
+		}
+		if (problemView != null) {
+			return true;
+		}
+		return false;
+	}
+
+	private void openMarkerView(int mode) {
+		//Only open the markers view if the problem view is not present
+		if (!isProblemViewOpen()) {
+			IWorkbenchWindow[] listWW = PlatformUI.getWorkbench().getWorkbenchWindows();
+			for (IWorkbenchWindow element : listWW) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						try {
+							element.getActivePage().showView("org.eclipse.ui.views.AllMarkersView", //$NON-NLS-1$
+									null, mode);
+						} catch (PartInitException e) {
+							EGerritCorePlugin
+									.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
+						}
+					}
+				});
+			}
 		}
 	}
 
@@ -244,8 +278,13 @@ public class ActiveWorkspaceRevision {
 				workspaceFile = ResourcesPlugin.getWorkspace().getRoot();
 			}
 			EList<CommentInfo> sortedComments = ModelHelpers.sortComments(fileInfo.getAllComments());
+			boolean addingMarker = false;
 			for (CommentInfo commentInfo : sortedComments) {
 				addMarker(commentInfo, workspaceFile);
+				addingMarker = true;
+			}
+			if (addingMarker) {
+				openMarkerView(IWorkbenchPage.VIEW_CREATE);
 			}
 		}
 	}
