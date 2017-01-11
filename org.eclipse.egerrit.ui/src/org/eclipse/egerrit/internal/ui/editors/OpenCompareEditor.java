@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
 public class OpenCompareEditor {
 	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
 
-	final static boolean OXYGEN_OR_MORE_RECENT_RUNNING = Platform.getBundle("org.eclipse.team.ui") //$NON-NLS-1$
+	final static boolean SUPPORT_SWAP = Platform.getBundle("org.eclipse.compare") //$NON-NLS-1$
 			.getVersion()
-			.compareTo(new Version("3.8.1")) > 0; //$NON-NLS-1$
+			.compareTo(new Version("3.7.0")) > 0; //$NON-NLS-1$
 
 	private final GerritClient gerrit;
 
@@ -47,7 +47,7 @@ public class OpenCompareEditor {
 	}
 
 	public void compareFiles(String leftSide, String rightSide, FileInfo fileToReveal) {
-		if (!OXYGEN_OR_MORE_RECENT_RUNNING) {
+		if (!SUPPORT_SWAP) {
 			CompareUI.openCompareEditor(new GerritMultipleInput(leftSide, rightSide, changeInfo, gerrit, fileToReveal));
 			return;
 		}
