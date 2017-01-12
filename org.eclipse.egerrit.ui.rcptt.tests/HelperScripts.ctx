@@ -291,7 +291,7 @@ proc "assert-dialog" [val named] [val containsText] [val dismiss true] {
 }
 
 proc "assert-marker-count-is" [val is] {
-	get-view Markers | get-label [concat $is " items"] | get-property caption | equals [concat $is " items"]
+	get-view Markers | get-label [concat $is " item"] | get-property caption | equals [concat $is " item"]
 		| verify-true
 }
 
