@@ -51,7 +51,7 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 		Display disp = Display.getCurrent();
 		Control control = disp.getFocusControl();
 		if (control instanceof Table) {
-			if (control.getData().equals(UIFilesTable.FILES_TABLE)) {
+			if (control.getData() != null && control.getData().equals(UIFilesTable.FILES_TABLE)) {
 				FilesTableModel[] tableInfo = FilesTableModel.values();
 				((Table) control).setColumnOrder(FilesTableModel.getDefaultOrder());
 				setTableDefaultWidth(control, tableInfo);

@@ -270,9 +270,26 @@ public class UIReviewTable {
 			return;
 		}
 		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		int totalSize = 0;
 		for (int i = 0; i < 10; i++) {
+			totalSize = totalSize + columnWidth[i];
 			fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
 		}
+		//Reset if total size is small number (50 or less )pixels.
+		if (totalSize <= 50) {
+			resetDefault();
+		}
+	}
+
+	private void resetDefault() {
+		//Reset to the original setting: ORDER + Column width
+		ReviewTableDefinition[] tableInfo = ReviewTableDefinition.values();
+		int size = tableInfo.length;
+		fViewer.getTable().setColumnOrder(ReviewTableDefinition.getDefaultOrder());//set the initial column order
+		for (int index = 0; index < size; index++) {
+			fViewer.getTable().getColumn(index).setWidth(tableInfo[index].getWidth());
+		}
+		storeColumnsSettings();
 	}
 
 	private IDialogSettings getDialogSettings() {
