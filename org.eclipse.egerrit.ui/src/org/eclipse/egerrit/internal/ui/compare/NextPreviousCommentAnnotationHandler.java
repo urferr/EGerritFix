@@ -45,7 +45,8 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 
 		CompareEditorInput editPart = (CompareEditorInput) activeEditor.getEditorInput();
 
-		MergeSourceViewer mergeSourceViewer = UICompareUtils.extractMergeSourceViewer(editPart.getNavigator(), false);
+		MergeSourceViewer mergeSourceViewer = UICompareUtils.extractMergeSourceViewer(editPart.getNavigator(),
+				!UICompareUtils.isMirroredOn(editPart));
 
 		if (mergeSourceViewer != null) {
 			SourceViewer sourceViewer = mergeSourceViewer.getSourceViewer();
@@ -53,6 +54,9 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 			boolean isNext = commandName.contains("NextCommentAnnotationHandler"); //$NON-NLS-1$
 			Position requestedCommentPosition = null;
 			Point curPos = sourceViewer.getSelectedRange();
+			if (!(sourceViewer.getDocument() instanceof PatchSetCompareItem)) {
+				return null;
+			}
 			PatchSetCompareItem patchSetCompareItem = ((PatchSetCompareItem) sourceViewer.getDocument());
 			TreeMap<Integer, GerritCommentAnnotation> sortedCommentMap = getSortedGerritAnnotation(patchSetCompareItem);
 			if (isNext) {

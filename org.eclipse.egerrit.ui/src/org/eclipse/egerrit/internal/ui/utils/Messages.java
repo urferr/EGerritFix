@@ -118,6 +118,10 @@ public class Messages extends NLS {
 
 	public static String CompareElementPatchSetWithCommitId;
 
+	public static String CompareUpperSection_0;
+
+	public static String CompareUpperSection_1;
+
 	public static String CompareUpperSection_PatchSet;
 
 	public static String DataConverter_0;
