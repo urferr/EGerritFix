@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.source.AnnotationModel;
@@ -69,12 +70,20 @@ class CommentAnnotationPainter extends AnnotationPainter {
 			Display.getDefault().asyncExec(() -> input.resetInputUponSelectionOfDetailedStructuralCompareSelected());
 			return;
 		}
+		IRegion activeRegion = tp.getExtent();
 		AnnotationModel originalCommentsModel = ((CommentableCompareItem) viewer.getDocument()).getEditableComments();
 		Iterator<?> it = originalCommentsModel.getAnnotationIterator();
 		while (it.hasNext()) {
 			GerritCommentAnnotation object = (GerritCommentAnnotation) it.next();
-			StyleRange range;
 			Position positingExistingComment = originalCommentsModel.getPosition(object);
+			//If the position is not part of the region being redrawn, ignore it
+			if (!(activeRegion.getOffset() + activeRegion.getLength() >= positingExistingComment.getOffset()
+					&& positingExistingComment.getOffset() + positingExistingComment.getLength() > activeRegion
+							.getOffset())) {
+				continue;
+			}
+
+			StyleRange range;
 			Color selectedColor;
 			Color colorForAuthor;
 			if (object.getComment() == null || object.getComment().getAuthor() == null) {
