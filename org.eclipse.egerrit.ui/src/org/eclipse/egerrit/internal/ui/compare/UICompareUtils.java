@@ -75,7 +75,7 @@ public class UICompareUtils {
 	 *            ICompareNavigator boolean left or right pane
 	 * @return MergeSourceViewer
 	 */
-	public static MergeSourceViewer extractMergeSourceViewer(ICompareNavigator aNavigator, boolean aIsLeftPane) {
+	public static MergeSourceViewer extractMergeSourceViewer(ICompareNavigator aNavigator, boolean getLeftPane) {
 
 		//Use free form to select position in file
 		//NOTE:  This is a dirty hack that involves accessing class and field we shouldn't, but that's
@@ -100,7 +100,7 @@ public class UICompareUtils {
 						}
 						try {
 							Field field;
-							if (aIsLeftPane) {
+							if (getLeftPane) {
 								field = textViewerClass.getDeclaredField(COMPARE_EDITOR_TEXT_FIELD_LEFT);
 							} else {
 								field = textViewerClass.getDeclaredField(COMPARE_EDITOR_TEXT_FIELD_RIGHT);

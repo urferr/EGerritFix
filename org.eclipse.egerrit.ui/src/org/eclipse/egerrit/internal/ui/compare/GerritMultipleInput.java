@@ -784,27 +784,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return leftSide;
 	}
 
-	//This method returns what the user sees on the screen in the left drop down of the compare editor title bar
-	public String getSelectionDisplayedOnLeft() {
-		if (UICompareUtils.isMirroredOn(this)) {
-			return getRightSide();
-		} else {
-			return getLeftSide();
-		}
-	}
-
 	public String getRightSide() {
 		return rightSide;
-	}
-
-	//This method returns what the user sees on the screen in the right drop down of the compare editor title bar
-	public String getSelectionDisplayedOnRight() {
-		if (UICompareUtils.isMirroredOn(this)) {
-			return getLeftSide();
-		} else {
-			return getRightSide();
-		}
-
 	}
 
 	public CompareUpperSection getUpperSection() {
