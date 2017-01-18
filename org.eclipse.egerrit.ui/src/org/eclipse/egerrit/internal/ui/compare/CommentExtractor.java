@@ -147,6 +147,9 @@ public class CommentExtractor {
 		int lineCommented = getLineNumber(newComment) - numberOfRemovedLines;
 		String comment = extractCommentMessage(newDocument, newCommentsModel, newComment);
 		numberOfRemovedLines += newDocument.computeNumberOfLines(comment);
+		if (comment.trim().length() == 0) {
+			return;
+		}
 		if (lineCommented > 0) {
 			GerritCommentAnnotation commentRepliedTo = isAnswerToExistingComment(lineCommented);
 			if (commentRepliedTo == null) {
