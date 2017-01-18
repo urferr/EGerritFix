@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _HRakgFW6EeaqndgsDAUXWQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 9/26/16 9:07 PM
+Save-Time: 1/18/17 10:03 AM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -21,18 +21,22 @@ Entry-Name: .content
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find all Open Reviews for the selected repository" | click -arrow
 get-menu Open | click
+wait -ms 500
 assert-that-search-box-in-dashboard -is "status:open"
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find all Open Reviews for the selected repository" | click -arrow
 get-menu Merged | click
+wait -ms 500
 assert-that-search-box-in-dashboard -is "status:merged"
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find all Open Reviews for the selected repository" | click -arrow
 get-menu Abandoned | click
+wait -ms 500
 assert-that-search-box-in-dashboard -is "status:abandoned"
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow
 get-menu Drafts | click
+wait -ms 500
 assert-that-search-box-in-dashboard -is "is:draft"
 
 get-view "Gerrit Dashboard (EGerrit)" | get-button "Find my Changes reviews for the selected repository" | click -arrow

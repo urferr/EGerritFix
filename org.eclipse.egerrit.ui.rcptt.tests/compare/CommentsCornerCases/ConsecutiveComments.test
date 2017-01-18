@@ -1,0 +1,30 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ConsecutiveComments
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _-F6dkN0ZEear4KIbYXINCQ
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 1/17/17 8:13 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [create-review -server $serverURL]] {
+	openCompareEditor $review
+}
+
+with [get-editor "Compare.*"] {
+	insertComment -on left -text part1 -atLine 1
+	insertComment -on left -text part2 -atLine 3 -column 6
+	
+	with [get-left-editor] {
+		get-property "styleAtCaret.text" | equals part1part2 | verify-true
+		get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
+		get-property "styleAtCaret.backgroundColor" | equals "#FFFF00" | verify-true
+	}
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

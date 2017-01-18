@@ -22,6 +22,7 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IPositionUpdater;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextViewer;
@@ -82,8 +83,9 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 						if (!isEditableLine(document.getLineOffset(lineNo), 1)) {
 							return;
 						}
-						doit(caretOffset, lineLength - 1, "", false, true); //$NON-NLS-1$
-						document.replace(document.getLineOffset(lineNo), lineLength - 1, ""); //$NON-NLS-1$
+						IRegion regionForDeletedLine = document.getLineInformation(lineNo);
+						doit(regionForDeletedLine.getOffset(), lineLength, "", false, true); //$NON-NLS-1$
+						document.replace(document.getLineOffset(lineNo), lineLength, ""); //$NON-NLS-1$
 
 					} catch (BadLocationException e1) {
 						logger.debug("Exception while performing Ctrl-D", e1); //$NON-NLS-1$
@@ -143,6 +145,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 			}
 			//The user is typing text in a non-authorized area
 			if (!isEditableLine(start, text.length())) {
+				boolean annotationAlreadyAdded = false;
 				int insertionPosition = start;
 				String commentText = text.trim();
 				if (!fromDoc) {
@@ -168,8 +171,22 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 							insertionPosition = getNextLine(start);
 						}
 					}
+					//We now have the final insertion position.
+					//If the document is writable at insertion position, we add content to the document.
+					if (isEditableLine(insertionPosition, text.length())) {
+						try {
+							document.replace(insertionPosition, 0, commentText);
+							textWidget.setCaretOffset(insertionPosition + commentText.length());
+							return false;
+						} catch (BadLocationException e) {
+							return false;
+						}
+					}
 					String insertedText = commentText + textWidget.getLineDelimiter();
 					try {
+						annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
+								new Position(insertionPosition, 0));
+						annotationAlreadyAdded = true;
 						document.replace(insertionPosition, 0, insertedText);
 					} catch (BadLocationException e) {
 						logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
@@ -177,9 +194,10 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 					textWidget.setCaretOffset(
 							insertionPosition + insertedText.length() - textWidget.getLineDelimiter().length());
 				}
-				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
-						new Position(insertionPosition, commentText.length()));
-
+				if (!annotationAlreadyAdded) {
+					annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
+							new Position(insertionPosition, commentText.length()));
+				}
 				return false;
 			}
 

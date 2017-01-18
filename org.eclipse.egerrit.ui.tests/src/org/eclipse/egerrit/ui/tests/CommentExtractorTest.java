@@ -159,7 +159,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(3, newComments.get(1).getLine());
+		assertEquals(4, newComments.get(1).getLine());
 		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -273,7 +273,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(3, newComments.get(1).getLine());
+		assertEquals(4, newComments.get(1).getLine());
 		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -297,7 +297,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(3, newComments.get(1).getLine());
+		assertEquals(4, newComments.get(1).getLine());
 		assertEquals("dddd", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
