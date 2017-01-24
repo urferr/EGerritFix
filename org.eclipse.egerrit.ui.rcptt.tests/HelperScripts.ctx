@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/23/17 11:02 AM
+Save-Time: 1/24/17 11:20 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -101,7 +101,7 @@ proc runQueryAndOpenEditor [val query] [val serverName $serverName] {
 proc openCompareEditor [val query] [val serverName $serverName] {
 	runQueryAndOpenEditor $query $serverName
 	wait -ms $defaultWaitTime
-	
+
 	with [get-table -index 1 | get-column-header "File Path"] {
 		click
 	}
@@ -112,7 +112,8 @@ proc openCompareEditor [val query] [val serverName $serverName] {
 	try {
 		// Click ok on tip
 		get-window "EGerrit Tip" | get-button OK | click
-	} -catch {}
+	} -catch {
+	}
 }
 
 proc switchLeftInput [val to] [val in -input] {
@@ -295,16 +296,17 @@ proc "assert-dialog" [val named] [val containsText] [val dismiss true] {
 }
 
 proc "assert-marker-count-is" [val is] {
-	get-view Markers | get-label [concat $is " item"] | get-property caption | equals [concat $is " item"]
+	get-view Markers | get-label [concat $is " items"] | get-property caption | equals [concat $is " items"]
 		| verify-true
 }
 
 proc "assert-sameTopic-table" [val contains] [val in -input] {
-	$in | get-group "Same Topic" | get-table | get-cell -row 1 -column 0 | get-property "columns[0]" | equals $contains | verify-true
+	$in | get-group "Same Topic" | get-table | get-cell -row 1 -column 0 | get-property "columns[0]" | equals $contains
+		| verify-true
 }
 
 proc "assert-noEntry-in-topic-table" [val in -input] {
-	$in | get-group "Same Topic" | get-table |  get-property itemCount | equals 0 | verify-true
+	$in | get-group "Same Topic" | get-table | get-property itemCount | equals 0 | verify-true
 }
 
 proc "switch-user" [val to] {
@@ -312,8 +314,8 @@ proc "switch-user" [val to] {
 	add-gerrit-server -serverURL $serverURL -serverName $to -userName $to
 	selectActiveServer -serverName $to
 }
-proc "assert-that-itemCount-in-history-is" [val is]{
-     get-property itemCount | equals $is | verify-true
+proc "assert-that-itemCount-in-history-is" [val is] {
+	get-property itemCount | equals $is | verify-true
 }
 
 proc "assert-that-status-in-compare" [val atLine] [val is] [val in -input] {
@@ -339,7 +341,7 @@ proc "assert-that-filename-in-compare" [val atLine] [val is] [val in -input] {
 		get-item "" -index $atLine | get-property "columns[2]" | equals $is | verify-true
 	}
 }
-	
+
 proc "assert-that-filename-in-dialog" [val atLine] [val is] [val in -input] {
 	with [$in | get-table] {
 		get-item "" -index $atLine | get-property "columns[2]" | equals $is | verify-true
@@ -353,8 +355,8 @@ proc "activate-review" [val in -input] {
 
 proc "assert-that-reviewed-flag-is-off" [val row] {
 	with [get-editor | get-table -index 1] {
-      get-cell $row 0 -column 0 | get-property "cells[0]" | equals "" | verify-true
-    }
+		get-cell $row 0 -column 0 | get-property "cells[0]" | equals "" | verify-true
+	}
 }
 
 proc "assert-that-reviewed-flag-is-on" [val row] [val in -input] {
@@ -362,10 +364,44 @@ proc "assert-that-reviewed-flag-is-on" [val row] [val in -input] {
 }
 
 proc "assert-that-reviewed-flag-in-files" [val row] [val is] [val in -input] {
-with [get-editor | get-table -index 1] {
-    get-cell $row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
-}
+	with [get-editor | get-table -index 1] {
+		get-cell $row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
+	}
 }
 
+// Open the Problems view.
+proc openProblemsView [] {
+	open-view Problems "General/Problems"
+}
 
+// Open the Markers view.
+proc openMarkersView [] {
+	open-view Markers "General/Markers"
+}
+
+// Look at the items in the Problems view
+proc "assert-problem-count-is" [val is] {
+	get-view Problems | get-label [concat $is " items"] | get-property caption | equals [concat $is " items"]
+		| verify-true
+}
+
+proc "open-view" [val viewName] [val viewPath] {
+	try {
+		get-view $viewName
+	} -catch {
+		get-menu "Window/Show View/Other..." | click
+		with [get-window "Show View"] {
+			get-tree | select $viewPath
+			get-button OK | click
+		}
+		get-view $viewName
+	}
+}
+
+proc "close-view" [val viewName] {
+	try {
+		get-view $viewName | close
+	} -catch {
+	}
+}
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

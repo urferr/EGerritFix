@@ -1,20 +1,20 @@
 --- RCPTT testcase ---
 Format-Version: 1.0
-Element-Name: ActivateMarkerView
+Element-Name: ActivateMarkersInProblemsView
 Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
-Id: _kZWPIGYwEeayT_mC1nsHtA
+Id: _Y9xawOJSEea5xsilRS_7Tw
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/24/17 11:35 AM
+Save-Time: 1/24/17 11:38 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
 Entry-Name: .content
 
-//This test verifies that the Markers view is opened when the Problems view is not opened.
-close-view Problems
+//This test verifies that the Markers view is NOT opened when the Problems view is opened.
+openProblemsView
 close-view Markers
 
 let [val review [create-review -server $serverURL]] {
@@ -29,15 +29,13 @@ with [get-editor "Compare.*"] {
 	insertComment -on left -text "This is my comment" -atLine 1
 	key-type "M1+s"
 }
+assert-problem-count-is -is 1
+verify-error { get-view Markers }
 
-assert-marker-count-is -is 1
-verify-error { get-view Problems }
-
-// disable markers and verify that they are no longer shown
+// Disable markers and verify that they are no longer shown
 get-editor | get-button "Markers for patchset 1" | uncheck
 get-window "Reply to comment" | get-button OK | click
-assert-marker-count-is -is 0
-
-
+assert-problem-count-is -is 0
+verify-error { get-view Markers }
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
