@@ -106,6 +106,7 @@ public class PersistentStorage {
 			getDialogSettings(fStorageSectionName).put(COLUMN_SELECTION, comparator.getColumnSorter());
 			getDialogSettings(fStorageSectionName).put(SORT_DIRECTION, direction);
 		}
+		getDialogSettings(fStorageSectionName).put(VIEW_VERSION, CURRENT_VERSION);
 	}
 
 	/**
@@ -159,7 +160,18 @@ public class PersistentStorage {
 		}
 	}
 
+	private static final int CURRENT_VERSION = 2;
+
+	private static final String VIEW_VERSION = "egerritVersionColumnStorage"; //$NON-NLS-1$
+
 	private void restoreTreeSettings(TreeViewer treeViewer) {
+		try {
+			if (getDialogSettings(fStorageSectionName).getInt(VIEW_VERSION) != CURRENT_VERSION) {
+				return;
+			}
+		} catch (NumberFormatException e) {
+			return;
+		}
 		String[] backedUpValue = getDialogSettings(fStorageSectionName).getArray(VIEW_COLUMN_ORDER);
 		if (backedUpValue != null) {
 			int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
