@@ -288,11 +288,12 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (activeReview.getSelection()) {
-
-					ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
-							fChangeInfo.getUserSelectedRevision() != null
-									? fChangeInfo.getUserSelectedRevision()
-									: fChangeInfo.getRevision());
+					CompletableFuture.runAsync(() -> {
+						ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
+								fChangeInfo.getUserSelectedRevision() != null
+										? fChangeInfo.getUserSelectedRevision()
+										: fChangeInfo.getRevision());
+					});
 				} else {
 					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();
 				}
