@@ -14,7 +14,9 @@ package org.eclipse.egerrit.internal.ui.compare;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,11 +26,14 @@ import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.CompareViewerPane;
 import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
+import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -52,12 +57,15 @@ import org.eclipse.emf.common.util.WeakInterningHashSet;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
+import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 import org.eclipse.team.ui.synchronize.SaveableCompareEditorInput;
@@ -531,24 +539,67 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		return getBaseCommitId(fileInfo.getRevision());
 	}
 
+	private LocalResourceTypedElement cachedElement;
+
 	@Override
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
 		Viewer newViewer = super.findContentViewer(oldViewer, input, parent);
+		purgeCache();
+
+		//Force a reset of the documents before they get used. This is necessary if the document has already been opened.
+		if (input instanceof GerritDiffNode) {
+			GerritDiffNode node = (GerritDiffNode) input;
+
+			if (node.getLeft() instanceof CommentableCompareItem) {
+				((CommentableCompareItem) node.getLeft()).reset();
+			}
+			if (node.getRight() instanceof CommentableCompareItem) {
+				((CommentableCompareItem) node.getRight()).reset();
+			}
+
+			if (node.getLeft() instanceof LocalResourceTypedElement) {
+				addToCache((LocalResourceTypedElement) node.getLeft());
+			}
+			if (node.getRight() instanceof LocalResourceTypedElement) {
+				addToCache((LocalResourceTypedElement) node.getRight());
+			}
+		}
+
 		if (oldViewer == newViewer) {
 			return newViewer;
 		}
-
-		if (isCommentable(input.getLeft())) {
-			setupCommentColorer(newViewer, 0);
-		}
-		if (isCommentable(input.getRight())) {
-			setupCommentColorer(newViewer, 1);
-		}
+		setupCommentColorer(newViewer, 0);
+		setupCommentColorer(newViewer, 1);
 
 		UICompareUtils.insertAnnotationNavigationCommands(CompareViewerPane.getToolBarManager(parent));
 
 		return newViewer;
+	}
+
+	//Load the IFile represented by the typedElement in the FileBufferManager
+	//This is necessary to avoid the loss of edits (done on workspace files) when swapping sides.
+	//Because the compare editor only shows one file at a time, we only add one element.
+	private void addToCache(LocalResourceTypedElement typedElement) {
+		try {
+			cachedElement = typedElement;
+			FileBuffers.getTextFileBufferManager().connect(cachedElement.getResource().getFullPath(),
+					LocationKind.IFILE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			//Ignore
+		}
+	}
+
+	//Remove a file from the FileBufferManager
+	private void purgeCache() {
+		if (cachedElement != null) {
+			try {
+				FileBuffers.getTextFileBufferManager().disconnect(cachedElement.getResource().getFullPath(),
+						LocationKind.IFILE, new NullProgressMonitor());
+			} catch (CoreException e) {
+				//Ignore
+			}
+		}
 	}
 
 	@Override
@@ -557,42 +608,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			nodeToReveal = (GerritDiffNode) input;
 		}
 		return super.findStructureViewer(oldViewer, input, parent);
-	}
-
-	/**
-	 * This is a total hack to handle the case where the compare editor shows the detailed structural pane. What we
-	 * refer to "the detailed structural diff" is a pane of the compare editor that shows structural differences of the
-	 * file being compared. For example, when you compare a .properties file, this pane will show a list of the
-	 * properties being added or removed.<br/>
-	 * When the user selects an item in the detailed structural pane, the compare editor framework recreates a new
-	 * document from the document already loaded and redisplays this. This causes EGerrit issues because we have our own
-	 * type of document which includes additional information like the position of comments, and losing those means that
-	 * we display the comments without the syntax coloring which is confusing to the user. At this point we assume we
-	 * can't change the compare fwk, and instead we detect the situation, and warn the user this usecase is not
-	 * supported. <br/>
-	 * The workaround we chose to implement consists in detecting the incorrect situation, present a message to the user
-	 * and reselect the input to reset the editor to an appropriate mode
-	 */
-	//Counter to detect the number of calls we have to wait before showing the dialog and refresh the input.
-	//This is the best way we had to detect this problematic situation. It is 6 because our code is called 3 times per editor pane.
-	private int call = 6;
-
-	void resetInputUponSelectionOfDetailedStructuralCompareSelected() {
-		synchronized (this) {
-			call--;
-			if (call == 0) {
-				MessageDialog.openInformation(null, Messages.UnsupportedInput_Title, Messages.UnsupportedInput_Text);
-				upperSection.setInput(root);
-				call = 6;
-			}
-		}
-	}
-
-	private boolean isCommentable(ITypedElement element) {
-		if (element instanceof CommentableCompareItem) {
-			return true;
-		}
-		return false;
 	}
 
 	private WeakInterningHashSet<SourceViewer> decoratedViewers = new WeakInterningHashSet<>(3);
@@ -623,28 +638,130 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				return;
 			}
 			decoratedViewers.add(sourceViewer);
-			final AnnotationPainter commentPainter = initializeCommentColoring(sourceViewer);
 
-			//Need to see by adding a breakpoint in the painter/limiter
+			//This listener is responsible to add / remove the listeners that take care
+			//of the coloring and prevent the edition. Those various listeners are different
+			//for each document
 			sourceViewer.addTextInputListener(new ITextInputListener() {
-				EditionLimiter editionLimiter = new EditionLimiter(sourceViewer);
+				final SourceViewer sv = sourceViewer;
+
+				AnnotationPainter commentPainter;
+
+				EditionLimiter editionLimiter;
+
+				VerifyListener blockEdition;
 
 				@Override
 				public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-					sourceViewer.addTextPresentationListener(commentPainter);
-					sourceViewer.addPainter(commentPainter);
-					sourceViewer.getTextWidget().addVerifyListener(editionLimiter);
-					if (oldInput instanceof CommentableCompareItem) {
-						((CommentableCompareItem) oldInput).reset();
+					sv.setEditable(true);
+					if (newInput instanceof CommentableCompareItem) {
+						commentPainter = initializeCommentColoring(sv);
+						editionLimiter = new EditionLimiter(sv);
+						sv.addTextPresentationListener(commentPainter);
+						sv.addPainter(commentPainter);
+						sv.getTextWidget().addVerifyListener(editionLimiter);
+						//Swapping causes loss of the dirty state, which means that saving won't work properly.
+						//Therefore we need to force reset the dirty flag based on the edits made to the documents
+						setDirty(isDirty((CommentableCompareItem) newInput), side);
+					} else {
+						if (newInput == null) {
+							return;
+						}
+
+						/**
+						 * This is our way to prevent edition when the compare editor shows the detailed structural
+						 * pane. What we refer to "the detailed structural diff" is a pane of the compare editor that
+						 * shows structural differences of the file being compared. For example, when you compare a
+						 * .properties file, this pane will show a list of the properties being added or removed.<br/>
+						 * When the user selects an item in the detailed structural pane, the compare editor framework
+						 * recreates a new document from the document already loaded and redisplays this. This causes
+						 * EGerrit issues because we have our own type of document which includes additional information
+						 * like the position of comments, and losing those means that we display the comments without
+						 * the syntax coloring which is confusing to the user. At this point we assume we can't change
+						 * the compare fwk, and instead we detect the situation, and warn the user this usecase is not
+						 * supported. <br/>
+						 */
+						if (side == 0) {
+							//Left side
+							if (!UICompareUtils.isMirroredOn(GerritMultipleInput.this) && leftSide.equals(WORKSPACE)) {
+								return;
+							}
+							if (UICompareUtils.isMirroredOn(GerritMultipleInput.this) && rightSide.equals(WORKSPACE)) {
+
+								return;
+							}
+						} else {
+							if (!UICompareUtils.isMirroredOn(GerritMultipleInput.this) && rightSide.equals(WORKSPACE)) {
+								//right side
+								return;
+							}
+
+							if (UICompareUtils.isMirroredOn(GerritMultipleInput.this) && leftSide.equals(WORKSPACE)) {
+								return;
+							}
+						}
+						blockEdition = new VerifyListener() {
+							boolean messageShown = false;
+
+							@Override
+							public void verifyText(VerifyEvent e) {
+								e.doit = false;
+								if (!messageShown) {
+									MessageDialog.openInformation(null, Messages.UnsupportedInput_Title,
+											Messages.UnsupportedInput_Text);
+									messageShown = true;
+								}
+							}
+						};
+						sv.getTextWidget().addVerifyListener(blockEdition);
 					}
 				}
 
 				@Override
 				public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
-					if (oldInput != null) {
-						sourceViewer.removePainter(commentPainter);
-						sourceViewer.addTextPresentationListener(commentPainter);
-						sourceViewer.getTextWidget().removeVerifyListener(editionLimiter);
+					if (oldInput instanceof CommentableCompareItem) {
+						if (commentPainter != null) {
+							sv.removePainter(commentPainter);
+							sv.removeTextPresentationListener(commentPainter);
+						}
+						if (editionLimiter != null) {
+							sv.getTextWidget().removeVerifyListener(editionLimiter);
+						}
+					} else {
+						if (blockEdition != null) {
+							sv.getTextWidget().removeVerifyListener(blockEdition);
+						}
+					}
+				}
+
+				private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
+					return new CommentAnnotationPainter(viewer, null, GerritMultipleInput.this);
+				}
+
+				//Determine if a document is dirty by checking the status of the comment annotations
+				private boolean isDirty(CommentableCompareItem doc) {
+					Iterator<Annotation> iterator = doc.getEditableComments().getAnnotationIterator();
+					while (iterator.hasNext()) {
+						GerritCommentAnnotation annotation = (GerritCommentAnnotation) iterator.next();
+						if (annotation.getComment() == null) {
+							return true;
+						}
+					}
+					return false;
+				}
+
+				//Helper method to set the dirty flag on the ContentMergeViewer
+				private void setDirty(boolean dirty, int side) {
+					try {
+						Class<ContentMergeViewer> clazz = ContentMergeViewer.class;
+						Method declaredMethod;
+						declaredMethod = clazz.getDeclaredMethod(side == 0 ? "setLeftDirty" : "setRightDirty", //$NON-NLS-1$ //$NON-NLS-2$
+								boolean.class);
+						declaredMethod.setAccessible(true);
+						declaredMethod.invoke(textMergeViewer, dirty);
+					} catch (NoSuchMethodException | SecurityException | IllegalAccessException
+							| IllegalArgumentException | InvocationTargetException e) {
+						//Should not happen
 					}
 				}
 			});
@@ -652,10 +769,6 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException t) {
 			logger.error("Problem while setting up coloration of comments", t); //$NON-NLS-1$
 		}
-	}
-
-	private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
-		return new CommentAnnotationPainter(viewer, null, this);
 	}
 
 	@Override
@@ -790,6 +903,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	public CompareUpperSection getUpperSection() {
 		return upperSection;
+	}
 
+	@Override
+	protected void handleDispose() {
+		super.handleDispose();
+		purgeCache();
 	}
 }

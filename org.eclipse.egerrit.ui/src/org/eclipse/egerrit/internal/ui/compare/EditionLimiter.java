@@ -23,8 +23,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.link.InclusivePositionUpdater;
 import org.eclipse.jface.text.source.Annotation;
@@ -123,8 +123,8 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 					Position commentPosition = annotations.getPosition(comment);
 
 					try {
-						if (commentPosition.length == 0
-								&& (document.get(start, length).equals(textWidget.getLineDelimiter()))) {
+						if (commentPosition.length == 0 && (document.get(start, length)
+								.equals(TextUtilities.getDefaultLineDelimiter(document)))) {
 							annotations.removeAnnotation(comment);
 							return true;
 						}
@@ -164,7 +164,8 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 						if (insertionPosition == -1) {
 							//If there is no next line, we first insert one, then compute it's position and proceed as usual
 							try {
-								document.replace(textWidget.getCharCount(), 0, textWidget.getLineDelimiter());
+								document.replace(textWidget.getCharCount(), 0,
+										TextUtilities.getDefaultLineDelimiter(document));
 							} catch (BadLocationException e) {
 								// not possible
 							}
@@ -182,17 +183,16 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 							return false;
 						}
 					}
-					String insertedText = commentText + textWidget.getLineDelimiter();
 					try {
+						document.replace(insertionPosition, 0, TextUtilities.getDefaultLineDelimiter(document));
 						annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
 								new Position(insertionPosition, 0));
 						annotationAlreadyAdded = true;
-						document.replace(insertionPosition, 0, insertedText);
+						document.replace(insertionPosition, 0, commentText);
 					} catch (BadLocationException e) {
 						logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
 					}
-					textWidget.setCaretOffset(
-							insertionPosition + insertedText.length() - textWidget.getLineDelimiter().length());
+					textWidget.setCaretOffset(insertionPosition + commentText.length());
 				}
 				if (!annotationAlreadyAdded) {
 					annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
@@ -312,6 +312,12 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 	//This way, when the user types in on the first character of the comment, the comment is grown.
 	private void changePositionUpdater() {
 		IPositionUpdater[] updaters = document.getPositionUpdaters();
+		//Make sure that the updater we want to add does not already exists
+		for (IPositionUpdater potentialInclusiveUpdater : updaters) {
+			if (potentialInclusiveUpdater instanceof InclusivePositionUpdater) {
+				return;
+			}
+		}
 		for (IPositionUpdater updater : updaters) {
 			if (updater instanceof DefaultPositionUpdater) {
 				try {
@@ -335,21 +341,5 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		document.addDocumentListener(this);
 		annotations = ((CommentableCompareItem) textViewer.getDocument()).getEditableComments();
 		changePositionUpdater();
-		textViewer.addTextInputListener(new ITextInputListener() {
-
-			@Override
-			public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-				//The document is changing (e.g in response to the user having hit saved), we need to reset the listener
-				if (oldInput != null) {
-					oldInput.removeDocumentListener(EditionLimiter.this);
-				}
-				document = null;
-			}
-
-			@Override
-			public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
-				// nothing to do
-			}
-		});
 	}
 }

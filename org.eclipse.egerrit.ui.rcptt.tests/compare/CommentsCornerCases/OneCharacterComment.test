@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _s8k-EN0ZEear4KIbYXINCQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/17/17 8:02 PM
+Save-Time: 1/31/17 3:02 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -19,9 +19,9 @@ let [val review [create-review -server $serverURL]] {
 
 // Make sure that comments made of only one character are properly colored
 with [get-editor "Compare.*"] {
-	insertComment -on left -text c -atLine 1
+	insertComment -on left -text c -atLine 2 -column 1
 	with [get-left-editor] {
-		set-caret-pos -line 2
+		set-caret-pos 2 1
 		get-property "styleAtCaret.text" | equals c | verify-true
 		get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
 		get-property "styleAtCaret.backgroundColor" | equals "#FFFF00" | verify-true

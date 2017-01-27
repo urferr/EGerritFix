@@ -66,16 +66,12 @@ class CommentAnnotationPainter extends AnnotationPainter {
 
 	@Override
 	public void applyTextPresentation(TextPresentation tp) {
-		if (!(viewer.getDocument() instanceof CommentableCompareItem)) {
-			Display.getDefault().asyncExec(() -> input.resetInputUponSelectionOfDetailedStructuralCompareSelected());
-			return;
-		}
 		IRegion activeRegion = tp.getExtent();
-		AnnotationModel originalCommentsModel = ((CommentableCompareItem) viewer.getDocument()).getEditableComments();
-		Iterator<?> it = originalCommentsModel.getAnnotationIterator();
+		AnnotationModel comments = ((CommentableCompareItem) viewer.getDocument()).getEditableComments();
+		Iterator<?> it = comments.getAnnotationIterator();
 		while (it.hasNext()) {
 			GerritCommentAnnotation object = (GerritCommentAnnotation) it.next();
-			Position positingExistingComment = originalCommentsModel.getPosition(object);
+			Position positingExistingComment = comments.getPosition(object);
 			//If the position is not part of the region being redrawn, ignore it
 			if (!(activeRegion.getOffset() + activeRegion.getLength() >= positingExistingComment.getOffset()
 					&& positingExistingComment.getOffset() + positingExistingComment.getLength() > activeRegion

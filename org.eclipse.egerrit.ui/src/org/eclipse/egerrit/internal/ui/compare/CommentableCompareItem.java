@@ -86,6 +86,7 @@ public abstract class CommentableCompareItem extends Document
 		this.originalComments = gerritComments;
 	}
 
+	//This method is only used for tests
 	public void setEditableComments(AnnotationModel gerritComments) {
 		this.editableComments = gerritComments;
 	}
@@ -248,10 +249,9 @@ public abstract class CommentableCompareItem extends Document
 		setOriginalDocument(originalDocument);
 
 		//Editable comments are a copy of the original comments but associated with the document that is presented in the UI
-		AnnotationModel editableComments = new CommentAnnotationManager();
+		editableComments = new CommentAnnotationManager();
 		set(text);
 		editableComments.connect(this);
-		setEditableComments(editableComments);
 
 		if (fileInfo.getAllComments().isEmpty()) {
 			return;
@@ -311,6 +311,7 @@ public abstract class CommentableCompareItem extends Document
 
 	public void reset() {
 		dataLoaded = false;
+		editableComments.disconnect(this);
 	}
 
 	protected boolean isBinary() {
