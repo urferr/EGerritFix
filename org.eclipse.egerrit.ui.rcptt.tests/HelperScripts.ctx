@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/24/17 11:20 AM
+Save-Time: 1/27/17 9:11 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -110,6 +110,7 @@ proc openCompareEditor [val query] [val serverName $serverName] {
 		get-cell -row 0 -column 2 | double-click
 	}
 	try {
+		wait -ms $defaultWaitTime
 		// Click ok on tip
 		get-window "EGerrit Tip" | get-button OK | click
 	} -catch {
@@ -350,6 +351,7 @@ proc "assert-that-filename-in-dialog" [val atLine] [val is] [val in -input] {
 
 proc "activate-review" [val in -input] {
 	$in | get-button "Activate Comment Markers" | check
+	wait -ms $defaultWaitTime
 	get-window "EGerrit Tip" | get-button OK | click
 }
 
