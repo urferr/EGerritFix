@@ -11,6 +11,7 @@
 
 package org.eclipse.egerrit.internal.process;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
@@ -21,14 +22,18 @@ import org.eclipse.egerrit.internal.core.rest.RebaseInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.ui.editors.FindLocalRepository;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.editors.RefreshRelatedEditors;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.egit.core.internal.indexdiff.IndexDiffCacheEntry;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -47,7 +52,8 @@ public class RebaseProcess {
 	public RebaseProcess() {
 	}
 
-	public void handleRebase(Shell shell, ChangeInfo changeInfo, RevisionInfo toRebase, GerritClient gerritClient) {
+	public void handleRebase(Shell shell, ChangeInfo changeInfo, RevisionInfo toRebase, GerritClient gerritClient)
+			throws InvocationTargetException {
 		InputDialog inputDialog = new InputDialog(shell, Messages.RebaseProcess_title,
 				Messages.RebaseProcess_changeParent, "", null) { //$NON-NLS-1$
 
@@ -106,15 +112,21 @@ public class RebaseProcess {
 			} catch (EGerritException e) {
 				if (e.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 
-					Display.getDefault().asyncExec(new Runnable() {
+					/* Ask for the the automatic rebase process if no choice was entered by the user
+					 * else just show the error message. */
+					if (inputDialog.getValue().trim().length() > 0) {
 
-						@Override
-						public void run() {
-							MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
-									Messages.RebaseProcess_notPerform, SWT.NONE);
-						}
-					});
+						Display.getDefault().syncExec(new Runnable() {
 
+							@Override
+							public void run() {
+								MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
+										Messages.RebaseProcess_notPerform, SWT.NONE);
+							}
+						});
+					} else {
+						suggestLocalRebase(toRebase, gerritClient);
+					}
 				} else {
 					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 				}
@@ -125,4 +137,73 @@ public class RebaseProcess {
 		});
 	}
 
+	/**
+	 * Suggest a local automatic rebase process to the user if the associated repository for the review is checked out
+	 */
+	private void suggestLocalRebase(RevisionInfo toRebase, GerritClient gerritClient) {
+		Repository repo;
+		repo = new FindLocalRepository(gerritClient, toRebase.getChangeInfo().getProject()).getRepository();
+		if (repo != null) {
+			IndexDiffCacheEntry entry = org.eclipse.egit.core.Activator.getDefault()
+					.getIndexDiffCache()
+					.getIndexDiffCacheEntry(repo);
+
+			RebaseRequestRunnable rebaseRequest = new RebaseRequestRunnable(entry.getIndexDiff().getModified().size());
+			Display.getDefault().syncExec(rebaseRequest);
+
+			if (rebaseRequest.getChoice() == IDialogConstants.OK_ID) {
+				AutoRebaseProcess process = new AutoRebaseProcess(gerritClient, repo, toRebase);
+				process.schedule();
+			}
+		} else {
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_TitleRebaseFailedNoRepo,
+							Messages.RebaseProcess_CouldNotPerformRemoteRebaseNoRepo,
+							SWT.NONE);
+				}
+			});
+		}
+	}
+
+	private class RebaseRequestRunnable implements Runnable {
+
+		private int choice;
+
+		private int numberOfChanges;
+
+		public int getChoice() {
+			return choice;
+		}
+
+		public RebaseRequestRunnable(int numberOfChanges) {
+			this.numberOfChanges = numberOfChanges;
+		}
+
+		@Override
+		public void run() {
+			String stashString = ""; //$NON-NLS-1$
+			if (numberOfChanges > 0) {
+				stashString = " (" + Integer.toString(numberOfChanges) + Messages.RebaseProcess_Changes //$NON-NLS-1$
+						+ Messages.RebaseProcess_ToStash;
+			}
+
+			MessageDialog result = new MessageDialog(null, Messages.RebaseProcess_AutomaticLocalRebase, null,
+
+					Messages.RebaseProcess_notPerform + "\r\r" + Messages.RebaseProcess_WouldYouLikeAutomaticRebase //$NON-NLS-1$
+							+ " : \r\r-" //$NON-NLS-1$
+							+ Messages.RebaseProcess_FetchAppropriateBranches + "\r-" //$NON-NLS-1$
+							+ Messages.RebaseProcess_StashLocalChanges + stashString + "\r-" //$NON-NLS-1$
+							+ Messages.RebaseProcess_CreateAndCheckout + "\r-" //$NON-NLS-1$
+							+ Messages.RebaseProcess_RebaseCheckedOut,
+					MessageDialog.QUESTION, 0, IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL) {
+				@Override
+				protected int getShellStyle() {
+					return super.getShellStyle() | SWT.SHEET;
+				}
+			};
+			choice = result.open();
+		}
+	}
 }

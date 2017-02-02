@@ -14,6 +14,7 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -597,8 +598,12 @@ public class ChangeDetailEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				RebaseProcess rebaseProcess = new RebaseProcess();
-				rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
-						fGerritClient);
+				try {
+					rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo,
+							fChangeInfo.getUserSelectedRevision(), fGerritClient);
+				} catch (InvocationTargetException e1) {
+					EGerritCorePlugin.logError(e1.getMessage());
+				}
 			}
 		});
 

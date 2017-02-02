@@ -34,6 +34,64 @@ public class Messages extends NLS {
 
 	public static String ActiveWorkspaceRevision_1;
 
+	public static String AutoRebaseProcess_AlreadyUpToDate;
+
+	public static String AutoRebaseProcess_AutomaticallyRebasing;
+
+	public static String AutoRebaseProcess_AutoRebaseStarted;
+
+	public static String AutoRebaseProcess_CheckingOutBranchToRebase;
+
+	public static String AutoRebaseProcess_CheckoutNewlyCreatedLocalBranch;
+
+	public static String AutoRebaseProcess_CommitAndPushChanges;
+
+	public static String AutoRebaseProcess_CreatingNewLocalBranch;
+
+	public static String AutoRebaseProcess_currentRebaseStatus;
+
+	public static String AutoRebaseProcess_FailedRepoFollowingState;
+
+	public static String AutoRebaseProcess_FailedRevertedBack;
+
+	public static String AutoRebaseProcess_FetchingRemoteBranch;
+
+	public static String AutoRebaseProcess_FetchingRemotePatchSet;
+
+	public static String AutoRebaseProcess_FetchingTheBranches;
+
+	public static String AutoRebaseProcess_FollowingStepsSuccessful;
+
+	public static String AutoRebaseProcess_PleaseFinishOrCancelCurrentRebase;
+
+	public static String AutoRebaseProcess_RebaseCancelled;
+
+	public static String AutoRebaseProcess_RebaseConflicts;
+
+	public static String AutoRebaseProcess_RebaseFailed;
+
+	public static String AutoRebaseProcess_RebaseFF;
+
+	public static String AutoRebaseProcess_RebaseSuccessful;
+
+	public static String AutoRebaseProcess_RebaseUpToDate;
+
+	public static String AutoRebaseProcess_RebasingLocally;
+
+	public static String AutoRebaseProcess_RevertingSteps;
+
+	public static String AutoRebaseProcess_StartingTheRebaseProcess;
+
+	public static String AutoRebaseProcess_StashingCurrentChanges;
+
+	public static String AutoRebaseProcess_StashingLocalChanges;
+
+	public static String AutoRebaseProcess_StashingTheLocalChanges;
+
+	public static String AutoRebaseProcess_StoppedConflict;
+
+	public static String AutoRebaseProcess_UncommitedChanges;
+
 	public static String Branch_perfect_match;
 
 	public static String Branch_change_Id;
@@ -440,6 +498,8 @@ public class Messages extends NLS {
 
 	public static String RebaseHandler_specificMessage;
 
+	public static String RebaseProcess_AutomaticLocalRebase;
+
 	public static String RebaseProcess_title;
 
 	public static String RebaseProcess_changeParent;
@@ -469,6 +529,24 @@ public class Messages extends NLS {
 	public static String SubmitHandler_specificMessage;
 
 	public static String RebaseProcess_changeIsAlreadyUpToDate;
+
+	public static String RebaseProcess_Changes;
+
+	public static String RebaseProcess_CouldNotPerformRemoteRebaseNoRepo;
+
+	public static String RebaseProcess_CreateAndCheckout;
+
+	public static String RebaseProcess_FetchAppropriateBranches;
+
+	public static String RebaseProcess_RebaseCheckedOut;
+
+	public static String RebaseProcess_StashLocalChanges;
+
+	public static String RebaseProcess_TitleRebaseFailedNoRepo;
+
+	public static String RebaseProcess_ToStash;
+
+	public static String RebaseProcess_WouldYouLikeAutomaticRebase;
 
 	public static String UIHistoryTable_0;
 
