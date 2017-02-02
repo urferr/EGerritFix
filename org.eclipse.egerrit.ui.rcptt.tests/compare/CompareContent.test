@@ -1,0 +1,62 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CompareContent
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _ZELdEAN1EeeT09dCOnl0Bw
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 3/7/17 3:43 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 90201 -serverName EF
+
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "13.*"
+		switchRightInput -to "BASE.*"
+
+		get-tree | select [get-item "" -index 4] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 13: DiffContent.java" -right "Base: DiffContent.java (" +
+			"69628103a5)"
+
+		assert-that-left-editor-content -is "interface DiffContent"
+		verify-error {
+			assert-that-right-editor-content -is "interface DiffContenty"
+		}
+	}
+
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "13.*"
+		switchRightInput -to "7.*"
+
+		get-tree | select [get-item "" -index 1] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 13: BaseCommand.java (69628103a5)" -right "Patch Set 7: BaseCommand.java"
+
+		verify-error {
+			assert-that-left-editor-content -is "System.currentTimeMillis();"
+		}
+		assert-that-right-editor-content -is "System.currentTimeMillis();"
+	}
+
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "7.*"
+		switchRightInput -to "13.*"
+
+		get-tree | select [get-item "" -index 1] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 7: BaseCommand.java" -right "Patch Set 13: BaseCommand.java (69628103a5)"
+
+		assert-that-left-editor-content -is "System.currentTimeMillis();"
+		verify-error {
+			assert-that-right-editor-content -is "System.currentTimeMillis();"
+		}
+	}
+} -finally {
+	remove-gerrit-server -serverName EF
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

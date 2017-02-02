@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -161,6 +161,12 @@ public class ModelFactoryImpl extends EFactoryImpl implements ModelFactory {
 			return createGroupBaseInfo();
 		case ModelPackage.REVIEWS:
 			return createReviews();
+		case ModelPackage.DIFF_INFO:
+			return createDiffInfo();
+		case ModelPackage.DIFF_FILE_META_INFO:
+			return createDiffFileMetaInfo();
+		case ModelPackage.DIFF_CONTENT:
+			return createDiffContent();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -561,6 +567,39 @@ public class ModelFactoryImpl extends EFactoryImpl implements ModelFactory {
 	public Reviews createReviews() {
 		ReviewsImpl reviews = new ReviewsImpl();
 		return reviews;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public DiffInfo createDiffInfo() {
+		DiffInfoImpl diffInfo = new DiffInfoImpl();
+		return diffInfo;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public DiffFileMetaInfo createDiffFileMetaInfo() {
+		DiffFileMetaInfoImpl diffFileMetaInfo = new DiffFileMetaInfoImpl();
+		return diffFileMetaInfo;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public DiffContent createDiffContent() {
+		DiffContentImpl diffContent = new DiffContentImpl();
+		return diffContent;
 	}
 
 	/**

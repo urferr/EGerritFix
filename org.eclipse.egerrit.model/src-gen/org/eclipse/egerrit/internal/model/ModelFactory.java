@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -272,6 +272,33 @@ public interface ModelFactory extends EFactory {
 	 * @generated
 	 */
 	Reviews createReviews();
+
+	/**
+	 * Returns a new object of class '<em>Diff Info</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Diff Info</em>'.
+	 * @generated
+	 */
+	DiffInfo createDiffInfo();
+
+	/**
+	 * Returns a new object of class '<em>Diff File Meta Info</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Diff File Meta Info</em>'.
+	 * @generated
+	 */
+	DiffFileMetaInfo createDiffFileMetaInfo();
+
+	/**
+	 * Returns a new object of class '<em>Diff Content</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Diff Content</em>'.
+	 * @generated
+	 */
+	DiffContent createDiffContent();
 
 	/**
 	 * Returns the package supported by this factory.

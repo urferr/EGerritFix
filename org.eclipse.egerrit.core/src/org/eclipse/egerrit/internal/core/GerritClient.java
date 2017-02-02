@@ -27,6 +27,7 @@ import org.eclipse.egerrit.internal.core.command.GetChangeCommand;
 import org.eclipse.egerrit.internal.core.command.GetCommitMsgCommand;
 import org.eclipse.egerrit.internal.core.command.GetContentCommand;
 import org.eclipse.egerrit.internal.core.command.GetContentFromCommitCommand;
+import org.eclipse.egerrit.internal.core.command.GetDiffCommand;
 import org.eclipse.egerrit.internal.core.command.GetFilesCommand;
 import org.eclipse.egerrit.internal.core.command.GetIncludedInCommand;
 import org.eclipse.egerrit.internal.core.command.GetMergeableCommand;
@@ -586,4 +587,7 @@ public abstract class GerritClient {
 		return new RebaseRevisionCommand(fGerritRepository, change_id, revision_id);
 	}
 
+	public GetDiffCommand getDiff(String change_id, String revision_id, String fileName, int base) {
+		return new GetDiffCommand(fGerritRepository, change_id, revision_id, fileName, base);
+	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2017 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.ui.compare;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 
 /**
  * Factory class to create compare items
@@ -43,21 +44,13 @@ public class CompareItemFactory {
 		return newCompareItem;
 	}
 
-	/**
-	 * Create a simple compare item
-	 */
-	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
-			IProgressMonitor monitor) {
-		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, null, null);
+	public CommitCompareItem createCompareItemFromCommit(RevisionInfo revision, FileInfo file, String fileName,
+			int baseRevisionNumber, IProgressMonitor progressMonitor) {
+		return new CommitCompareItem(gerrit, revision, file, fileName, baseRevisionNumber);
 	}
 
-	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
-			String fileName, IProgressMonitor monitor) {
-		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, fileName, null);
-	}
-
-	public CommitCompareItem createCompareItemFromCommit(String projectId, String commitId, FileInfo fileInfo,
-			String fileName, String showAsRevision, IProgressMonitor monitor) {
-		return new CommitCompareItem(gerrit, projectId, commitId, fileInfo, fileName, showAsRevision);
+	public CommitCompareItem createCompareItemFromBase(RevisionInfo revision, FileInfo file, String fileName,
+			IProgressMonitor progressMonitor) {
+		return new CommitCompareItem(gerrit, revision, file, fileName, 0);
 	}
 }

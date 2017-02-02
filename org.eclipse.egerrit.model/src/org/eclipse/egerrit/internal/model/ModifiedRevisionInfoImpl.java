@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.egerrit.internal.model;
 
+import java.util.List;
+
 import org.eclipse.egerrit.internal.model.impl.RevisionInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
@@ -92,5 +94,14 @@ public class ModifiedRevisionInfoImpl extends RevisionInfoImpl {
 			}
 			return files;
 		}
+	}
+	
+	@Override
+	public String getBaseCommit() {
+		List<CommitInfo> parents = getCommit().getParents();
+		if (parents == null || parents.isEmpty()) {
+			return null;
+		}
+		return parents.get(0).getCommit();
 	}
 }

@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -12,6 +12,7 @@
 package org.eclipse.egerrit.internal.model.util;
 
 import java.util.Map;
+import org.eclipse.egerrit.internal.model.*;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
@@ -269,6 +270,21 @@ public class ModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseReviews(Reviews object) {
 			return createReviewsAdapter();
+		}
+
+		@Override
+		public Adapter caseDiffInfo(DiffInfo object) {
+			return createDiffInfoAdapter();
+		}
+
+		@Override
+		public Adapter caseDiffFileMetaInfo(DiffFileMetaInfo object) {
+			return createDiffFileMetaInfoAdapter();
+		}
+
+		@Override
+		public Adapter caseDiffContent(DiffContent object) {
+			return createDiffContentAdapter();
 		}
 
 		@Override
@@ -763,6 +779,48 @@ public class ModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createReviewsAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.model.DiffInfo <em>Diff Info</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo
+	 * @generated
+	 */
+	public Adapter createDiffInfoAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.model.DiffFileMetaInfo <em>Diff File Meta Info</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.model.DiffFileMetaInfo
+	 * @generated
+	 */
+	public Adapter createDiffFileMetaInfoAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.model.DiffContent <em>Diff Content</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent
+	 * @generated
+	 */
+	public Adapter createDiffContentAdapter() {
 		return null;
 	}
 

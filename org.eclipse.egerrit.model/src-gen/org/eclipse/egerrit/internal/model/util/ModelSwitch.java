@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -12,6 +12,7 @@
 package org.eclipse.egerrit.internal.model.util;
 
 import java.util.Map;
+import org.eclipse.egerrit.internal.model.*;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
@@ -345,6 +346,27 @@ public class ModelSwitch<T> extends Switch<T> {
 		case ModelPackage.REVIEWS: {
 			Reviews reviews = (Reviews) theEObject;
 			T result = caseReviews(reviews);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case ModelPackage.DIFF_INFO: {
+			DiffInfo diffInfo = (DiffInfo) theEObject;
+			T result = caseDiffInfo(diffInfo);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case ModelPackage.DIFF_FILE_META_INFO: {
+			DiffFileMetaInfo diffFileMetaInfo = (DiffFileMetaInfo) theEObject;
+			T result = caseDiffFileMetaInfo(diffFileMetaInfo);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case ModelPackage.DIFF_CONTENT: {
+			DiffContent diffContent = (DiffContent) theEObject;
+			T result = caseDiffContent(diffContent);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -861,6 +883,51 @@ public class ModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseReviews(Reviews object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Diff Info</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Diff Info</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDiffInfo(DiffInfo object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Diff File Meta Info</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Diff File Meta Info</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDiffFileMetaInfo(DiffFileMetaInfo object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Diff Content</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Diff Content</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDiffContent(DiffContent object) {
 		return null;
 	}
 

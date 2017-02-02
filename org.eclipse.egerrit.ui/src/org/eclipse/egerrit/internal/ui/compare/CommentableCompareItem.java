@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016-2017 Ericsson
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,8 @@ package org.eclipse.egerrit.internal.ui.compare;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.eclipse.compare.IEditableContent;
@@ -187,11 +189,6 @@ public abstract class CommentableCompareItem extends Document
 		}
 	}
 
-	private void loadComments() {
-		QueryHelpers.loadComments(gerrit, fileInfo.getRevision());
-		QueryHelpers.loadDrafts(gerrit, fileInfo.getRevision());
-	}
-
 	protected String getChangeId() {
 		return fileInfo.getRevision().getChangeInfo().getId();
 	}
@@ -224,9 +221,21 @@ public abstract class CommentableCompareItem extends Document
 		if (dataLoaded) {
 			return;
 		}
-		QueryHelpers.markAsReviewed(gerrit, fileInfo);
-		loadComments();
-		byte[] fileContent = loadFileContent();
+
+		CompletableFuture<byte[]> contentLoader = CompletableFuture.supplyAsync(() -> loadFileContent());
+		CompletableFuture.runAsync(() -> QueryHelpers.markAsReviewed(gerrit, fileInfo));
+		CompletableFuture
+				.allOf(contentLoader,
+						CompletableFuture.runAsync(() -> QueryHelpers.loadComments(gerrit, fileInfo.getRevision())),
+						CompletableFuture.runAsync(() -> QueryHelpers.loadDrafts(gerrit, fileInfo.getRevision())))
+				.join();
+
+		byte[] fileContent;
+		try {
+			fileContent = contentLoader.get();
+		} catch (InterruptedException | ExecutionException e) {
+			return;
+		}
 		if (!isBinary()) {
 			mergeCommentsInText(StringUtils.newStringUtf8(fileContent));
 		} else {

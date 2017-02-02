@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson AB.
+ * Copyright (c) 2015-2017 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ class GerritCompareHelper {
 
 	//Given a commit id, returns a shortened commit id (the first 10 characters)
 	static String shortenCommitId(String commitId) {
-		return commitId != null ? commitId.substring(0, 10) : commitId;
+		return commitId != null && commitId.length() > 0 ? commitId.substring(0, 10) : commitId;
 	}
 
 	//Given a filePath, returns the filename

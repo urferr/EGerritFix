@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -2637,13 +2637,22 @@ public interface ModelPackage extends EPackage {
 	int REVISION_INFO___GET_CHANGE_INFO = 2;
 
 	/**
+	 * The operation id for the '<em>Get Base Commit</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REVISION_INFO___GET_BASE_COMMIT = 3;
+
+	/**
 	 * The number of operations of the '<em>Revision Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REVISION_INFO_OPERATION_COUNT = 3;
+	int REVISION_INFO_OPERATION_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.
@@ -2775,6 +2784,198 @@ public interface ModelPackage extends EPackage {
 	int REVIEWS_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.DiffInfoImpl <em>Diff Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.DiffInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffInfo()
+	 * @generated
+	 */
+	int DIFF_INFO = 34;
+
+	/**
+	 * The feature id for the '<em><b>Change type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO__CHANGE_TYPE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Content</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO__CONTENT = 1;
+
+	/**
+	 * The feature id for the '<em><b>Meta a</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO__META_A = 2;
+
+	/**
+	 * The feature id for the '<em><b>Meta b</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO__META_B = 3;
+
+	/**
+	 * The feature id for the '<em><b>Binary</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO__BINARY = 4;
+
+	/**
+	 * The number of structural features of the '<em>Diff Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO_FEATURE_COUNT = 5;
+
+	/**
+	 * The number of operations of the '<em>Diff Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_INFO_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.DiffFileMetaInfoImpl <em>Diff File Meta Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.DiffFileMetaInfoImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffFileMetaInfo()
+	 * @generated
+	 */
+	int DIFF_FILE_META_INFO = 35;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_FILE_META_INFO__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Content type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_FILE_META_INFO__CONTENT_TYPE = 1;
+
+	/**
+	 * The feature id for the '<em><b>Lines</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_FILE_META_INFO__LINES = 2;
+
+	/**
+	 * The number of structural features of the '<em>Diff File Meta Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_FILE_META_INFO_FEATURE_COUNT = 3;
+
+	/**
+	 * The number of operations of the '<em>Diff File Meta Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_FILE_META_INFO_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.DiffContentImpl <em>Diff Content</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.egerrit.internal.model.impl.DiffContentImpl
+	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffContent()
+	 * @generated
+	 */
+	int DIFF_CONTENT = 36;
+
+	/**
+	 * The feature id for the '<em><b>A</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT__A = 0;
+
+	/**
+	 * The feature id for the '<em><b>B</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT__B = 1;
+
+	/**
+	 * The feature id for the '<em><b>Ab</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT__AB = 2;
+
+	/**
+	 * The feature id for the '<em><b>Skip</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT__SKIP = 3;
+
+	/**
+	 * The number of structural features of the '<em>Diff Content</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT_FEATURE_COUNT = 4;
+
+	/**
+	 * The number of operations of the '<em>Diff Content</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DIFF_CONTENT_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2782,7 +2983,7 @@ public interface ModelPackage extends EPackage {
 	 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getActionConstants()
 	 * @generated
 	 */
-	int ACTION_CONSTANTS = 34;
+	int ACTION_CONSTANTS = 37;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo <em>Related Change And Commit Info</em>}'.
@@ -5144,6 +5345,16 @@ public interface ModelPackage extends EPackage {
 	EOperation getRevisionInfo__GetChangeInfo();
 
 	/**
+	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.RevisionInfo#getBaseCommit() <em>Get Base Commit</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Base Commit</em>' operation.
+	 * @see org.eclipse.egerrit.internal.model.RevisionInfo#getBaseCommit()
+	 * @generated
+	 */
+	EOperation getRevisionInfo__GetBaseCommit();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.SuggestReviewerInfo <em>Suggest Reviewer Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -5227,6 +5438,168 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getReviews_AllReviews();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.DiffInfo <em>Diff Info</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Diff Info</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo
+	 * @generated
+	 */
+	EClass getDiffInfo();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffInfo#getChange_type <em>Change type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Change type</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo#getChange_type()
+	 * @see #getDiffInfo()
+	 * @generated
+	 */
+	EAttribute getDiffInfo_Change_type();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.eclipse.egerrit.internal.model.DiffInfo#getContent <em>Content</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Content</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo#getContent()
+	 * @see #getDiffInfo()
+	 * @generated
+	 */
+	EReference getDiffInfo_Content();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.egerrit.internal.model.DiffInfo#getMeta_a <em>Meta a</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Meta a</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo#getMeta_a()
+	 * @see #getDiffInfo()
+	 * @generated
+	 */
+	EReference getDiffInfo_Meta_a();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.egerrit.internal.model.DiffInfo#getMeta_b <em>Meta b</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Meta b</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo#getMeta_b()
+	 * @see #getDiffInfo()
+	 * @generated
+	 */
+	EReference getDiffInfo_Meta_b();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffInfo#isBinary <em>Binary</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Binary</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffInfo#isBinary()
+	 * @see #getDiffInfo()
+	 * @generated
+	 */
+	EAttribute getDiffInfo_Binary();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.DiffFileMetaInfo <em>Diff File Meta Info</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Diff File Meta Info</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffFileMetaInfo
+	 * @generated
+	 */
+	EClass getDiffFileMetaInfo();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getName()
+	 * @see #getDiffFileMetaInfo()
+	 * @generated
+	 */
+	EAttribute getDiffFileMetaInfo_Name();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getContent_type <em>Content type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Content type</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getContent_type()
+	 * @see #getDiffFileMetaInfo()
+	 * @generated
+	 */
+	EAttribute getDiffFileMetaInfo_Content_type();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getLines <em>Lines</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Lines</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffFileMetaInfo#getLines()
+	 * @see #getDiffFileMetaInfo()
+	 * @generated
+	 */
+	EAttribute getDiffFileMetaInfo_Lines();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.DiffContent <em>Diff Content</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Diff Content</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent
+	 * @generated
+	 */
+	EClass getDiffContent();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.egerrit.internal.model.DiffContent#getA <em>A</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>A</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent#getA()
+	 * @see #getDiffContent()
+	 * @generated
+	 */
+	EAttribute getDiffContent_A();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.egerrit.internal.model.DiffContent#getB <em>B</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>B</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent#getB()
+	 * @see #getDiffContent()
+	 * @generated
+	 */
+	EAttribute getDiffContent_B();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.egerrit.internal.model.DiffContent#getAb <em>Ab</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Ab</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent#getAb()
+	 * @see #getDiffContent()
+	 * @generated
+	 */
+	EAttribute getDiffContent_Ab();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.DiffContent#getSkip <em>Skip</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Skip</em>'.
+	 * @see org.eclipse.egerrit.internal.model.DiffContent#getSkip()
+	 * @see #getDiffContent()
+	 * @generated
+	 */
+	EAttribute getDiffContent_Skip();
 
 	/**
 	 * Returns the meta object for enum '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}'.
@@ -7064,6 +7437,14 @@ public interface ModelPackage extends EPackage {
 		EOperation REVISION_INFO___GET_CHANGE_INFO = eINSTANCE.getRevisionInfo__GetChangeInfo();
 
 		/**
+		 * The meta object literal for the '<em><b>Get Base Commit</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation REVISION_INFO___GET_BASE_COMMIT = eINSTANCE.getRevisionInfo__GetBaseCommit();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.SuggestReviewerInfoImpl <em>Suggest Reviewer Info</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -7132,6 +7513,132 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference REVIEWS__ALL_REVIEWS = eINSTANCE.getReviews_AllReviews();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.DiffInfoImpl <em>Diff Info</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.egerrit.internal.model.impl.DiffInfoImpl
+		 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffInfo()
+		 * @generated
+		 */
+		EClass DIFF_INFO = eINSTANCE.getDiffInfo();
+
+		/**
+		 * The meta object literal for the '<em><b>Change type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_INFO__CHANGE_TYPE = eINSTANCE.getDiffInfo_Change_type();
+
+		/**
+		 * The meta object literal for the '<em><b>Content</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DIFF_INFO__CONTENT = eINSTANCE.getDiffInfo_Content();
+
+		/**
+		 * The meta object literal for the '<em><b>Meta a</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DIFF_INFO__META_A = eINSTANCE.getDiffInfo_Meta_a();
+
+		/**
+		 * The meta object literal for the '<em><b>Meta b</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DIFF_INFO__META_B = eINSTANCE.getDiffInfo_Meta_b();
+
+		/**
+		 * The meta object literal for the '<em><b>Binary</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_INFO__BINARY = eINSTANCE.getDiffInfo_Binary();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.DiffFileMetaInfoImpl <em>Diff File Meta Info</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.egerrit.internal.model.impl.DiffFileMetaInfoImpl
+		 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffFileMetaInfo()
+		 * @generated
+		 */
+		EClass DIFF_FILE_META_INFO = eINSTANCE.getDiffFileMetaInfo();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_FILE_META_INFO__NAME = eINSTANCE.getDiffFileMetaInfo_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Content type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_FILE_META_INFO__CONTENT_TYPE = eINSTANCE.getDiffFileMetaInfo_Content_type();
+
+		/**
+		 * The meta object literal for the '<em><b>Lines</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_FILE_META_INFO__LINES = eINSTANCE.getDiffFileMetaInfo_Lines();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.DiffContentImpl <em>Diff Content</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.egerrit.internal.model.impl.DiffContentImpl
+		 * @see org.eclipse.egerrit.internal.model.impl.ModelPackageImpl#getDiffContent()
+		 * @generated
+		 */
+		EClass DIFF_CONTENT = eINSTANCE.getDiffContent();
+
+		/**
+		 * The meta object literal for the '<em><b>A</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_CONTENT__A = eINSTANCE.getDiffContent_A();
+
+		/**
+		 * The meta object literal for the '<em><b>B</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_CONTENT__B = eINSTANCE.getDiffContent_B();
+
+		/**
+		 * The meta object literal for the '<em><b>Ab</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_CONTENT__AB = eINSTANCE.getDiffContent_Ab();
+
+		/**
+		 * The meta object literal for the '<em><b>Skip</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DIFF_CONTENT__SKIP = eINSTANCE.getDiffContent_Skip();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.ActionConstants <em>Action Constants</em>}' enum.

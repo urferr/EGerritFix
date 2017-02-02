@@ -1,5 +1,5 @@
 /**
- *   Copyright (c) 2015 Ericsson AB
+ *   Copyright (c) 2015-2017 Ericsson AB
  *  
  *   All rights reserved. This program and the accompanying materials are
  *   made available under the terms of the Eclipse Public License v1.0 which
@@ -23,6 +23,9 @@ import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.CommentRange;
 import org.eclipse.egerrit.internal.model.CommitInfo;
+import org.eclipse.egerrit.internal.model.DiffContent;
+import org.eclipse.egerrit.internal.model.DiffFileMetaInfo;
+import org.eclipse.egerrit.internal.model.DiffInfo;
 import org.eclipse.egerrit.internal.model.FetchInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.GitPersonInfo;
@@ -295,6 +298,27 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	private EClass reviewsEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass diffInfoEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass diffFileMetaInfoEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass diffContentEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -2543,6 +2567,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EOperation getRevisionInfo__GetBaseCommit() {
+		return revisionInfoEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getSuggestReviewerInfo() {
 		return suggestReviewerInfoEClass;
 	}
@@ -2615,6 +2649,156 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	@Override
 	public EReference getReviews_AllReviews() {
 		return (EReference) reviewsEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getDiffInfo() {
+		return diffInfoEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffInfo_Change_type() {
+		return (EAttribute) diffInfoEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getDiffInfo_Content() {
+		return (EReference) diffInfoEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getDiffInfo_Meta_a() {
+		return (EReference) diffInfoEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getDiffInfo_Meta_b() {
+		return (EReference) diffInfoEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffInfo_Binary() {
+		return (EAttribute) diffInfoEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getDiffFileMetaInfo() {
+		return diffFileMetaInfoEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffFileMetaInfo_Name() {
+		return (EAttribute) diffFileMetaInfoEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffFileMetaInfo_Content_type() {
+		return (EAttribute) diffFileMetaInfoEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffFileMetaInfo_Lines() {
+		return (EAttribute) diffFileMetaInfoEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getDiffContent() {
+		return diffContentEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffContent_A() {
+		return (EAttribute) diffContentEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffContent_B() {
+		return (EAttribute) diffContentEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffContent_Ab() {
+		return (EAttribute) diffContentEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getDiffContent_Skip() {
+		return (EAttribute) diffContentEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -2904,6 +3088,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEOperation(revisionInfoEClass, REVISION_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_ID);
 		createEOperation(revisionInfoEClass, REVISION_INFO___GET_CHANGE_INFO);
+		createEOperation(revisionInfoEClass, REVISION_INFO___GET_BASE_COMMIT);
 
 		suggestReviewerInfoEClass = createEClass(SUGGEST_REVIEWER_INFO);
 		createEReference(suggestReviewerInfoEClass, SUGGEST_REVIEWER_INFO__ACCOUNT);
@@ -2915,6 +3100,24 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
 		reviewsEClass = createEClass(REVIEWS);
 		createEReference(reviewsEClass, REVIEWS__ALL_REVIEWS);
+
+		diffInfoEClass = createEClass(DIFF_INFO);
+		createEAttribute(diffInfoEClass, DIFF_INFO__CHANGE_TYPE);
+		createEReference(diffInfoEClass, DIFF_INFO__CONTENT);
+		createEReference(diffInfoEClass, DIFF_INFO__META_A);
+		createEReference(diffInfoEClass, DIFF_INFO__META_B);
+		createEAttribute(diffInfoEClass, DIFF_INFO__BINARY);
+
+		diffFileMetaInfoEClass = createEClass(DIFF_FILE_META_INFO);
+		createEAttribute(diffFileMetaInfoEClass, DIFF_FILE_META_INFO__NAME);
+		createEAttribute(diffFileMetaInfoEClass, DIFF_FILE_META_INFO__CONTENT_TYPE);
+		createEAttribute(diffFileMetaInfoEClass, DIFF_FILE_META_INFO__LINES);
+
+		diffContentEClass = createEClass(DIFF_CONTENT);
+		createEAttribute(diffContentEClass, DIFF_CONTENT__A);
+		createEAttribute(diffContentEClass, DIFF_CONTENT__B);
+		createEAttribute(diffContentEClass, DIFF_CONTENT__AB);
+		createEAttribute(diffContentEClass, DIFF_CONTENT__SKIP);
 
 		// Create enums
 		actionConstantsEEnum = createEEnum(ACTION_CONSTANTS);
@@ -3528,6 +3731,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEOperation(getRevisionInfo__GetChangeInfo(), this.getChangeInfo(), "getChangeInfo", 0, 1, IS_UNIQUE, //$NON-NLS-1$
 				IS_ORDERED);
 
+		initEOperation(getRevisionInfo__GetBaseCommit(), ecorePackage.getEString(), "getBaseCommit", 0, 1, IS_UNIQUE, //$NON-NLS-1$
+				IS_ORDERED);
+
 		initEClass(suggestReviewerInfoEClass, SuggestReviewerInfo.class, "SuggestReviewerInfo", !IS_ABSTRACT, //$NON-NLS-1$
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSuggestReviewerInfo_Account(), this.getAccountInfo(), null, "account", null, 0, 1, //$NON-NLS-1$
@@ -3548,6 +3754,48 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getReviews_AllReviews(), this.getChangeInfo(), null, "allReviews", null, 0, -1, Reviews.class, //$NON-NLS-1$
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(diffInfoEClass, DiffInfo.class, "DiffInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getDiffInfo_Change_type(), ecorePackage.getEString(), "change_type", null, 0, 1, DiffInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDiffInfo_Content(), this.getDiffContent(), null, "content", null, 0, -1, DiffInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDiffInfo_Meta_a(), this.getDiffFileMetaInfo(), null, "meta_a", null, 0, 1, DiffInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDiffInfo_Meta_b(), this.getDiffFileMetaInfo(), null, "meta_b", null, 0, 1, DiffInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDiffInfo_Binary(), ecorePackage.getEBoolean(), "binary", null, 0, 1, DiffInfo.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(diffFileMetaInfoEClass, DiffFileMetaInfo.class, "DiffFileMetaInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getDiffFileMetaInfo_Name(), ecorePackage.getEString(), "name", null, 0, 1, //$NON-NLS-1$
+				DiffFileMetaInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDiffFileMetaInfo_Content_type(), ecorePackage.getEString(), "content_type", null, 0, 1, //$NON-NLS-1$
+				DiffFileMetaInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDiffFileMetaInfo_Lines(), ecorePackage.getEString(), "lines", null, 0, 1, //$NON-NLS-1$
+				DiffFileMetaInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(diffContentEClass, DiffContent.class, "DiffContent", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getDiffContent_A(), ecorePackage.getEString(), "a", null, 0, -1, DiffContent.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEAttribute(getDiffContent_B(), ecorePackage.getEString(), "b", null, 0, -1, DiffContent.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEAttribute(getDiffContent_Ab(), ecorePackage.getEString(), "ab", null, 0, -1, DiffContent.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEAttribute(getDiffContent_Skip(), ecorePackage.getEInt(), "skip", null, 0, 1, DiffContent.class, //$NON-NLS-1$
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(actionConstantsEEnum, ActionConstants.class, "ActionConstants"); //$NON-NLS-1$

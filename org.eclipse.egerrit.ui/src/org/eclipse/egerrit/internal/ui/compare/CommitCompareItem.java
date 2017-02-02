@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015-2017 Ericsson
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,9 +19,14 @@ import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.GetContentFromCommitCommand;
+import org.eclipse.egerrit.internal.core.command.GetDiffCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
+import org.eclipse.egerrit.internal.model.DiffContent;
+import org.eclipse.egerrit.internal.model.DiffInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -39,32 +44,49 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 
 	private static final String PARENT = "PARENT"; //$NON-NLS-1$
 
-	private final String projectId, commitId;
+	private ChangeInfo changeInfo;
 
-	private String showAsRevision;
+	private int baseRevision; //There are situations where we show the revision number even though we are showing the base
 
 	private String filePath;
 
-	public CommitCompareItem(GerritClient gerrit, String projectId, String commitId, FileInfo fileInfo, String fileName,
-			String showAsRevision) {
+	private String revisionId;
+
+	private int revisionNumber;
+
+	public CommitCompareItem(GerritClient gerrit, RevisionInfo revision, FileInfo fileInfo, String fileName,
+			int baseRevision) {
 		super(PARENT);
 		this.gerrit = gerrit;
-		this.projectId = projectId;
-		this.commitId = commitId;
+		changeInfo = revision.getChangeInfo();
+		this.revisionId = revision.getId();
+		this.revisionNumber = revision.get_number();
 		this.fileInfo = fileInfo;
-		this.showAsRevision = showAsRevision;
+		if (fileInfo == null) {
+			throw new IllegalStateException();
+		}
+		this.filePath = fileName;
+		if (filePath == null) {
+			filePath = fileInfo.getPath();
+			if (filePath == null) {
+				throw new IllegalStateException();
+			}
+		}
+		if (baseRevision > 0) {
+			this.baseRevision = baseRevision;
+		}
 	}
 
 	@Override
 	//This name is presented in the header of the text editor area
 	public String getName() {
-		if (showAsRevision != null) {
+		if (baseRevision > 0) {
 			return NLS.bind(Messages.CompareElementPatchSetWithCommitId,
-					new Object[] { showAsRevision, GerritCompareHelper.extractFilename(getOldPathOrPath()),
-							GerritCompareHelper.shortenCommitId(commitId) });
+					new Object[] { baseRevision, GerritCompareHelper.extractFilename(getOldPathOrPath()),
+							GerritCompareHelper.shortenCommitId(getBaseCommitId(fileInfo)) });
 		}
 		return NLS.bind(Messages.CompareElementBase, GerritCompareHelper.extractFilename(getOldPathOrPath()),
-				GerritCompareHelper.shortenCommitId(commitId));
+				GerritCompareHelper.shortenCommitId(getBaseCommitId(fileInfo)));
 	}
 
 	private String getOldPathOrPath() {
@@ -79,7 +101,31 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 
 	@Override
 	protected byte[] loadFileContent() {
-		GetContentFromCommitCommand getContent = gerrit.getContentFromCommit(projectId, commitId, getOldPathOrPath());
+		GetDiffCommand getDiff = gerrit.getDiff(changeInfo.getChange_id(), revisionId, filePath, baseRevision);
+		try {
+			DiffInfo info = getDiff.call();
+			if (contentSkipped(info) || info.isBinary()) {
+				return getBinary();
+			}
+			return recreateFile(info);
+		} catch (EGerritException e) {
+			logger.debug("Exception retrieving content through diff", e); //$NON-NLS-1$
+			return new byte[0];
+		}
+	}
+
+	private boolean contentSkipped(DiffInfo info) {
+		for (DiffContent content : info.getContent()) {
+			if (content.getSkip() != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private byte[] getBinary() {
+		GetContentFromCommitCommand getContent = gerrit.getContentFromCommit(changeInfo.getProject(),
+				getBaseCommitId(fileInfo), getOldPathOrPath());
 		try {
 			String encodedFile = getContent.call();
 			setFileType(getContent.getFileMimeType());
@@ -90,9 +136,40 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 		return new byte[0];
 	}
 
+	//Go over all the diffContents and create a byte array representing the file
+	private byte[] recreateFile(DiffInfo info) {
+		EList<DiffContent> content = info.getContent();
+		EList<String> allStrings = new BasicEList<>();
+		for (DiffContent diffContent : content) {
+			if (revisionNumber > baseRevision) {
+				allStrings.addAll(diffContent.getA());
+			}
+			allStrings.addAll(diffContent.getAb());
+			if (revisionNumber < baseRevision) {
+				allStrings.addAll(diffContent.getB());
+			}
+		}
+
+		//Pre-compute the size of the StringBuilder to avoid resizes
+		int count = 0;
+		for (String string : allStrings) {
+			count += string.length() + 1;
+		}
+		StringBuilder sb = new StringBuilder(count);
+		for (String string : allStrings) {
+			sb.append(string);
+			sb.append('\n');
+		}
+		return sb.toString().getBytes();
+	}
+
 	@Override
 	protected EList<CommentInfo> filterComments(EList<CommentInfo> eList) {
 		return eList.stream().filter(comment -> PARENT.equals(comment.getSide())).collect(
 				Collectors.toCollection(BasicEList::new));
+	}
+
+	private String getBaseCommitId(FileInfo fileInfo) {
+		return fileInfo.getRevision().getBaseCommit();
 	}
 }

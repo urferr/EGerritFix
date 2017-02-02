@@ -704,6 +704,18 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 	 * @generated
 	 */
 	@Override
+	public String getBaseCommit() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public boolean isActionAllowed(String action) {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -941,6 +953,8 @@ public class RevisionInfoImpl extends MinimalEObjectImpl.Container implements Re
 			return getId();
 		case ModelPackage.REVISION_INFO___GET_CHANGE_INFO:
 			return getChangeInfo();
+		case ModelPackage.REVISION_INFO___GET_BASE_COMMIT:
+			return getBaseCommit();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
