@@ -40,6 +40,7 @@ import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -206,13 +207,14 @@ public class UIUtils {
 		}
 	}
 
-	public static String formatMessageForMarkerView(CommentInfo commentInfo) {
+	public static String formatMessageForMarkerView(CommentInfo commentInfo, int newPosition) {
 		String patchSet = ModelHelpers.getRevision(commentInfo).get_number() + "/" //$NON-NLS-1$
 				+ ModelHelpers.getHighestRevisionNumber(
 						ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().values());
 		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : Messages.UIUtils_1;
-		return commentInfo.getMessage() + Messages.UIUtils_2 + author + Messages.UIUtils_3
-				+ CommentPrettyPrinter.printDate(commentInfo) + Messages.UIUtils_4 + patchSet + Messages.UIUtils_5;
+		return commentInfo.getMessage() + (newPosition < 0 ? NLS.bind(Messages.UIUtils_3, commentInfo.getLine()) : "") //$NON-NLS-1$
+				+ NLS.bind(Messages.UIUtils_2,
+						new String[] { author, CommentPrettyPrinter.printDate(commentInfo), patchSet });
 	}
 
 	public static String formatMessageForQuickFix(CommentInfo commentInfo) {

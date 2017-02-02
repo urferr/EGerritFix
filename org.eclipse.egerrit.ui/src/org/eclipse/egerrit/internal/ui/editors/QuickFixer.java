@@ -32,7 +32,7 @@ public class QuickFixer implements IMarkerResolutionGenerator2 {
 			boolean isDraft = (boolean) marker.getAttribute(EGerritCommentMarkers.ATTR_IS_DRAFT);
 			CommentInfo element = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 			String truncatedMsg = UIUtils.formatMessageForQuickFix(element);
-			String fullMessage = UIUtils.formatMessageForMarkerView(element);
+			String fullMessage = UIUtils.formatMessageForMarkerView(element, 0);
 			if (isDraft) {
 				return new IMarkerResolution[] {
 						new QuickFixModifyDraft(Messages.QuickFixer_0 + truncatedMsg, fullMessage),

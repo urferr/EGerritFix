@@ -36,7 +36,6 @@ import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelHelpers;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.egerrit.internal.ui.EGerritUIPlugin;
 import org.eclipse.egerrit.internal.ui.compare.CommentableCompareItem;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.editors.EGerritCommentMarkers;
@@ -48,16 +47,15 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
@@ -104,7 +102,7 @@ public class ActiveWorkspaceRevision {
 			if (msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__COMMENTS)
 					|| msg.getFeature().equals(ModelPackage.Literals.FILE_INFO__DRAFT_COMMENTS)) {
 				if (msg.getEventType() == Notification.ADD) {
-					addMarker((CommentInfo) msg.getNewValue(), null);
+					addMarker((CommentInfo) msg.getNewValue());
 					openMarkerView(IWorkbenchPage.VIEW_CREATE);
 				}
 				if (msg.getEventType() == Notification.REMOVE) {
@@ -272,15 +270,10 @@ public class ActiveWorkspaceRevision {
 		Collection<FileInfo> files = fRevisionInContext.getFiles().values();
 		deleteAllMarkers();
 		for (FileInfo fileInfo : files) {
-			IResource workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
-					.getCorrespondingWorkspaceFile(fileInfo);
-			if (workspaceFile == null) {
-				workspaceFile = ResourcesPlugin.getWorkspace().getRoot();
-			}
 			EList<CommentInfo> sortedComments = ModelHelpers.sortComments(fileInfo.getAllComments());
 			boolean addingMarker = false;
 			for (CommentInfo commentInfo : sortedComments) {
-				addMarker(commentInfo, workspaceFile);
+				addMarker(commentInfo);
 				addingMarker = true;
 			}
 			if (addingMarker) {
@@ -353,7 +346,8 @@ public class ActiveWorkspaceRevision {
 
 	//Add a marker for the specified comment.
 	//The workspacefile is optional. If it is not specified the associated file will be derived the comment
-	private void addMarker(CommentInfo newComment, IResource workspaceFile) {
+	private void addMarker(CommentInfo newComment) {
+		IResource workspaceFile = null;
 		if (workspaceFile == null) {
 			workspaceFile = new OpenCompareEditor(fGerritClient, fChangeInfo)
 					.getCorrespondingWorkspaceFile(ModelHelpers.getFileInfo(newComment));
@@ -365,13 +359,15 @@ public class ActiveWorkspaceRevision {
 			IMarker commentMarker = workspaceFile.createMarker(EGerritCommentMarkers.COMMENT_MARKER_ID);
 			if (workspaceFile == ResourcesPlugin.getWorkspace().getRoot()) {
 				commentMarker.setAttribute(IMarker.MESSAGE,
-						resourceMissingMessage(newComment) + UIUtils.formatMessageForMarkerView(newComment));
+						resourceMissingMessage(newComment) + UIUtils.formatMessageForMarkerView(newComment, 0));
 			} else {
-				commentMarker.setAttribute(IMarker.LINE_NUMBER, newComment.getLine() == 0 ? 1 : newComment.getLine());
-				commentMarker.setAttribute(IMarker.MESSAGE, UIUtils.formatMessageForMarkerView(newComment));
+				int lineNumber = getLine(newComment);
+				commentMarker.setAttribute(IMarker.LINE_NUMBER, Math.abs(lineNumber));
+				commentMarker.setAttribute(IMarker.MESSAGE, UIUtils.formatMessageForMarkerView(newComment, lineNumber));
 			}
 			commentMarker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
 			commentMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
+
 			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO, newComment);
 			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_FILE_INFO, newComment);
 			commentMarker.setAttribute(EGerritCommentMarkers.ATTR_GERRIT_CLIENT, fGerritClient);
@@ -379,6 +375,22 @@ public class ActiveWorkspaceRevision {
 			markersManaged.put(newComment.getId(), commentMarker);
 		} catch (CoreException e) {
 			logger.debug("Failed to create marker", e); //$NON-NLS-1$
+		}
+	}
+
+	private int getLine(CommentInfo comment) {
+		try {
+			if (comment.getLine() == 0) {
+				return 1;
+			}
+			Repository repo = new GerritToGitMapping(
+					new URIish(fGerritClient.getRepository().getURIBuilder(false).toString()), fChangeInfo.getProject())
+							.find();
+			int newPosition = new MarkerRepositioner(repo, ModelHelpers.getFileInfo(comment).getPath())
+					.getNewPositionFor(comment.getLine());
+			return newPosition == 0 ? -1 : newPosition;
+		} catch (Exception e) {
+			return comment.getLine();
 		}
 	}
 
@@ -437,13 +449,6 @@ public class ActiveWorkspaceRevision {
 		}
 
 		Repository repo = new FindLocalRepository(fGerritClient, fChangeInfo.getProject()).getRepository();
-		IWorkbenchPartSite site = EGerritUIPlugin.getDefault()
-				.getWorkbench()
-				.getActiveWorkbenchWindow()
-				.getActivePage()
-				.getActivePart()
-				.getSite();
-		IHandlerService handlerService = site.getService(IHandlerService.class);
 		try {
 			GitQuickDiffProvider.setBaselineReference(repo, "HEAD^1"); //$NON-NLS-1$
 		} catch (IOException e1) {
