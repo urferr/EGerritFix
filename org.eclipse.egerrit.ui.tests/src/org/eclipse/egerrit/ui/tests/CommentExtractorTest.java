@@ -159,7 +159,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(4, newComments.get(1).getLine());
+		assertEquals(3, newComments.get(1).getLine());
 		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -258,7 +258,7 @@ public class CommentExtractorTest {
 	 * Test comment answer and new commment
 	 */
 	@Test
-	public void anwerToCommentThenInsertANewComment() {
+	public void answerToCommentThenInsertANewComment() {
 		setupOriginalDocument("000000000\nauthor\n111111111\n222222222\n333333333\n", "author"); //$NON-NLS-1$//$NON-NLS-2$
 		setupNewDocument("000000000\nauthor\nbbbb\n111111111\n222222222\ncccc\n333333333\n", //$NON-NLS-1$
 				new String[] { "author" }, //$NON-NLS-1$
@@ -273,7 +273,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("bbbb", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(4, newComments.get(1).getLine());
+		assertEquals(3, newComments.get(1).getLine());
 		assertEquals("cccc", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -297,7 +297,7 @@ public class CommentExtractorTest {
 		assertEquals(1, newComments.get(0).getLine());
 		assertEquals("aaaa\naaaa", newComments.get(0).getMessage()); //$NON-NLS-1$
 
-		assertEquals(4, newComments.get(1).getLine());
+		assertEquals(3, newComments.get(1).getLine());
 		assertEquals("dddd", newComments.get(1).getMessage()); //$NON-NLS-1$
 		assertEquals(0, extractor.getModifiedComments().size());
 		assertEquals(0, extractor.getRemovedComments().size());
@@ -457,18 +457,17 @@ public class CommentExtractorTest {
 		IDocument document = new Document(documentText);
 		int lineDelta = 0;
 		AnnotationModel commentModel = new AnnotationModel();
+
 		if (comments != null) {
 			for (String comment : comments) {
 				int offset = documentText.indexOf(comment);
 				if (offset == -1) {
 					throw new IllegalStateException("Could not find comment in document " + comment); //$NON-NLS-1$
 				}
-				int line = -1;
 				try {
-					line = document.getLineOfOffset(offset);
+					int line = document.getLineOfOffset(offset);
 					commentModel.addAnnotation(createGerritComment(comment, line - lineDelta, offset, comment.length()),
 							new Position(offset, comment.length()));
-					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
 				} catch (BadLocationException e) {
 					//Should not happen
 					throw new IllegalStateException("Problem getting comment details " + comment); //$NON-NLS-1$
@@ -481,16 +480,8 @@ public class CommentExtractorTest {
 				if (offset == -1) {
 					throw new IllegalStateException("Could not find comment in document " + comment); //$NON-NLS-1$
 				}
-				int line = -1;
-				try {
-					line = document.getLineOfOffset(offset);
-					commentModel.addAnnotation(new GerritCommentAnnotation(null, ""), //$NON-NLS-1$
-							new Position(offset, comment.length()));
-					lineDelta += document.getNumberOfLines(offset, comment.length()) - 1;
-				} catch (BadLocationException e) {
-					//Should not happen
-					throw new IllegalStateException("Problem getting comment details " + comment); //$NON-NLS-1$
-				}
+				commentModel.addAnnotation(new GerritCommentAnnotation(null, ""), //$NON-NLS-1$
+						new Position(offset, comment.length()));
 			}
 		}
 		commentModel.connect(document);

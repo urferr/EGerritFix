@@ -1,0 +1,60 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: CannotCommentOnPartsOfFiles
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _Q2P8UOgsEea8u5ALJ06Ksg
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 1/31/17 10:51 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 89657 -serverName EF
+
+	get-editor ".*Compare.*" | get-tree | get-column-header "File Path" | click
+
+	// Make sure that at line 2 we have the messages.properties
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to BASE
+		switchRightInput -to "13.*"
+
+		assert-that-filename-in-compare -atLine 2 -is "messages.properties.*"
+	}
+
+	// Open the messages.properties file, then select a specific property
+	with [get-editor "Compare.*"] {
+		get-tree | select [get-item "" -index 2] | double-click
+		get-tree -after [get-label "Property Compare"] | select UnsupportedInput_Text | double-click
+	}
+
+	// Type something in the right editor (on a patchset) and confirm that nothing changes
+	with [get-editor "Compare.*"] {
+		with [get-right-editor] {
+			set-caret-pos 245 15
+			key-type a
+			set-caret-pos 245 1
+			select-range 245 1 245 54
+			assert-that-selected-text -is "UnsupportedInput_Text=EGerrit does not allow comments"
+		}
+	}
+	
+	// Type something in the right editor (on a patchset) and confirm that nothing changes
+	with [get-editor "Compare.*"] {
+		with [get-left-editor] {
+			set-caret-pos 245 15
+			key-type a
+			set-caret-pos 245 1
+			select-range 245 1 245 62
+			assert-that-selected-text -is "UnsupportedInput_Text=EGerrit does not support the comparison"
+		}
+	}
+} -finally {
+	delete-gerrit-server -serverName EF
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

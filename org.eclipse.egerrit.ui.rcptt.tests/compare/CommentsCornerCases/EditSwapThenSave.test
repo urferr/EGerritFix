@@ -1,0 +1,41 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: EditSwapThenSave
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _1zPvIOtDEeasCLaYLzFpMA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 2/4/17 8:54 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+let [val review [create-review -server $serverURL]] {
+	openCompareEditor $review
+}
+
+try {
+	with [get-editor "Compare.*"] {
+		insertComment -on left -text part1 -atLine 2 -column 1
+		get-button "Swap Left and Right View" | click
+
+		with [get-right-editor] {
+			key-type "M1+s"
+			wait -ms $defaultWaitTime
+		}
+		
+		with [get-right-editor] {
+			select-range 2 9 2 14
+			assert-that-selected-text -is "part1"
+			get-property "styleAtCaret.foregroundColor" | equals "#000000" | verify-true
+			get-property "styleAtCaret.backgroundColor" | equals "#FFFF00" | verify-true
+		}
+	}
+} -finally {
+	get-editor "Compare.*" | get-button "Swap Left and Right View" | click
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

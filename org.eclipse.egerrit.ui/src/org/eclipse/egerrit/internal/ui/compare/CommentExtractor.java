@@ -146,7 +146,7 @@ public class CommentExtractor {
 	private void createNewComment(GerritCommentAnnotation newComment) {
 		int lineCommented = getLineNumber(newComment) - numberOfRemovedLines;
 		String comment = extractCommentMessage(newDocument, newCommentsModel, newComment);
-		numberOfRemovedLines += newDocument.computeNumberOfLines(comment);
+		numberOfRemovedLines += newDocument.computeNumberOfLines(comment) + 1;//The comment annotation does not include the end of line character so we need to add 1
 		if (comment.trim().length() == 0) {
 			return;
 		}
