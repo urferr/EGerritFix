@@ -33,6 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -104,8 +105,16 @@ public class RebaseProcess {
 				rebaseCmd.call();
 			} catch (EGerritException e) {
 				if (e.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
-							Messages.RebaseProcess_notPerform, SWT.NONE);
+
+					Display.getDefault().asyncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
+									Messages.RebaseProcess_notPerform, SWT.NONE);
+						}
+					});
+
 				} else {
 					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 				}
