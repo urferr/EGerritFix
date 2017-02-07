@@ -118,6 +118,7 @@ public class UIUtils {
 	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client,
 			boolean waitForDataRefresh) {
 		String current = revisionInfo.getId();
+		QueryHelpers.loadDrafts(client, revisionInfo); //Force load the drafts to make sure they are shown in the dialog.
 		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
