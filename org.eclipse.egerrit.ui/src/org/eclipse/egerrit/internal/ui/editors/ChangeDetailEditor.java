@@ -98,8 +98,6 @@ import com.ibm.icu.text.NumberFormat;
 public class ChangeDetailEditor extends EditorPart {
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
-	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
-
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -260,7 +258,6 @@ public class ChangeDetailEditor extends EditorPart {
 							return ACTIVATION_MESSAGE;
 						}
 						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
-							activateMarkers();
 							return Messages.ChangeDetailEditor_7 + (((RevisionInfo) value)).get_number();
 						}
 						return ACTIVATION_MESSAGE;
@@ -316,13 +313,6 @@ public class ChangeDetailEditor extends EditorPart {
 		//Set the binding for this section
 		headerSectionDataBindings();
 		return group_header;
-	}
-
-	private void activateMarkers() {
-		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			UIUtils.showDialogTip(MARKERS_KEY, headerSection.getShell(), Messages.EGerriTip,
-					Messages.ChangeDetailEditor_EGerriTipValue);
-		}
 	}
 
 	private Composite buttonSection(final Composite parent) {

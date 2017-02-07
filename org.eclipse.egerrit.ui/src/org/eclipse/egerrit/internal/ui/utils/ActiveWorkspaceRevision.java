@@ -68,6 +68,8 @@ import org.slf4j.LoggerFactory;
  */
 
 public class ActiveWorkspaceRevision {
+	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
+
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
 	private static final ActiveWorkspaceRevision INSTANCE = new ActiveWorkspaceRevision();
@@ -125,7 +127,12 @@ public class ActiveWorkspaceRevision {
 	 */
 	public void activateCurrentRevision(GerritClient gerrit, RevisionInfo revisionInfo) {
 		if (revisionInfo == null) {
-			throw new IllegalAccessError("Revision can't be null."); //$NON-NLS-1$
+			throw new IllegalArgumentException("Revision can't be null."); //$NON-NLS-1$
+		}
+
+		//We are reactivating the same review. Do nothing.
+		if (fRevisionInContext != null && fRevisionInContext.getId().equals(revisionInfo.getId())) {
+			return;
 		}
 
 		//Force deactivation if another review is already tracked
@@ -144,6 +151,14 @@ public class ActiveWorkspaceRevision {
 			openMarkerView(IWorkbenchPage.VIEW_CREATE);
 		}
 		enableQuickDiff();
+		informUserAboutMarkers();
+	}
+
+	private void informUserAboutMarkers() {
+		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			Display.getDefault().asyncExec(() -> UIUtils.showDialogTip(MARKERS_KEY, null, Messages.EGerriTip,
+					Messages.ChangeDetailEditor_EGerriTipValue));
+		}
 	}
 
 	private boolean isProblemViewOpen() {
