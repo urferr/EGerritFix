@@ -35,7 +35,6 @@ public class ReplyHandler extends AbstractHandler {
 
 	private TreeViewer viewer;
 
-	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 
