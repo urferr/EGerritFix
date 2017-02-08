@@ -43,7 +43,7 @@ public class GerritTest {
 
 	@Before
 	public void setUp() throws Exception {
-		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common_2_11.PORT, Common_2_11.PATH);
+		fRepository = new GerritRepository(Common.SCHEME, Common.HOST, Common.PORT, Common.PATH);
 		fRepository.setCredentials(new GerritCredentials(Common.USER, Common.PASSWORD));
 	}
 
