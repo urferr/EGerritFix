@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson AB.
+ * Copyright (c) 2016-2017 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,18 +34,12 @@ public class ReviewFactory {
 
 	private GerritRepository fRepository;
 
-	private String filename;
+	private String filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$;
 
-	private String fileContent;
+	private String fileContent = "Hello reviewers {community} !\n This is the second line \n" //$NON-NLS-1$
+			+ System.currentTimeMillis();
 
 	private GitAccess gitAccess;
-
-//	private static final String DOT_PROJECT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-//			+ "<projectDescription>\n" + "	<name>aProject</name>\n" + "	<comment></comment>\n" + "	<projects>\n"
-//			+ "	</projects>\n" + "	<buildSpec>\n" + "		<buildCommand>\n"
-//			+ "			<name>org.eclipse.jdt.core.javabuilder</name>\n" + "			<arguments>\n"
-//			+ "			</arguments>\n" + "		</buildCommand>\n" + "	</buildSpec>\n" + "	<natures>\n"
-//			+ "		<nature>org.eclipse.jdt.core.javanature</nature>\n" + "	</natures>\n" + "</projectDescription>\n";
 
 	public static ReviewDescription amendReview(String localRepo, String server, String project, String changeId,
 			boolean isDraft) throws Exception {
@@ -66,10 +60,10 @@ public class ReviewFactory {
 		gitAccess.close();
 	}
 
-	public static ReviewDescription createReview(String server, String project, boolean isDraft, String changedFilename)
-			throws Exception {
+	public static ReviewDescription createReview(String server, String project, boolean isDraft, String changedFilename,
+			String fileContent) throws Exception {
 		ReviewFactory factory = new ReviewFactory();
-		String changeId = factory.doCreateReview(server, project, isDraft, changedFilename);
+		String changeId = factory.doCreateReview(server, project, isDraft, changedFilename, fileContent);
 
 		ReviewDescription commandResult = egerriteclFactory.eINSTANCE.createReviewDescription();
 		commandResult.setGerritServerURL(server);
@@ -91,15 +85,35 @@ public class ReviewFactory {
 		return gitAccess.getChangeId();
 	}
 
-	private String doCreateReview(String server, String project, boolean isDraft, String changedFilename)
-			throws Exception {
+	private String doCreateReview(String server, String project, boolean isDraft, String changedFilename,
+			String fileContent) throws Exception {
 		this.server = server;
 		this.project = project;
-		this.filename = changedFilename;
+		if (changedFilename != null) {
+			this.filename = changedFilename;
+		}
+		if (fileContent != null) {
+			this.fileContent = fileContent;
+		}
 		initGitAccess();
+		createProjectInMaster();
 		initGerritConnection();
 		createReviewWithSimpleFile(isDraft);
-		return gitAccess.getChangeId();
+		String changeId = gitAccess.getChangeId();
+		gitAccess.close();
+		return changeId;
+	}
+
+	//Conditionally create a .project file
+	private void createProjectInMaster() throws Exception {
+		String dotProjectContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<projectDescription>\n"
+				+ "	<name>Project</name>\n" + "	<comment></comment>\n" + "	<projects>\n" + "	</projects>\n"
+				+ "	<buildSpec>\n" + "	</buildSpec>\n" + "	<natures>\n" + "	</natures>\n" + "</projectDescription>"; //$NON-NLS-5$
+		gitAccess.commitFileInMaster("Project/.project", dotProjectContent);
+		gitAccess.close();
+
+		//Re-initialize the gitAccess
+		initGitAccess();
 	}
 
 	private void initGerritConnection() throws Exception {
@@ -116,7 +130,6 @@ public class ReviewFactory {
 
 	private void createReviewWithSimpleFile(boolean draft) {
 		try {
-			fileContent = "Hello reviewers {community} !\n This is the second line \n" + System.currentTimeMillis(); //$NON-NLS-1$
 			gitAccess.addFile(filename, fileContent);
 			gitAccess.pushFile(draft, false);
 		} catch (Exception e1) {
@@ -126,10 +139,6 @@ public class ReviewFactory {
 
 	private void amendReview(String changeId, boolean draft) {
 		try {
-			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
-			fileContent = "Hello reviewers {community} !\n This is the second line \n This is the third line \n" //$NON-NLS-1$
-					+ System.currentTimeMillis();
-
 			gitAccess.addFile(filename, fileContent);
 			gitAccess.pushFile("Another revision\n\nChange-Id: " + changeId, draft, true); //$NON-NLS-1$
 		} catch (Exception e1) {

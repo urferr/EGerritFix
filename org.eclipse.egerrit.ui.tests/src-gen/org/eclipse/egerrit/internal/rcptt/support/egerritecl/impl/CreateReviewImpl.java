@@ -34,6 +34,7 @@ import org.eclipse.rcptt.ecl.core.impl.CommandImpl;
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#getProject <em>Project</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#isIsDraft <em>Is Draft</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#getFilename <em>Filename</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.CreateReviewImpl#getFileContent <em>File Content</em>}</li>
  * </ul>
  *
  * @generated
@@ -118,6 +119,26 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 	 * @ordered
 	 */
 	protected String filename = FILENAME_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getFileContent() <em>File Content</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getFileContent()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String FILE_CONTENT_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getFileContent() <em>File Content</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getFileContent()
+	 * @generated
+	 * @ordered
+	 */
+	protected String fileContent = FILE_CONTENT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -227,6 +248,27 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getFileContent() {
+		return fileContent;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setFileContent(String newFileContent) {
+		String oldFileContent = fileContent;
+		fileContent = newFileContent;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, egerriteclPackage.CREATE_REVIEW__FILE_CONTENT, oldFileContent, fileContent));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -238,6 +280,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return isIsDraft();
 			case egerriteclPackage.CREATE_REVIEW__FILENAME:
 				return getFilename();
+			case egerriteclPackage.CREATE_REVIEW__FILE_CONTENT:
+				return getFileContent();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -261,6 +305,9 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return;
 			case egerriteclPackage.CREATE_REVIEW__FILENAME:
 				setFilename((String)newValue);
+				return;
+			case egerriteclPackage.CREATE_REVIEW__FILE_CONTENT:
+				setFileContent((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -286,6 +333,9 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 			case egerriteclPackage.CREATE_REVIEW__FILENAME:
 				setFilename(FILENAME_EDEFAULT);
 				return;
+			case egerriteclPackage.CREATE_REVIEW__FILE_CONTENT:
+				setFileContent(FILE_CONTENT_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -306,6 +356,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 				return isDraft != IS_DRAFT_EDEFAULT;
 			case egerriteclPackage.CREATE_REVIEW__FILENAME:
 				return FILENAME_EDEFAULT == null ? filename != null : !FILENAME_EDEFAULT.equals(filename);
+			case egerriteclPackage.CREATE_REVIEW__FILE_CONTENT:
+				return FILE_CONTENT_EDEFAULT == null ? fileContent != null : !FILE_CONTENT_EDEFAULT.equals(fileContent);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -328,6 +380,8 @@ public class CreateReviewImpl extends CommandImpl implements CreateReview {
 		result.append(isDraft);
 		result.append(", filename: "); //$NON-NLS-1$
 		result.append(filename);
+		result.append(", fileContent: "); //$NON-NLS-1$
+		result.append(fileContent);
 		result.append(')');
 		return result.toString();
 	}

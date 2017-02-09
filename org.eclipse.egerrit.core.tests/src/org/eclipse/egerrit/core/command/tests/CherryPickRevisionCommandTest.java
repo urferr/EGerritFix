@@ -21,6 +21,7 @@ import org.eclipse.egerrit.internal.core.command.CherryPickRevisionCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.CherryPickInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
@@ -31,6 +32,14 @@ import org.osgi.framework.Version;
  */
 @SuppressWarnings("nls")
 public class CherryPickRevisionCommandTest extends CommandTestWithSimpleReview {
+	@Before
+	public void ensureInitialCommit() throws Exception {
+		gitAccess.commitFileInMaster("initialFile.txt", "initial commit to seed the repo");
+		//Here we need to force a setup because the creation of review needs to be done from a repo that already has the commit.
+		setUp();
+		createReview();
+	}
+
 	/**
 	 * Test method for {@link org.eclipse.egerrit.core.command.GerritCommand#call()}.
 	 */

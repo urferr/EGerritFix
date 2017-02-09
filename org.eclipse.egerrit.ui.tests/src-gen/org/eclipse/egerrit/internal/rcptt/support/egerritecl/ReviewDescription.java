@@ -14,19 +14,21 @@ package org.eclipse.egerrit.internal.rcptt.support.egerritecl;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Review Description</b></em>'.
- * <!-- end-user-doc -->
- *
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Review Description</b></em>'. <!-- end-user-doc
+ * -->
  * <p>
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getGerritServerURL <em>Gerrit Server URL</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName <em>Project Name</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone <em>Local Clone</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId <em>Last Change Id</em>}</li>
- *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}</li>
+ * <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getGerritServerURL <em>Gerrit
+ * Server URL</em>}</li>
+ * <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName <em>Project
+ * Name</em>}</li>
+ * <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone <em>Local
+ * Clone</em>}</li>
+ * <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId <em>Last Change
+ * Id</em>}</li>
+ * <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getReviewDescription()
@@ -38,8 +40,8 @@ public interface ReviewDescription extends EObject {
 	 * Returns the value of the '<em><b>Gerrit Server URL</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Gerrit Server URL</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Gerrit Server URL</em>' attribute isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Gerrit Server URL</em>' attribute.
@@ -52,8 +54,7 @@ public interface ReviewDescription extends EObject {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getGerritServerURL <em>Gerrit Server URL</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Gerrit Server URL</em>' attribute.
 	 * @see #getGerritServerURL()
 	 * @generated
@@ -64,8 +65,8 @@ public interface ReviewDescription extends EObject {
 	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Project Name</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Project Name</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Project Name</em>' attribute.
@@ -78,8 +79,7 @@ public interface ReviewDescription extends EObject {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getProjectName <em>Project Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Project Name</em>' attribute.
 	 * @see #getProjectName()
 	 * @generated
@@ -90,8 +90,8 @@ public interface ReviewDescription extends EObject {
 	 * Returns the value of the '<em><b>Local Clone</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Local Clone</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Local Clone</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Local Clone</em>' attribute.
@@ -104,8 +104,7 @@ public interface ReviewDescription extends EObject {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLocalClone <em>Local Clone</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Local Clone</em>' attribute.
 	 * @see #getLocalClone()
 	 * @generated
@@ -116,8 +115,8 @@ public interface ReviewDescription extends EObject {
 	 * Returns the value of the '<em><b>Last Change Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Last Change Id</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Last Change Id</em>' attribute isn't clear, there really should be more of a
+	 * description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Last Change Id</em>' attribute.
@@ -130,8 +129,7 @@ public interface ReviewDescription extends EObject {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#getLastChangeId <em>Last Change Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Last Change Id</em>' attribute.
 	 * @see #getLastChangeId()
 	 * @generated
@@ -142,8 +140,8 @@ public interface ReviewDescription extends EObject {
 	 * Returns the value of the '<em><b>Is Draft</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Is Draft</em>' attribute.
@@ -156,8 +154,7 @@ public interface ReviewDescription extends EObject {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription#isIsDraft <em>Is Draft</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Is Draft</em>' attribute.
 	 * @see #isIsDraft()
 	 * @generated

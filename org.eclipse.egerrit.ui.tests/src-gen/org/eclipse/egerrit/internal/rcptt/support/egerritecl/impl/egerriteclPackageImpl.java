@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl;
 
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclFactory;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage;
@@ -54,6 +55,13 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * @generated
 	 */
 	private EClass amendReviewEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass importProjectEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -103,6 +111,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 
 		// Initialize simple dependencies
 		CorePackage.eINSTANCE.eClass();
+		EcorePackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theegerriteclPackage.createPackageContents();
@@ -162,6 +171,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 */
 	public EAttribute getCreateReview_Filename() {
 		return (EAttribute)createReviewEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getCreateReview_FileContent() {
+		return (EAttribute)createReviewEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -250,6 +268,42 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getImportProject() {
+		return importProjectEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getImportProject_Review() {
+		return (EReference)importProjectEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getImportProject_ProjectName() {
+		return (EAttribute)importProjectEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getImportProject_Branch() {
+		return (EAttribute)importProjectEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public egerriteclFactory getegerriteclFactory() {
 		return (egerriteclFactory)getEFactoryInstance();
 	}
@@ -278,6 +332,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		createEAttribute(createReviewEClass, CREATE_REVIEW__PROJECT);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__IS_DRAFT);
 		createEAttribute(createReviewEClass, CREATE_REVIEW__FILENAME);
+		createEAttribute(createReviewEClass, CREATE_REVIEW__FILE_CONTENT);
 
 		reviewDescriptionEClass = createEClass(REVIEW_DESCRIPTION);
 		createEAttribute(reviewDescriptionEClass, REVIEW_DESCRIPTION__GERRIT_SERVER_URL);
@@ -289,6 +344,11 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		amendReviewEClass = createEClass(AMEND_REVIEW);
 		createEReference(amendReviewEClass, AMEND_REVIEW__REVIEW);
 		createEAttribute(amendReviewEClass, AMEND_REVIEW__IS_DRAFT);
+
+		importProjectEClass = createEClass(IMPORT_PROJECT);
+		createEReference(importProjectEClass, IMPORT_PROJECT__REVIEW);
+		createEAttribute(importProjectEClass, IMPORT_PROJECT__PROJECT_NAME);
+		createEAttribute(importProjectEClass, IMPORT_PROJECT__BRANCH);
 	}
 
 	/**
@@ -325,6 +385,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		// Add supertypes to classes
 		createReviewEClass.getESuperTypes().add(theCorePackage.getCommand());
 		amendReviewEClass.getESuperTypes().add(theCorePackage.getCommand());
+		importProjectEClass.getESuperTypes().add(theCorePackage.getCommand());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(createReviewEClass, CreateReview.class, "CreateReview", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
@@ -332,6 +393,7 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		initEAttribute(getCreateReview_Project(), ecorePackage.getEString(), "project", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getCreateReview_IsDraft(), ecorePackage.getEBoolean(), "isDraft", "false", 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
 		initEAttribute(getCreateReview_Filename(), theEcorePackage.getEString(), "filename", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getCreateReview_FileContent(), theEcorePackage.getEString(), "fileContent", null, 0, 1, CreateReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(reviewDescriptionEClass, ReviewDescription.class, "ReviewDescription", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEAttribute(getReviewDescription_GerritServerURL(), ecorePackage.getEString(), "gerritServerURL", null, 0, 1, ReviewDescription.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
@@ -343,6 +405,11 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		initEClass(amendReviewEClass, AmendReview.class, "AmendReview", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 		initEReference(getAmendReview_Review(), theEcorePackage.getEObject(), null, "review", null, 0, 1, AmendReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getAmendReview_IsDraft(), ecorePackage.getEBoolean(), "isDraft", "false", 0, 1, AmendReview.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$ //$NON-NLS-2$
+
+		initEClass(importProjectEClass, ImportProject.class, "ImportProject", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEReference(getImportProject_Review(), theEcorePackage.getEObject(), null, "review", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getImportProject_ProjectName(), theEcorePackage.getEString(), "projectName", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getImportProject_Branch(), theEcorePackage.getEString(), "branch", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);

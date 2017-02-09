@@ -6,11 +6,29 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 1/27/17 9:11 AM
+Save-Time: 2/10/17 7:04 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
 Entry-Name: .ecl.context
+
+proc "delete-git-repos" {
+	try {
+		with [open-view "Git Repositories" "Git/Git Repositories" | get-tree] {
+			key-type "M1+a"
+		}
+		get-quick-access | set-text "remove repo"
+		get-quick-access | key-type Enter
+
+		try {
+			get-window "Confirm Project Deletion" | get-button Yes | click
+		} -catch {
+			// In case the dialog is not shown. This happens when the repos deleted don't have a project loaded in the workspace, or where there are no repo to delete.
+		}
+	} -catch {
+		// In the dialog does not have a tree
+	}
+}
 
 proc "add-gerrit-server" [val serverURL] [val serverName] [val userName] [val userPwd] {
 	get-preferences-menu | click
@@ -404,6 +422,45 @@ proc "close-view" [val viewName] {
 	try {
 		get-view $viewName | close
 	} -catch {
+	}
+}
+
+proc "open-file" [val fileName] {
+	get-eclipse-window | key-type "M1+M2+r"
+	with [get-window "Open Resource"] {
+	    get-editbox | set-text $fileName
+	    get-table | select $fileName | double-click
+	}
+}
+
+proc "assert-that-editor" [val in -input] [val contains] [val close true] {
+	open-file $in
+	get-editor $in | get-text-viewer | get-property text | equals $contains | verify-true
+	if [$close] {
+		get-editor $in | close
+	}
+}
+
+proc "checkout-revision" [val in -input] [val ps] [val acceptPrompts false] {
+	with [$in] {
+		with [get-group "" | get-button -after [get-label "Patch Sets.*"]] {
+			click
+			get-menu $ps | click
+		}
+		with [get-button Download] {
+			click
+			get-menu "Checkout..." | click
+		}
+	}
+	if [$acceptPrompts] {
+		try {
+			get-window "Fetch a change from Gerrit" | get-button Finish | click
+		} -catch {
+		}
+		try {
+			get-window "EGerrit Tip" | get-button OK | click
+		} -catch {
+		}
 	}
 }
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

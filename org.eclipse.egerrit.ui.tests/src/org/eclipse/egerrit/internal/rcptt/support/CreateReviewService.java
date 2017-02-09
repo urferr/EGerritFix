@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson AB.
+ * Copyright (c) 2016-2017 Ericsson AB.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,9 +50,10 @@ public class CreateReviewService implements ICommandService {
 			filename = "src/EGerritTestReviewFile.java"; //$NON-NLS-1$
 		}
 
+		String fileContent = ((CreateReview) cmd).getFileContent();
 		boolean isDraft = createCmd.isIsDraft();
 		try {
-			result.getOutput().write(ReviewFactory.createReview(httpServer, project, isDraft, filename));
+			result.getOutput().write(ReviewFactory.createReview(httpServer, project, isDraft, filename, fileContent));
 		} catch (Exception e) {
 			return new Status(IStatus.ERROR, EGerritUITestsPlugin.PLUGIN_ID,
 					"An error occurred while creating the review", e); //$NON-NLS-1$

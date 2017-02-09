@@ -14,9 +14,7 @@ package org.eclipse.egerrit.internal.rcptt.support.egerritecl;
 import org.eclipse.rcptt.ecl.core.Command;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Create Review</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Create Review</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
@@ -26,6 +24,7 @@ import org.eclipse.rcptt.ecl.core.Command;
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getProject <em>Project</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#isIsDraft <em>Is Draft</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFilename <em>Filename</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFileContent <em>File Content</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview()
@@ -34,14 +33,14 @@ import org.eclipse.rcptt.ecl.core.Command;
  */
 public interface CreateReview extends Command {
 	/**
-	 * Returns the value of the '<em><b>Server</b></em>' attribute.
-	 * The default value is <code>""</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Server</b></em>' attribute. The default value is <code>""</code>. <!--
+	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Server</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Server</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Server</em>' attribute.
 	 * @see #setServer(String)
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview_Server()
@@ -52,8 +51,7 @@ public interface CreateReview extends Command {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getServer <em>Server</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Server</em>' attribute.
 	 * @see #getServer()
 	 * @generated
@@ -64,8 +62,8 @@ public interface CreateReview extends Command {
 	 * Returns the value of the '<em><b>Project</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Project</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Project</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Project</em>' attribute.
@@ -78,8 +76,7 @@ public interface CreateReview extends Command {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getProject <em>Project</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Project</em>' attribute.
 	 * @see #getProject()
 	 * @generated
@@ -87,14 +84,14 @@ public interface CreateReview extends Command {
 	void setProject(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Is Draft</b></em>' attribute.
-	 * The default value is <code>"false"</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Is Draft</b></em>' attribute. The default value is <code>"false"</code>. <!--
+	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Is Draft</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Is Draft</em>' attribute.
 	 * @see #setIsDraft(boolean)
 	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview_IsDraft()
@@ -105,8 +102,7 @@ public interface CreateReview extends Command {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#isIsDraft <em>Is Draft</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Is Draft</em>' attribute.
 	 * @see #isIsDraft()
 	 * @generated
@@ -117,8 +113,8 @@ public interface CreateReview extends Command {
 	 * Returns the value of the '<em><b>Filename</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Filename</em>' attribute isn't clear,
-	 * there really should be more of a description here...
+	 * If the meaning of the '<em>Filename</em>' attribute isn't clear, there really should be more of a description
+	 * here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Filename</em>' attribute.
@@ -131,12 +127,37 @@ public interface CreateReview extends Command {
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFilename <em>Filename</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Filename</em>' attribute.
 	 * @see #getFilename()
 	 * @generated
 	 */
 	void setFilename(String value);
+
+	/**
+	 * Returns the value of the '<em><b>File Content</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>File Content</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>File Content</em>' attribute.
+	 * @see #setFileContent(String)
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage#getCreateReview_FileContent()
+	 * @model
+	 * @generated
+	 */
+	String getFileContent();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFileContent <em>File Content</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>File Content</em>' attribute.
+	 * @see #getFileContent()
+	 * @generated
+	 */
+	void setFileContent(String value);
 
 } // CreateReview

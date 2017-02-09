@@ -128,8 +128,12 @@ public class GitAccess {
 	 * @return
 	 */
 	public void addFile(String fileName, String content) throws Exception {
-		new File(checkoutFolder, fileName).getParentFile().mkdirs();
-		try (Writer writer = new FileWriter(new File(checkoutFolder, fileName))) {
+		File fileToAdd = new File(checkoutFolder, fileName);
+		fileToAdd.getParentFile().mkdirs();
+		if (fileToAdd.exists()) {
+			fileToAdd.delete();
+		}
+		try (Writer writer = new FileWriter(fileToAdd)) {
 			writer.write(content.toString());
 		}
 		fGit.add().addFilepattern(fileName).call();
@@ -208,7 +212,6 @@ public class GitAccess {
 		RemoteRefUpdate rru = crru.iterator().next();
 		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
 				rru.getNewObjectId().toString().length() - 1);
-
 	}
 
 	public void commitFile(String commitMsg, boolean generateChangeId, boolean amend) throws Exception {
@@ -223,6 +226,23 @@ public class GitAccess {
 		if (cid != -1) {
 			fChange_id = call.getFullMessage().substring(cid + "Change-Id: ".length()).trim();
 		}
+	}
+
+	public void commitInMaster(String commitMsg) throws Exception {
+		commitFile(commitMsg, false, false);
+
+		Authenticator.setDefault(null);
+		String refSpec = "HEAD:refs/heads/master";
+		CredentialsProvider creds = new UsernamePasswordCredentialsProvider(Common.USER, Common.PASSWORD);
+		Iterable<PushResult> result = fGit.push()
+				.setCredentialsProvider(creds)
+				.setRefSpecs(new RefSpec(refSpec))
+				.call();
+
+		Collection<RemoteRefUpdate> crru = result.iterator().next().getRemoteUpdates();
+		RemoteRefUpdate rru = crru.iterator().next();
+		fCommit_id = rru.getNewObjectId().toString().substring("AnyObjectId[".length(),
+				rru.getNewObjectId().toString().length() - 1);
 	}
 
 	private static File createTempFolder(String prefix) throws IOException {
@@ -402,5 +422,15 @@ public class GitAccess {
 		} catch (GitAPIException e) {
 			fail(e.getMessage());
 		}
+	}
+
+	public void commitFileInMaster(String fileName, String content) throws Exception {
+		if (getCheckoutFolder().exists() && new File(getCheckoutFolder(), fileName).exists()) {
+			return;
+		}
+		addFile(fileName, content);
+
+		String commitMsg = "Add " + fileName; //$NON-NLS-1$
+		commitInMaster(commitMsg);
 	}
 }

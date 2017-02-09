@@ -27,7 +27,7 @@ import org.eclipse.rcptt.ecl.core.CorePackage;
  * <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * 
+ *
  * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclFactory
  * @model kind="package"
  * @generated
@@ -35,7 +35,7 @@ import org.eclipse.rcptt.ecl.core.CorePackage;
 public interface egerriteclPackage extends EPackage {
 	/**
 	 * The package name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	String eNAME = "egerritecl"; //$NON-NLS-1$
@@ -122,13 +122,21 @@ public interface egerriteclPackage extends EPackage {
 	int CREATE_REVIEW__FILENAME = CorePackage.COMMAND_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>File Content</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int CREATE_REVIEW__FILE_CONTENT = CorePackage.COMMAND_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Create Review</em>' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 *
 	 * @generated
 	 * @ordered
 	 */
-	int CREATE_REVIEW_FEATURE_COUNT = CorePackage.COMMAND_FEATURE_COUNT + 4;
+	int CREATE_REVIEW_FEATURE_COUNT = CorePackage.COMMAND_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of operations of the '<em>Create Review</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -269,6 +277,74 @@ public interface egerriteclPackage extends EPackage {
 	int AMEND_REVIEW_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ImportProjectImpl
+	 * <em>Import Project</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ImportProjectImpl
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getImportProject()
+	 * @generated
+	 */
+	int IMPORT_PROJECT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Host</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT__HOST = CorePackage.COMMAND__HOST;
+
+	/**
+	 * The feature id for the '<em><b>Bindings</b></em>' containment reference list. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT__BINDINGS = CorePackage.COMMAND__BINDINGS;
+
+	/**
+	 * The feature id for the '<em><b>Review</b></em>' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT__REVIEW = CorePackage.COMMAND_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Project Name</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT__PROJECT_NAME = CorePackage.COMMAND_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT__BRANCH = CorePackage.COMMAND_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Import Project</em>' class. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT_FEATURE_COUNT = CorePackage.COMMAND_FEATURE_COUNT + 3;
+
+	/**
+	 * The number of operations of the '<em>Import Project</em>' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_PROJECT_OPERATION_COUNT = 0;
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview
 	 * <em>Create Review</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
@@ -325,6 +401,18 @@ public interface egerriteclPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getCreateReview_Filename();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFileContent <em>File
+	 * Content</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for the attribute '<em>File Content</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview#getFileContent()
+	 * @see #getCreateReview()
+	 * @generated
+	 */
+	EAttribute getCreateReview_FileContent();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription
@@ -431,6 +519,52 @@ public interface egerriteclPackage extends EPackage {
 	EAttribute getAmendReview_IsDraft();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject
+	 * <em>Import Project</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for class '<em>Import Project</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject
+	 * @generated
+	 */
+	EClass getImportProject();
+
+	/**
+	 * Returns the meta object for the reference
+	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getReview <em>Review</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for the reference '<em>Review</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getReview()
+	 * @see #getImportProject()
+	 * @generated
+	 */
+	EReference getImportProject_Review();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getProjectName <em>Project
+	 * Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for the attribute '<em>Project Name</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getProjectName()
+	 * @see #getImportProject()
+	 * @generated
+	 */
+	EAttribute getImportProject_ProjectName();
+
+	/**
+	 * Returns the meta object for the attribute
+	 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getBranch <em>Branch</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @return the meta object for the attribute '<em>Branch</em>'.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject#getBranch()
+	 * @see #getImportProject()
+	 * @generated
+	 */
+	EAttribute getImportProject_Branch();
+
+	/**
 	 * Returns the factory that creates the instances of the model. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @return the factory that creates the instances of the model.
@@ -494,6 +628,14 @@ public interface egerriteclPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CREATE_REVIEW__FILENAME = eINSTANCE.getCreateReview_Filename();
+
+		/**
+		 * The meta object literal for the '<em><b>File Content</b></em>' attribute feature. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 *
+		 * @generated
+		 */
+		EAttribute CREATE_REVIEW__FILE_CONTENT = eINSTANCE.getCreateReview_FileContent();
 
 		/**
 		 * The meta object literal for the
@@ -572,6 +714,41 @@ public interface egerriteclPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute AMEND_REVIEW__IS_DRAFT = eINSTANCE.getAmendReview_IsDraft();
+
+		/**
+		 * The meta object literal for the
+		 * '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ImportProjectImpl <em>Import
+		 * Project</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 *
+		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.ImportProjectImpl
+		 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl.egerriteclPackageImpl#getImportProject()
+		 * @generated
+		 */
+		EClass IMPORT_PROJECT = eINSTANCE.getImportProject();
+
+		/**
+		 * The meta object literal for the '<em><b>Review</b></em>' reference feature. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 *
+		 * @generated
+		 */
+		EReference IMPORT_PROJECT__REVIEW = eINSTANCE.getImportProject_Review();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Name</b></em>' attribute feature. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 *
+		 * @generated
+		 */
+		EAttribute IMPORT_PROJECT__PROJECT_NAME = eINSTANCE.getImportProject_ProjectName();
+
+		/**
+		 * The meta object literal for the '<em><b>Branch</b></em>' attribute feature. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 *
+		 * @generated
+		 */
+		EAttribute IMPORT_PROJECT__BRANCH = eINSTANCE.getImportProject_Branch();
 
 	}
 

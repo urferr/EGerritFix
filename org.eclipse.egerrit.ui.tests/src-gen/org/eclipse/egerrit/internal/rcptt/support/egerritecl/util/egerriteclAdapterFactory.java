@@ -91,6 +91,10 @@ public class egerriteclAdapterFactory extends AdapterFactoryImpl {
 				return createAmendReviewAdapter();
 			}
 			@Override
+			public Adapter caseImportProject(ImportProject object) {
+				return createImportProjectAdapter();
+			}
+			@Override
 			public Adapter caseCommand(Command object) {
 				return createCommandAdapter();
 			}
@@ -153,6 +157,20 @@ public class egerriteclAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createAmendReviewAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject <em>Import Project</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject
+	 * @generated
+	 */
+	public Adapter createImportProjectAdapter() {
 		return null;
 	}
 

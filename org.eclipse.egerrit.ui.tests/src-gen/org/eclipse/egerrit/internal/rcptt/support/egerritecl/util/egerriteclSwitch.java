@@ -97,6 +97,13 @@ public class egerriteclSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case egerriteclPackage.IMPORT_PROJECT: {
+				ImportProject importProject = (ImportProject)theEObject;
+				T result = caseImportProject(importProject);
+				if (result == null) result = caseCommand(importProject);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -143,6 +150,21 @@ public class egerriteclSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseAmendReview(AmendReview object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Import Project</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Import Project</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseImportProject(ImportProject object) {
 		return null;
 	}
 
