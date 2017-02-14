@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _4c2NYKA-Eea965xUntu3wg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 11/21/16 10:45 AM
+Save-Time: 2/14/17 3:31 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -20,8 +20,8 @@ try {
 	get-editor ".*Compare.*" | get-tree | get-column-header "File Path" | click	
 	
 	with [get-editor "Compare.*"] {
-		switchLeftInput -to "BASE"
-		switchRightInput -to "6.*"
+		switchLeftInput -to "6.*"
+		switchRightInput -to "BASE"
 		
 		assert-that-status-in-compare -atLine 0 -is "A"
 		assert-that-filename-in-compare -atLine 0 -is "IGdbTerminalControlConnector.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console"
@@ -31,7 +31,7 @@ try {
 		switchLeftInput -to "5.*"
 		switchRightInput -to "6.*"	
 		assert-that-status-in-compare -atLine 0 -is R
-		assert-that-filename-in-compare -atLine 0 -is "IGdbTerminalControlConnector.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGDBTerminalControlManager.java)"
+		assert-that-filename-in-compare -atLine 0 -is "IGDBTerminalControlManager.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGdbTerminalControlConnector.java)"
 	}
 	
 	with [get-editor "Compare.*"] {
@@ -39,7 +39,7 @@ try {
 		switchRightInput -to "5.*"
 	
 		assert-that-status-in-compare -atLine 0 -is R
-		assert-that-filename-in-compare -atLine 0 -is "IGDBTerminalControlManager.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGdbTerminalControlConnector.java)"
+		assert-that-filename-in-compare -atLine 0 -is "IGdbTerminalControlConnector.java - dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console (was dsf-gdb/org.eclipse.cdt.dsf.gdb.ui/src/org/eclipse/cdt/dsf/gdb/internal/ui/console/IGDBTerminalControlManager.java)"
 	}
 } -finally {
 	delete-gerrit-server -serverName EF

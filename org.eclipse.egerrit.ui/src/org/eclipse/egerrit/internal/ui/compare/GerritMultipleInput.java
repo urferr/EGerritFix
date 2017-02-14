@@ -225,7 +225,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	private void compareRevisions(IProgressMonitor monitor) {
 		loadRevision(leftSide);
 		loadRevision(rightSide);
-		Map<String, FileInfo> files = loadRevisionDiff(leftSide, rightSide);
+		Map<String, FileInfo> files = loadRevisionDiff(rightSide, leftSide);
 
 		for (Entry<String, FileInfo> file : files.entrySet()) {
 			GerritDiffNode node = createRevisionRevisionNode(monitor, changeInfo.getRevisions().get(leftSide),
@@ -259,13 +259,13 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 		switch (differenceKind) {
 		case GerritDifferences.ADDITION:
-			node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
-			FileInfo potentialLeft = leftRevision.getFiles().get(filePathToShow);
-			if (potentialLeft == null) {
+			node.setFileInfo(leftRevision.getFiles().get(filePathToShow));
+			FileInfo potentialRight = rightRevision.getFiles().get(filePathToShow);
+			if (potentialRight == null) {
 				//Real addition
-				leftFile = new EmptyTypedElement(filePathToShow);
-				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
-						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+						changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
+				rightFile = new EmptyTypedElement(filePathToShow);
 			} else {
 				//Deal with the case where a deletion that happened between revision 1 and 3 is shown as an addition
 				//because we are comparing revision 3 with 1 (E.g. review 83696).
@@ -335,10 +335,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			}
 			break;
 		case GerritDifferences.DELETION:
-			leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
-					changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
-			rightFile = new EmptyTypedElement(filePathToShow);
-			node.setFileInfo(leftRevision.getFiles().get(filePathToShow));
+			leftFile = new EmptyTypedElement(filePathToShow);
+			rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
+					changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
+			node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
 			break;
 		default:
 			return null;

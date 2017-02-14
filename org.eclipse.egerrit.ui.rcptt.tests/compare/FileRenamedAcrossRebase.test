@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _dykEAKCqEea_cdUF3tDi1A
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 11/2/16 5:36 PM
+Save-Time: 2/14/17 3:19 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -21,16 +21,16 @@ try {
 		switchLeftInput -to "1.*"
 		switchRightInput -to "9.*"
 		
-		assert-that-status-in-compare -atLine 0 -is "R"
-		assert-that-filename-in-compare -atLine 0 -is "AuthorKindFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/HistoryFileFilter.java)" 
+		assert-that-status-in-compare -atLine 3 -is "R"
+		assert-that-filename-in-compare -atLine 3 -is "HistoryFileFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/AuthorKindFilter.java)" 
 	}
 	
 	with [get-editor "Compare.*"] {
 		switchLeftInput -to "9.*"
 		switchRightInput -to "1.*"
 		
-		assert-that-status-in-compare -atLine 3 -is "R"
-		assert-that-filename-in-compare -atLine 3 -is "HistoryFileFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/AuthorKindFilter.java)" 
+		assert-that-status-in-compare -atLine 0 -is "R"
+		assert-that-filename-in-compare -atLine 0 -is "AuthorKindFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/HistoryFileFilter.java)" 
 	}
 } -finally {
 	delete-gerrit-server -serverName EF
