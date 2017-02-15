@@ -1,0 +1,44 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: OpenFileInWorkspace.test
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _SidcMPPBEeaTHaB7IPJ7BA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 2/16/17 8:29 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+//Make sure all the git repos are removed
+delete-git-repos
+
+//Create a first review, import the project in the workspace, and open the compare editor
+let [val review [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent "a\nb\nc\n"]] {
+	import-project $review -projectName Project
+	openCompareEditor $review
+}
+
+//Now assert that using the context menu will open the workspace file
+get-editor "Compare.*" | get-left-editor | get-menu "Open Workspace File" | click
+wait -ms $defaultWaitTime
+get-editor "file.txt"
+get-editor "file.txt" | close
+
+get-editor "Compare.*" | get-right-editor | get-menu "Open Workspace File" | click
+wait -ms $defaultWaitTime
+get-editor "file.txt"
+get-editor "file.txt" | close
+
+//Now we rename the workspace file and make sure that the user sees a dialog when the file can't be found
+get-view "Package Explorer" | get-tree | select "Project.*/src/file.txt"  | get-menu "Refactor/Rename..." | click
+with [get-window "Rename Resource"] {
+    get-editbox -after [get-label "New name:"] | set-text "bar.txt"
+    get-button OK | click
+}
+get-editor "Compare.*" | get-left-editor | get-menu "Open Workspace File" | click
+get-window "File(s) not found" | get-button OK | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

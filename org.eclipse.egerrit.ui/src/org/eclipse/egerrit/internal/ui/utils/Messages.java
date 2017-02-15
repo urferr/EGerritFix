@@ -124,6 +124,8 @@ public class Messages extends NLS {
 
 	public static String CompareUpperSection_PatchSet;
 
+	public static String Compare_OpenFile;
+
 	public static String DataConverter_0;
 
 	public static String DataConverter_4;
@@ -289,6 +291,8 @@ public class Messages extends NLS {
 	public static String UIFilesTable_1;
 
 	public static String UIFilesTable_2;
+
+	public static String UIFilesTable_3;
 
 	public static String UIFilesTable_clearReviewedFlag;
 

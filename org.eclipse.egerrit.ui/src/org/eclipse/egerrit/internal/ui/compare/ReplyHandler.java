@@ -50,7 +50,7 @@ public class ReplyHandler extends AbstractHandler {
 			if (input.getLeftSide().equals(GerritMultipleInput.WORKSPACE)
 					|| input.getLeftSide().equals(GerritMultipleInput.BASE)) {
 				//if the right side is the workspace or base file, the revision is null
-				UIUtils.displayInformation(null, Messages.ReplyHandlerTitle, Messages.ReplyHandlerMessage);
+				UIUtils.displayInformation(Messages.ReplyHandlerTitle, Messages.ReplyHandlerMessage);
 			} else {
 				RevisionInfo revisionInfo = input.getChangeInfo().getRevisions().get(input.getLeftSide());
 				UIUtils.replyToChange(viewer.getControl().getShell(), revisionInfo, null, input.gerritClient, true);

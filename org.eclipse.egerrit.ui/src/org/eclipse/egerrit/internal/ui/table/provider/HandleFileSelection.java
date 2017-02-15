@@ -24,8 +24,6 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 
 /**
  * This class implements the selection of the file in the Files table and open the workspace file.
@@ -66,23 +64,14 @@ public class HandleFileSelection {
 				}
 				String status = fileInfo.getStatus();
 				if (status.compareTo("D") != 0) { //$NON-NLS-1$
-					if (fViewer instanceof TableViewer) {
-						if (UIUtils.openSingleFile(((StringToFileInfoImpl) element).getKey(), fGerritClient,
-								fileInfo.getRevision(), 0) == false) {
-							failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
-						}
-					} else {
-						if (UIUtils.openSingleFile(((StringToFileInfoImpl) fileInfo.eContainer()).getKey(),
-								fGerritClient, fileInfo.getRevision(), 0) == false) {
-							failedFiles = failedFiles + fileInfo.getPath() + "\n"; //$NON-NLS-1$
-						}
+					if (UIUtils.openSingleFile(fileInfo, fGerritClient, fileInfo.getRevision(), 0) == false) {
+						failedFiles += fileInfo.getPath() + '\n';
 					}
-					QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
 				}
+				QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
 			}
 			if (!failedFiles.isEmpty()) {
-				Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-				UIUtils.displayInformation(shell, Messages.UIFilesTable_2, failedFiles);
+				UIUtils.displayInformation(Messages.UIFilesTable_3, Messages.UIFilesTable_2 + '\n' + failedFiles);
 			}
 		}
 

@@ -777,7 +777,7 @@ public class DetailsTabView {
 				} catch (EGerritException e3) {
 					if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 						String message = input.getReviewer() + Messages.SummaryTabView_21;
-						UIUtils.displayInformation(null, TITLE, message);
+						UIUtils.displayInformation(TITLE, message);
 					} else {
 						EGerritCorePlugin
 								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());

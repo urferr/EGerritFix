@@ -54,6 +54,9 @@ import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
@@ -61,6 +64,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationPainter;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -909,5 +913,25 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	protected void handleDispose() {
 		super.handleDispose();
 		purgeCache();
+	}
+
+	@Override
+	public void registerContextMenu(MenuManager menu, final ISelectionProvider selectionProvider) {
+		super.registerContextMenu(menu, selectionProvider);
+		registerOpenWorkspaceVersion(menu, selectionProvider);
+	}
+
+	private void registerOpenWorkspaceVersion(MenuManager menu, final ISelectionProvider selectionProvider) {
+		menu.addMenuListener(new IMenuListener() {
+			@Override
+			public void menuAboutToShow(IMenuManager manager) {
+				if (!(selectionProvider instanceof SourceViewer) && !(getSelectedEdition() instanceof GerritDiffNode)) {
+					return;
+				}
+				manager.insertAfter("file", //$NON-NLS-1$
+						new OpenWorkspaceFile((SourceViewer) selectionProvider, (GerritDiffNode) getSelectedEdition(),
+								gerritClient));
+			}
+		});
 	}
 }

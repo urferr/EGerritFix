@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
@@ -40,6 +41,9 @@ import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -55,6 +59,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
@@ -77,14 +82,13 @@ public class UIUtils {
 	/**
 	 * To display some information to the end-user
 	 *
-	 * @param shell
 	 * @param title
 	 * @param message
 	 */
-	public static void displayInformation(final Shell shell, final String title, final String message) {
+	public static void displayInformation(final String title, final String message) {
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
-				MessageDialog.openInformation(shell, title, message);
+				MessageDialog.openInformation(null, title, message);
 			}
 		});
 	}
@@ -261,24 +265,49 @@ public class UIUtils {
 	 * @param line
 	 * @return
 	 */
-	public static boolean openSingleFile(Object key, GerritClient gerritClient, RevisionInfo revInfo, int line) {
-		FileInfo fileInfo = revInfo.getFiles().get(key);
-		if (fileInfo != null) {
-			IFile workspaceFile = new OpenCompareEditor(gerritClient, revInfo.getChangeInfo())
-					.getCorrespondingWorkspaceFile(fileInfo);
+	public static boolean openSingleFile(FileInfo fileToShow, GerritClient gerritClient, RevisionInfo revInfo,
+			int line) {
+		if (fileToShow == null) {
+			return false;
+		}
+		IFile workspaceFile = new OpenCompareEditor(gerritClient, revInfo.getChangeInfo())
+				.getCorrespondingWorkspaceFile(fileToShow);
 
-			if (workspaceFile == null) {
-				return false;
+		return openSingleFile(workspaceFile, line);
+	}
+
+	public static boolean openSingleFile(IResource resource, int line) {
+		IFile workspaceFile = (resource instanceof IFile) ? (IFile) resource : null;
+		if (workspaceFile == null) {
+			return false;
+		}
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+		try {
+			IEditorPart editor = IDE.openEditor(page, workspaceFile);
+			if (editor != null && line != 0) {
+				selectLine(editor, line);
 			}
-			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			try {
-				IDE.openEditor(page, workspaceFile);
-			} catch (PartInitException e1) {
-				logger.debug("Failed to delete marker", e1); //$NON-NLS-1$
-			}
+		} catch (PartInitException e1) {
+			logger.debug("Could not open the editor for " + workspaceFile.getFullPath(), e1); //$NON-NLS-1$
 		}
 		return true;
+	}
+
+	private static void selectLine(IEditorPart editorPart, int selectedLine) {
+		if (editorPart instanceof ITextEditor) {
+			ITextEditor editor = (ITextEditor) editorPart;
+			IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+			if (document != null) {
+				try {
+					IRegion line = document.getLineInformation(selectedLine);
+					editor.selectAndReveal(line.getOffset(), 0);
+				} catch (BadLocationException e) {
+					// line seems not to exist in
+					// workspace version
+				}
+			}
+		}
 	}
 
 	/**

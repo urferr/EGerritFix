@@ -59,7 +59,7 @@ public class OpenFileSelectionHandler extends AbstractHandler {
 			FilesDialog filesDialog = new FilesDialog(revInfo, activeRevision.getGerritClient(), fileInput);
 			filesDialog.open();
 		} else {
-			UIUtils.displayInformation(null, Messages.OpenFileProblem, Messages.OpenFileProblemMessage);
+			UIUtils.displayInformation(Messages.OpenFileProblem, Messages.OpenFileProblemMessage);
 		}
 
 		return null;
