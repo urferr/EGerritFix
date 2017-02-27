@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _dykEAKCqEea_cdUF3tDi1A
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 2/14/17 3:19 PM
+Save-Time: 2/28/17 9:46 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -23,6 +23,11 @@ try {
 		
 		assert-that-status-in-compare -atLine 3 -is "R"
 		assert-that-filename-in-compare -atLine 3 -is "HistoryFileFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/AuthorKindFilter.java)" 
+		
+		get-tree | select [get-item "" -index 3] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 1: HistoryFileFilter.java" -right "Patch Set 9: AuthorKindFilter.java.*"
+		assert-that-left-editor-content -is "class HistoryFileFilter"
+		assert-that-right-editor-content -is "class AuthorKindFilter"
 	}
 	
 	with [get-editor "Compare.*"] {
@@ -31,6 +36,11 @@ try {
 		
 		assert-that-status-in-compare -atLine 0 -is "R"
 		assert-that-filename-in-compare -atLine 0 -is "AuthorKindFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/HistoryFileFilter.java)" 
+		
+		get-tree | select [get-item "" -index 0] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 9: AuthorKindFilter.java.*" -right "Patch Set 1: HistoryFileFilter.java"
+		assert-that-left-editor-content -is "class AuthorKindFilter"
+		assert-that-right-editor-content -is "class HistoryFileFilter"		
 	}
 } -finally {
 	delete-gerrit-server -serverName EF

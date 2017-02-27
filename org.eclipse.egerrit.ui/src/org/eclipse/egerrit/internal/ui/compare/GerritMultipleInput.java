@@ -281,29 +281,30 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			break;
 		case GerritDifferences.RENAMED:
 		case GerritDifferences.COPIED:
-			if (leftRevision.getFiles().get(fileToShow.getOld_path()) != null) {
+			if (leftRevision.getFiles().get(filePathToShow) != null) {
 				leftFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
-						changeInfo.getId(), leftRevision.getFiles().get(fileToShow.getOld_path()), monitor);
+						changeInfo.getId(), leftRevision.getFiles().get(filePathToShow), monitor);
+				node.setFileInfo(leftRevision.getFiles().get(filePathToShow));
 			} else {
 				OrphanedFileInfo o = new OrphanedFileInfo();
-				o.setFilePath(fileToShow.getOld_path());
+				o.setFilePath(filePathToShow);
 				o.setRevisionInfo(leftRevision);
 				String baseCommitId = getBaseCommitId(o);
 				if (baseCommitId != null) {
 					leftFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(changeInfo.getProject(),
-							baseCommitId, o, fileToShow.getOld_path(), monitor);
+							baseCommitId, o, filePathToShow, Integer.toString(leftRevision.get_number()), monitor);
 				} else {
 					leftFile = new EmptyTypedElement(fileToShow.getOld_path());
 				}
+				node.setFileInfo(o);
 			}
 
-			if (rightRevision.getFiles().get(filePathToShow) != null) {
-				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(filePathToShow,
-						changeInfo.getId(), rightRevision.getFiles().get(filePathToShow), monitor);
-				node.setFileInfo(rightRevision.getFiles().get(filePathToShow));
+			if (rightRevision.getFiles().get(fileToShow.getOld_path()) != null) {
+				rightFile = new CompareItemFactory(gerritClient).createCompareItemFromRevision(fileToShow.getOld_path(),
+						changeInfo.getId(), rightRevision.getFiles().get(fileToShow.getOld_path()), monitor);
 			} else {
 				OrphanedFileInfo o = new OrphanedFileInfo();
-				o.setFilePath(filePathToShow);
+				o.setFilePath(fileToShow.getOld_path());
 				o.setOld_path(fileToShow.getOld_path());
 				o.setRevisionInfo(rightRevision);
 				o.setStatus(fileToShow.getStatus());
@@ -311,10 +312,10 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				String baseCommitId = getBaseCommitId(o);
 				if (baseCommitId != null) {
 					rightFile = new CompareItemFactory(gerritClient).createCompareItemFromCommit(
-							changeInfo.getProject(), baseCommitId, o, filePathToShow, monitor);
-					node.setFileInfo(o);
+							changeInfo.getProject(), baseCommitId, o, fileToShow.getOld_path(),
+							Integer.toString(rightRevision.get_number()), monitor);
 				} else {
-					rightFile = new EmptyTypedElement(filePathToShow);
+					rightFile = new EmptyTypedElement(fileToShow.getOld_path());
 				}
 			}
 			break;

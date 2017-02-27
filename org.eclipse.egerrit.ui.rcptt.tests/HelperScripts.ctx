@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 2/10/17 7:04 PM
+Save-Time: 2/27/17 2:02 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -258,6 +258,13 @@ proc "assert-that-left-editor-content" [val is] [val in -input] {
 proc "assert-that-right-editor-content" [val is] [val in -input] {
 	with [$in] {
 		get-editbox -index 1 | get-property text | contains $is | verify-true
+	}
+}
+
+proc "assert-that-compare-editor-titles-are" [val left] [val right] [val in -input] {
+	with [$in] {
+		get-label $left
+		get-label $right -after [get-label $left] 
 	}
 }
 
