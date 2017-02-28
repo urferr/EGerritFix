@@ -60,6 +60,24 @@ public interface egerriteclFactory extends EFactory {
 	ImportProject createImportProject();
 
 	/**
+	 * Returns a new object of class '<em>Add Gerrit Server</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Add Gerrit Server</em>'.
+	 * @generated
+	 */
+	AddGerritServer createAddGerritServer();
+
+	/**
+	 * Returns a new object of class '<em>Remove Gerrit Server</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Remove Gerrit Server</em>'.
+	 * @generated
+	 */
+	RemoveGerritServer createRemoveGerritServer();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the package supported by this factory.

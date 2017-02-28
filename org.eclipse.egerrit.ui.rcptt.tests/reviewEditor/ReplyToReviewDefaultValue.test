@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _inl-EGDUEeamXfKo3m2CPA
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 9/12/16 9:36 PM
+Save-Time: 2/28/17 4:16 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -30,7 +30,7 @@ let [val review [create-review -server $serverURL]] {
    //Get another user to vote -1
    switch-user -to "test1"
    runQueryAndOpenEditor $review -serverName "test1"
-   delete-gerrit-server "test1"
+   remove-gerrit-server "test1"
    
    get-editor | get-button "Reply..." | click
    get-menu "Reply..." | click
@@ -45,7 +45,7 @@ let [val review [create-review -server $serverURL]] {
    //Get back to the first user to confirm the initial vote is still properly set
    switch-user -to $defaultUser
    runQueryAndOpenEditor $review -serverName $defaultUser
-   delete-gerrit-server $defaultUser
+   remove-gerrit-server $defaultUser
    
    get-editor | get-button "Reply..." | click
    get-menu "Reply..." | click

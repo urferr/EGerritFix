@@ -22,12 +22,12 @@ try {
 		switchRightInput -to "9.*"
 		
 		assert-that-status-in-compare -atLine 3 -is "R"
-		assert-that-filename-in-compare -atLine 3 -is "HistoryFileFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/AuthorKindFilter.java)" 
-		
+		assert-that-filename-in-compare -atLine 3 -is "HistoryFileFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/AuthorKindFilter.java)"
+				
 		get-tree | select [get-item "" -index 3] | double-click
 		assert-that-compare-editor-titles-are -left "Patch Set 1: HistoryFileFilter.java" -right "Patch Set 9: AuthorKindFilter.java.*"
 		assert-that-left-editor-content -is "class HistoryFileFilter"
-		assert-that-right-editor-content -is "class AuthorKindFilter"
+		assert-that-right-editor-content -is "class AuthorKindFilter" 
 	}
 	
 	with [get-editor "Compare.*"] {
@@ -35,15 +35,15 @@ try {
 		switchRightInput -to "1.*"
 		
 		assert-that-status-in-compare -atLine 0 -is "R"
-		assert-that-filename-in-compare -atLine 0 -is "AuthorKindFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/HistoryFileFilter.java)" 
-		
+		assert-that-filename-in-compare -atLine 0 -is "AuthorKindFilter.java - org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter (was org.eclipse.egerrit.ui/src/org/eclipse/egerrit/internal/ui/table/filter/HistoryFileFilter.java)"
+				
 		get-tree | select [get-item "" -index 0] | double-click
 		assert-that-compare-editor-titles-are -left "Patch Set 9: AuthorKindFilter.java.*" -right "Patch Set 1: HistoryFileFilter.java"
 		assert-that-left-editor-content -is "class AuthorKindFilter"
-		assert-that-right-editor-content -is "class HistoryFileFilter"		
+		assert-that-right-editor-content -is "class HistoryFileFilter" 
 	}
 } -finally {
-	delete-gerrit-server -serverName EF
+	remove-gerrit-server -serverName EF
 }
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

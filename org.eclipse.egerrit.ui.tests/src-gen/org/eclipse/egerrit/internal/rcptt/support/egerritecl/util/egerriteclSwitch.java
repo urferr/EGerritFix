@@ -104,6 +104,20 @@ public class egerriteclSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case egerriteclPackage.ADD_GERRIT_SERVER: {
+				AddGerritServer addGerritServer = (AddGerritServer)theEObject;
+				T result = caseAddGerritServer(addGerritServer);
+				if (result == null) result = caseCommand(addGerritServer);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case egerriteclPackage.REMOVE_GERRIT_SERVER: {
+				RemoveGerritServer removeGerritServer = (RemoveGerritServer)theEObject;
+				T result = caseRemoveGerritServer(removeGerritServer);
+				if (result == null) result = caseCommand(removeGerritServer);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -165,6 +179,36 @@ public class egerriteclSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseImportProject(ImportProject object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Add Gerrit Server</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Add Gerrit Server</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAddGerritServer(AddGerritServer object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Remove Gerrit Server</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Remove Gerrit Server</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseRemoveGerritServer(RemoveGerritServer object) {
 		return null;
 	}
 

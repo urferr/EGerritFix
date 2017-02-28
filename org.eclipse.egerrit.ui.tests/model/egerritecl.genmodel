@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
-    copyrightText="  Copyright (c) 2016 Ericsson AB&#xA; &#xA;  All rights reserved. This program and the accompanying materials are&#xA;  made available under the terms of the Eclipse Public License v1.0 which&#xA;  accompanies this distribution, and is available at&#xA;  http://www.eclipse.org/legal/epl-v10.html&#xA; &#xA;  Contributors:&#xA;    Ericsson AB - Initial API and implementation"
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="  Copyright (c) 2016-2017 Ericsson AB&#xD;&#xA; &#xD;&#xA;  All rights reserved. This program and the accompanying materials are&#xD;&#xA;  made available under the terms of the Eclipse Public License v1.0 which&#xD;&#xA;  accompanies this distribution, and is available at&#xD;&#xA;  http://www.eclipse.org/legal/epl-v10.html&#xD;&#xA; &#xD;&#xA;  Contributors:&#xD;&#xA;    Ericsson AB - Initial API and implementation"
     modelDirectory="/org.eclipse.egerrit.ui.tests/src-gen" modelPluginID="org.eclipse.egerrit.ui.tests"
     modelName="egerritecl" nonNLSMarkers="true" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" copyrightFields="false"
@@ -9,6 +9,37 @@
   <foreignModel>egerrit.ecore</foreignModel>
   <genPackages prefix="egerritecl" basePackage="org.eclipse.egerrit.internal.rcptt.support"
       disposableProviderFactory="true" ecorePackage="egerritecl.ecore#/">
-    <genClasses ecoreClass="egerritecl.ecore#//CreateReview"/>
+    <genClasses ecoreClass="egerritecl.ecore#//CreateReview">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//CreateReview/server"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//CreateReview/project"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//CreateReview/isDraft"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//CreateReview/filename"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//CreateReview/fileContent"/>
+    </genClasses>
+    <genClasses ecoreClass="egerritecl.ecore#//ReviewDescription">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ReviewDescription/gerritServerURL"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ReviewDescription/projectName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ReviewDescription/localClone"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ReviewDescription/lastChangeId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ReviewDescription/isDraft"/>
+    </genClasses>
+    <genClasses ecoreClass="egerritecl.ecore#//AmendReview">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerritecl.ecore#//AmendReview/review"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//AmendReview/isDraft"/>
+    </genClasses>
+    <genClasses ecoreClass="egerritecl.ecore#//ImportProject">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference egerritecl.ecore#//ImportProject/review"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ImportProject/projectName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//ImportProject/branch"/>
+    </genClasses>
+    <genClasses ecoreClass="egerritecl.ecore#//AddGerritServer">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//AddGerritServer/serverURL"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//AddGerritServer/serverName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//AddGerritServer/userName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//AddGerritServer/userPwd"/>
+    </genClasses>
+    <genClasses ecoreClass="egerritecl.ecore#//RemoveGerritServer">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute egerritecl.ecore#//RemoveGerritServer/serverName"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

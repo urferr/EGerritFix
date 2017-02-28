@@ -95,6 +95,14 @@ public class egerriteclAdapterFactory extends AdapterFactoryImpl {
 				return createImportProjectAdapter();
 			}
 			@Override
+			public Adapter caseAddGerritServer(AddGerritServer object) {
+				return createAddGerritServerAdapter();
+			}
+			@Override
+			public Adapter caseRemoveGerritServer(RemoveGerritServer object) {
+				return createRemoveGerritServerAdapter();
+			}
+			@Override
 			public Adapter caseCommand(Command object) {
 				return createCommandAdapter();
 			}
@@ -171,6 +179,34 @@ public class egerriteclAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createImportProjectAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.AddGerritServer <em>Add Gerrit Server</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.AddGerritServer
+	 * @generated
+	 */
+	public Adapter createAddGerritServerAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.egerrit.internal.rcptt.support.egerritecl.RemoveGerritServer <em>Remove Gerrit Server</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.egerrit.internal.rcptt.support.egerritecl.RemoveGerritServer
+	 * @generated
+	 */
+	public Adapter createRemoveGerritServerAdapter() {
 		return null;
 	}
 

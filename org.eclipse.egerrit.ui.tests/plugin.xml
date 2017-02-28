@@ -36,5 +36,21 @@
             namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
       </scriptlet>
    </extension>
+   <extension
+         point="org.eclipse.rcptt.ecl.core.scriptlet">
+      <scriptlet
+            class="org.eclipse.egerrit.internal.rcptt.support.AddGerritServerService"
+            name="AddGerritServer"
+            namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
+      </scriptlet>
+   </extension>
+   <extension
+         point="org.eclipse.rcptt.ecl.core.scriptlet">
+      <scriptlet
+            class="org.eclipse.egerrit.internal.rcptt.support.RemoveGerritServerService"
+            name="RemoveGerritServer"
+            namespace="http://www.eclipse.org/egerrit/2016/egerritecl.ecore">
+      </scriptlet>
+   </extension>
 
 </plugin>

@@ -11,9 +11,11 @@
  */
 package org.eclipse.egerrit.internal.rcptt.support.egerritecl.impl;
 
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.AddGerritServer;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.AmendReview;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.CreateReview;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ImportProject;
+import org.eclipse.egerrit.internal.rcptt.support.egerritecl.RemoveGerritServer;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.ReviewDescription;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclFactory;
 import org.eclipse.egerrit.internal.rcptt.support.egerritecl.egerriteclPackage;
@@ -62,6 +64,20 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * @generated
 	 */
 	private EClass importProjectEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass addGerritServerEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass removeGerritServerEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -304,6 +320,69 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getAddGerritServer() {
+		return addGerritServerEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getAddGerritServer_ServerURL() {
+		return (EAttribute)addGerritServerEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getAddGerritServer_ServerName() {
+		return (EAttribute)addGerritServerEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getAddGerritServer_UserName() {
+		return (EAttribute)addGerritServerEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getAddGerritServer_UserPwd() {
+		return (EAttribute)addGerritServerEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getRemoveGerritServer() {
+		return removeGerritServerEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRemoveGerritServer_ServerName() {
+		return (EAttribute)removeGerritServerEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public egerriteclFactory getegerriteclFactory() {
 		return (egerriteclFactory)getEFactoryInstance();
 	}
@@ -349,6 +428,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		createEReference(importProjectEClass, IMPORT_PROJECT__REVIEW);
 		createEAttribute(importProjectEClass, IMPORT_PROJECT__PROJECT_NAME);
 		createEAttribute(importProjectEClass, IMPORT_PROJECT__BRANCH);
+
+		addGerritServerEClass = createEClass(ADD_GERRIT_SERVER);
+		createEAttribute(addGerritServerEClass, ADD_GERRIT_SERVER__SERVER_URL);
+		createEAttribute(addGerritServerEClass, ADD_GERRIT_SERVER__SERVER_NAME);
+		createEAttribute(addGerritServerEClass, ADD_GERRIT_SERVER__USER_NAME);
+		createEAttribute(addGerritServerEClass, ADD_GERRIT_SERVER__USER_PWD);
+
+		removeGerritServerEClass = createEClass(REMOVE_GERRIT_SERVER);
+		createEAttribute(removeGerritServerEClass, REMOVE_GERRIT_SERVER__SERVER_NAME);
 	}
 
 	/**
@@ -386,6 +474,8 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		createReviewEClass.getESuperTypes().add(theCorePackage.getCommand());
 		amendReviewEClass.getESuperTypes().add(theCorePackage.getCommand());
 		importProjectEClass.getESuperTypes().add(theCorePackage.getCommand());
+		addGerritServerEClass.getESuperTypes().add(theCorePackage.getCommand());
+		removeGerritServerEClass.getESuperTypes().add(theCorePackage.getCommand());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(createReviewEClass, CreateReview.class, "CreateReview", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
@@ -410,6 +500,15 @@ public class egerriteclPackageImpl extends EPackageImpl implements egerriteclPac
 		initEReference(getImportProject_Review(), theEcorePackage.getEObject(), null, "review", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getImportProject_ProjectName(), theEcorePackage.getEString(), "projectName", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 		initEAttribute(getImportProject_Branch(), theEcorePackage.getEString(), "branch", null, 0, 1, ImportProject.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(addGerritServerEClass, AddGerritServer.class, "AddGerritServer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(getAddGerritServer_ServerURL(), theEcorePackage.getEString(), "serverURL", null, 0, 1, AddGerritServer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getAddGerritServer_ServerName(), theEcorePackage.getEString(), "serverName", null, 0, 1, AddGerritServer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getAddGerritServer_UserName(), theEcorePackage.getEString(), "userName", null, 0, 1, AddGerritServer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+		initEAttribute(getAddGerritServer_UserPwd(), theEcorePackage.getEString(), "userPwd", null, 0, 1, AddGerritServer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+
+		initEClass(removeGerritServerEClass, RemoveGerritServer.class, "RemoveGerritServer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+		initEAttribute(getRemoveGerritServer_ServerName(), theEcorePackage.getEString(), "serverName", null, 0, 1, RemoveGerritServer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
 		// Create resource
 		createResource(eNS_URI);

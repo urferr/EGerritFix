@@ -1,0 +1,60 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AddRemoveServer
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _5G0PMP37EeafFNNlK-v8pg
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 2/28/17 4:29 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+proc "add-gerrit-server-through-ui" [val serverURL] [val serverName] [val userName] [val userPwd] {
+	get-preferences-menu | click
+	with [get-window Preferences] {
+		get-tree | select "Team/Gerrit Servers"
+		get-button "New..." | click
+		with [get-window "Gerrit Server Selection"] {
+			get-editbox -after [get-label "URL:"] | set-text $serverURL
+
+			with [get-editbox -after [get-label "Label:"]] {
+				set-text $serverName
+			}
+			try {
+				get-editbox -after [get-label "User:"] | set-text $userName
+			}
+			get-button OK | click
+		}
+		get-button Apply | click
+		get-button OK | click
+	}
+}
+
+proc "remove-gerrit-server-through-ui" [val serverName] {
+	// delete server if present
+	get-preferences-menu | click
+	with [get-window Preferences] {
+		get-editbox | set-text gerrit
+		get-tree | select "Team/Gerrit Servers" | double-click
+		try {
+			get-table | select $serverName
+			get-button Remove | click
+			get-button Apply | click
+		} -catch {
+		}
+		get-button OK | click
+	}
+}
+
+remove-gerrit-server-through-ui -serverName $serverName
+add-gerrit-server-through-ui -serverURL $serverURL -serverName $serverName -userName $defaultUser
+
+let [val review [create-review -server $serverURL]] {
+	runQueryAndOpenEditor $review
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

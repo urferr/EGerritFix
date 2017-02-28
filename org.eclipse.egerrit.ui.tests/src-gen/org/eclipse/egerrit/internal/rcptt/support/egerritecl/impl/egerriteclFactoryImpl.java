@@ -69,6 +69,8 @@ public class egerriteclFactoryImpl extends EFactoryImpl implements egerriteclFac
 			case egerriteclPackage.REVIEW_DESCRIPTION: return createReviewDescription();
 			case egerriteclPackage.AMEND_REVIEW: return createAmendReview();
 			case egerriteclPackage.IMPORT_PROJECT: return createImportProject();
+			case egerriteclPackage.ADD_GERRIT_SERVER: return createAddGerritServer();
+			case egerriteclPackage.REMOVE_GERRIT_SERVER: return createRemoveGerritServer();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -112,6 +114,26 @@ public class egerriteclFactoryImpl extends EFactoryImpl implements egerriteclFac
 	public ImportProject createImportProject() {
 		ImportProjectImpl importProject = new ImportProjectImpl();
 		return importProject;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public AddGerritServer createAddGerritServer() {
+		AddGerritServerImpl addGerritServer = new AddGerritServerImpl();
+		return addGerritServer;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public RemoveGerritServer createRemoveGerritServer() {
+		RemoveGerritServerImpl removeGerritServer = new RemoveGerritServerImpl();
+		return removeGerritServer;
 	}
 
 	/**
