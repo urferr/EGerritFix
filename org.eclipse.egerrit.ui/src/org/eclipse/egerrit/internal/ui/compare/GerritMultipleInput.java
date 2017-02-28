@@ -912,8 +912,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 
 	@Override
 	protected void handleDispose() {
-		super.handleDispose();
 		purgeCache();
+		super.handleDispose();
 	}
 
 	@Override
