@@ -311,7 +311,9 @@ public abstract class CommentableCompareItem extends Document
 
 	public void reset() {
 		dataLoaded = false;
-		editableComments.disconnect(this);
+		if (editableComments != null) {
+			editableComments.disconnect(this);
+		}
 	}
 
 	protected boolean isBinary() {

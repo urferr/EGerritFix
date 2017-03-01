@@ -1,0 +1,42 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: OpenImage.test
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _aCSEEP6TEeaAeadKIFsvzA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 3/1/17 10:39 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 90644 -serverName EF
+	
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "11.*"
+		switchRightInput -to "BASE.*"
+		
+		assert-that-status-in-compare -atLine 13 -is "D"
+		assert-that-filename-in-compare -atLine 13 -is "minusOne.png.*" 
+		
+		get-tree | select [get-item "" -index 13] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 11: minusOne.png" -right "Base: minusOne.png (75ea799b93)"
+		
+		//Make sure that we show an image (we check the class name of what is shown in the editor)
+		//Left
+		get-canvas | get-property className | equals "org.eclipse.compare.internal.ImageCanvas" | verify-true
+		
+		//Right
+		get-canvas -after [get-label "Base: minusOne.png (75ea799b93)"] -index 1 | get-property className 
+        | equals "org.eclipse.compare.internal.ImageCanvas" | verify-true
+	}
+} -finally {
+	delete-gerrit-server -serverName EF
+}
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
