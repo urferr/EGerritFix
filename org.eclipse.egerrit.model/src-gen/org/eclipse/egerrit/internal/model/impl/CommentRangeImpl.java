@@ -44,6 +44,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected static final int START_LINE_EDEFAULT = 0;
+
 	/**
 	 * The cached value of the '{@link #getStartLine() <em>Start Line</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -53,6 +54,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected int startLine = START_LINE_EDEFAULT;
+
 	/**
 	 * The default value of the '{@link #getStartCharacter() <em>Start Character</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -62,6 +64,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected static final int START_CHARACTER_EDEFAULT = 0;
+
 	/**
 	 * The cached value of the '{@link #getStartCharacter() <em>Start Character</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -71,6 +74,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected int startCharacter = START_CHARACTER_EDEFAULT;
+
 	/**
 	 * The default value of the '{@link #getEndLine() <em>End Line</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -80,6 +84,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected static final int END_LINE_EDEFAULT = 0;
+
 	/**
 	 * The cached value of the '{@link #getEndLine() <em>End Line</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -89,6 +94,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected int endLine = END_LINE_EDEFAULT;
+
 	/**
 	 * The default value of the '{@link #getEndCharacter() <em>End Character</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -98,6 +104,7 @@ public class CommentRangeImpl extends MinimalEObjectImpl.Container implements Co
 	 * @ordered
 	 */
 	protected static final int END_CHARACTER_EDEFAULT = 0;
+
 	/**
 	 * The cached value of the '{@link #getEndCharacter() <em>End Character</em>}' attribute.
 	 * <!-- begin-user-doc -->

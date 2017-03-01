@@ -1,0 +1,63 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: ValidateDynamicColumn
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _cje6UPRzEean8JK3EvuidA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 2/21/17 8:25 AM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Validate the definition of the Dynamic columns in the Dashboard and in the Reviewers table view concerning the LABELS.
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+//Lets create the default server
+let [val review [create-review -server $serverURL]] {
+	runQueryAndOpenEditor [$review | get lastChangeId] -serverName $serverName
+}
+
+//Test columns in Dashboard
+assert-colum-count-in-dashboard-is -is 9
+
+//Test to see the number of columns in the Reviewers table includes the dynamic columns
+assert-colum-count-in-reviewers-is 4
+
+//Test the column value is CR "Code-Review"
+assert-column-label-in-reviewers -col 3 -label "CR"
+
+//Close all editors
+get-editor | close
+
+//Now lets try on a different server: Eclipse foundation
+add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+runQuery -query 90644 -serverName EF
+
+
+//Verify if the dynamic column "CR"  and "V" are available in the DASHBOARD
+assert-colum-count-in-dashboard-is -is 10
+
+//Open the editor
+with [getDashboard] {
+		with [get-table] {
+			get-cell -row 0 -column 1 | double-click
+		}
+}
+wait -ms $defaultWaitTime
+
+//Test to see the number of columns in the Reviewers table includes the dynamic columns
+assert-colum-count-in-reviewers-is 5
+
+//Test the column value is CR "Code-Review" and V "Verified"
+assert-column-label-in-reviewers -col 3 -label "CR"
+assert-column-label-in-reviewers -col 4 -label "V"
+
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

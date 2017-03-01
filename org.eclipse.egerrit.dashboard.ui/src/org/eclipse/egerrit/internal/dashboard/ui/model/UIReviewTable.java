@@ -70,7 +70,12 @@ public class UIReviewTable {
 
 	private AdapterFactoryContentProvider contentProvider;
 
-	public Composite createTableViewerSection(Composite aParent) {
+	private int defaultColumn = ReviewTableDefinition.values().length;
+
+	private String[] voteColumns;
+
+	public Composite createTableViewerSection(Composite aParent, String[] voteColumns) {
+		this.voteColumns = voteColumns;
 		Composite viewerForm = new Composite(aParent, SWT.BORDER | SWT.SHADOW_ETCHED_IN);
 		viewerForm.setLayout(new FillLayout());
 
@@ -80,21 +85,56 @@ public class UIReviewTable {
 		fViewer.getTable().addDisposeListener(e -> {
 			storeColumnsSettings();
 		});
-		adapterFactory = new ComposedAdapterFactory();
-		adapterFactory.addAdapterFactory(new ModifiedModelItemProviderAdapterFactory());
-
-		contentProvider = new AdapterFactoryContentProvider(adapterFactory);
-		fViewer.setContentProvider(contentProvider);
-
-		labelProvider = new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null);
-		fViewer.setLabelProvider(labelProvider);
-		ReviewTableSorter.bind(fViewer);
-		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
 
 		// Add a Key event and mouse down listener
 		fViewer.getTable().addListener(SWT.MouseDown, mouseButtonListener);
 
+		adapterFactory = new ComposedAdapterFactory();
+		adapterFactory.addAdapterFactory(new ModifiedModelItemProviderAdapterFactory(voteColumns));
+
+		contentProvider = new AdapterFactoryContentProvider(adapterFactory);
+		fViewer.setContentProvider(contentProvider);
+
+		if (voteColumns != null) {
+			setLabelProvider(voteColumns);
+		}
+
 		return viewerForm;
+	}
+
+	/**
+	 * Create the label provider after we defined the dynamic columns
+	 *
+	 * @param voteColumns
+	 */
+	private void setLabelProvider(String[] voteColumns) {
+		for (String column : voteColumns) {
+			createTableViewerLabelColumn(getAcronymLabel(column));
+		}
+
+		ReviewTableSorter.bind(fViewer);
+		fViewer.setComparator(new ReviewTableSorter(7)); // sort by Updated, descending
+
+		labelProvider = new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null);
+		fViewer.setLabelProvider(labelProvider);
+
+		//Read and adjust the last column defined before the dynamic labels
+		int[] order = fViewer.getTable().getColumnOrder();
+		int lastColumn = order[ReviewTableDefinition.values().length - 1];
+		int defaultWidth = ReviewTableDefinition.values()[lastColumn].getWidth();//column before the dynamic labels
+		fViewer.getTable().getColumn(lastColumn).setWidth(defaultWidth);
+
+	}
+
+	private String getAcronymLabel(String label) {
+		String ret = ""; //$NON-NLS-1$
+		if (!label.isEmpty()) {
+			String[] arraySt = label.split("-"); //$NON-NLS-1$
+			for (String s : arraySt) {
+				ret = ret.concat(s.substring(0, 1));
+			}
+		}
+		return ret;
 	}
 
 	/**
@@ -242,9 +282,9 @@ public class UIReviewTable {
 			return;
 		}
 		int[] columnOrder = fViewer.getTable().getColumnOrder();
-
-		int[] columnWidth = new int[10];
-		for (int i = 0; i < 10; i++) {
+		int colInTable = fViewer.getTable().getColumnCount();
+		int[] columnWidth = new int[colInTable];
+		for (int i = 0; i < colInTable; i++) {
 			columnWidth[i] = fViewer.getTable().getColumn(i).getWidth();
 		}
 
@@ -263,7 +303,23 @@ public class UIReviewTable {
 			return;
 		}
 		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-		fViewer.getTable().setColumnOrder(columnOrder);
+		int colInTable = fViewer.getTable().getColumnCount();
+		int[] colTable = new int[colInTable];
+		if (colInTable < columnOrder.length) {
+			//More store column than store
+			System.arraycopy(columnOrder, 0, colTable, 0, colInTable);
+		} else {
+			//Table have more column
+			System.arraycopy(columnOrder, 0, colTable, 0, columnOrder.length);
+		}
+		//Validate the column , it should be between 0 to ReviewTableDefinition.size
+		for (int i = 0; i < colInTable; i++) {
+			if (!(colTable[i] < colInTable)) {
+				resetDefault();
+				return;
+			}
+		}
+		fViewer.getTable().setColumnOrder(colTable);
 
 		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
 		if (backedUpValue == null) {
@@ -271,23 +327,51 @@ public class UIReviewTable {
 		}
 		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
 		int totalSize = 0;
-		for (int i = 0; i < 10; i++) {
-			totalSize = totalSize + columnWidth[i];
-			fViewer.getTable().getColumn(i).setWidth(columnWidth[i]);
+		if (colInTable < columnWidth.length) {
+			//More store column than store
+			System.arraycopy(columnWidth, 0, colTable, 0, colInTable);
+		} else {
+			//Table have more column
+			System.arraycopy(columnWidth, 0, colTable, 0, columnWidth.length);
 		}
+		for (int i = 0; i < colTable.length; i++) {
+			totalSize = totalSize + colTable[i];
+			fViewer.getTable().getColumn(i).setWidth(colTable[i]);
+		}
+
 		//Reset if total size is small number (50 or less )pixels.
 		if (totalSize <= 50) {
 			resetDefault();
 		}
 	}
 
-	private void resetDefault() {
-		//Reset to the original setting: ORDER + Column width
+	/**
+	 * Reset the column width and order, then save it for the next time
+	 */
+	public void resetDefault() {
+		Table table = fViewer.getTable();
 		ReviewTableDefinition[] tableInfo = ReviewTableDefinition.values();
-		int size = tableInfo.length;
-		fViewer.getTable().setColumnOrder(ReviewTableDefinition.getDefaultOrder());//set the initial column order
-		for (int index = 0; index < size; index++) {
-			fViewer.getTable().getColumn(index).setWidth(tableInfo[index].getWidth());
+		int defaultLength = tableInfo.length;
+		int colInTable = table.getColumnCount();
+		int[] newOrder = new int[colInTable];
+		int[] currentOrder = table.getColumnOrder();
+		System.arraycopy(ReviewTableDefinition.getDefaultOrder(), 0, newOrder, 0, defaultLength);
+		//Now put the remaining column in the same order
+		for (int i = defaultLength; i < colInTable; i++) {
+			int columValue = 0;
+			for (int j = 0; j < colInTable; j++) {
+				if (currentOrder[j] >= defaultLength) {
+					columValue = currentOrder[j];
+					currentOrder[j] = 0; //reset the value not to take it again
+					break;
+				}
+			}
+			newOrder[i] = columValue;
+		}
+
+		table.setColumnOrder(newOrder);//Re-set the initial column order, plus the LABELS at the end
+		for (int i = 0; i < defaultLength; i++) {
+			table.getColumn(i).setWidth(tableInfo[i].getWidth());
 		}
 		storeColumnsSettings();
 	}
@@ -299,5 +383,36 @@ public class UIReviewTable {
 			section = settings.addNewSection(EGERRIT_DASHBOARD);
 		}
 		return section;
+	}
+
+	/**
+	 * Create each column in the review table list
+	 *
+	 * @param ReviewTableDefinition
+	 * @return TableViewerColumn
+	 */
+	private void createTableViewerLabelColumn(String label) {
+		int width = 28 + 5 * label.length();
+		final TableViewerColumn viewerColumn = new TableViewerColumn(fViewer, SWT.NONE);
+		final TableColumn column = viewerColumn.getColumn();
+		column.setText(label);
+		column.setWidth(width);
+		column.setAlignment(SWT.LEFT);
+		column.setResizable(false);
+		column.setMoveable(false);
+	}
+
+	/**
+	 * Return the name for a dynamic column
+	 *
+	 * @param column
+	 * @return
+	 */
+	public String getColumnLabel(int column) {
+		int val = column - defaultColumn;//Adjust the dynamic column value
+		if (val >= 0) {
+			return voteColumns[val];
+		}
+		return ""; //$NON-NLS-1$
 	}
 }

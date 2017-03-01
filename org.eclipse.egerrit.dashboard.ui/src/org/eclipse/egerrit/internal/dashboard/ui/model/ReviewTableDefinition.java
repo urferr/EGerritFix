@@ -13,8 +13,6 @@
 
 package org.eclipse.egerrit.internal.dashboard.ui.model;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 
 /**
@@ -28,7 +26,6 @@ import org.eclipse.swt.SWT;
 // Definition of the review table list {name, width of the column, Resizeable,
 // Moveable}
 public enum ReviewTableDefinition {
-	// 			Name 			                               Width 	Resize Moveable
 	STARRED("", 20, false, true, SWT.LEFT), //$NON-NLS-1$
 	ID(Messages.ReviewTableDefinition_id, 60, true, true, SWT.LEFT), //
 	SUBJECT(Messages.ReviewTableDefinition_subject, 180, true, true, SWT.LEFT), //
@@ -36,10 +33,7 @@ public enum ReviewTableDefinition {
 	OWNER(Messages.ReviewTableDefinition_owner, 140, true, true, SWT.LEFT), //
 	PROJECT(Messages.ReviewTableDefinition_project, 170, true, true, SWT.LEFT), //
 	BRANCH(Messages.ReviewTableDefinition_branch, 90, true, true, SWT.LEFT), //
-	UPDATED(Messages.ReviewTableDefinition_updated, 140, true, true, SWT.LEFT), //
-	CR(Messages.ReviewTableDefinition_codeReview, 33, true, true, SWT.LEFT), //
-//	   IC(		"IC", 			28, 	false, 	true, SWT.LEFT),
-	VERIFY(Messages.ReviewTableDefinition_verify, 28, true, true, SWT.LEFT);
+	UPDATED(Messages.ReviewTableDefinition_updated, 140, true, true, SWT.LEFT);
 
 	private final String fHeader;
 
@@ -79,29 +73,6 @@ public enum ReviewTableDefinition {
 		return fAlignment;
 	}
 
-	public static String[] getColumnName() {
-		ArrayList<String> listName = new ArrayList<String>();
-		for (ReviewTableDefinition st : ReviewTableDefinition.values()) {
-			listName.add(st.getName());
-		}
-		return listName.toArray(new String[] {});
-	}
-
-	public static int getMinimumWidth() {
-		int width = 0;
-		for (int index = 0; index < ReviewTableDefinition.values().length; index++) {
-			width += ReviewTableDefinition.values()[index].getWidth();
-		}
-		return width;
-	}
-
-	// public static int getColumnNumber (String st) {
-	// logger.debug("getColumnNumber(): " +
-	// (ReviewTableDefinition.valueOf(st).ordinal() + 1));
-	// //The ordinal starts at zero, so add 1
-	// return ReviewTableDefinition.valueOf(st).ordinal();
-	// }
-
 	/**
 	 * Provide an index array width the default order definition
 	 *
@@ -115,5 +86,4 @@ public enum ReviewTableDefinition {
 		}
 		return order;
 	}
-
 }

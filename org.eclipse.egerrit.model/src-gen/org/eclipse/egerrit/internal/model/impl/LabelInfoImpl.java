@@ -710,7 +710,8 @@ public class LabelInfoImpl extends MinimalEObjectImpl.Container implements Label
 		case ModelPackage.LABEL_INFO__VALUE:
 			return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
 		case ModelPackage.LABEL_INFO__DEFAULT_VALUE:
-			return DEFAULT_VALUE_EDEFAULT == null ? default_value != null
+			return DEFAULT_VALUE_EDEFAULT == null
+					? default_value != null
 					: !DEFAULT_VALUE_EDEFAULT.equals(default_value);
 		case ModelPackage.LABEL_INFO__ALL:
 			return all != null && !all.isEmpty();

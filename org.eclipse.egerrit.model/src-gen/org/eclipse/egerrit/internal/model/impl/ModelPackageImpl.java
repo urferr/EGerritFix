@@ -347,7 +347,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
 		// Obtain or create and register package
 		ModelPackageImpl theModelPackage = (ModelPackageImpl) (EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof ModelPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
+				.get(eNS_URI) instanceof ModelPackageImpl
+						? EPackage.Registry.INSTANCE.get(eNS_URI)
 						: new ModelPackageImpl());
 
 		isInited = true;
@@ -2112,6 +2113,26 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EOperation getChangeInfo__GetLabelMinValue__String() {
+		return changeInfoEClass.getEOperations().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EOperation getChangeInfo__GetLabelMaxValue__String() {
+		return changeInfoEClass.getEOperations().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getProblemInfo() {
 		return problemInfoEClass;
 	}
@@ -2834,6 +2855,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_REVISION_BY_NUMBER__INT);
 		createEOperation(changeInfoEClass, CHANGE_INFO___IS_ACTION_ALLOWED__STRING);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING);
+		createEOperation(changeInfoEClass, CHANGE_INFO___GET_LABEL_MIN_VALUE__STRING);
+		createEOperation(changeInfoEClass, CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING);
 
 		problemInfoEClass = createEClass(PROBLEM_INFO);
 		createEAttribute(problemInfoEClass, PROBLEM_INFO__MESSAGE);
@@ -3382,6 +3405,14 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 
 		op = initEOperation(getChangeInfo__GetMostRelevantVote__String(), this.getApprovalInfo(), "getMostRelevantVote", //$NON-NLS-1$
 				0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getChangeInfo__GetLabelMinValue__String(), ecorePackage.getEInt(), "getLabelMinValue", 0, 1, //$NON-NLS-1$
+				IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
+
+		op = initEOperation(getChangeInfo__GetLabelMaxValue__String(), ecorePackage.getEInt(), "getLabelMaxValue", 0, 1, //$NON-NLS-1$
+				IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
 
 		initEClass(problemInfoEClass, ProblemInfo.class, "ProblemInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$

@@ -401,13 +401,16 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT:
 			return commit != null;
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_NUMBER:
-			return _CHANGE_NUMBER_EDEFAULT == null ? _change_number != null
+			return _CHANGE_NUMBER_EDEFAULT == null
+					? _change_number != null
 					: !_CHANGE_NUMBER_EDEFAULT.equals(_change_number);
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__REVISION_NUMBER:
-			return _REVISION_NUMBER_EDEFAULT == null ? _revision_number != null
+			return _REVISION_NUMBER_EDEFAULT == null
+					? _revision_number != null
 					: !_REVISION_NUMBER_EDEFAULT.equals(_revision_number);
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER:
-			return _CURRENT_REVISION_NUMBER_EDEFAULT == null ? _current_revision_number != null
+			return _CURRENT_REVISION_NUMBER_EDEFAULT == null
+					? _current_revision_number != null
 					: !_CURRENT_REVISION_NUMBER_EDEFAULT.equals(_current_revision_number);
 		}
 		return super.eIsSet(featureID);

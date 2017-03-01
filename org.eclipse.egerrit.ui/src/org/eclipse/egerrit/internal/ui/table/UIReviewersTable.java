@@ -14,6 +14,7 @@ package org.eclipse.egerrit.internal.ui.table;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewTableSorter;
 import org.eclipse.egerrit.internal.ui.table.model.ReviewersTableModel;
+import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -49,10 +50,10 @@ public class UIReviewersTable {
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent) {
+	public TableViewer createTableViewerSection(Composite aParent, String[] dynamicReviewersColumn) {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(aParent, TABLE_STYLE);
-		fViewer = buildAndLayoutTable(fViewer);
+		fViewer = buildAndLayoutTable(fViewer, dynamicReviewersColumn);
 
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
@@ -66,21 +67,23 @@ public class UIReviewersTable {
 	 *
 	 * @param aParent
 	 * @param aViewer
+	 * @param dynamicReviewersColumn
 	 */
-	private TableViewer buildAndLayoutTable(final TableViewer aViewer) {
+	private TableViewer buildAndLayoutTable(final TableViewer aViewer, String[] dynamicReviewersColumn) {
 		final Table table = aViewer.getTable();
 
 		//Get the review table definition
 		final ITableModel[] tableInfo = ReviewersTableModel.values();
 		int size = tableInfo.length;
-//		logger.debug("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
-//			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-//					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
-//					+ tableInfo[index].getMoveable());
 			createTableViewerColumn(tableInfo[index]);
 		}
 
+		if (dynamicReviewersColumn != null) {
+			for (String element : dynamicReviewersColumn) {
+				createTableViewerLabelColumn(element);
+			}
+		}
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
 
@@ -109,8 +112,30 @@ public class UIReviewersTable {
 
 	}
 
+	/**
+	 * @return the tableViewer
+	 */
 	public TableViewer getViewer() {
 		return fViewer;
+	}
+
+	/**
+	 * Create each column in the review table list
+	 *
+	 * @param ReviewTableDefinition
+	 * @return TableViewerColumn
+	 */
+	private TableViewerColumn createTableViewerLabelColumn(String fullName) {
+		String label = UIUtils.getAcronymLabel(fullName);
+		int width = 28 + 5 * label.length();
+		final TableViewerColumn viewerColumn = new TableViewerColumn(fViewer, SWT.NONE);
+		final TableColumn column = viewerColumn.getColumn();
+		column.setText(label);
+		column.setWidth(width);
+		column.setAlignment(SWT.LEFT);
+		column.setResizable(false);
+		column.setMoveable(false);
+		return viewerColumn;
 	}
 
 }

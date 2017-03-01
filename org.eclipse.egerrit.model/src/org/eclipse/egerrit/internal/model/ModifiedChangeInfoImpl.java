@@ -12,7 +12,9 @@ package org.eclipse.egerrit.internal.model;
  */
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -353,5 +355,37 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		}
 		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
 		return matcher.find(0);
+	}
+	
+	@Override
+	public int getLabelMinValue(String label) {
+		int min = 0;
+		EMap<String, LabelInfo> allLabels = getLabels();
+		if (allLabels != null) {
+			LabelInfo info = getLabels().get(label);
+			if (info == null)
+				return min;
+			Set<String> possibleValues = info.getValues().keySet();
+			for (String value : possibleValues) {
+				min = Math.min(min, Integer.parseInt(value.trim()));
+			}
+		}
+		return min;
+	}
+	
+	@Override
+	public int getLabelMaxValue(String label) {
+		int max = 0;
+		EMap<String, LabelInfo> mapLabels = getLabels();
+		if (mapLabels != null) {
+			LabelInfo info = mapLabels.get(label);
+			if (info == null)
+				return max;
+			Set<String> possibleValues = info.getValues().keySet();
+			for (String value : possibleValues) {
+				max = Math.max(max, Integer.parseInt(value.trim()));
+			}
+		}
+		return max;
 	}
 }

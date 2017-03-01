@@ -998,6 +998,22 @@ public interface ChangeInfo extends EObject {
 	ApprovalInfo getMostRelevantVote(String label);
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	int getLabelMinValue(String label);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	int getLabelMaxValue(String label);
+
+	/**
 	 * Returns the value of the '<em><b>Revertable</b></em>' attribute.
 	 * The default value is <code>"false"</code>.
 	 * <!-- begin-user-doc -->

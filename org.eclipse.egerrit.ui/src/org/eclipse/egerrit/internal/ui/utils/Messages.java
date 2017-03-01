@@ -408,10 +408,6 @@ public class Messages extends NLS {
 
 	public static String ReviewersTableDefinition_role;
 
-	public static String ReviewersTableDefinition_cr;
-
-	public static String ReviewersTableDefinition_v;
-
 	public static String FilesTableDefinition_filePath;
 
 	public static String FilesTableDefinition_comments;

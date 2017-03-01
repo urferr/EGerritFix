@@ -14,7 +14,6 @@ package org.eclipse.egerrit.internal.dashboard.ui.commands;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.egerrit.internal.dashboard.ui.model.ReviewTableDefinition;
 import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.table.UIConflictsWithTable;
@@ -62,12 +61,7 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 		String id = wbp.getActivePartReference().getId();
 		if (id.compareTo(GerritTableView.VIEW_ID) == 0) {
 			GerritTableView reviewTableView = GerritTableView.getActiveView(true);
-			Table table = reviewTableView.getViewer().getTable();
-			ReviewTableDefinition[] tableInfo = ReviewTableDefinition.values();
-			table.setColumnOrder(ReviewTableDefinition.getDefaultOrder());//set the initial column order
-			for (int i = 0; i < tableInfo.length; i++) {
-				table.getColumn(i).setWidth(tableInfo[i].getWidth());
-			}
+			reviewTableView.resetDefault();
 		} else {
 			Display display = Display.getCurrent();
 			Control table = display.getFocusControl();

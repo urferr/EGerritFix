@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Ericsson
+ * Copyright (c) 2013, 2017 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -20,6 +20,7 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.provider.ChangeInfoItemProvider;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -38,32 +39,17 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 
 	private final String EMPTY_STRING = ""; //$NON-NLS-1$
 
-	private int fVerifyState;
+	private int fState;
 
-	private int fCodeReviewState;
+	private int defaultColumn = ReviewTableDefinition.values().length;
 
-	// +2 Names of images used to represent review-checked
-	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
-
-	// -2 Names of images used to represent review-not OK
-	public static final String NOT_OK_IMAGE = "redNot.png"; //$NON-NLS-1$
-
-	// -1
-	public static final String MINUS_ONE = "minusOne.png"; //$NON-NLS-1$
-
-	// +1
-	public static final String PLUS_ONE = "plusOne.png"; //$NON-NLS-1$
+	private String[] voteColumns;
 
 	// Names of images used to represent STAR FILLED
 	public static final String STAR_FILLED = "starFilled.gif"; //$NON-NLS-1$
 
 	// Names of images used to represent STAR OPEN
 	public static final String STAR_OPEN = "starOpen.gif"; //$NON-NLS-1$
-
-	// Value stored to define the state of the review item.
-	public static final int NOT_OK_IMAGE_STATE = -2;
-
-	public static final int CHECKED_IMAGE_STATE = 2;
 
 	// Constant for the column with colors: CR, IC and V
 	private static Display fDisplay = Display.getCurrent();
@@ -75,17 +61,14 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 
 	private static Color BOLD_COLOR = fDisplay.getSystemColor(SWT.COLOR_BLACK);
 
-//	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
 	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
 
 	private static Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
 
-//	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
-//	private static Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	private static Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
 
-	private static final String VERIFIED = "Verified"; //$NON-NLS-1$
+	private static Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
 
-	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 	// For the images
 
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
@@ -98,69 +81,14 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 
 		String iconPath = "icons/view16/"; //$NON-NLS-1$
 
-		fImageRegistry.put(CHECKED_IMAGE, GerritUi.getImageDescriptor(iconPath + CHECKED_IMAGE));
-
-		fImageRegistry.put(NOT_OK_IMAGE, GerritUi.getImageDescriptor(iconPath + NOT_OK_IMAGE));
-
-		fImageRegistry.put(MINUS_ONE, GerritUi.getImageDescriptor(iconPath + MINUS_ONE));
-
-		fImageRegistry.put(PLUS_ONE, GerritUi.getImageDescriptor(iconPath + PLUS_ONE));
-
 		fImageRegistry.put(STAR_FILLED, GerritUi.getImageDescriptor(iconPath + STAR_FILLED));
 
 		fImageRegistry.put(STAR_OPEN, GerritUi.getImageDescriptor(iconPath + STAR_OPEN));
 	}
 
-	public ReviewTableLabelProvider(AdapterFactory adapterFactory) {
+	public ReviewTableLabelProvider(AdapterFactory adapterFactory, String[] columnDescription) {
 		super(adapterFactory);
-	}
-
-	/**
-	 * Return an image representing the state of the object
-	 *
-	 * @param int
-	 *            aState
-	 * @return Image
-	 */
-	private Image getReviewStateImage(int aState) {
-		switch (aState) {
-		case 2:
-			return fImageRegistry.get(CHECKED_IMAGE);
-		case 1:
-			return fImageRegistry.get(PLUS_ONE);
-		case 0:
-			break;
-		case -1:
-			return fImageRegistry.get(MINUS_ONE);
-		case -2:
-			return fImageRegistry.get(NOT_OK_IMAGE);
-		default:
-			break;
-		}
-		return null;
-	}
-
-	/**
-	 * Return an image representing the state of the object
-	 *
-	 * @param int
-	 *            aState
-	 * @return Image
-	 */
-	private Image getVerifyStateImage(int aState) {
-		switch (aState) {
-		case 2:
-		case 1:
-			return fImageRegistry.get(CHECKED_IMAGE);
-		case 0:
-			break;
-		case -1:
-		case -2:
-			return fImageRegistry.get(NOT_OK_IMAGE);
-		default:
-			break;
-		}
-		return null;
+		voteColumns = columnDescription;
 	}
 
 	/**
@@ -222,16 +150,21 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 			case 7: {
 				return Utils.prettyPrintDate(reviewSummary.getUpdated());
 			}
-			case 8: {
-				fCodeReviewState = reviewSummary.getMostRelevantVote(CODE_REVIEW).getValue();
-				return EMPTY_STRING;
-			}
-			case 9: {
-				fVerifyState = reviewSummary.getMostRelevantVote(VERIFIED).getValue();
-
-				return EMPTY_STRING;
-			}
 			default:
+				String label = getColumnLabels(aIndex);
+				fState = reviewSummary.getMostRelevantVote(label).getValue();
+
+				int min = reviewSummary.getLabelMinValue(label);
+				int max = reviewSummary.getLabelMaxValue(label);
+				if (max != 0 && fState >= max) {
+					return "\u2713"; //Check mark value in hexadecimal //$NON-NLS-1$
+				} else if (min != 0 && fState <= min) {
+					return "X"; //$NON-NLS-1$
+				} else if (fState != 0) {
+					String st = fState > 0 ? "+" : ""; //$NON-NLS-1$//$NON-NLS-2$
+					st = st + StringConverter.asString(fState);
+					return st;
+				}
 				return EMPTY_STRING;
 			}
 		}
@@ -275,10 +208,6 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 				return image;
 			case 7:
 				return image;
-			case 8:
-				return getReviewStateImage(fCodeReviewState);
-			case 9:
-				return getVerifyStateImage(fVerifyState);
 			default:
 				return image;
 			}
@@ -312,6 +241,12 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 				} else {
 					return BOLD_COLOR;
 				}
+			default:
+				if (fState < 0) {
+					return RED_COLOR;
+				} else if (fState > 0) {
+					return GREEN_COLOR;
+				}
 			}
 		}
 		return null;
@@ -320,9 +255,6 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 
 	@Override
 	public Object getBackground(Object aElement, int aColumnIndex) {
-		// logger.debug("getBackground column : " +
-		// aColumnIndex +
-		// " ]: "+ aElement );
 		if (aElement instanceof ChangeInfo) {
 			ChangeInfo item = (ChangeInfo) aElement;
 			//
@@ -339,6 +271,20 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 		}
 
 		return DEFAULT_COLOR;
+	}
+
+	/**
+	 * Return the name for a dynamic column
+	 *
+	 * @param column
+	 * @return
+	 */
+	private String getColumnLabels(int column) {
+		int val = column - defaultColumn;//Adjust the dynamic column value
+		if (val >= 0) {
+			return voteColumns[val];
+		}
+		return ""; //$NON-NLS-1$
 	}
 
 }

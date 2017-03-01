@@ -470,4 +470,26 @@ proc "checkout-revision" [val in -input] [val ps] [val acceptPrompts false] {
 		}
 	}
 }
+
+proc "assert-colum-count-in-dashboard-is" [val is] {
+	getDashboard | get-table | get-property "columnCount"
+		| equals $is | verify-true
+}
+
+proc "assert-colum-count-in-reviewers-is" [val is] {
+//Test to see the number of columns in the Reviewers table includes the dynamic columns
+	with [get-editor ] {
+		get-tab-folder | get-tab-item Details | click
+		get-group Reviewers | get-table | get-property "columnCount"
+		| equals $is | verify-true
+	}
+}
+proc "assert-column-label-in-reviewers" [val col] [val label] {
+//Test the column value is CR "Code-Review", V "Verified", etc
+	with [get-editor | get-group Reviewers | get-table] {
+		get-property [format "columns[%d].caption" $col] | equals $label | verify-true
+	}
+
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

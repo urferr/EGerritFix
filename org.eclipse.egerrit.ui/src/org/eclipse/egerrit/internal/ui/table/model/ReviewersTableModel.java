@@ -33,9 +33,7 @@ public enum ReviewersTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	SELECT("", 24, false, true, SWT.LEFT), // //$NON-NLS-1$
 	ID(Messages.ReviewersTableDefinition_id, 120, true, true, SWT.LEFT), //
-	ROLE(Messages.ReviewersTableDefinition_role, 170, true, true, SWT.LEFT), //
-	CR(Messages.ReviewersTableDefinition_cr, 45, false, true, SWT.LEFT), //
-	v(Messages.ReviewersTableDefinition_v, 40, false, true, SWT.LEFT);
+	ROLE(Messages.ReviewersTableDefinition_role, 170, true, true, SWT.LEFT);
 
 	private final String fHeader;
 

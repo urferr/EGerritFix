@@ -1579,7 +1579,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	@Override
 	public RevisionInfo getRevision() {
 		RevisionInfo revision = basicGetRevision();
-		return revision != null && revision.eIsProxy() ? (RevisionInfo) eResolveProxy((InternalEObject) revision)
+		return revision != null && revision.eIsProxy()
+				? (RevisionInfo) eResolveProxy((InternalEObject) revision)
 				: revision;
 	}
 
@@ -1604,7 +1605,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	public RevisionInfo getLatestPatchSet() {
 		RevisionInfo latestPatchSet = basicGetLatestPatchSet();
 		return latestPatchSet != null && latestPatchSet.eIsProxy()
-				? (RevisionInfo) eResolveProxy((InternalEObject) latestPatchSet) : latestPatchSet;
+				? (RevisionInfo) eResolveProxy((InternalEObject) latestPatchSet)
+				: latestPatchSet;
 	}
 
 	/**
@@ -1729,6 +1731,30 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 */
 	@Override
 	public ApprovalInfo getMostRelevantVote(String label) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public int getLabelMinValue(String label) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public int getLabelMaxValue(String label) {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
 		throw new UnsupportedOperationException();
@@ -2273,7 +2299,8 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 		case ModelPackage.CHANGE_INFO__MESSAGES:
 			return messages != null && !messages.isEmpty();
 		case ModelPackage.CHANGE_INFO__CURRENT_REVISION:
-			return CURRENT_REVISION_EDEFAULT == null ? current_revision != null
+			return CURRENT_REVISION_EDEFAULT == null
+					? current_revision != null
 					: !CURRENT_REVISION_EDEFAULT.equals(current_revision);
 		case ModelPackage.CHANGE_INFO__REVISIONS:
 			return revisions != null && !revisions.isEmpty();
@@ -2331,6 +2358,10 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return isActionAllowed((String) arguments.get(0));
 		case ModelPackage.CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING:
 			return getMostRelevantVote((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_LABEL_MIN_VALUE__STRING:
+			return getLabelMinValue((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING:
+			return getLabelMaxValue((String) arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

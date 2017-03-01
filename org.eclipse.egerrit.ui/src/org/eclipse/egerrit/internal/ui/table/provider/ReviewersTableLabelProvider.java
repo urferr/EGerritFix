@@ -14,6 +14,11 @@ package org.eclipse.egerrit.internal.ui.table.provider;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.egerrit.internal.model.ReviewerInfo;
+import org.eclipse.egerrit.internal.ui.table.model.ReviewersTableModel;
+import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * This class implements the File table UI label provider.
@@ -22,12 +27,27 @@ import org.eclipse.egerrit.internal.model.ReviewerInfo;
  */
 public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 
+	// Constant for the column with colors: CR, IC and V
+	private static Display fDisplay = Display.getCurrent();
+
+	//Color used depending on the review state
+	private static Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
+
+	private static Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
+
+	private String[] dynamicName;
+
+	private int defaultColumn = ReviewersTableModel.values().length;
+
+	private int fValue;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public ReviewersTableLabelProvider(IObservableMap[] iObservableMaps) {
+	public ReviewersTableLabelProvider(IObservableMap[] iObservableMaps, String[] dynamicReviewersColumn) {
 		super(iObservableMaps);
+		this.dynamicName = dynamicReviewersColumn;
 	}
 
 	// ------------------------------------------------------------------------
@@ -57,18 +77,66 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 				return super.getColumnText(aObj, aIndex);
 			case 2:
 				return super.getColumnText(aObj, aIndex);
-			case 3:
-				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Code-Review")) { //$NON-NLS-1$
-					return reviewerInfo.getApprovals().get("Code-Review"); //$NON-NLS-1$
-				}
-			case 4:
-				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey("Verified")) { //$NON-NLS-1$
-					return reviewerInfo.getApprovals().get("Verified"); //$NON-NLS-1$
-				}
 			default:
+				//Handle all dynamic columns
+				String label = getColumnLabels(aIndex);
+				if (reviewerInfo.getApprovals() != null && reviewerInfo.getApprovals().containsKey(label)) {
+					String tmp = reviewerInfo.getApprovals().get(label);
+					if (tmp.trim().contains("0")) { //$NON-NLS-1$
+						fValue = 0;
+					} else {
+						fValue = Integer.valueOf(tmp);
+						String convert = fValue > 0 ? "+" : ""; //$NON-NLS-1$//$NON-NLS-2$
+						convert = convert + StringConverter.asString(fValue);
+						return convert;
+					}
+				}
 				return EMPTY_STRING;
 			}
 		}
 		return EMPTY_STRING;
 	}
+
+	/**
+	 * Adjust the column color
+	 *
+	 * @param Object
+	 *            ReviewTableListItem
+	 * @param int
+	 *            columnIndex
+	 */
+	@Override
+	public Color getForeground(Object aElement, int aColumnIndex) {
+		if (aElement instanceof ReviewerInfo) {
+			switch (aColumnIndex) {
+			case 0:
+			case 1:
+			case 2:
+				break;
+			default:
+				if (fValue < 0) {
+					return RED_COLOR;
+				} else if (fValue > 0) {
+					return GREEN_COLOR;
+				}
+			}
+		}
+		return null;
+
+	}
+
+	/**
+	 * Return the name for a dynamic column
+	 *
+	 * @param column
+	 * @return
+	 */
+	private String getColumnLabels(int column) {
+		int val = column - defaultColumn;//Adjust the dynamic column value
+		if (val >= 0) {
+			return dynamicName[val];
+		}
+		return ""; //$NON-NLS-1$
+	}
+
 }

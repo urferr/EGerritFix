@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.egerrit.internal.dashboard.ui.model.ReviewTableDefinition;
 import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
@@ -96,8 +95,9 @@ public class VoteHandler implements Listener, MouseListener {
 				return;
 			}
 			try {
-				IWebBrowser browser = PlatformUI.getWorkbench().getBrowserSupport().createBrowser(
-						"org.eclipse.egerrit.browser"); //$NON-NLS-1$
+				IWebBrowser browser = PlatformUI.getWorkbench()
+						.getBrowserSupport()
+						.createBrowser("org.eclipse.egerrit.browser"); //$NON-NLS-1$
 				browser.openURL(new URL(uriToServer));
 			} catch (PartInitException | MalformedURLException e1) {
 				logger.debug("Error opening URL :" + e1.toString()); //$NON-NLS-1$
@@ -134,12 +134,7 @@ public class VoteHandler implements Listener, MouseListener {
 	private String getRequestedLabel(Event event) {
 		ViewerCell viewerCell = table.getCell(new Point(event.x, event.y));
 		if (viewerCell != null) {
-			if (viewerCell.getColumnIndex() == ReviewTableDefinition.VERIFY.ordinal()) {
-				return "Verified"; //$NON-NLS-1$
-			}
-			if (viewerCell.getColumnIndex() == ReviewTableDefinition.CR.ordinal()) {
-				return "Code-Review"; //$NON-NLS-1$
-			}
+			return view.getReviewTable().getColumnLabel(viewerCell.getColumnIndex());
 		}
 		return null;
 	}
@@ -167,7 +162,6 @@ public class VoteHandler implements Listener, MouseListener {
 	}
 
 	public void connect() {
-		//table.getTable().addMouseListener(openBuildLocationListener());
 		table.getTable().addListener(SWT.MouseHover, this);
 		table.getTable().addMouseListener(this);
 	}

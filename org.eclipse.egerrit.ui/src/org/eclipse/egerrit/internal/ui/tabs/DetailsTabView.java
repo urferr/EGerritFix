@@ -182,8 +182,10 @@ public class DetailsTabView {
 
 	private Button fButtonPlus;
 
+	private String[] dynamicReviewersColumn;
+
 	/**
-	 * Class that provides suggestion for completion for adding a reviwer.
+	 * Class that provides suggestion for completion for adding a reviewer.
 	 */
 	private class AddReviewerContentProposal {
 
@@ -226,10 +228,9 @@ public class DetailsTabView {
 	}
 
 	/**
-	 * @param fGerritClient2
+	 * @param gerritClient
 	 * @param tabFolder
-	 * @param listMessages
-	 *            List<ChangeMessageInfo>
+	 * @param changeInfo
 	 */
 	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
 		fChangeInfo = changeInfo;
@@ -256,7 +257,7 @@ public class DetailsTabView {
 		scrolledComposite.setLayout(new FillLayout());
 		tabSummary.setControl(scrolledComposite);
 
-		final Composite composite = new Composite(scrolledComposite, SWT.NONE);
+		Composite composite = new Composite(scrolledComposite, SWT.NONE);
 		composite.setLayout(new GridLayout(6, false));
 
 		Composite general = summaryGeneral(composite);
@@ -408,14 +409,7 @@ public class DetailsTabView {
 		genVoteData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
 
 		//Table of reviewers
-		UIReviewersTable uiReviewersTable = new UIReviewersTable();
-		uiReviewersTable.createTableViewerSection(grpReviewers);
-
-		tableReviewersViewer = uiReviewersTable.getViewer();
-		tableReviewersViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			tableReviewersViewer.getTable().addMouseListener(deleteReviewerListener());
-		}
+		createReviewersTable(grpReviewers);
 
 		//Add
 		Label lblUserName = new Label(grpReviewers, SWT.NONE);
@@ -453,6 +447,37 @@ public class DetailsTabView {
 		//Set the binding for this section
 		sumReviewerDataBindings();
 		return grpReviewers;
+	}
+
+	/**
+	 * Create the reviewers table with the dynamic columns
+	 *
+	 * @param grpReviewers
+	 */
+	private void createReviewersTable(Group grpReviewers) {
+		//Create the dynamic column
+		HashMap<String, Integer> hashMap = extractAllVotingColumn();
+		SortedMap<String, Integer> dynamiColumnLabels = new TreeMap<String, Integer>(hashMap);
+		fillDynamicColumnArray(dynamiColumnLabels);
+
+		//Table of reviewers
+		UIReviewersTable uiReviewersTable = new UIReviewersTable();
+		uiReviewersTable.createTableViewerSection(grpReviewers, dynamicReviewersColumn);
+
+		tableReviewersViewer = uiReviewersTable.getViewer();
+		tableReviewersViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
+			tableReviewersViewer.getTable().addMouseListener(deleteReviewerListener());
+		}
+	}
+
+	/**
+	 * Fill an array with the column name for all Dynamic column
+	 *
+	 * @param dynamiColumnLabels
+	 */
+	private void fillDynamicColumnArray(SortedMap<String, Integer> dynamiColumnLabels) {
+		dynamicReviewersColumn = dynamiColumnLabels.keySet().toArray(new String[dynamiColumnLabels.keySet().size()]);
 	}
 
 	private boolean handleKeyReleased(String queryText, AddReviewerContentProposal reviewerProposal) {
@@ -893,42 +918,36 @@ public class DetailsTabView {
 	protected DataBindingContext sumGenDataBindings() {
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genProjectData), projectbytesFChangeInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show branch
 		IObservableValue<String> branchFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genBranchData), branchFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show topic
 		IObservableValue<String> topicFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genTopicData), topicFChangeInfoObserveValue, null,
 				null);
 
 		//Show updated status
-		IObservableValue updatedFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED)
-				.observe(fChangeInfo);
+		IObservableValue<String> updatedFChangeInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
 		//Show mergeableinfo
 		IObservableValue<String> mergeSubmitValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fChangeInfo)));
 
 		//Show mergeable status
-		IObservableValue mergeableMergeableInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE)
-				.observe(fChangeInfo);
+		IObservableValue<String> mergeableMergeableInfoObserveValue = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableMergeableInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
@@ -950,8 +969,8 @@ public class DetailsTabView {
 				return status;
 			}
 		};
-		IObservableValue observeChangeInfoStatus = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
-				.observe(fChangeInfo);
+		IObservableValue<String> observeChangeInfoStatus = EMFProperties
+				.value(ModelPackage.Literals.CHANGE_INFO__STATUS).observe(fChangeInfo);
 		IObservableValue observeGenDataVisibility = WidgetProperties.visible().observe(genMessageData);
 		bindingContext.bindValue(observeGenDataVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
 		IObservableValue observeGenStrategyDataVisibility = WidgetProperties.visible().observe(genStrategyData);
@@ -970,7 +989,9 @@ public class DetailsTabView {
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__NAME),
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__EMAIL),
 						EMFProperties.value(ModelPackage.Literals.REVIEWER_INFO__DELETEABLE) });
-		tableReviewersViewer.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties));
+		tableReviewersViewer
+				.setLabelProvider(new ReviewersTableLabelProvider(watchedProperties, dynamicReviewersColumn));
+
 		tableReviewersViewer.setInput(
 				EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__COMPUTED_REVIEWERS).observe(fChangeInfo));
 
@@ -981,7 +1002,8 @@ public class DetailsTabView {
 		ComputedValue<String> cv = new ComputedValue<String>() {
 			@Override
 			protected String calculate() {
-				HashMap<String, Integer> hashMap = extractAllVotesSummary(observedList);
+				HashMap<String, Integer> hashMap = extractAllVotingColumn();
+
 				//Now sort and Display the vote:
 				return formatReviewersVote(hashMap);
 			}
@@ -1011,28 +1033,26 @@ public class DetailsTabView {
 				}
 				return sb.toString().trim();
 			}
-
-			/**
-			 * @param observedList
-			 * @return HashMap
-			 */
-			private HashMap<String, Integer> extractAllVotesSummary(final IObservableList<ReviewerInfo> observedList) {
-				EMap<String, LabelInfo> allVotes = fChangeInfo.getLabels();
-				HashMap<String, Integer> mostRevelantVotesPerLabel = new HashMap<String, Integer>();
-				if (allVotes == null) {
-					return mostRevelantVotesPerLabel;
-				}
-
-				for (String aLabel : allVotes.keySet()) {
-					mostRevelantVotesPerLabel.put(aLabel, fChangeInfo.getMostRelevantVote(aLabel).getValue());
-				}
-				return mostRevelantVotesPerLabel;
-			}
-
 		};
 
 		ISWTObservableValue o = WidgetProperties.text().observe(genVoteData);
 		bindingContext.bindValue(o, cv, null, null);
+	}
+
+	/**
+	 * @return HashMap
+	 */
+	private HashMap<String, Integer> extractAllVotingColumn() {
+		EMap<String, LabelInfo> allVotes = fChangeInfo.getLabels();
+		HashMap<String, Integer> mostRevelantVotesPerLabel = new HashMap<String, Integer>();
+		if (allVotes == null) {
+			return mostRevelantVotesPerLabel;
+		}
+
+		for (String aLabel : allVotes.keySet()) {
+			mostRevelantVotesPerLabel.put(aLabel, fChangeInfo.getMostRelevantVote(aLabel).getValue());
+		}
+		return mostRevelantVotesPerLabel;
 	}
 
 	protected void sumIncludedDataBindings() {
@@ -1045,12 +1065,12 @@ public class DetailsTabView {
 		FeaturePath fp = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN,
 				ModelPackage.Literals.INCLUDED_IN_INFO__TAGS);
 		IEMFListProperty includedTags = EMFProperties.list(fp);
-		final IObservableList observedTags = includedTags.observe(fChangeInfo);
+		final IObservableList<ReviewerInfo> observedTags = includedTags.observe(fChangeInfo);
 
-		ComputedValue cv = new ComputedValue<String>() {
+		ComputedValue<String> cv = new ComputedValue<String>() {
 			@Override
 			protected String calculate() {
-				Iterator it = observedTags.iterator();
+				Iterator<ReviewerInfo> it = observedTags.iterator();
 				String result = ""; //$NON-NLS-1$
 				while (it.hasNext()) {
 					Object object = it.next();
@@ -1074,12 +1094,12 @@ public class DetailsTabView {
 		FeaturePath fp = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__INCLUDED_IN,
 				ModelPackage.Literals.INCLUDED_IN_INFO__BRANCHES);
 		IEMFListProperty includedInBranches = EMFProperties.list(fp);
-		final IObservableList observedBranches = includedInBranches.observe(fChangeInfo);
+		final IObservableList<ReviewerInfo> observedBranches = includedInBranches.observe(fChangeInfo);
 
-		ComputedValue cv = new ComputedValue<String>() {
+		ComputedValue<String> cv = new ComputedValue<String>() {
 			@Override
 			protected String calculate() {
-				Iterator it = observedBranches.iterator();
+				Iterator<ReviewerInfo> it = observedBranches.iterator();
 				String result = ""; //$NON-NLS-1$
 				while (it.hasNext()) {
 					Object object = it.next();
@@ -1105,7 +1125,7 @@ public class DetailsTabView {
 		tableSameTopicViewer.setContentProvider(new AdapterFactoryContentProvider(composedAdapterFactory));
 		tableSameTopicViewer.setLabelProvider(new AdapterFactoryLabelProvider(composedAdapterFactory));
 
-		IObservableList observedList = EMFObservables.observeList(fChangeInfo,
+		IObservableList<ReviewerInfo> observedList = EMFObservables.observeList(fChangeInfo,
 				ModelPackage.Literals.CHANGE_INFO__SAME_TOPIC);
 		ViewerSupport.bind(tableSameTopicViewer, observedList,
 				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER),
@@ -1115,7 +1135,7 @@ public class DetailsTabView {
 	protected void sumRelatedChangesDataBindings() {
 		final FeaturePath properties = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
 				ModelPackage.Literals.RELATED_CHANGES_INFO__CHANGES);
-		IObservableList relatedChanges = EMFProperties.list(properties).observe(fChangeInfo);
+		IObservableList<ReviewerInfo> relatedChanges = EMFProperties.list(properties).observe(fChangeInfo);
 		final FeaturePath commitSubject = FeaturePath.fromList(
 				ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT,
 				ModelPackage.Literals.COMMIT_INFO__SUBJECT);
@@ -1126,7 +1146,7 @@ public class DetailsTabView {
 	}
 
 	protected void sumConflictWithDataBindings() {
-		IObservableList observedList = EMFObservables.observeList(fChangeInfo,
+		IObservableList<ReviewerInfo> observedList = EMFObservables.observeList(fChangeInfo,
 				ModelPackage.Literals.CHANGE_INFO__CONFLICTS_WITH);
 		ViewerSupport.bind(tableConflictsWithViewer, observedList,
 				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER),

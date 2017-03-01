@@ -256,7 +256,8 @@ public class MergeableInfoImpl extends MinimalEObjectImpl.Container implements M
 		case ModelPackage.MERGEABLE_INFO__SUBMIT_TYPE:
 			return SUBMIT_TYPE_EDEFAULT == null ? submit_type != null : !SUBMIT_TYPE_EDEFAULT.equals(submit_type);
 		case ModelPackage.MERGEABLE_INFO__MERGEABLE_INTO:
-			return MERGEABLE_INTO_EDEFAULT == null ? mergeable_into != null
+			return MERGEABLE_INTO_EDEFAULT == null
+					? mergeable_into != null
 					: !MERGEABLE_INTO_EDEFAULT.equals(mergeable_into);
 		case ModelPackage.MERGEABLE_INFO__MERGEABLE:
 			return mergeable != MERGEABLE_EDEFAULT;

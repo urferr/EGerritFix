@@ -203,8 +203,10 @@ public class UIUtils {
 				//Use the Author
 				sb.append(revisionInfo.getCommit().getAuthor().getName());
 			}
-			if (!revisionInfo.getCommit().getAuthor().getName().equals(
-					revisionInfo.getCommit().getCommitter().getName())) {
+			if (!revisionInfo.getCommit()
+					.getAuthor()
+					.getName()
+					.equals(revisionInfo.getCommit().getCommitter().getName())) {
 				//Add the committer if different than the Author
 				sb.append("/"); //$NON-NLS-1$
 				sb.append(revisionInfo.getCommit().getCommitter().getName());
@@ -377,6 +379,23 @@ public class UIUtils {
 						: e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Create a acronym label based on the provided label
+	 *
+	 * @param label
+	 * @return
+	 */
+	public static String getAcronymLabel(String label) {
+		String ret = ""; //$NON-NLS-1$
+		if (!label.isEmpty()) {
+			String[] arraySt = label.split("-"); //$NON-NLS-1$
+			for (String s : arraySt) {
+				ret = ret.concat(s.substring(0, 1));
+			}
+		}
+		return ret;
 	}
 
 }

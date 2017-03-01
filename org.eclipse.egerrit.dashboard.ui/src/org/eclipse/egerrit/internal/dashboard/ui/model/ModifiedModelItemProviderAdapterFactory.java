@@ -19,10 +19,16 @@ import org.eclipse.emf.common.notify.Adapter;
  */
 public class ModifiedModelItemProviderAdapterFactory extends ModelItemProviderAdapterFactory {
 
+	private String[] columnDescription;
+
+	public ModifiedModelItemProviderAdapterFactory(String[] dynamicName) {
+		this.columnDescription = dynamicName;
+	}
+
 	@Override
 	public Adapter createChangeInfoAdapter() {
 		if (changeInfoItemProvider == null) {
-			changeInfoItemProvider = new ReviewTableLabelProvider(this);
+			changeInfoItemProvider = new ReviewTableLabelProvider(this, columnDescription);
 		}
 
 		return changeInfoItemProvider;
