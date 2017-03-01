@@ -1,0 +1,150 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AutoRebase
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _J05PwPhOEeaXtuZTeCL23w
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/10/17 2:20 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+global [val text "Changes to stash"]
+
+/* Remove all repos */
+delete-git-repos
+wait -ms $defaultWaitTime
+
+/* Create a first review with a unique content (timestamp) */
+let [val review1 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time | format-time
+	-format "hh:mm:ss:SS"]]] {
+	wait -ms $defaultWaitTime
+	/* Create second review with unique content (different timestamps) */
+	let [val review2 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+		| format-time -format "hh:mm:ss:SS"]]] {
+		runQueryAndOpenEditor $review1
+
+		/* First do a +2 */
+		get-editor | get-button "Reply..." | click
+		get-menu "Code-Review+2" | click
+		wait -ms $defaultWaitTime
+
+		/* Submit the first change */
+		with [get-editor] {
+			get-button Submit | click
+			wait -ms $defaultWaitTime
+			close
+		}
+
+		runQueryAndOpenEditor $review2
+		wait -ms $defaultWaitTime
+
+		with [get-editor] {
+			/* If the repository isn't imported, the automatic rebase dialog should not be displayed */
+			assert-that-button -button Rebase -is enabled
+
+			/* Verify that the automatic rebase doesn't start if a non-empty string is entered */
+			get-button Rebase | click
+			with [get-window "Code Review - Rebase Change"] {
+				get-editbox -after [get-label "Change parent revision (leave empty to rebase on targeted branch)"]
+					| set-text 1111111111111111
+				get-button OK | click
+				get-window "Rebase failed" | get-property title | equals "Rebase failed" | verify-true
+				get-window "Rebase failed" | get-button OK | click
+			}
+
+			/* Verify that the automatic rebase can't start if no local repo is found on the workspace */
+			get-button Rebase | click
+			get-window "Code Review - Rebase Change" | get-button OK | click
+			wait -ms $defaultWaitTime
+			get-window "Rebase failed (no local repository)" | get-property title | equals "Rebase failed (no local r" +
+				"epository)" | verify-true
+			get-window "Rebase failed (no local repository)" | get-button OK | click
+
+			/* Import the repository and try again */
+			import-project $review2 -projectName Project
+			wait -ms $defaultWaitTime
+		}
+	}
+}
+
+/* Verify that the automatic rebase can't start if the repo is in a wrong state (i.e already rebasing) */
+get-view "Git Repositories" | get-tree | select ".*master.*\.git" | get-menu "Rebase..." | click
+with [get-window "Rebase 'master'"] {
+	get-button "Rebase interactively" | check
+	get-button Rebase | click
+}
+
+/* If the rebase confirmation dialog preference is set, we need to get rid of that first */
+try {
+	get-window "Rebase Result" | get-button OK | click
+} -catch {
+	// In the dialog does not have a tree
+}
+
+with [get-editor] {
+	get-button Rebase | click
+	get-window "Code Review - Rebase Change" | get-button OK | click
+	get-window "Automatic local rebase" | get-button OK | click
+	get-window "The automatic rebase process was cancelled!" | get-property title | equals "The automatic rebase proc" +
+		"ess was cancelled!" | verify-true
+	get-window "The automatic rebase process was cancelled!" | get-button OK | click
+	get-view "Git Staging" | get-section Rebase | get-button Abort | click
+}
+
+try {
+	get-window "Rebase Result" | get-button OK | click
+} -catch {
+	// In the dialog does not have a tree
+}
+
+with [get-editor] {
+	/* Verify that the automatic rebase works if a local repository is checked out */
+	get-button Rebase | click
+	get-window "Code Review - Rebase Change" | get-button OK | click
+	get-window "Automatic local rebase" | get-property title | equals "Automatic local rebase" | verify-true
+	get-window "Automatic local rebase" | get-button OK | click
+	get-window "Automatic local rebase was started" | get-property title | equals "Automatic local rebase was started"
+		| verify-true
+	get-window "Automatic local rebase was started" | get-button OK | click
+	get-view "Git Staging" | get-section Rebase | get-label Rebase | get-property caption | equals Rebase | verify-true
+}
+get-view "Git Staging" | get-section Rebase | get-button Abort | click
+
+try {
+	get-window "Rebase Result" | get-button OK | click
+} -catch {
+	// In the dialog does not have a tree
+}
+
+with [get-view "Package Explorer" | get-tree] {
+	select "Project.*/src/file\.txt" | double-click
+}
+
+/* Verify that changes are correctly stashed if starting the autorebase process */
+with [get-editor "file.txt" | get-text-viewer] {
+	key-type "M1+a"
+	type-text $text
+	key-type "M1+s"
+	key-type "M1+w"
+}
+with [get-editor "Test commit message"] {
+	click
+	get-button Rebase | click
+}
+get-window "Code Review - Rebase Change" | get-button OK | click
+get-window "Automatic local rebase" | get-button OK | click
+get-window "Automatic local rebase was started" | get-button OK | click
+with [get-view "Git Repositories" | get-tree] {
+	select "egerrit.*Rebase w\\/merge.*\.git" | get-menu "Stashes/0: automatic-rebase.*" | click
+}
+
+get-editor ".*\.tmp]" | get-section "Unstaged Changes (1)" | get-table | select "Project\\/src\\/file.txt"
+	| double-click
+get-editor "file\.txt.*" | get-text-viewer | get-property text | equals $text | verify-true
+get-editor "file.txt.*" | close
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
