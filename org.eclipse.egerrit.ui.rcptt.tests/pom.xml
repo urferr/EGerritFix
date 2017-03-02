@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.eclipse.egerrit</groupId>
 		<artifactId>org.eclipse.egerrit.parent</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -16,14 +16,14 @@
 		<dependency>
 			<groupId>org.eclipse.egerrit</groupId>
 			<artifactId>org.eclipse.egerrit.updatesite</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.4.0-SNAPSHOT</version>
 			<type>zip</type>
 		</dependency>
 		<!-- we use this dependency to obtain the archive of the plug-ins to test -->
 		<dependency>
 			<groupId>org.eclipse.egerrit</groupId>
 			<artifactId>org.eclipse.egerrit.updatesite.tests</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.4.0-SNAPSHOT</version>
 			<type>zip</type>
 		</dependency>
 	</dependencies>

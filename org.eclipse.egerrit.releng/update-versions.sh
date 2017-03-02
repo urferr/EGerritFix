@@ -13,5 +13,5 @@ find ../. -name category.xml | xargs sed -i~ -e "s/version=$OLD.qualifier/versio
 
 }
 
-update 1.2.0 1.3.0
+update 1.3.0 1.4.0
  
