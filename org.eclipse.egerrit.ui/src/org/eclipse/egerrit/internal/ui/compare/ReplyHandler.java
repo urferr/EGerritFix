@@ -23,8 +23,10 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements button to show/hide files with comments
@@ -33,15 +35,12 @@ import org.eclipse.ui.PlatformUI;
  */
 public class ReplyHandler extends AbstractHandler {
 
-	private TreeViewer viewer;
-
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
-
-		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor instanceof CompareEditor) {
-			GerritMultipleInput input = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
-			viewer = input.getUpperSection().getDiffTreeViewer();
+		IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+		if (activeEditorInput instanceof GerritMultipleInput) {
+			GerritMultipleInput input = (GerritMultipleInput) activeEditorInput;
+			TreeViewer viewer = input.getUpperSection().getDiffTreeViewer();
 			try {
 				input.saveChanges(new NullProgressMonitor());
 			} catch (CoreException e) {
@@ -58,7 +57,6 @@ public class ReplyHandler extends AbstractHandler {
 			}
 		}
 		return Status.OK_STATUS;
-
 	}
 
 	@Override
@@ -74,5 +72,4 @@ public class ReplyHandler extends AbstractHandler {
 		}
 		return false;
 	}
-
 }

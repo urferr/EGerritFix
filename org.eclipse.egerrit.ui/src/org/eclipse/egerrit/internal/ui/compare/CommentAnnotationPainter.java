@@ -41,12 +41,9 @@ class CommentAnnotationPainter extends AnnotationPainter {
 
 	private ISourceViewer viewer;
 
-	private GerritMultipleInput input;
-
-	public CommentAnnotationPainter(ISourceViewer sourceViewer, IAnnotationAccess access, GerritMultipleInput input) {
+	public CommentAnnotationPainter(ISourceViewer sourceViewer, IAnnotationAccess access) {
 		super(sourceViewer, access);
 		viewer = sourceViewer;
-		this.input = input;
 
 		Object strategyID = new Object();
 		HighlightingStrategy paintingStrategy = new AnnotationPainter.HighlightingStrategy();

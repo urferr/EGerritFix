@@ -740,7 +740,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 				}
 
 				private AnnotationPainter initializeCommentColoring(ISourceViewer viewer) {
-					return new CommentAnnotationPainter(viewer, null, GerritMultipleInput.this);
+					return new CommentAnnotationPainter(viewer, null);
 				}
 
 				//Determine if a document is dirty by checking the status of the comment annotations

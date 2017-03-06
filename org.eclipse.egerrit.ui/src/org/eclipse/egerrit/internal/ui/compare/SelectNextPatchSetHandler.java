@@ -18,13 +18,12 @@ import java.util.LinkedHashMap;
 import java.util.ListIterator;
 import java.util.Map.Entry;
 
-import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements the selection of the next patchset in the compare editor
@@ -38,14 +37,11 @@ public class SelectNextPatchSetHandler extends AbstractHandler {
 	public Object execute(final ExecutionEvent aEvent) {
 
 		try {
-			IWorkbenchPart editor = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow()
-					.getActivePage()
-					.getActiveEditor();
-			if (editor instanceof CompareEditor) {
+			IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+			if (activeEditorInput instanceof GerritMultipleInput) {
 				String commandName = aEvent.getCommand().getId();
 				boolean isLeftSide = commandName.contains("selectLeftPatchSet"); //$NON-NLS-1$
-				GerritMultipleInput input = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
+				GerritMultipleInput input = (GerritMultipleInput) activeEditorInput;
 
 				ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(
 						input.getChangeInfo().getRevisions().values());

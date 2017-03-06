@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements the display of the patchset selected by the user in the ChangeDetailEditor
@@ -33,11 +33,9 @@ import org.eclipse.ui.PlatformUI;
  */
 public class ShowNextPatchSetHandler extends AbstractHandler {
 
-	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
-
-		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		IWorkbenchPart editor = HandlerUtil.getActiveEditor(aEvent);
 		if (editor instanceof ChangeDetailEditor) {
 			ChangeDetailEditorInput input = (ChangeDetailEditorInput) ((ChangeDetailEditor) editor).getEditorInput();
 
