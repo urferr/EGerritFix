@@ -58,6 +58,7 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.team.core.TeamException;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -415,8 +416,18 @@ public class AutoRebaseProcess extends Job {
 		subMonitor.setTaskName(Messages.AutoRebaseProcess_StashingCurrentChanges);
 		try {
 			stashRefCommit = stashChanges(subMonitor, tempName);
-		} catch (CoreException e) {
+		} catch (TeamException e) {
+			Display.getDefault().syncExec(new Runnable() {
 
+				@Override
+				public void run() {
+					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_AutoRebaseFailed,
+							Messages.AutoRebaseProcess_AutoRebaseCouldNotStartFixRepo, SWT.NONE);
+
+				}
+			});
+			return false;
+		} catch (CoreException e) {
 			EGerritCorePlugin.logError(e.getMessage());
 			return false;
 		}

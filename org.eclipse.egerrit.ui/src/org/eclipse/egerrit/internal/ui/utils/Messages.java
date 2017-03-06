@@ -38,6 +38,10 @@ public class Messages extends NLS {
 
 	public static String AutoRebaseProcess_AutomaticallyRebasing;
 
+	public static String AutoRebaseProcess_AutoRebaseCouldNotStartFixRepo;
+
+	public static String AutoRebaseProcess_AutoRebaseFailed;
+
 	public static String AutoRebaseProcess_AutoRebaseStarted;
 
 	public static String AutoRebaseProcess_CheckingOutBranchToRebase;
