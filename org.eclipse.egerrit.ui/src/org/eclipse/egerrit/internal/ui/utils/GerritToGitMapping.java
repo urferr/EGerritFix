@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.egit.core.RepositoryCache;
 import org.eclipse.egit.core.RepositoryUtil;
+import org.eclipse.egit.ui.internal.ResourcePropertyTester;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
@@ -82,6 +83,9 @@ public class GerritToGitMapping {
 		RepositoryCache repoCache = getRepositoryCache();
 		for (String dirs : repoUtil.getConfiguredRepositories()) {
 			match = repoCache.lookupRepository(new File(dirs));
+			if (!ResourcePropertyTester.hasGerritConfiguration(match)) {
+				continue;
+			}
 			RemoteConfig remote = findRemoteByName();
 			if (remote != null) {
 				return;
@@ -126,6 +130,9 @@ public class GerritToGitMapping {
 		RepositoryCache repoCache = getRepositoryCache();
 		for (String dirs : repoUtil.getConfiguredRepositories()) {
 			match = repoCache.lookupRepository(new File(dirs));
+			if (!ResourcePropertyTester.hasGerritConfiguration(match)) {
+				continue;
+			}
 			RemoteConfig remote = findMatchingRemote();
 			if (remote != null) {
 				return;
