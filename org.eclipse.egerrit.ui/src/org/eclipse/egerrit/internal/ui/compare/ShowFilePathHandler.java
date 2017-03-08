@@ -12,15 +12,14 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.compare;
 
-import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements button for the toggle file path layout
@@ -28,23 +27,14 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 public class ShowFilePathHandler extends AbstractHandler {
-
-	private TreeViewer viewer;
-
 	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 
 		try {
-			IWorkbenchPart editor = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow()
-					.getActivePage()
-					.getActiveEditor();
-			if (editor instanceof CompareEditor) {
-				GerritMultipleInput input = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
-
-				viewer = input.getUpperSection().getDiffTreeViewer();
-				TreeViewer treeViewer = viewer;
+			IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+			if (activeEditorInput instanceof GerritMultipleInput) {
+				TreeViewer treeViewer = ((GerritMultipleInput) activeEditorInput).getUpperSection().getDiffTreeViewer();
 				//Get the label provider for the FilePath column
 				IBaseLabelProvider labelProvider = treeViewer
 						.getLabelProvider(CompareUpperSectionColumn.FILE_PATH.ordinal());
@@ -57,7 +47,5 @@ public class ShowFilePathHandler extends AbstractHandler {
 		} finally {
 			return Status.OK_STATUS;
 		}
-
 	}
-
 }

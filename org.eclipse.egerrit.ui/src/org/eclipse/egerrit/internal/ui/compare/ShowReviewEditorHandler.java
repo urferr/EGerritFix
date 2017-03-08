@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.compare;
 
-import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Status;
@@ -22,10 +21,10 @@ import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements a handler to open a review editor from the
@@ -34,12 +33,11 @@ import org.eclipse.ui.PlatformUI;
  */
 public class ShowReviewEditorHandler extends AbstractHandler {
 
-	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
-		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor instanceof CompareEditor) {
-			GerritMultipleInput gmInput = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
+		IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+		if (activeEditorInput instanceof GerritMultipleInput) {
+			GerritMultipleInput gmInput = (GerritMultipleInput) activeEditorInput;
 			IEditorInput input = new ChangeDetailEditorInput(gmInput.gerritClient, gmInput.getChangeInfo());
 
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

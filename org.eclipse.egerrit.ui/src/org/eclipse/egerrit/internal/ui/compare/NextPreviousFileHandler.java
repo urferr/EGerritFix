@@ -13,15 +13,14 @@
 package org.eclipse.egerrit.internal.ui.compare;
 
 import org.eclipse.compare.INavigatable;
-import org.eclipse.compare.internal.CompareEditor;
 import org.eclipse.compare.internal.CompareEditorInputNavigator;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Adapters;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * This class implements the command handler for the file navigation in the compare editor
@@ -53,11 +52,11 @@ public class NextPreviousFileHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor instanceof CompareEditor) {
+		IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(event);
+		if (activeEditorInput instanceof GerritMultipleInput) {
 			String commandName = event.getCommand().getId();
 			boolean isNext = commandName.contains("selectNextFile"); //$NON-NLS-1$
-			compareInput = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
+			compareInput = (GerritMultipleInput) activeEditorInput;
 			if (isNext) {
 				move(INavigatable.NEXT_CHANGE);
 			} else {
