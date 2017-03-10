@@ -42,7 +42,7 @@ public class EGerritImages {
 
 	public static final String CHECKED_IMAGE = "icons/greenCheck.png"; //$NON-NLS-1$
 
-	public static final String SHOW_REVIEW_EDITOR_IMAGE = "icons/back.gif"; //$NON-NLS-1$
+	public static final String SHOW_REVIEW_EDITOR_IMAGE = "icons/EGerritcolor16.png"; //$NON-NLS-1$
 
 	public static final String NEXT_COMMENT_ANNOTATION_ICON_FILE = "icons/nextComment_menu.gif"; //$NON-NLS-1$
 
