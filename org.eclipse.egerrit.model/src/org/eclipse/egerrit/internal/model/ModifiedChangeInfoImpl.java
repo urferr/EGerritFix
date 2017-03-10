@@ -262,12 +262,15 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 	public void setUserSelectedRevision(RevisionInfo newUserSelectedRevision) {
 		if (newUserSelectedRevision == null)
 			return;
-		if (userSelectedRevision == null) {
-			super.setUserSelectedRevision(newUserSelectedRevision);
-			return;
-		}
-		if (userSelectedRevision.get_number() != newUserSelectedRevision.get_number()) {
-			super.setUserSelectedRevision(newUserSelectedRevision);
+		synchronized (this) {
+
+			if (userSelectedRevision == null) {
+				super.setUserSelectedRevision(newUserSelectedRevision);
+				return;
+			}
+			if (userSelectedRevision.get_number() != newUserSelectedRevision.get_number()) {
+				super.setUserSelectedRevision(newUserSelectedRevision);
+			}
 		}
 	}
 
@@ -356,7 +359,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		Matcher matcher = COMMENT_PATTERN.matcher(msg.toLowerCase());
 		return matcher.find(0);
 	}
-	
+
 	@Override
 	public int getLabelMinValue(String label) {
 		int min = 0;
@@ -372,7 +375,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		}
 		return min;
 	}
-	
+
 	@Override
 	public int getLabelMaxValue(String label) {
 		int max = 0;
@@ -387,5 +390,12 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 			}
 		}
 		return max;
+	}
+
+	@Override
+	public RevisionInfo getUserSelectedRevision() {
+		synchronized (this) {
+			return super.getUserSelectedRevision();
+		}
 	}
 }
