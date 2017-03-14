@@ -56,12 +56,12 @@ public class AddReviewerCommandTest extends CommandTestWithSimpleReview {
 	/**
 	 * Test method for {@link org.eclipse.egerrit.internal.core.command.AddReviewerCommand#call()}.
 	 */
-//	@Test
+	@Test
 	public void testAddGroupCall() {
 		// Add a valid reviewer group. I.e. the current Group defined: "Administrator".
 		AddReviewerCommand command = fGerrit.addReviewer(change_id);
 		AddReviewerInput addreviewerInput = new AddReviewerInput();
-		addreviewerInput.setReviewer("Administrators");
+		addreviewerInput.setReviewer("test1");
 		command.setCommandInput(addreviewerInput);
 
 		AddReviewerResult reviewerCmdResult = null;
