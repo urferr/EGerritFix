@@ -23,6 +23,9 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.core.command.AbandonCommand;
@@ -104,6 +107,8 @@ public class ChangeDetailEditor extends EditorPart {
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
+	public static int REFRESH_RATE = 60000;
+
 	private DetailsTabView detailsTab = null;
 
 	private HistoryTabView historytab = null;
@@ -141,6 +146,8 @@ public class ChangeDetailEditor extends EditorPart {
 
 	private ObservableCollector observableCollector;
 
+	private CheckForUpdate checkForUpdates;
+
 	/**
 	 * The constructor.
 	 */
@@ -176,6 +183,9 @@ public class ChangeDetailEditor extends EditorPart {
 
 		setPartName(((ChangeDetailEditorInput) getEditorInput()).getName());
 		observableCollector = new ObservableCollector(bindingContext);
+
+		checkForUpdates = new CheckForUpdate();
+		checkForUpdates.schedule(REFRESH_RATE);
 	}
 
 	private Composite headerSection(final Composite parent) {
@@ -520,6 +530,7 @@ public class ChangeDetailEditor extends EditorPart {
 		}
 
 		fAbandon.addSelectionListener(new SelectionAdapter() {
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
@@ -898,6 +909,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 	@Override
 	public void dispose() {
+		checkForUpdates.cancel();
 		loader.dispose();
 		fChangeInfo.eAdapters().remove(subjectListener);
 		observableCollector.dispose();
@@ -909,5 +921,24 @@ public class ChangeDetailEditor extends EditorPart {
 		historytab.dispose();
 		messageTab.dispose();
 		detailsTab.dispose();
+	}
+
+	//Job that checks if the review has changed on the server
+	private class CheckForUpdate extends Job {
+		public CheckForUpdate() {
+			super(NLS.bind(Messages.RefreshJobName, fChangeInfo.get_number()));
+			setSystem(true);
+			setPriority(SHORT);
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			if (monitor.isCanceled()) {
+				return Status.OK_STATUS;
+			}
+			QueryHelpers.loadBasicInformation(fGerritClient, fChangeInfo, false);
+			this.schedule(REFRESH_RATE);
+			return Status.OK_STATUS;
+		}
 	}
 }

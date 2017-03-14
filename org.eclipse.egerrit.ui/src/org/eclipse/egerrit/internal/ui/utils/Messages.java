@@ -557,6 +557,9 @@ public class Messages extends NLS {
 	public static String UnsupportedInput_Text;
 
 	public static String UnsupportedInput_Title;
+
+	public static String RefreshJobName;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
