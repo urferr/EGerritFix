@@ -91,7 +91,7 @@
 						<explicit>${base-aut}</explicit>
 						<injections>
 							<injection>
-								<site>http://download.eclipse.org/releases/neon</site>
+								<site>http://download.eclipse.org/releases/oxygen</site>
 								<features>
 									<feature>org.eclipse.egit.feature.group</feature>
 									<feature>org.eclipse.jgit.feature.group</feature>
