@@ -342,4 +342,9 @@ public abstract class CommentableCompareItem extends Document
 			this.fileType = fileType.substring(lastSlash + 1);
 		}
 	}
+
+	/**
+	 * This returns the string shown in the sub-editor header
+	 */
+	abstract public String getUserReadableName();
 }

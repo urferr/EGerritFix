@@ -80,7 +80,10 @@ public class GerritCompareInputLabelProvider implements ICompareInputLabelProvid
 		if (toPrint == null) {
 			return ""; //$NON-NLS-1$
 		}
-		return toPrint.getName();
+		if (toPrint instanceof CommentableCompareItem) {
+			return ((CommentableCompareItem) toPrint).getUserReadableName();
+		}
+		return "";
 	}
 
 	@Override

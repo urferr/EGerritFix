@@ -41,9 +41,9 @@ public class PatchSetCompareItem extends CommentableCompareItem
 	}
 
 	@Override
+	//This needs to return the name of the file
 	public String getName() {
-		return NLS.bind(Messages.CompareElementPatchSet, fileInfo.getRevision().get_number(),
-				GerritCompareHelper.extractFilename(fileInfo.getPath()));
+		return GerritCompareHelper.extractFilename(fileInfo.getPath());
 	}
 
 	@Override
@@ -74,5 +74,11 @@ public class PatchSetCompareItem extends CommentableCompareItem
 		return eList.stream()
 				.filter(comment -> comment.getSide() == null || REVISION.equals(comment.getSide()))
 				.collect(Collectors.toCollection(BasicEList::new));
+	}
+
+	@Override
+	public String getUserReadableName() {
+		return NLS.bind(Messages.CompareElementPatchSet, fileInfo.getRevision().get_number(),
+				GerritCompareHelper.extractFilename(fileInfo.getPath()));
 	}
 }

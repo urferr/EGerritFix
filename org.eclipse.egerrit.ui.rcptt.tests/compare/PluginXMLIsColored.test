@@ -1,0 +1,39 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: PluginXMLIsColored
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _wsKJoAjIEeejbLlyayQ3PA
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/14/17 12:04 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+try {
+	add-gerrit-server -serverURL "https://git.eclipse.org/r" -serverName EF -userName ""
+	openCompareEditor 91828 -serverName EF
+
+	with [get-editor "Compare.*"] {
+		switchLeftInput -to "9.*"
+		switchRightInput -to BASE
+
+		assert-that-status-in-compare -atLine 10 -is M
+		assert-that-filename-in-compare -atLine 10 -is "plugin.xml - org.eclipse.egerrit.dashboard.ui"
+
+		get-tree | select [get-item "" -index 10] | double-click
+		assert-that-compare-editor-titles-are -left "Patch Set 9: plugin.xml" -right "Base: plugin.xml (f23aec1b59)"
+
+		with [get-left-editor] {
+			get-property "styles[0].foregroundColor" | equals "#808080" | verify-true
+			get-property "styles[4].text" | equals "<plugin>" | verify-true
+			get-property "styles[4].foregroundColor" | equals "#000080" | verify-true
+		}
+	}
+} -finally {
+	remove-gerrit-server -serverName EF
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

@@ -78,14 +78,18 @@ class CommitCompareItem extends CommentableCompareItem implements IStreamContent
 	}
 
 	@Override
-	//This name is presented in the header of the text editor area
+	//This needs to return the name of the file.
 	public String getName() {
+		return GerritCompareHelper.extractFilename(getOldPathOrPath());
+	}
+
+	@Override
+	public String getUserReadableName() {
 		if (baseRevision > 0) {
-			return NLS.bind(Messages.CompareElementPatchSetWithCommitId,
-					new Object[] { baseRevision, GerritCompareHelper.extractFilename(getOldPathOrPath()),
-							GerritCompareHelper.shortenCommitId(getBaseCommitId(fileInfo)) });
+			return NLS.bind(Messages.CompareElementPatchSetWithCommitId, new Object[] { baseRevision, getName(),
+					GerritCompareHelper.shortenCommitId(getBaseCommitId(fileInfo)) });
 		}
-		return NLS.bind(Messages.CompareElementBase, GerritCompareHelper.extractFilename(getOldPathOrPath()),
+		return NLS.bind(Messages.CompareElementBase, getName(),
 				GerritCompareHelper.shortenCommitId(getBaseCommitId(fileInfo)));
 	}
 
