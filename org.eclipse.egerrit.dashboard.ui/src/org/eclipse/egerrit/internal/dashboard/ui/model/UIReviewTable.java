@@ -117,13 +117,7 @@ public class UIReviewTable {
 
 		labelProvider = new AdapterFactoryLabelProvider.ColorProvider(adapterFactory, null, null);
 		fViewer.setLabelProvider(labelProvider);
-
-		//Read and adjust the last column defined before the dynamic labels
-		int[] order = fViewer.getTable().getColumnOrder();
-		int lastColumn = order[ReviewTableDefinition.values().length - 1];
-		int defaultWidth = ReviewTableDefinition.values()[lastColumn].getWidth();//column before the dynamic labels
-		fViewer.getTable().getColumn(lastColumn).setWidth(defaultWidth);
-
+		restoreColumnsSettings();
 	}
 
 	private String getAcronymLabel(String label) {
@@ -200,7 +194,6 @@ public class UIReviewTable {
 		Menu contextMenu = menuManager.createContextMenu(table);
 		table.setMenu(contextMenu);
 		GerritTableView.getActiveView(true).getSite().registerContextMenu(DASHBOARD_CONTEXT_MENU, menuManager, aViewer);
-		restoreColumnsSettings();
 		return aViewer;
 	}
 
@@ -282,6 +275,12 @@ public class UIReviewTable {
 			return;
 		}
 		int[] columnOrder = fViewer.getTable().getColumnOrder();
+		//Use only the store when there is more than the default columns
+		//This is to allow the dynamic column position
+		if (columnOrder.length == ReviewTableDefinition.values().length) {
+			return;
+		}
+
 		int colInTable = fViewer.getTable().getColumnCount();
 		int[] columnWidth = new int[colInTable];
 		for (int i = 0; i < colInTable; i++) {
@@ -302,47 +301,91 @@ public class UIReviewTable {
 		if (backedUpValue == null) {
 			return;
 		}
-		int[] columnOrder = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
-		int colInTable = fViewer.getTable().getColumnCount();
-		int[] colTable = new int[colInTable];
-		if (colInTable < columnOrder.length) {
-			//More store column than store
-			System.arraycopy(columnOrder, 0, colTable, 0, colInTable);
-		} else {
-			//Table have more column
-			System.arraycopy(columnOrder, 0, colTable, 0, columnOrder.length);
+		int[] columnOrderStored = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
+		int columInTable = fViewer.getTable().getColumnCount();
+		//Keep default column position until we have data to display in the dashboard
+		if (columInTable == ReviewTableDefinition.values().length) {
+			return;
 		}
-		//Validate the column , it should be between 0 to ReviewTableDefinition.size
-		for (int i = 0; i < colInTable; i++) {
-			if (!(colTable[i] < colInTable)) {
-				resetDefault();
-				return;
+		//Keep an array of the last saved value concerning the columns width in the dashboard
+		int[] oldvalue = new int[columInTable];
+		for (int i = 0; i < columInTable; i++) {
+			int width = fViewer.getTable().getColumn(i).getWidth();
+			oldvalue[i] = width;
+		}
+
+		//Lets deal with the columns order
+		//Initialize variables
+		int lastStoredColumnSize = columnOrderStored.length;
+		int[] nextTableColumn = new int[columInTable];
+		if (columInTable < columnOrderStored.length) {
+			//More stored columns than what we need now, let reduce the array
+			System.arraycopy(columnOrderStored, 0, nextTableColumn, 0, columInTable);
+		} else {
+			//Table have more columns than the storage
+			System.arraycopy(columnOrderStored, 0, nextTableColumn, 0, columnOrderStored.length);
+			//Get the extra column
+			//Initialize the columns order when there are more columns in the table than what has been stored previously
+			for (int i = lastStoredColumnSize; i < nextTableColumn.length; i++) {
+				nextTableColumn[i] = i; //init the new dynamic columns at the end of the table
 			}
 		}
-		fViewer.getTable().setColumnOrder(colTable);
 
+		//Validate the column , it should be between 0 to number of columns
+		int nextColumSize = nextTableColumn.length;
+		int numberColumnToMove = 0;
+		for (int i = 0; i < nextColumSize; i++) {
+			if (!(nextTableColumn[i] < nextColumSize)) {
+				numberColumnToMove++;
+				//Move by one slot the array
+				System.arraycopy(columnOrderStored, (i + numberColumnToMove), nextTableColumn, i, (nextColumSize - i));
+				//need to maintain the counter for next loop if the new number has to move as well
+				i--;
+			}
+		}
+
+		fViewer.getTable().setColumnOrder(nextTableColumn);
+
+		//Lets deal now with the columns width
 		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
 		if (backedUpValue == null) {
 			return;
 		}
 		int[] columnWidth = Arrays.stream(backedUpValue).mapToInt(Integer::parseInt).toArray();
 		int totalSize = 0;
-		if (colInTable < columnWidth.length) {
-			//More store column than store
-			System.arraycopy(columnWidth, 0, colTable, 0, colInTable);
+		if (columInTable < columnWidth.length) {
+			//More store column than what we need now, let reduce the array
+			System.arraycopy(columnWidth, 0, nextTableColumn, 0, columInTable);
 		} else {
-			//Table have more column
-			System.arraycopy(columnWidth, 0, colTable, 0, columnWidth.length);
+			//Table have more columns than the storage
+			System.arraycopy(columnWidth, 0, nextTableColumn, 0, columnWidth.length);
+			//Add the extra columns width from the table data
+			for (int i = columnWidth.length; i < nextTableColumn.length; i++) {
+				nextTableColumn[i] = oldvalue[i];
+			}
 		}
-		for (int i = 0; i < colTable.length; i++) {
-			totalSize = totalSize + colTable[i];
-			fViewer.getTable().getColumn(i).setWidth(colTable[i]);
+		for (int i = 0; i < nextTableColumn.length; i++) {
+			totalSize = totalSize + nextTableColumn[i];
+			fViewer.getTable().getColumn(i).setWidth(nextTableColumn[i]);
 		}
 
 		//Reset if total size is small number (50 or less )pixels.
 		if (totalSize <= 50) {
 			resetDefault();
 		}
+
+		//Read and adjust the last column defined before the dynamic labels
+		//Needs to be reset to allow to see the dynamic columns in the client area
+		lastStoredColumnSize--; //decrease by one to read the array
+		if (lastStoredColumnSize < fViewer.getTable().getColumnCount()) {
+			int defaultWidth = oldvalue[lastStoredColumnSize];//column before the new labels
+			int testCol = columnOrderStored[lastStoredColumnSize];
+			if (testCol < ReviewTableDefinition.values().length) {
+				defaultWidth = ReviewTableDefinition.values()[testCol].getWidth();//column before the dynamic labels
+			}
+			fViewer.getTable().getColumn(testCol).setWidth(defaultWidth);
+		}
+
 	}
 
 	/**
@@ -398,8 +441,8 @@ public class UIReviewTable {
 		column.setText(label);
 		column.setWidth(width);
 		column.setAlignment(SWT.LEFT);
-		column.setResizable(false);
-		column.setMoveable(false);
+		column.setResizable(true);
+		column.setMoveable(true);
 	}
 
 	/**
