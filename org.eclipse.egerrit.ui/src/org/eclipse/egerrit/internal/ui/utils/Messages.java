@@ -94,8 +94,6 @@ public class Messages extends NLS {
 
 	public static String AutoRebaseProcess_StoppedConflict;
 
-	public static String AutoRebaseProcess_titleAlreadyUpToDate;
-
 	public static String AutoRebaseProcess_UncommitedChanges;
 
 	public static String Branch_perfect_match;

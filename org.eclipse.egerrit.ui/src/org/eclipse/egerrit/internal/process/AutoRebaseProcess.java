@@ -683,7 +683,7 @@ public class AutoRebaseProcess extends Job {
 				}
 			} else if (status.getStatus() == RebaseResult.Status.UP_TO_DATE) {
 				dialogMessage = Messages.AutoRebaseProcess_AlreadyUpToDate;
-				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_titleAlreadyUpToDate,
+				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_AutoRebaseStarted,
 						dialogMessage, SWT.NONE);
 				success = false;
 			} else {
