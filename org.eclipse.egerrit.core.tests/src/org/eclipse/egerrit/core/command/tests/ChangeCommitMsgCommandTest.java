@@ -18,6 +18,8 @@ import org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand;
 import org.eclipse.egerrit.internal.core.command.PublishChangeEditCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ChangeEditMessageInput;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test suite for {@link org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand}
@@ -29,11 +31,11 @@ public class ChangeCommitMsgCommandTest extends CommandTestWithSimpleReview {
 	/**
 	 * Test method for {@link org.eclipse.egerrit.internal.core.command.ChangeCommitMsgCommand#call()}.
 	 */
-//	@Test
+	@Test
 	public void testCall() {
 		ChangeCommitMsgCommand editMessageCmd = fGerrit.editMessage(change_id);
 		ChangeEditMessageInput changeEditMessageInput = new ChangeEditMessageInput();
-		changeEditMessageInput.setMessage("A new message to be saved ...");
+		changeEditMessageInput.setMessage("A new message to be saved ...\n\nChange-Id: " + change_id);
 
 		editMessageCmd.setCommandInput(changeEditMessageInput);
 		PublishChangeEditCommand publishChangeEditCmd = fGerrit.publishChangeEdit(change_id);
@@ -41,7 +43,8 @@ public class ChangeCommitMsgCommandTest extends CommandTestWithSimpleReview {
 		try {
 			editMessageCmd.call();
 			publishChangeEditCmd.call();
-			System.out.println(fGerrit.getChange(change_id).call().getSubject());
+			Assert.assertTrue(
+					fGerrit.getChange(change_id).call().getSubject().contains("A new message to be saved ..."));
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
