@@ -397,25 +397,20 @@ public class UIReviewTable {
 		int defaultLength = tableInfo.length;
 		int colInTable = table.getColumnCount();
 		int[] newOrder = new int[colInTable];
-		int[] currentOrder = table.getColumnOrder();
-		System.arraycopy(ReviewTableDefinition.getDefaultOrder(), 0, newOrder, 0, defaultLength);
-		//Now put the remaining column in the same order
-		for (int i = defaultLength; i < colInTable; i++) {
-			int columValue = 0;
-			for (int j = 0; j < colInTable; j++) {
-				if (currentOrder[j] >= defaultLength) {
-					columValue = currentOrder[j];
-					currentOrder[j] = 0; //reset the value not to take it again
-					break;
-				}
-			}
-			newOrder[i] = columValue;
+		//Reset the column order
+		for (int i = 0; i < colInTable; i++) {
+			newOrder[i] = i;
 		}
-
 		table.setColumnOrder(newOrder);//Re-set the initial column order, plus the LABELS at the end
+		//Use the default length defined for the table without the dynamic columns
 		for (int i = 0; i < defaultLength; i++) {
 			table.getColumn(i).setWidth(tableInfo[i].getWidth());
 		}
+		//For the dynamic columns, defined the minimum value
+		for (int i = defaultLength; i < colInTable; i++) {
+			table.getColumn(i).pack();
+		}
+
 		storeColumnsSettings();
 	}
 
