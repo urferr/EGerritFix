@@ -14,12 +14,10 @@ package org.eclipse.egerrit.internal.ui.editors;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
-import org.eclipse.egerrit.internal.model.ApprovalInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
@@ -30,7 +28,6 @@ import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
@@ -68,7 +65,7 @@ public class ReplyDialog extends InputDialog {
 	// A map of the permitted labels that maps a label name to the list of
 	// values that are allowed for that label. Only set if 'detailed labels' are
 	// requested.
-	private EMap<String, EList<String>> permitted_labels;
+	private Map<String, EList<String>> permitted_labels;
 
 	private Composite keyComposite;
 
@@ -80,13 +77,11 @@ public class ReplyDialog extends InputDialog {
 
 	private final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
 
-	private LinkedHashMap<String, String> previousVotes = new LinkedHashMap<String, String>();
+	private Map<String, Integer> lastUserVotes = new LinkedHashMap<String, Integer>();
 
 	private RevisionInfo fRevisionInfo;
 
 	private GerritClient fGerritClient;
-
-	private static final int WIDTH = 650;
 
 	/**
 	 * The constructor.
@@ -95,7 +90,7 @@ public class ReplyDialog extends InputDialog {
 		super(shell, Messages.ReplyDialog_0, buildMessage(reason, revisionToReplyTo), null, null);
 		fRevisionInfo = revisionToReplyTo;
 		fGerritClient = gerritClient;
-		permitted_labels = revisionToReplyTo.getChangeInfo().getPermitted_labels();
+		permitted_labels = revisionToReplyTo.getChangeInfo().getSortedPermittedLabels();
 		labelsInfo = revisionToReplyTo.getChangeInfo().getLabels();
 
 		boolean isVoteAllowed = revisionToReplyTo.getId()
@@ -140,6 +135,10 @@ public class ReplyDialog extends InputDialog {
 		((GridData) this.getText().getLayoutData()).verticalAlignment = SWT.FILL;
 		//Create area to display the draft comments
 		createMessageArea(composite);
+		GridLayout compositeLayout = (GridLayout) composite.getLayout();
+		compositeLayout.verticalSpacing = 0;
+		compositeLayout.marginHeight = 0;
+		composite.setLayout(compositeLayout);
 
 		//Create the section handling the radio buttons
 		if (labelsInfo != null) {
@@ -151,9 +150,27 @@ public class ReplyDialog extends InputDialog {
 
 			@Override
 			public void controlResized(ControlEvent e) {
-				Point size = parent.getShell().computeSize(WIDTH, SWT.DEFAULT);
-				parent.getShell().setMinimumSize(size);
-				parent.getShell().setSize(size);
+				if (keyComposite != null) { //Null when we do not create this section.
+					int widthKey = getMinimalWidth(keyComposite, -1);
+					int widthRadio = getMinimalWidth(radioButtonComposite, -1);
+					int widthdetail = getMinimalWidth(detailTextComposite, 150);
+					int widthTotal = 0;
+					if (widthKey < 25 || widthRadio < 25 || widthdetail < 25) {
+						widthTotal = 250;
+					} else {
+						widthTotal = widthKey + widthRadio + widthdetail;
+					}
+
+					Point size = parent.getShell().computeSize(widthTotal, SWT.DEFAULT);
+					parent.getShell().setMinimumSize(size);
+					parent.getShell().setSize(size);
+
+				} else {
+					//set a minimum size, there is no review labels
+					Point size = parent.getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+					parent.getShell().setMinimumSize(size);
+					parent.getShell().setSize(size);
+				}
 
 				if (hasDrafts(fRevisionInfo)) {
 					//Re-layout the DRAFT AREA
@@ -175,8 +192,64 @@ public class ReplyDialog extends InputDialog {
 				}
 			}
 		});
+		//Reset the field from the inputDialog
+		resetErrorSection(composite);
+
 		return parent;
 
+	}
+
+	/**
+	 * Adjust the fields inside the input dialog
+	 *
+	 * @param composite
+	 */
+	private void resetErrorSection(Composite composite) {
+		Control[] compChild = composite.getChildren();
+
+		if (compChild != null) {
+			//Adjust the Label not to expand when resizing, but keep the new height to the scroll text
+			if (compChild[0] instanceof Label) {
+				Label lbl = (Label) compChild[0];
+				GridData gridData = (GridData) lbl.getLayoutData();
+				gridData.grabExcessVerticalSpace = false;
+				lbl.setLayoutData(gridData);
+				lbl.setSize(lbl.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+
+			//Lets adjust the error text not shown here
+			if (compChild.length > 2 && compChild[2] instanceof Text) {
+				Text txt = (Text) compChild[2];
+				GridData gridData = (GridData) txt.getLayoutData();
+				gridData.minimumHeight = 0;
+				gridData.grabExcessVerticalSpace = false;
+				txt.setLayoutData(gridData);
+				txt.setSize(txt.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+		}
+	}
+
+	/**
+	 * Compute the minimal width to set for a composite
+	 *
+	 * @param composite
+	 * @param minWidth
+	 * @return int
+	 */
+	private int getMinimalWidth(Composite composite, int minWidth) {
+		int min = 0;
+		Point sizeComposite = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		//If min width <0, it means, we take whatever the value from the computation
+		if (minWidth < 0) {
+			min = sizeComposite.x;
+		} else {
+			if ((sizeComposite.x > minWidth) || (sizeComposite.x == 0)) {
+				min = minWidth;
+			} else {
+				min = sizeComposite.x;
+			}
+		}
+		return min;
 	}
 
 	/**
@@ -204,7 +277,7 @@ public class ReplyDialog extends InputDialog {
 			scrolledDraftArea = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
 
 			GridData grid = new GridData(GridData.FILL_BOTH);
-			grid.heightHint = 100;
+			grid.heightHint = 50;
 			scrolledDraftArea.setLayoutData(grid);
 			Composite composite = new Composite(scrolledDraftArea, SWT.NONE);
 
@@ -222,6 +295,7 @@ public class ReplyDialog extends InputDialog {
 					// ignore
 					Rectangle size = composite.getParent().getClientArea();
 					composite.setSize(composite.computeSize(size.width, SWT.DEFAULT));
+
 					scrolledDraftArea.setMinWidth(size.x);
 					Rectangle compoHeight = composite.getBounds();
 					scrolledDraftArea.setMinHeight(compoHeight.height);
@@ -294,9 +368,11 @@ public class ReplyDialog extends InputDialog {
 			sepGrid.grabExcessHorizontalSpace = true;
 			separator.setLayoutData(sepGrid);
 		}
-
+		int maxRadio = getMaxCountLabels();
+		if (maxRadio <= 0) {
+			return;//no need to create the composite
+		}
 		Composite composite = new Composite(parent, SWT.NONE);
-
 		GridLayout gl_composite = new GridLayout(3, false);
 		gl_composite.marginTop = 3;
 		composite.setLayout(gl_composite);
@@ -305,21 +381,20 @@ public class ReplyDialog extends InputDialog {
 		gd_composite.minimumHeight = height;
 		gd_composite.heightHint = height;
 		composite.setLayoutData(gd_composite);
-		keyComposite = createComposite(composite, SWT.LEFT, 1);
-		radioButtonComposite = createComposite(composite, SWT.CENTER, 1);
-		detailTextComposite = createComposite(composite, SWT.LEFT, 1);
+		keyComposite = createComposite(composite, SWT.LEFT, 1, false);
+		radioButtonComposite = createComposite(composite, SWT.CENTER, 1, false);
+		detailTextComposite = createComposite(composite, SWT.LEFT, 1, true);
 
 		//Create the dynamic selection
 		createRadioButtonSelection();
 	}
 
-	private Composite createComposite(Composite parent, int horizontalSwt, int numColumn) {
+	private Composite createComposite(Composite parent, int horizontalSwt, int numColumn, boolean grabHorizon) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout gl_composite = new GridLayout(numColumn, true);
+		GridLayout gl_composite = new GridLayout(numColumn, false);
 		gl_composite.marginTop = 3;
 		composite.setLayout(gl_composite);
-		GridData gd_composite = new GridData(horizontalSwt, SWT.CENTER, true, false);
-		gd_composite.minimumHeight = 117;
+		GridData gd_composite = new GridData(horizontalSwt, SWT.CENTER, grabHorizon, false);
 		composite.setLayoutData(gd_composite);
 		return composite;
 	}
@@ -355,65 +430,22 @@ public class ReplyDialog extends InputDialog {
 		Composite headerLabels = getRadioButtonHeaderLabels(maxRadio);
 		Point sizeRadio = null;
 		Point fontSize = UIUtils.computeFontSize(detailTextComposite);
-		//Set into the variable the last setting of the radio
-		getLastLabelSet();
 
+		//Get the last votes for all labels according to a user
+		String loginUser = fGerritClient.getRepository().getServerInfo().getUserName();
+		lastUserVotes = fRevisionInfo.getChangeInfo().getUserLastLabelSet(loginUser);
+
+		//Set the radio buttons
 		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, EList<String>> permittedlabel = iterator.next();
-			EList<String> listPermitted = permittedlabel.getValue();
-			Label rowLabel = new Label(keyComposite, SWT.BOLD);
-			rowLabel.setText(permittedlabel.getKey());
-
-			String valueSet = previousVotes.get(permittedlabel.getKey());
-			if (valueSet == null) {
-				valueSet = "0"; //$NON-NLS-1$
-			}
-
-			//fetch the last value set for this key
-			int lastValue = Integer.parseInt(valueSet);
-
-			//Create the text data for the selection
-			Label detailLabel = new Label(detailTextComposite, SWT.NONE);
-			GridData grid = new GridData(SWT.FILL, SWT.LEFT, true, false);
-			grid.minimumWidth = fontSize.x * 50;
-			detailLabel.setLayoutData(grid);
-
-			Composite radioComposite = createButtonComposite(radioButtonComposite, maxRadio);
-
-			radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			//Fill the dummy space
-			int numEmpty = (maxRadio - listPermitted.size()) / 2;//Only half the number at the beginning
-			createFillerRadioButtons(numEmpty, radioComposite);
-
-			//Fill the radio buttons
-			Button[] radios = new Button[listPermitted.size()];
-			for (int i = 0; i < listPermitted.size(); i++) {
-				//Create a radio and store extra data into the structure
-				radios[i] = new Button(radioComposite, SWT.RADIO);
-				radios[i].setData(listPermitted.get(i));
-				radios[i].setData(listPermitted.get(i), permittedlabel.getKey());
-				radios[i].setData(DISPLAYWIDGET, detailLabel);//set the display label widget
-
-				String description = labelSelectionDescription(permittedlabel.getKey(), listPermitted.get(i));
-				radios[i].setToolTipText(description);
-				if (Integer.parseInt(listPermitted.get(i).trim()) == lastValue) {
-					radios[i].setSelection(true);
-					detailLabel.setText(description);
-				}
-
-				radios[i].addListener(SWT.Selection, radioGroupListener());
-			}
-
-			//Complete to fill the dummy space
-			createFillerRadioButtons(numEmpty, radioComposite);
-			radioComposite.pack();
-			sizeRadio = radioComposite.getSize();
+			sizeRadio = createARowRadioLabel(permittedlabel, maxRadio, fontSize.x);
 		}
 
 		//Need to adjust the label position to align it with the buttons
 		Point headerSize = headerLabels.getSize();
 		GridLayout layout = (GridLayout) headerLabels.getLayout();
+		int radioHeight = fontSize.y; //default height
 
 		//Set the margin for the radio button top labels
 		if (sizeRadio != null) {
@@ -421,7 +453,99 @@ public class ReplyDialog extends InputDialog {
 			layout.marginWidth = space / 2;
 			layout.horizontalSpacing = space;
 			headerLabels.setLayout(layout);
+			radioHeight = sizeRadio.y;
 		}
+		reAdjustRadioLayout(fontSize, radioHeight);
+	}
+
+	private Point createARowRadioLabel(Entry<String, EList<String>> permittedlabel, int maxRadio, int fontWidth) {
+		EList<String> listPermitted = permittedlabel.getValue();
+		Point sizeRadio = null;
+		Label rowLabel = new Label(keyComposite, SWT.BOLD);
+		rowLabel.setText(permittedlabel.getKey());
+
+		//Create the text data for the selection
+		Label detailLabel = new Label(detailTextComposite, SWT.NONE);
+		GridData grid = new GridData(SWT.FILL, SWT.LEFT, true, false);
+		grid.minimumWidth = fontWidth * 500;
+		detailLabel.setLayoutData(grid);
+
+		Composite radioComposite = createButtonComposite(radioButtonComposite, maxRadio);
+
+		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//Fill the dummy space
+		int middlePoint = (maxRadio + 1) / 2; //button position for the column = 0;
+		int minValue = Integer.parseInt(listPermitted.get(0)); //get the first minimum value
+		int numEmptyBefore = middlePoint + minValue - 1;
+		int numEmptyAfter = middlePoint - Integer.parseInt(listPermitted.get(listPermitted.size() - 1)) - 1;//compute the number of empty space to add at the end
+		createFillerRadioButtons(numEmptyBefore, radioComposite);
+
+		//Fill the radio buttons
+		Button[] radios = new Button[listPermitted.size()];
+		for (int i = 0; i < listPermitted.size(); i++) {
+			//Create a radio and store extra data into the structure
+			radios[i] = new Button(radioComposite, SWT.RADIO);
+			radios[i].setData(listPermitted.get(i));
+			radios[i].setData(listPermitted.get(i), permittedlabel.getKey());
+			radios[i].setData(DISPLAYWIDGET, detailLabel);//set the display label widget
+
+			String description = labelSelectionDescription(permittedlabel.getKey(), listPermitted.get(i));
+			radios[i].setToolTipText(description);
+			int userVotes = lastUserVotes.get(permittedlabel.getKey()) != null
+					? lastUserVotes.get(permittedlabel.getKey())
+					: 0;
+			if (Integer.parseInt(listPermitted.get(i).trim()) == userVotes) {
+				radios[i].setSelection(true);
+				detailLabel.setText(description);
+			}
+
+			radios[i].addListener(SWT.Selection, radioGroupListener());
+		}
+
+		//Complete to fill the dummy space
+		createFillerRadioButtons(numEmptyAfter, radioComposite);
+		radioComposite.pack();
+		sizeRadio = radioComposite.getSize();
+		return sizeRadio;
+	}
+
+	/**
+	 * Re-set the layout data for the radio area in the dialog
+	 *
+	 * @param fontSize
+	 * @param radioHeight
+	 */
+	private void reAdjustRadioLayout(Point fontSize, int radioHeight) {
+		int topMargin = 0;
+		int verticalSpacing = radioHeight - fontSize.y + 4;
+		Point compSize = radioButtonComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		GridData radioData = (GridData) radioButtonComposite.getLayoutData();
+		radioData.minimumWidth = compSize.x;
+		radioButtonComposite.setLayoutData(radioData);
+
+		//Reset the layout for Labels area
+		GridData gridData = (GridData) keyComposite.getLayoutData();
+		gridData.heightHint = compSize.y;
+
+		keyComposite.setLayoutData(gridData);
+		GridLayout keyLayout = (GridLayout) keyComposite.getLayout();
+		keyLayout.marginTop = topMargin;
+
+		keyLayout.verticalSpacing = verticalSpacing;
+		keyComposite.setLayout(keyLayout);
+		Point size = keyComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		keyComposite.setSize(size);
+
+		//Reset the layout for Details
+		GridData gridDataDetail = (GridData) detailTextComposite.getLayoutData();
+		gridDataDetail.heightHint = compSize.y;
+		detailTextComposite.setLayoutData(gridDataDetail);
+
+		GridLayout detailLayout = (GridLayout) detailTextComposite.getLayout();
+		detailLayout.marginTop = topMargin;
+		detailLayout.verticalSpacing = verticalSpacing;
+		detailTextComposite.setLayout(detailLayout);
+		detailTextComposite.setSize(detailTextComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	/**
@@ -446,7 +570,6 @@ public class ReplyDialog extends InputDialog {
 		Label permittedLabel = new Label(keyComposite, SWT.NONE);
 		//Create the text data display for the selection
 		Label detailLabel = new Label(detailTextComposite, SWT.NONE);
-
 		//Create the radio buttons header labels
 		Composite radioComposite = createButtonComposite(radioButtonComposite, maxRadioChoice);
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, maxRadioChoice, 1));
@@ -511,7 +634,11 @@ public class ReplyDialog extends InputDialog {
 				Label toShow = (Label) objWidget;
 				toShow.setText(tootip);
 				toShow.pack();
-				previousVotes.put(keyLabel, (String) obj);
+				String st = (String) obj;
+				if (st.startsWith("+")) { //$NON-NLS-1$
+					st = st.substring(1);//parse the string for the positive value
+				}
+				lastUserVotes.put(keyLabel, Integer.parseInt(st.trim()));
 			}
 		};
 	}
@@ -526,55 +653,19 @@ public class ReplyDialog extends InputDialog {
 	private String labelSelectionDescription(String key, String value) {
 		String ret = ""; //$NON-NLS-1$
 		if (labelsInfo != null && !labelsInfo.isEmpty()) {
-			Iterator<Map.Entry<String, LabelInfo>> labelIter = labelsInfo.entrySet().iterator();
-			while (labelIter.hasNext()) {
-				Entry<String, LabelInfo> entrylabel = labelIter.next();
-				if (entrylabel.getKey().equals(key)) {
-					LabelInfo labelInfo = entrylabel.getValue();
-					EMap<String, String> mapValues = labelInfo.getValues();
-					return mapValues.get(value);
-				}
-			}
+			LabelInfo info = labelsInfo.get(key);
+			return info.getValues().get(value);
 		}
 		return ret;
 	}
 
 	/**
-	 * Read the received labels and keep the last setting for each labels. Will use it to set the radio buttons
-	 * selection
-	 */
-	private void getLastLabelSet() {
-		if (labelsInfo != null && !labelsInfo.isEmpty()) {
-			Iterator<Map.Entry<String, LabelInfo>> labelIter = labelsInfo.entrySet().iterator();
-			while (labelIter.hasNext()) {
-				Entry<String, LabelInfo> entrylabel = labelIter.next();
-				LabelInfo labelInfo = entrylabel.getValue();
-				List<ApprovalInfo> listApproval = labelInfo.getAll();
-				if (listApproval != null && !listApproval.isEmpty()) {
-					ApprovalInfo candidate = null;
-					//Find the most recent vote for the current user
-					for (ApprovalInfo oneApproval : listApproval) {
-						if (fGerritClient.getRepository().getServerInfo().getUserName().equals(
-								oneApproval.getEmail())) {
-							if (candidate == null) {
-								candidate = oneApproval;
-							}
-						}
-					}
-					if (candidate != null) {
-						previousVotes.put(entrylabel.getKey(), StringConverter.asString(candidate.getValue()));
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * This method return the hashMap of the selected radio buttons
 	 *
-	 * @return LinkedHashMap<String, String>
+	 * @return LinkedHashMap<String, Integer>
 	 */
-	public Map<String, String> getRadiosSelection() {
-		return previousVotes;
+	public Map<String, Integer> getRadiosSelection() {
+		return lastUserVotes;
 	}
+
 }

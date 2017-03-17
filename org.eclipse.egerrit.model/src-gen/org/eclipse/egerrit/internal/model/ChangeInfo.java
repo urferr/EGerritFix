@@ -11,6 +11,7 @@
  */
 package org.eclipse.egerrit.internal.model;
 
+import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 
@@ -1012,6 +1013,46 @@ public interface ChangeInfo extends EObject {
 	 * @generated
 	 */
 	int getLabelMaxValue(String label);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	int getPermittedMaxValue(String label);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation"
+	 * @generated
+	 */
+	Map<String, EList<String>> getSortedPermittedLabels();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation"
+	 * @generated
+	 */
+	Map<String, Integer> getAllowedLabelsMaxValue();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	Map<String, Integer> getUserLastLabelSet(String user);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	Map<String, Integer> getLabelsNotAtMax(String loginUser);
 
 	/**
 	 * Returns the value of the '<em><b>Revertable</b></em>' attribute.

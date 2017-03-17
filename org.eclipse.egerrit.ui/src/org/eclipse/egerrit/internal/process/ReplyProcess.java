@@ -23,13 +23,10 @@ import org.eclipse.egerrit.internal.core.command.SetReviewCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.LabelInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -37,7 +34,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class ReplyProcess {
 
-	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
+	public static final String REPLY_ALL_BUTTONS = Messages.ReplyProcess_AllButtons;
 
 	private ChangeInfo changeInfo = null;
 
@@ -56,82 +53,30 @@ public class ReplyProcess {
 				.thenRun(() -> changeInfo.setUserSelectedRevision(selectedRevision));
 	}
 
-	public void handleReplyPlus2(RevisionInfo selectedRevision) {
+	/**
+	 * Handles the reply votes set to its maximum
+	 *
+	 * @param changeInfo
+	 * @param allowedButton
+	 * @param gerritClient
+	 */
+	public void handleReplyVotes(ChangeInfo changeInfo, Map<String, Integer> allowedButton, GerritClient gerritClient) {
+		this.gerritClient = gerritClient;
+		this.changeInfo = changeInfo;
+		RevisionInfo selectedRevision = changeInfo.getRevision();
 		ReviewInput reviewInput = new ReviewInput();
 		reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
-		Map<String, String> obj = new HashMap<String, String>();
-		obj.put(CODE_REVIEW, Messages.ReplyProcess_PlusTwo);
+		Map<String, Integer> obj = new HashMap<String, Integer>();
+
+		//Loop to include all the potential buttons
+		Iterator<Entry<String, Integer>> iter = allowedButton.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<String, Integer> entry = iter.next();
+			obj.put(entry.getKey(), entry.getValue());
+		}
 
 		reviewInput.setLabels(obj);
 		postReply(reviewInput, selectedRevision);
-	}
-
-	/**
-	 * Test if we should allow the CR +2 button to be available
-	 *
-	 * @param changeInfo
-	 * @param gerritClient
-	 * @return boolean
-	 */
-	public boolean isCRPlusTwoAllowed(ChangeInfo changeInfo, GerritClient gerritClient, RevisionInfo revision) {
-		//Test if we should allow the +2 button or not
-		//Condition:
-		//     - User is a committer (maxCRDefined == maxCRPermitted)
-		//     - If user permitted, the maxCRPermitted > 0 if not Abandoned
-		//     - Selected patch set is the latest
-		//     - User cannot submit yet
-		this.changeInfo = changeInfo;
-		this.gerritClient = gerritClient;
-
-		int maxCRPermitted = findMaxPermitted(CODE_REVIEW);
-		int maxCRDefined = findMaxDefinedLabelValue(CODE_REVIEW);
-		boolean allowPlus2 = false;
-		if (maxCRDefined == maxCRPermitted && maxCRPermitted > 0) {
-			allowPlus2 = true;
-		}
-		//Verify the patchset if we are allowed only, no need to check if not allowed
-		if (allowPlus2) {
-			String psSelectedID = revision.getId();
-			if (!(psSelectedID != null && changeInfo.getLatestPatchSet().getId().compareTo(psSelectedID) == 0)) {
-				allowPlus2 = false;
-			}
-		}
-		return (!revision.isSubmitable() && allowPlus2);
-	}
-
-	private int findMaxPermitted(String label) {
-		int maxPermitted = 0;
-		EList<String> listPermitted = null;
-		EMap<String, EList<String>> mapLabels = changeInfo.getPermitted_labels();
-		if (mapLabels != null) {
-			Iterator<Entry<String, EList<String>>> iterator = mapLabels.entrySet().iterator();
-			//Get the structure having all the possible options
-			while (iterator.hasNext()) {
-				Entry<String, EList<String>> permittedlabel = iterator.next();
-				listPermitted = permittedlabel.getValue();
-				if (permittedlabel.getKey().compareTo(label) == 0) {
-					for (String element2 : listPermitted) {
-						maxPermitted = Math.max(maxPermitted, new Integer(element2.trim()));
-					}
-				}
-			}
-		}
-		return maxPermitted;
-	}
-
-	private int findMaxDefinedLabelValue(String label) {
-		Iterator<Entry<String, LabelInfo>> iterator = changeInfo.getLabels().entrySet().iterator();
-		//Get the structure having all the possible options
-		int maxDefined = 0;
-		while (iterator.hasNext()) {
-			Entry<String, LabelInfo> definedlabel = iterator.next();
-			if (definedlabel.getKey().compareTo(label) == 0) {
-				for (String element2 : definedlabel.getValue().getValues().keySet()) {
-					maxDefined = Math.max(maxDefined, new Integer(element2.trim()));
-				}
-			}
-		}
-		return maxDefined;
 	}
 
 	/**

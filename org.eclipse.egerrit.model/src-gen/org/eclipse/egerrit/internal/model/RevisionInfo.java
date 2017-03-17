@@ -164,7 +164,7 @@ public interface RevisionInfo extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Fetch</em>' map.
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Fetch()
-	 * @model mapType="org.eclipse.egerrit.internal.model.StringToFetchInfo&lt;org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.FetchInfo&gt;"
+	 * @model mapType="org.eclipse.egerrit.internal.model.StringToFetchInfo<org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.FetchInfo>"
 	 * @generated
 	 */
 	EMap<String, FetchInfo> getFetch();
@@ -207,7 +207,7 @@ public interface RevisionInfo extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Files</em>' map.
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Files()
-	 * @model mapType="org.eclipse.egerrit.internal.model.StringToFileInfo&lt;org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.FileInfo&gt;"
+	 * @model mapType="org.eclipse.egerrit.internal.model.StringToFileInfo<org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.FileInfo>"
 	 * @generated
 	 */
 	EMap<String, FileInfo> getFiles();
@@ -224,7 +224,7 @@ public interface RevisionInfo extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Actions</em>' map.
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRevisionInfo_Actions()
-	 * @model mapType="org.eclipse.egerrit.internal.model.StringToActionInfo&lt;org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.ActionInfo&gt;"
+	 * @model mapType="org.eclipse.egerrit.internal.model.StringToActionInfo<org.eclipse.emf.ecore.EString, org.eclipse.egerrit.internal.model.ActionInfo>"
 	 * @generated
 	 */
 	EMap<String, ActionInfo> getActions();

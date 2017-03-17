@@ -98,7 +98,7 @@ public interface FetchInfo extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Commands</em>' map.
 	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getFetchInfo_Commands()
-	 * @model mapType="org.eclipse.egerrit.internal.model.StringToString&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString&gt;"
+	 * @model mapType="org.eclipse.egerrit.internal.model.StringToString<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>"
 	 * @generated
 	 */
 	EMap<String, String> getCommands();
