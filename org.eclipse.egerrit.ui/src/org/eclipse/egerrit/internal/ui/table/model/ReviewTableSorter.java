@@ -11,6 +11,8 @@
  ******************************************************************************/
 package org.eclipse.egerrit.internal.ui.table.model;
 
+import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
+import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
 import org.eclipse.egerrit.internal.ui.table.provider.FileInfoCompareCellLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -53,11 +55,17 @@ public class ReviewTableSorter extends ViewerComparator {
 		}
 		int result = 0;
 		if (viewer instanceof TableViewer) {
-			String l1 = ((ITableLabelProvider) ((TableViewer) viewer).getLabelProvider()).getColumnText(item1,
-					fColumnIndex);
-			String l2 = ((ITableLabelProvider) ((TableViewer) viewer).getLabelProvider()).getColumnText(item2,
-					fColumnIndex);
-			result = getComparator().compare(l1, l2);
+			if (fColumnIndex == 0) {
+				result = getComparator().compare(
+						Boolean.toString(((StringToFileInfoImpl) item1).getValue().isReviewed()),
+						Boolean.toString(((StringToFileInfoImpl) item2).getValue().isReviewed()));
+			} else {
+				String l1 = ((ITableLabelProvider) ((TableViewer) viewer).getLabelProvider()).getColumnText(item1,
+						fColumnIndex);
+				String l2 = ((ITableLabelProvider) ((TableViewer) viewer).getLabelProvider()).getColumnText(item2,
+						fColumnIndex);
+				result = getComparator().compare(l1, l2);
+			}
 		} else {
 			result = defaultCompare(viewer, item1, item2);
 		}
@@ -66,6 +74,12 @@ public class ReviewTableSorter extends ViewerComparator {
 
 	private int defaultCompare(Viewer aViewer, Object aE1, Object aE2) {
 		if (aViewer instanceof TreeViewer) {
+			if (fColumnIndex == 0) {
+				if (aE1 instanceof GerritDiffNode && aE2 instanceof GerritDiffNode) {
+					return getComparator().compare(Boolean.toString(((GerritDiffNode) aE1).getFileInfo().isReviewed()),
+							Boolean.toString(((GerritDiffNode) aE2).getFileInfo().isReviewed()));
+				}
+			}
 			TreeViewer tv = (TreeViewer) aViewer;
 			FileInfoCompareCellLabelProvider provider = (FileInfoCompareCellLabelProvider) tv
 					.getLabelProvider(fColumnIndex);
