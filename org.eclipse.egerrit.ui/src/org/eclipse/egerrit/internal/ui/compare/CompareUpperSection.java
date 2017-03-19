@@ -232,9 +232,10 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		ReviewTableSorter.bind(viewer);
 		viewer.setComparator(new ReviewTableSorter(2)); // sort by File Path, descending. This way we are sorted like in the files tab
 
-		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$
-		IValueProperty leftReviewedFlag = leftFileInfo
+		//The reviewed flag is always watched from the gerritDiffNode#fileInfo object.
+		IValueProperty leftReviewedFlag = PojoProperties.value("fileInfo")
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
+		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$
 		IValueProperty leftComments = leftFileInfo
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
 		IValueProperty leftDraftComments = leftFileInfo
