@@ -83,6 +83,7 @@ public class OpenCompareEditor {
 		try {
 			repo = new GerritToGitMapping(new URIish(gerrit.getRepository().getURIBuilder(false).toString()),
 					changeInfo.getProject()).find();
+			System.out.println("Repo found: " + repo.getIndexFile().getAbsolutePath());
 			if (repo == null) {
 				return null;
 			}
