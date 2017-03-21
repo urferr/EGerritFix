@@ -15,9 +15,6 @@
 package org.eclipse.egerrit.internal.ui.editors;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.databinding.DataBindingContext;
@@ -62,7 +59,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -86,6 +82,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolTip;
@@ -655,19 +652,49 @@ public class ChangeDetailEditor extends EditorPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//Adjust the list of label which the current user can set to a maximum value
-				String loginUser = fGerritClient.getRepository().getServerInfo().getUserName();
-				Map<String, Integer> adjustedAllowedButton = fChangeInfo.getLabelsNotAtMax(loginUser);
-				if (adjustedAllowedButton.isEmpty()) {
-					//Should open directly the reply dialog, no sub-menu
-					ReplyProcess replyProcess = new ReplyProcess();
-					replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
-							fChangeInfo.getUserSelectedRevision());
-				} else {
-					MenuManager mgr = new MenuManager();
-					buildReplyDynamicMenu(adjustedAllowedButton, mgr);
-					mgr.createContextMenu(replyButton).setVisible(true);
+				final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(shell, SWT.POP_UP);
+				ReplyProcess replyProcess = new ReplyProcess();
+
+				final MenuItem itemReply = new MenuItem(menu, SWT.PUSH);
+				itemReply.setText(ActionConstants.REPLY.getLiteral());
+				itemReply.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
+								fChangeInfo.getUserSelectedRevision());
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// ignore
+					}
+				});
+
+				MenuItem itemCRPlus2 = new MenuItem(menu, SWT.PUSH);
+				itemCRPlus2.setText(Messages.ChangeDetailEditor_25);
+				itemCRPlus2.setEnabled(replyProcess.isCRPlusTwoAllowed(fChangeInfo, fGerritClient,
+						fChangeInfo.getUserSelectedRevision()));
+
+				if (itemCRPlus2.isEnabled()) {
+					itemCRPlus2.addSelectionListener(new SelectionAdapter() {
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							super.widgetSelected(e);
+							replyProcess.handleReplyPlus2(fChangeInfo.getUserSelectedRevision());
+						}
+					});
 				}
+
+				Point loc = replyButton.getLocation();
+				Rectangle rect = replyButton.getBounds();
+
+				Point mLoc = new Point(loc.x - 1, loc.y + rect.height);
+
+				menu.setLocation(shell.getDisplay().map(replyButton.getParent(), null, mLoc));
+
+				menu.setVisible(true);
 			}
 		});
 
@@ -679,7 +706,6 @@ public class ChangeDetailEditor extends EditorPart {
 		bindingContext.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
 		draftButton.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(draftButton.getShell(),
@@ -745,33 +771,10 @@ public class ChangeDetailEditor extends EditorPart {
 
 				menu.setVisible(true);
 			}
-
 		});
 
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
-	}
-
-	private void buildReplyDynamicMenu(Map<String, Integer> adjustedAllowedButton, MenuManager mgr) {
-		mgr.add(new ReplyHandler(fChangeInfo, fGerritClient, ActionConstants.REPLY.getLiteral())); //Add the Reply option
-
-		//Adjust the list of label which the current user can set to a maximum value
-		int size = adjustedAllowedButton.size();
-
-		//If there is some menu to add, then lets create a separator
-		if (size > 0) {
-			mgr.add(new Separator());
-		}
-		//Add all potential menu items
-		Iterator<Entry<String, Integer>> iter = adjustedAllowedButton.entrySet().iterator();
-		while (iter.hasNext()) {
-			Entry<String, Integer> entry = iter.next();
-			mgr.add(new ReplyHandler(fChangeInfo, fGerritClient, entry.getKey()));
-		}
-		//Add a selection for all buttons when there is more than one selection
-		if (size > 1) {
-			mgr.add(new ReplyHandler(fChangeInfo, fGerritClient, ReplyProcess.REPLY_ALL_BUTTONS));
-		}
 	}
 
 	private SelectionListener downloadButtonListener(Composite parent) {

@@ -30,7 +30,7 @@ public class ReviewInput {
 	private String message;
 
 	// The labels of the review as a map that maps the label names to the voting values.
-	private Map<String, Integer> labels;
+	private Map<String, String> labels;
 
 	// The comments that should be added as a map that maps a file path to a list of
 	// CommentInput entities
@@ -84,16 +84,16 @@ public class ReviewInput {
 	/**
 	 * @return the labels
 	 */
-	public Map<String, Integer> getLabels() {
+	public Map<String, String> getLabels() {
 		return labels;
 	}
 
 	/**
-	 * @param map
+	 * @param labels
 	 *            the labels to set
 	 */
-	public void setLabels(Map<String, Integer> map) {
-		this.labels = map;
+	public void setLabels(Map<String, String> labels) {
+		this.labels = labels;
 	}
 
 	/**

@@ -49,7 +49,6 @@ import org.eclipse.egerrit.internal.model.SuggestReviewerInfo;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -2158,56 +2157,6 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
-	public EOperation getChangeInfo__GetPermittedMaxValue__String() {
-		return changeInfoEClass.getEOperations().get(5);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EOperation getChangeInfo__GetSortedPermittedLabels() {
-		return changeInfoEClass.getEOperations().get(6);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EOperation getChangeInfo__GetAllowedLabelsMaxValue() {
-		return changeInfoEClass.getEOperations().get(7);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EOperation getChangeInfo__GetUserLastLabelSet__String() {
-		return changeInfoEClass.getEOperations().get(8);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EOperation getChangeInfo__GetLabelsNotAtMax__String() {
-		return changeInfoEClass.getEOperations().get(9);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getProblemInfo() {
 		return problemInfoEClass;
 	}
@@ -3092,11 +3041,6 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_MOST_RELEVANT_VOTE__STRING);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_LABEL_MIN_VALUE__STRING);
 		createEOperation(changeInfoEClass, CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING);
-		createEOperation(changeInfoEClass, CHANGE_INFO___GET_PERMITTED_MAX_VALUE__STRING);
-		createEOperation(changeInfoEClass, CHANGE_INFO___GET_SORTED_PERMITTED_LABELS);
-		createEOperation(changeInfoEClass, CHANGE_INFO___GET_ALLOWED_LABELS_MAX_VALUE);
-		createEOperation(changeInfoEClass, CHANGE_INFO___GET_USER_LAST_LABEL_SET__STRING);
-		createEOperation(changeInfoEClass, CHANGE_INFO___GET_LABELS_NOT_AT_MAX__STRING);
 
 		problemInfoEClass = createEClass(PROBLEM_INFO);
 		createEAttribute(problemInfoEClass, PROBLEM_INFO__MESSAGE);
@@ -3673,50 +3617,6 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		op = initEOperation(getChangeInfo__GetLabelMaxValue__String(), ecorePackage.getEInt(), "getLabelMaxValue", 0, 1, //$NON-NLS-1$
 				IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-
-		op = initEOperation(getChangeInfo__GetPermittedMaxValue__String(), ecorePackage.getEInt(),
-				"getPermittedMaxValue", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		addEParameter(op, ecorePackage.getEString(), "label", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-
-		op = initEOperation(getChangeInfo__GetSortedPermittedLabels(), null, "getSortedPermittedLabels", 0, 1, //$NON-NLS-1$
-				IS_UNIQUE, IS_ORDERED);
-		EGenericType g1 = createEGenericType(ecorePackage.getEMap());
-		EGenericType g2 = createEGenericType(ecorePackage.getEString());
-		g1.getETypeArguments().add(g2);
-		g2 = createEGenericType(ecorePackage.getEEList());
-		g1.getETypeArguments().add(g2);
-		EGenericType g3 = createEGenericType(ecorePackage.getEString());
-		g2.getETypeArguments().add(g3);
-		initEOperation(op, g1);
-
-		op = initEOperation(getChangeInfo__GetAllowedLabelsMaxValue(), null, "getAllowedLabelsMaxValue", 0, 1, //$NON-NLS-1$
-				IS_UNIQUE, IS_ORDERED);
-		g1 = createEGenericType(ecorePackage.getEMap());
-		g2 = createEGenericType(ecorePackage.getEString());
-		g1.getETypeArguments().add(g2);
-		g2 = createEGenericType(ecorePackage.getEIntegerObject());
-		g1.getETypeArguments().add(g2);
-		initEOperation(op, g1);
-
-		op = initEOperation(getChangeInfo__GetUserLastLabelSet__String(), null, "getUserLastLabelSet", 0, 1, IS_UNIQUE, //$NON-NLS-1$
-				IS_ORDERED);
-		addEParameter(op, ecorePackage.getEString(), "user", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		g1 = createEGenericType(ecorePackage.getEMap());
-		g2 = createEGenericType(ecorePackage.getEString());
-		g1.getETypeArguments().add(g2);
-		g2 = createEGenericType(ecorePackage.getEIntegerObject());
-		g1.getETypeArguments().add(g2);
-		initEOperation(op, g1);
-
-		op = initEOperation(getChangeInfo__GetLabelsNotAtMax__String(), null, "getLabelsNotAtMax", 0, 1, IS_UNIQUE, //$NON-NLS-1$
-				IS_ORDERED);
-		addEParameter(op, ecorePackage.getEString(), "loginUser", 0, 1, IS_UNIQUE, IS_ORDERED); //$NON-NLS-1$
-		g1 = createEGenericType(ecorePackage.getEMap());
-		g2 = createEGenericType(ecorePackage.getEString());
-		g1.getETypeArguments().add(g2);
-		g2 = createEGenericType(ecorePackage.getEIntegerObject());
-		g1.getETypeArguments().add(g2);
-		initEOperation(op, g1);
 
 		initEClass(problemInfoEClass, ProblemInfo.class, "ProblemInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

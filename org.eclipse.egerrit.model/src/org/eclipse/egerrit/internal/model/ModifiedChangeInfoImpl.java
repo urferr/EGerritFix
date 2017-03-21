@@ -13,10 +13,6 @@ package org.eclipse.egerrit.internal.model;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -401,108 +397,5 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		synchronized (this) {
 			return super.getUserSelectedRevision();
 		}
-	}
-
-	@Override
-	public int getPermittedMaxValue(String label) {
-		int maxPermitted = Integer.MIN_VALUE;
-		EMap<String, EList<String>> listLabels = getPermitted_labels();
-		if (!listLabels.isEmpty()) {
-			EList<String> listPermitted = listLabels.get(label);
-			if (listPermitted != null && !listPermitted.isEmpty()) {
-				Iterator<String> iterator = listPermitted.iterator();
-				//Get the structure having all the possible options
-				while (iterator.hasNext()) {
-					String value = iterator.next();
-					maxPermitted = Math.max(maxPermitted, new Integer(value.trim()));
-				}
-			}
-		}
-		return maxPermitted;
-	}
-
-	@Override
-	public Map<String, EList<String>> getSortedPermittedLabels() {
-		TreeMap<String, EList<String>> sortedPermitted = new TreeMap<>();
-		Iterator<Entry<String, EList<String>>> iterator = getPermitted_labels().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, EList<String>> permittedlabel = iterator.next();
-			sortedPermitted.put(permittedlabel.getKey(), permittedlabel.getValue());
-		}
-		return sortedPermitted;
-	}
-
-	@Override
-	public Map<String, Integer> getAllowedLabelsMaxValue() {
-		//Maintain the list of potential label and their max value for the current changeInfo
-		TreeMap<String, Integer> mapLabels = new TreeMap<>();
-		Iterator<Map.Entry<String, EList<String>>> iterator = getPermitted_labels().entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, EList<String>> permittedlabel = iterator.next();
-			int maxPermitted = getPermittedMaxValue(permittedlabel.getKey());
-			if (maxPermitted > 0) {
-				mapLabels.put(permittedlabel.getKey(), maxPermitted);
-			}
-		}
-		return mapLabels;
-	}
-
-	@Override
-	public Map<String, Integer> getUserLastLabelSet(String user) {
-		//Collect all votes from a user for every potential labels defined for this project
-		LinkedHashMap<String, Integer> userVotes = new LinkedHashMap<String, Integer>();
-		EMap<String, LabelInfo> labelsInfo = getLabels();
-
-		if (labelsInfo != null && !labelsInfo.isEmpty()) {
-			Iterator<Map.Entry<String, LabelInfo>> labelIter = labelsInfo.entrySet().iterator();
-			//Iterate through all defined labels and keep only the one for the specified user
-			while (labelIter.hasNext()) {
-				Entry<String, LabelInfo> entrylabel = labelIter.next();
-				LabelInfo labelInfo = entrylabel.getValue();
-				List<ApprovalInfo> listApproval = labelInfo.getAll();
-				if (listApproval != null && !listApproval.isEmpty()) {
-					ApprovalInfo candidate = null;
-					//Find the most recent vote for the current user
-					for (ApprovalInfo oneApproval : listApproval) {
-						//Test either the e-mail or the username
-						if (user.equals(oneApproval.getEmail()) || user.equals(oneApproval.getUsername())) {
-							if (candidate == null) {
-								candidate = oneApproval;
-								break;
-							}
-						}
-					}
-					if (candidate != null) {
-						//Collect the label and the associated last value for the current user
-						userVotes.put(entrylabel.getKey(), candidate.getValue());
-					}
-				}
-			}
-		}
-		return userVotes;
-	}
-
-	/**
-	 * Find all potential labels not set to its maximum value for a login user
-	 */
-	@Override
-	public Map<String, Integer> getLabelsNotAtMax(String loginUser) {
-		Map<String, Integer> modifiedAllowed = new TreeMap<>();
-
-		Iterator<Entry<String, Integer>> iter = getAllowedLabelsMaxValue().entrySet().iterator();
-		Map<String, Integer> userVotes = getUserLastLabelSet(loginUser);
-		while (iter.hasNext()) {
-			Entry<String, Integer> entry = iter.next();
-			int currentValue = -1;
-			if (!userVotes.isEmpty()) {
-				currentValue = userVotes.get(entry.getKey());
-			}
-			int permittedMax = getPermittedMaxValue(entry.getKey());
-			if (!(currentValue == permittedMax)) {
-				//Only copy the one not at the maximum yet
-				modifiedAllowed.put(entry.getKey(), entry.getValue());
-			}
-		}
-		return modifiedAllowed;
 	}
 }

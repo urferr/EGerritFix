@@ -2154,58 +2154,13 @@ public interface ModelPackage extends EPackage {
 	int CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING = 4;
 
 	/**
-	 * The operation id for the '<em>Get Permitted Max Value</em>' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO___GET_PERMITTED_MAX_VALUE__STRING = 5;
-
-	/**
-	 * The operation id for the '<em>Get Sorted Permitted Labels</em>' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO___GET_SORTED_PERMITTED_LABELS = 6;
-
-	/**
-	 * The operation id for the '<em>Get Allowed Labels Max Value</em>' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO___GET_ALLOWED_LABELS_MAX_VALUE = 7;
-
-	/**
-	 * The operation id for the '<em>Get User Last Label Set</em>' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO___GET_USER_LAST_LABEL_SET__STRING = 8;
-
-	/**
-	 * The operation id for the '<em>Get Labels Not At Max</em>' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CHANGE_INFO___GET_LABELS_NOT_AT_MAX__STRING = 9;
-
-	/**
 	 * The number of operations of the '<em>Change Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CHANGE_INFO_OPERATION_COUNT = 10;
+	int CHANGE_INFO_OPERATION_COUNT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.
@@ -4942,56 +4897,6 @@ public interface ModelPackage extends EPackage {
 	EOperation getChangeInfo__GetLabelMaxValue__String();
 
 	/**
-	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getPermittedMaxValue(java.lang.String) <em>Get Permitted Max Value</em>}' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get Permitted Max Value</em>' operation.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getPermittedMaxValue(java.lang.String)
-	 * @generated
-	 */
-	EOperation getChangeInfo__GetPermittedMaxValue__String();
-
-	/**
-	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getSortedPermittedLabels() <em>Get Sorted Permitted Labels</em>}' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get Sorted Permitted Labels</em>' operation.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getSortedPermittedLabels()
-	 * @generated
-	 */
-	EOperation getChangeInfo__GetSortedPermittedLabels();
-
-	/**
-	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getAllowedLabelsMaxValue() <em>Get Allowed Labels Max Value</em>}' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get Allowed Labels Max Value</em>' operation.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getAllowedLabelsMaxValue()
-	 * @generated
-	 */
-	EOperation getChangeInfo__GetAllowedLabelsMaxValue();
-
-	/**
-	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getUserLastLabelSet(java.lang.String) <em>Get User Last Label Set</em>}' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get User Last Label Set</em>' operation.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getUserLastLabelSet(java.lang.String)
-	 * @generated
-	 */
-	EOperation getChangeInfo__GetUserLastLabelSet__String();
-
-	/**
-	 * Returns the meta object for the '{@link org.eclipse.egerrit.internal.model.ChangeInfo#getLabelsNotAtMax(java.lang.String) <em>Get Labels Not At Max</em>}' operation.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get Labels Not At Max</em>' operation.
-	 * @see org.eclipse.egerrit.internal.model.ChangeInfo#getLabelsNotAtMax(java.lang.String)
-	 * @generated
-	 */
-	EOperation getChangeInfo__GetLabelsNotAtMax__String();
-
-	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.ProblemInfo <em>Problem Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7190,48 +7095,6 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING = eINSTANCE.getChangeInfo__GetLabelMaxValue__String();
-
-		/**
-		 * The meta object literal for the '<em><b>Get Permitted Max Value</b></em>' operation.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EOperation CHANGE_INFO___GET_PERMITTED_MAX_VALUE__STRING = eINSTANCE
-				.getChangeInfo__GetPermittedMaxValue__String();
-
-		/**
-		 * The meta object literal for the '<em><b>Get Sorted Permitted Labels</b></em>' operation.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EOperation CHANGE_INFO___GET_SORTED_PERMITTED_LABELS = eINSTANCE.getChangeInfo__GetSortedPermittedLabels();
-
-		/**
-		 * The meta object literal for the '<em><b>Get Allowed Labels Max Value</b></em>' operation.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EOperation CHANGE_INFO___GET_ALLOWED_LABELS_MAX_VALUE = eINSTANCE.getChangeInfo__GetAllowedLabelsMaxValue();
-
-		/**
-		 * The meta object literal for the '<em><b>Get User Last Label Set</b></em>' operation.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EOperation CHANGE_INFO___GET_USER_LAST_LABEL_SET__STRING = eINSTANCE
-				.getChangeInfo__GetUserLastLabelSet__String();
-
-		/**
-		 * The meta object literal for the '<em><b>Get Labels Not At Max</b></em>' operation.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EOperation CHANGE_INFO___GET_LABELS_NOT_AT_MAX__STRING = eINSTANCE.getChangeInfo__GetLabelsNotAtMax__String();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.ProblemInfoImpl <em>Problem Info</em>}' class.

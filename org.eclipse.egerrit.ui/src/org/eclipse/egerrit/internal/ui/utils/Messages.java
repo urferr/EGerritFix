@@ -508,11 +508,15 @@ public class Messages extends NLS {
 
 	public static String RebaseProcess_notPerform;
 
-	public static String ReplyProcess_AllButtons;
+	public static String ReplyProcess_PlusTwo;
 
 	public static String ReplyHandler_generalMessage;
 
 	public static String ReplyHandler_specificMessage;
+
+	public static String ReplyPlusTwoHandler_generalMessage;
+
+	public static String ReplyPlusTwoHandler_specificMessage;
 
 	public static String SubmitHandler_title;
 

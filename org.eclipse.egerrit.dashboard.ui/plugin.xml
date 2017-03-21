@@ -46,7 +46,7 @@
           <dynamic
                 class="org.eclipse.egerrit.internal.dashboard.ui.menus.DynamicMenuAddition"
                 id="org.eclipse.egerrit.dashboard.ui.dynamic1">
-           </dynamic>
+          </dynamic>
           <separator
                 name="additions"
                 visible="true">
@@ -264,12 +264,13 @@
                 style="push"
                 tooltip="%command.tooltipReply">
              </command>
-             <separator
-                  name="additions"
-                  visible="true">
-            </separator>
-             <dynamic class="org.eclipse.egerrit.internal.dashboard.ui.utils.VoteMenuGenerator"
-                    id="org.eclipse.egerrit.dashboard.ui.votes.generator" />
+             <command
+                commandId="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2"
+                id="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2"
+                label="%command.name.replyPlus2"
+                style="push"
+                tooltip="%command.tooltipReplyPlus2">
+             </command>
           </menu>
        </menuContribution>
        <menuContribution
@@ -395,20 +396,6 @@
             	id="org.eclipse.egerrit.dashboard.ui.adjustMyStarred"
             	name="%command.name.starReview">
        </command>
-       <command
-             id="org.eclipse.egerrit.dashboard.ui.vote"
-             name="vote">
-          <commandParameter
-                id="org.eclipse.egerrit.dashboard.ui.vote.label"
-                name="voteLabel"
-                optional="false">
-          </commandParameter>
-          <commandParameter
-                id="org.eclipse.egerrit.dashboard.ui.vote.value"
-                name="voteValue"
-                optional="false">
-          </commandParameter>
-       </command>
    </extension>
 
    <extension
@@ -516,10 +503,10 @@
 				commandId="org.eclipse.egerrit.dashboard.ui.replyDialog">
        </handler>
 
-       <!-- Reply voting handler -->
-       <handler
-             class="org.eclipse.egerrit.internal.dashboard.ui.utils.VoteHandler"
-             commandId="org.eclipse.egerrit.dashboard.ui.vote">
+		<!-- Reply Plus 2 -->
+	      <handler
+				class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.ReplyPlusTwoHandler" 
+				commandId="org.eclipse.egerrit.dashboard.ui.replyHandlerPlus2">
        </handler>
 
 	      <!-- Submit sub-menu-->
