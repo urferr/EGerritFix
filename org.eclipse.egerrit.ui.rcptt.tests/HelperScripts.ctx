@@ -5,49 +5,29 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 3/20/17 1:26 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 2/28/17 3:50 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
 Entry-Name: .ecl.context
 
 proc "delete-git-repos" {
-try {
-	with [open-view "Git Repositories" "Git/Git Repositories" | get-tree] {
-		key-type "M1+a"
-		collapse-all
-	}
-} -catch {
-	// In the dialog does not have a tree
-}
-
-try {let [val repoCount [get-view "Git Repositories" | get-tree | get-property "getItemCount()" -raw]] {
-	loop [val count $repoCount] {
-		if [$count | gt 0] {
-
-			with [get-view "Git Repositories" | get-tree | select ".*"] {
-			wait -ms $defaultWaitTime
-				get-quick-access | set-text "delete repo"
-				get-quick-access | key-type Enter
-
-				with [get-window "Delete Repository"] {
-					with [get-button "Delete Git repository data and history:"] {
-						key-type Enter
-						check
-					}
-					get-button "Also delete working tree:" | check
-					get-button OK | click
-				}
-			}
-					wait -ms $defaultWaitTime
-			recur [$count | minus 1]
+	try {
+		with [open-view "Git Repositories" "Git/Git Repositories" | get-tree] {
+			key-type "M1+a"
 		}
-	}
-}
-} -catch {  
+		get-quick-access | set-text "remove repo"
+		get-quick-access | key-type Enter
 
-}
+		try {
+			get-window "Confirm Project Deletion" | get-button Yes | click
+		} -catch {
+			// In case the dialog is not shown. This happens when the repos deleted don't have a project loaded in the workspace, or where there are no repo to delete.
+		}
+	} -catch {
+		// In the dialog does not have a tree
+	}
 }
 
 // Return the dashboard view. Open it if necessary.
