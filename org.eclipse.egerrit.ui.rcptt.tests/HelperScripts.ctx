@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 2/28/17 3:50 PM
+Save-Time: 3/22/17 12:34 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -16,17 +16,37 @@ proc "delete-git-repos" {
 	try {
 		with [open-view "Git Repositories" "Git/Git Repositories" | get-tree] {
 			key-type "M1+a"
-		}
-		get-quick-access | set-text "remove repo"
-		get-quick-access | key-type Enter
-
-		try {
-			get-window "Confirm Project Deletion" | get-button Yes | click
-		} -catch {
-			// In case the dialog is not shown. This happens when the repos deleted don't have a project loaded in the workspace, or where there are no repo to delete.
+			collapse-all
 		}
 	} -catch {
-		// In the dialog does not have a tree
+		// In case the dialog does not have a tree
+	}
+
+	try {
+		let [val repoCount [get-view "Git Repositories" | get-tree | get-property "getItemCount()" -raw]] {
+			loop [val count $repoCount] {
+				if [$count | gt 0] {
+					with [get-view "Git Repositories" | get-tree | select ".*"] {
+						wait -ms $defaultWaitTime
+						get-quick-access | set-text "delete repo"
+						get-quick-access | key-type Enter
+
+						with [get-window "Delete Repository"] {
+							with [get-button "Delete Git repository data and history:"] {
+								key-type Enter
+								check
+							}
+							get-button "Also delete working tree:" | check
+							get-button OK | click
+						}
+					}
+					wait -ms $defaultWaitTime
+					recur [$count | minus 1]
+				}
+			}
+		}
+	} -catch {
+		//Nothing to do
 	}
 }
 
@@ -227,7 +247,7 @@ proc "assert-that-right-editor-content" [val is] [val in -input] {
 proc "assert-that-compare-editor-titles-are" [val left] [val right] [val in -input] {
 	with [$in] {
 		get-label $left
-		get-label $right -after [get-label $left] 
+		get-label $right -after [get-label $left]
 	}
 }
 
@@ -398,8 +418,8 @@ proc "close-view" [val viewName] {
 proc "open-file" [val fileName] {
 	get-eclipse-window | key-type "M1+M2+r"
 	with [get-window "Open Resource"] {
-	    get-editbox | set-text $fileName
-	    get-table | select $fileName | double-click
+		get-editbox | set-text $fileName
+		get-table | select $fileName | double-click
 	}
 }
 
@@ -435,24 +455,20 @@ proc "checkout-revision" [val in -input] [val ps] [val acceptPrompts false] {
 }
 
 proc "assert-colum-count-in-dashboard-is" [val is] {
-	getDashboard | get-table | get-property "columnCount"
-		| equals $is | verify-true
+	getDashboard | get-table | get-property columnCount | equals $is | verify-true
 }
 
 proc "assert-colum-count-in-reviewers-is" [val is] {
-//Test to see the number of columns in the Reviewers table includes the dynamic columns
-	with [get-editor ] {
+	// Test to see the number of columns in the Reviewers table includes the dynamic columns
+	with [get-editor] {
 		get-tab-folder | get-tab-item Details | click
-		get-group Reviewers | get-table | get-property "columnCount"
-		| equals $is | verify-true
+		get-group Reviewers | get-table | get-property columnCount | equals $is | verify-true
 	}
 }
 proc "assert-column-label-in-reviewers" [val col] [val label] {
-//Test the column value is CR "Code-Review", V "Verified", etc
+	// Test the column value is CR "Code-Review", V "Verified", etc
 	with [get-editor | get-group Reviewers | get-table] {
 		get-property [format "columns[%d].caption" $col] | equals $label | verify-true
 	}
-
 }
-
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--
