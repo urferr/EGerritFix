@@ -69,6 +69,14 @@ import org.eclipse.swt.widgets.TableColumn;
  * @since 1.0
  */
 public class UIFilesTable {
+	private static final String VIEW_COLUMN_ORDER = "egerritViewColumnOrder"; //$NON-NLS-1$
+
+	private static final String VIEW_COLUMN_WIDTH = "egerritViewColumnWidth"; //$NON-NLS-1$
+
+	private static final String COLUMN_SELECTION = "egerritSelectColumn"; //$NON-NLS-1$
+
+	private static final String SORT_DIRECTION = "sortDirection"; //$NON-NLS-1$
+
 	private boolean popupEnabled = true;
 
 	private boolean filterDeletedFiles = false;
