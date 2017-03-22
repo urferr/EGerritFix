@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _RMuQEO_WEeaJxZ8h6GZdcw
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 2/10/17 7:43 PM
+Save-Time: 3/22/17 11:26 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -16,51 +16,53 @@ Entry-Name: .content
 // Make sure all the git repos are removed
 delete-git-repos
 
-// Create a review with two revisions.
-// Check out project
-let [val review [amend-review [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent "a\nb\n" +
-	"c\n"]]] {
-	import-project $review -projectName Project
-	runQueryAndOpenEditor $review
-}
-with [get-editor] {
-	checkout-revision "2.*" -acceptPrompts true
-}
-with [get-editor] {
-	checkout-revision "1.*" -acceptPrompts true
-}
+try {
+	// Create a review with two revisions.
+	// Check out project
+	let [val review [amend-review [create-review -server $serverURL -filename "Project/src/file.txt"
+		-fileContent "a\nb\nc\n"]]] {
+		import-project $review -projectName Project
+		runQueryAndOpenEditor $review
+	}
+	with [get-editor] {
+		checkout-revision "2.*" -acceptPrompts true
+	}
+	with [get-editor] {
+		checkout-revision "1.*" -acceptPrompts true
+	}
 
+	// Create a commit in the branch for revision 2
+	open-file "file.txt"
+	with [get-editor "file.txt" | get-text-viewer] {
+		set-caret-pos 1 1
+		key-type Del
+		type-text x
+		key-type "M1+s"
+	}
 
-//Create a commit in the branch for revision 2
-open-file "file.txt"
-with [get-editor "file.txt" | get-text-viewer] {
-    set-caret-pos 1 1
-    key-type Del
-    type-text x
-    key-type "M1+s"
-}
+	with [get-editor "file.txt"] {
+		get-editbox | get-menu "Team/Add to Index" | click
+		get-editbox | get-menu "Team/Commit..." | click
+	}
+	with [get-view "Git Staging" | get-section "Commit Message"] {
+		get-button "Amend (Edit Previous Commit)" | click
+		get-button Commit | click
+	}
+	get-editor "file.txt" | close
 
-with [get-editor "file.txt"] {
-    get-editbox | get-menu "Team/Add to Index" | click
-    get-editbox | get-menu "Team/Commit..." | click
-}
-with [get-view "Git Staging" | get-section "Commit Message"] {
-    get-button "Amend (Edit Previous Commit)" | click
-    get-button Commit | click
-}
-get-editor "file.txt" | close
-
-//Finally try to checkout the revision 1 again, and check the state of the dialog that opened
-with [get-editor]  {
-    checkout-revision "2.*" -acceptPrompts true
-}
-with [get-window "Review previously checked-out"] {
-    with [get-table] {
-        get-item master | get-property "columns[1]" | equals "This is commit you are looking for" | verify-true
-        get-item "change.*" | get-property "columns[1]" 
-            | equals "The branch was created from some patchset of this review but contains code you modified or rebased" 
-            | verify-true
-    }
-    get-button Switch | get-property enablement | equals true | verify-true
+	// Finally try to checkout the revision 1 again, and check the state of the dialog that opened
+	with [get-editor] {
+		checkout-revision "2.*" -acceptPrompts true
+	}
+	with [get-window "Review previously checked-out"] {
+		with [get-table] {
+			get-item master | get-property "columns[1]" | equals "This is commit you are looking for" | verify-true
+			get-item "change.*" | get-property "columns[1]" | equals "The branch was created from some patchset of th" +
+				"is review but contains code you modified or rebased" | verify-true
+		}
+		get-button Switch | get-property enablement | equals true | verify-true
+	}
+} -finally {
+	delete-git-repos
 }
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
