@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 3/23/17 11:14 AM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 3/23/17 1:07 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -375,8 +375,9 @@ proc "assert-that-filename-in-dialog" [val atLine] [val is] [val in -input] {
 
 proc "activate-review" [val in -input] {
 	$in | get-button "Activate Comment Markers" | check
-	wait -ms $defaultWaitTime
-	get-window "EGerrit Tip" | get-button OK | click
+	try {
+		get-window "EGerrit Tip" | get-button OK | click
+	} -times 4 -delay $defaultWaitTime
 }
 
 proc "assert-that-reviewed-flag-is-off" [val row] {
