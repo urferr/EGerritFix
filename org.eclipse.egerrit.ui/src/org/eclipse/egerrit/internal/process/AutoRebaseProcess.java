@@ -663,9 +663,6 @@ public class AutoRebaseProcess extends Job {
 					case OK:
 						rebaseMessage = Messages.AutoRebaseProcess_RebaseSuccessful;
 						break;
-					case UP_TO_DATE:
-						rebaseMessage = Messages.AutoRebaseProcess_RebaseUpToDate;
-						break;
 					case FAST_FORWARD:
 						rebaseMessage = Messages.AutoRebaseProcess_RebaseFF;
 						break;
@@ -683,8 +680,8 @@ public class AutoRebaseProcess extends Job {
 				}
 			} else if (status.getStatus() == RebaseResult.Status.UP_TO_DATE) {
 				dialogMessage = Messages.AutoRebaseProcess_AlreadyUpToDate;
-				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_AutoRebaseStarted,
-						dialogMessage, SWT.NONE);
+				MessageDialog.open(MessageDialog.INFORMATION, null,
+						Messages.AutoRebaseProcess_AlreadyUpToDateTitle, dialogMessage, SWT.NONE);
 				success = false;
 			} else {
 				dialogMessage = Messages.AutoRebaseProcess_FailedRevertedBack;
