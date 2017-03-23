@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _faIt4LvJEeawKoti9_0qpQ
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 12/8/16 10:16 AM
+Save-Time: 3/17/17 1:06 PM
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
 Content-Type: text/plain
@@ -25,7 +25,8 @@ let [val review [create-review -server $serverURL]] {
 
 /* +2 the review and submits it to the server */
 get-editor | get-button "Reply..." | click
-get-menu "Code-Review+2" | click
+	get-menu "Code-Review  +2" | click 
+
 wait -ms $defaultWaitTime
 
 get-editor | get-button Submit | click

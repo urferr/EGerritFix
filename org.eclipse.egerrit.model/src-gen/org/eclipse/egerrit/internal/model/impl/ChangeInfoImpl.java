@@ -13,6 +13,7 @@ package org.eclipse.egerrit.internal.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Map;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 import org.eclipse.egerrit.internal.model.ActionInfo;
 import org.eclipse.egerrit.internal.model.ApprovalInfo;
@@ -1766,6 +1767,66 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 	 * @generated
 	 */
 	@Override
+	public int getPermittedMaxValue(String label) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Map<String, EList<String>> getSortedPermittedLabels() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Map<String, Integer> getAllowedLabelsMaxValue() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Map<String, Integer> getUserLastLabelSet(String user) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Map<String, Integer> getLabelsNotAtMax(String loginUser) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public boolean isRevertable() {
 		// TODO: implement this method to return the 'Revertable' attribute
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -2362,6 +2423,16 @@ public class ChangeInfoImpl extends MinimalEObjectImpl.Container implements Chan
 			return getLabelMinValue((String) arguments.get(0));
 		case ModelPackage.CHANGE_INFO___GET_LABEL_MAX_VALUE__STRING:
 			return getLabelMaxValue((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_PERMITTED_MAX_VALUE__STRING:
+			return getPermittedMaxValue((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_SORTED_PERMITTED_LABELS:
+			return getSortedPermittedLabels();
+		case ModelPackage.CHANGE_INFO___GET_ALLOWED_LABELS_MAX_VALUE:
+			return getAllowedLabelsMaxValue();
+		case ModelPackage.CHANGE_INFO___GET_USER_LAST_LABEL_SET__STRING:
+			return getUserLastLabelSet((String) arguments.get(0));
+		case ModelPackage.CHANGE_INFO___GET_LABELS_NOT_AT_MAX__STRING:
+			return getLabelsNotAtMax((String) arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}
