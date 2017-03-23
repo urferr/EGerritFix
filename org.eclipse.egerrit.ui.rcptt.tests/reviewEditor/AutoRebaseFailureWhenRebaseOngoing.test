@@ -1,0 +1,78 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AutoRebaseFailureWhenRebaseOngoing
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _EYNgUA_WEeeBuMHyGXWtrw
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/23/17 11:50 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+/* Remove all repos */
+delete-git-repos
+
+try {
+	/* Create a first review with a unique content (timestamp) */
+	let [val review1 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+		| format-time -format "hh:mm:ss:SS"]]] {
+		// wait -ms $defaultWaitTime
+
+		/* Create a conflicting review by creating a new review, and then submitting the first review */
+		let [val review2 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+			| format-time -format "hh:mm:ss:SS"]]] {
+			// Submit the first review and close the editor
+			runQueryAndOpenEditor $review1
+
+			/* First do a +2 */
+			get-editor | get-button "Reply..." | click
+			get-menu "Code-Review+2" | click
+			wait -ms $defaultWaitTime
+
+			with [get-editor] {
+				get-button Submit | click
+				wait -ms $defaultWaitTime
+				close
+			}
+
+			runQueryAndOpenEditor $review2
+
+			/* Import the repository and try again */
+			import-project $review2 -projectName Project
+		}
+	}
+	
+	/* Initiate an interactive rebase in order to create the problematic situation */
+	/* Wait for the git repo view to get filled */
+	wait -ms $defaultWaitTime
+	get-view "Git Repositories" | get-tree | select ".*master.*\.git" | get-menu "Rebase..." | click
+	with [get-window "Rebase 'master'"] {
+		get-button "Rebase interactively" | check
+		get-button Rebase | click
+	}
+
+	/* If the rebase confirmation dialog preference is set, we need to get rid of that first */
+	try {
+		get-window "Rebase Result" | get-button OK | click
+	} -catch {
+		/* Do nothing if it wasn't there */
+	}
+
+	with [get-editor] {
+		initiate-local-rebase
+	}
+
+	/* Verify that the automatic rebase can't start if the repo is in a wrong state (i.e already rebasing) */
+	with [get-window "The automatic rebase process was cancelled!"] {
+		get-property "getText()" | equals "The automatic rebase process was cancelled!" | verify-true
+		get-button OK | click
+		wait -ms $defaultWaitTime
+	}
+} -finally {
+	delete-git-repos
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

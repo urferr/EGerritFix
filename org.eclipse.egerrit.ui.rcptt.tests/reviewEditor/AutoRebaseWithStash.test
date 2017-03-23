@@ -1,0 +1,84 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AutoRebaseWithStash
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _J05PwPhOEeaXtuZTeCL23w
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 3/23/17 12:20 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+global [val text "Changes to stash"]
+
+/* Remove all repos */
+delete-git-repos
+
+try {
+	/* Create a first review with a unique content (timestamp) */
+	let [val review1 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+		| format-time -format "hh:mm:ss:SS"]]] {
+
+		/* Create a conflicting review by creating a new review, and then submitting the first review */
+		let [val review2 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+			| format-time -format "hh:mm:ss:SS"]]] {
+			
+			/* Submit the first review and close the editor */
+			runQueryAndOpenEditor $review1
+
+			/* First do a +2 */
+			get-editor | get-button "Reply..." | click
+			get-menu "Code-Review+2" | click
+			wait -ms $defaultWaitTime
+
+			with [get-editor] {
+				get-button Submit | click
+				wait -ms $defaultWaitTime
+				close
+			}
+
+			runQueryAndOpenEditor $review2
+
+			/* Import the repository and try again */
+			import-project $review2 -projectName Project
+		}
+	}
+
+	/* Create uncommitted changes to create stashing conditions for the test */
+	open-file "file.txt"
+	with [get-editor "file.txt" | get-text-viewer] {
+		key-type "M1+a"
+		type-text $text
+		key-type "M1+s"
+		key-type "M1+w" /* Close the editor */
+	}
+
+	/* Verify that changes are correctly stashed if starting the autorebase process */
+	with [get-editor] {
+		initiate-local-rebase
+	}
+	with [get-window "Automatic local rebase was started"] {
+		get-button OK | click
+	}
+
+	/* Check that a stash has been created */
+	wait -ms $defaultWaitTime
+	with [get-view "Git Repositories" | get-tree] {
+		select "egerrit.*Rebase w\\/merge.*\.git" | get-menu "Stashes/0: automatic-rebase.*" | click
+	}
+
+	/* Check the content of the created stash and compare with initial text */
+	get-editor ".*\.tmp]" | get-section "Unstaged Changes (1)" | get-table | select "Project\\/src\\/file.txt"
+		| double-click
+
+	with [get-editor "file\.txt.*"] {
+		get-text-viewer | get-property text | equals $text | verify-true
+	}
+} -finally {
+	delete-git-repos
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

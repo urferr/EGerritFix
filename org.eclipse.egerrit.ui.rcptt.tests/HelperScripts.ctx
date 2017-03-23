@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201605312320
-Save-Time: 3/22/17 12:34 AM
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/23/17 11:14 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -47,6 +47,22 @@ proc "delete-git-repos" {
 		}
 	} -catch {
 		//Nothing to do
+	}
+}
+
+//Initialte a local rebase by clicking rebase in the review editor and answer to prompts
+proc "initiate-local-rebase" [val editor -input] {
+	with [$editor] {
+		get-button Rebase | click
+	}
+	with [get-window "Code Review - Rebase Change"] {
+		get-button OK | click
+		wait -ms $defaultWaitTime
+	}
+
+	with [get-window "Automatic local rebase"] {
+		get-button OK | click
+		wait -ms $defaultWaitTime
 	}
 }
 

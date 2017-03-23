@@ -1,0 +1,77 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: AutoRebaseFailureNoRepo
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _VmzIsA_VEeeBuMHyGXWtrw
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/23/17 11:50 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+/* Remove all repos */
+delete-git-repos
+
+try {
+	/* Create a first review with a unique content (timestamp) */
+	let [val review1 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+		| format-time -format "hh:mm:ss:SS"]]] {
+
+		/* Create a conflicting review by creating a new review, and then submitting the first review */
+		let [val review2 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
+			| format-time -format "hh:mm:ss:SS"]]] {
+			// Submit the first review and close the editor
+			runQueryAndOpenEditor $review1
+
+			/* First do a +2 */
+			get-editor | get-button "Reply..." | click
+			get-menu "Code-Review+2" | click
+			wait -ms $defaultWaitTime
+
+			with [get-editor] {
+				get-button Submit | click
+				wait -ms $defaultWaitTime
+				close
+			}
+
+			runQueryAndOpenEditor $review2
+
+			with [get-editor] {
+				/* If the repository isn't imported, the automatic rebase dialog should not be displayed */
+				assert-that-button -button Rebase -is enabled
+
+				/* Verify that the automatic rebase doesn't start if a non-empty string is entered */
+				get-button Rebase | click
+				with [get-window "Code Review - Rebase Change"] {
+					get-editbox | set-text 1111111111111111
+					get-button OK | click
+					wait -ms $defaultWaitTime
+
+					with [get-window "Rebase failed"] {
+						get-property "getText()" | equals "Rebase failed" | verify-true
+						get-button OK | click
+					}
+				}
+
+				/* Verify that the automatic rebase can't start if no local repo is found on the workspace */
+				get-button Rebase | click
+				with [get-window "Code Review - Rebase Change"] {
+					get-button OK | click
+					wait -ms $defaultWaitTime
+				}
+
+				with [get-window "Rebase failed (no local repository)"] {
+					get-property "getText()" | equals "Rebase failed (no local repository)" | verify-true
+					get-button OK | click
+				}
+			}
+		}
+	}
+} -finally {
+	delete-git-repos
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
