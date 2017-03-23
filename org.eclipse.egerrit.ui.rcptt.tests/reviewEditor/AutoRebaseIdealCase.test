@@ -53,10 +53,20 @@ try {
 		get-button OK | click
 	}
 
-	with [get-view "Git Staging"] {
-		get-section Rebase | get-label Rebase | get-property caption | equals Rebase | verify-true
-	}
-	// TODO verifier qude la brnache est creee, pas sur master?
+	/* Verify that the git repo is in a rebase state */
+	get-view "Git Staging" | get-section Rebase | get-label Rebase | get-property caption | equals Rebase | verify-true
+
+	/* Verify that there are now two branches */
+	get-view "Git Repositories" | get-tree | get-item "egerrit.*\.git/Branches/Local" | get-property childCount | equals
+		"2" | verify-true
+
+	/* Verify that the automatic rebase branch was created */
+	get-view "Git Repositories" | get-tree | get-item "egerrit.*\.git/Branches/Local" | get-property "getItems().Tree" +
+		"Item[0].getText()" | equals "automatic-rebase-.*Test commit message" | verify-true
+
+	/* Verify that the automatic branch doesn't have the checked out icon (means it's not checked out) */
+	get-view "Git Repositories" | get-tree | get-item "egerrit.*\.git/Branches/Local/automatic-rebase-.*" | get-property
+		"image.path" | equals "org.eclipse.egit.ui/icons/obj16/branch_obj.gif" | verify-true
 } -finally {
 	delete-git-repos
 }
