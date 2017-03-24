@@ -231,6 +231,10 @@ public class QueryHelpers {
 	}
 
 	private static void mergeNewInformation(ChangeInfo toRefresh, ChangeInfo newChangeInfo, boolean forceReload) {
+		if (newChangeInfo == null) {
+			//When we did not reach the gerrit server, we received a null ChangeInfo
+			return;
+		}
 		synchronized (toRefresh) {
 			if (!forceReload) {
 				if (toRefresh.getUpdated() != null && toRefresh.getUpdated().equals(newChangeInfo.getUpdated())
@@ -474,7 +478,7 @@ public class QueryHelpers {
 
 	/**
 	 * Set the flag if the reviewer can be deleted
-	 * 
+	 *
 	 * @param changeInfo
 	 * @param reviewerInfo
 	 */
