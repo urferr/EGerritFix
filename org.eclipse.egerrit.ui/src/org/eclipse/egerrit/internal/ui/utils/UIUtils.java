@@ -215,13 +215,23 @@ public class UIUtils {
 	}
 
 	public static String formatMessageForMarkerView(CommentInfo commentInfo, int newPosition) {
-		String patchSet = ModelHelpers.getRevision(commentInfo).get_number() + "/" //$NON-NLS-1$
-				+ ModelHelpers.getHighestRevisionNumber(
-						ModelHelpers.getRevision(commentInfo).getChangeInfo().getRevisions().values());
-		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : Messages.UIUtils_1;
-		return commentInfo.getMessage() + (newPosition < 0 ? NLS.bind(Messages.UIUtils_3, commentInfo.getLine()) : "") //$NON-NLS-1$
-				+ NLS.bind(Messages.UIUtils_2,
-						new String[] { author, CommentPrettyPrinter.printDate(commentInfo), patchSet });
+		String psString = getPatchSetString(commentInfo);
+		String author = commentInfo.getAuthor() != null ? commentInfo.getAuthor().getName() : null;
+		String message = commentInfo.getMessage();
+		boolean lineDeleted = newPosition < 0;
+		String formattedMessage;
+		if (author == null) {
+			//This is a draft
+			formattedMessage = NLS.bind(Messages.UIUtils_draft,
+					new String[] { message, CommentPrettyPrinter.printDate(commentInfo), psString });
+		} else {
+			formattedMessage = NLS.bind(Messages.UIUtils_comment,
+					new String[] { message, author, CommentPrettyPrinter.printDate(commentInfo), psString });
+		}
+		if (lineDeleted) {
+			return formattedMessage + NLS.bind(Messages.UIUtils_lineDeleted, commentInfo.getLine());
+		}
+		return formattedMessage;
 	}
 
 	public static String formatMessageForQuickFix(CommentInfo commentInfo) {

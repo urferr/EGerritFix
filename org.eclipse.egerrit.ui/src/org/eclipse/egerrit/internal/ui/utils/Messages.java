@@ -362,11 +362,11 @@ public class Messages extends NLS {
 
 	public static String UIUtils_0;
 
-	public static String UIUtils_1;
+	public static String UIUtils_lineDeleted;
 
-	public static String UIUtils_2;
+	public static String UIUtils_draft;
 
-	public static String UIUtils_3;
+	public static String UIUtils_comment;
 
 	public static String FileTabView_EGerriTipValue;
 
