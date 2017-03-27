@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egit.core.op.CreateLocalBranchOperation;
@@ -83,6 +84,8 @@ public class AutoRebaseProcess extends Job {
 
 	private String tempName;
 
+	private ChangeInfo baseChange;
+
 	private enum AutoRebaseStep {
 		NONE, FETCH_PATCHSET, STASH_CHANGES, CREATE_BRANCH, CHECKOUT_BRANCH, FETCH_BRANCH, REBASE_INIT,
 	};
@@ -97,11 +100,13 @@ public class AutoRebaseProcess extends Job {
 	 * @param revisionInfo
 	 *            Current gerrit revision on which to execute the rebase
 	 */
-	public AutoRebaseProcess(GerritClient gerritClient, Repository localRepo, RevisionInfo revisionInfo) {
+	public AutoRebaseProcess(GerritClient gerritClient, Repository localRepo, RevisionInfo revisionInfo,
+			ChangeInfo baseChange) {
 		super(Messages.AutoRebaseProcess_AutomaticallyRebasing);
 		this.gerritClient = gerritClient;
 		this.localRepo = localRepo;
 		this.revisionInfo = revisionInfo;
+		this.baseChange = baseChange;
 		DateFormat dateFormat = new SimpleDateFormat("yy/MM/dd.HH-mm-ss"); //$NON-NLS-1$
 		Date date = new Date();
 		this.dateNowBranchFormat = dateFormat.format(date);
@@ -494,19 +499,20 @@ public class AutoRebaseProcess extends Job {
 		/* Do remote tasks before local ones */
 		/* Fetch remote branches to make sure that the remote branch is up to date */
 		subMonitor.setTaskName(Messages.AutoRebaseProcess_FetchingRemoteBranch);
-		Ref refBranch = null;
-		try {
-			refBranch = localRepo.findRef(revisionInfo.getChangeInfo().getBranch());
-		} catch (IOException e2) {
-			EGerritCorePlugin.logError(e2.getMessage());
-			return false;
-		}
-
-		RefSpec refSpecBranch = new RefSpec().setSource(refBranch.getName()).setDestination(Constants.FETCH_HEAD);
 		List<RefSpec> branchSpecs = new ArrayList<>(1);
+		RefSpec refSpecBranch;
+		if (baseChange == null) {
+			refSpecBranch = new RefSpec().setSource("refs/heads/" + revisionInfo.getChangeInfo().getBranch()) //$NON-NLS-1$
+					.setDestination(Constants.FETCH_HEAD);
+
+		} else {
+			refSpecBranch = new RefSpec().setSource(baseChange.getRevision().getRef())
+					.setDestination(Constants.FETCH_HEAD);
+		}
 
 		branchSpecs.add(refSpecBranch);
 		FetchResult fetchResBranch = null;
+
 		try {
 			URIish uri = getRemoteURI();
 			if (uri != null) {
@@ -680,8 +686,8 @@ public class AutoRebaseProcess extends Job {
 				}
 			} else if (status.getStatus() == RebaseResult.Status.UP_TO_DATE) {
 				dialogMessage = Messages.AutoRebaseProcess_AlreadyUpToDate;
-				MessageDialog.open(MessageDialog.INFORMATION, null,
-						Messages.AutoRebaseProcess_AlreadyUpToDateTitle, dialogMessage, SWT.NONE);
+				MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_AlreadyUpToDateTitle,
+						dialogMessage, SWT.NONE);
 				success = false;
 			} else {
 				dialogMessage = Messages.AutoRebaseProcess_FailedRevertedBack;

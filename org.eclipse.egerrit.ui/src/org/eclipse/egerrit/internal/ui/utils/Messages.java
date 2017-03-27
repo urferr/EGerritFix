@@ -534,6 +534,10 @@ public class Messages extends NLS {
 
 	public static String RebaseProcess_CreateAndCheckout;
 
+	public static String RebaseProcess_FailedInvalidChangeNumber;
+
+	public static String RebaseProcess_FailedInvalidChangeNumberPleaseEnterValid;
+
 	public static String RebaseProcess_FetchAppropriateBranches;
 
 	public static String RebaseProcess_LocalNoRepo;

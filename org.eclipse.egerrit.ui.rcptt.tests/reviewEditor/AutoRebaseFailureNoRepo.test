@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _VmzIsA_VEeeBuMHyGXWtrw
 Runtime-Version: 2.1.0.201606221726
-Save-Time: 3/24/17 4:03 PM
+Save-Time: 3/30/17 3:02 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -49,12 +49,13 @@ try {
 					get-menu "Rebase (remotely)" | click
 				}
 				with [get-window "Code Review - Rebase Change"] {
-					get-editbox | set-text 1111111111111111
+				/* Enter an invalid "number" for a change */
+					get-editbox | set-text "1111111111111111RandomWord"
 					get-button OK | click
 					wait -ms $defaultWaitTime
 
-					with [get-window "Rebase failed"] {
-						get-property "getText()" | equals "Rebase failed" | verify-true
+					with [get-window "Rebase failed (invalid change number)"] {
+						get-property "getText()" | equals "Rebase failed (invalid change number)" | verify-true
 						get-button OK | click
 					}
 				}
