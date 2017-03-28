@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 3/23/17 1:07 PM
+Save-Time: 3/27/17 9:32 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -381,9 +381,11 @@ proc "activate-review" [val in -input] {
 }
 
 proc "assert-that-reviewed-flag-is-off" [val row] {
-	with [get-editor | get-table -index 1] {
-		get-cell $row 0 -column 0 | get-property "cells[0]" | equals "" | verify-true
-	}
+	try {
+		with [get-editor | get-table -index 1] {
+			get-cell $row 0 -column 0 | get-property "cells[0]" | equals "" | verify-true
+		}
+	} -times 4 -delay $defaultWaitTime
 }
 
 proc "assert-that-reviewed-flag-is-on" [val row] [val in -input] {
@@ -391,9 +393,11 @@ proc "assert-that-reviewed-flag-is-on" [val row] [val in -input] {
 }
 
 proc "assert-that-reviewed-flag-in-files" [val row] [val is] [val in -input] {
-	with [get-editor | get-table -index 1] {
-		get-cell $row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
-	}
+	try {
+		with [get-editor | get-table -index 1] {
+			get-cell $row 0 -column 0 | get-property "cells[0].image.path" | equals $is | verify-true
+		}
+	} -times 4 -delay $defaultWaitTime
 }
 
 // Open the Problems view.
