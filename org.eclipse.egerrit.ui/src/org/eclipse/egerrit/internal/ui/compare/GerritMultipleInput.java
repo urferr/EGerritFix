@@ -27,7 +27,9 @@ import org.eclipse.compare.IStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.contentmergeviewer.ContentMergeViewer;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
+import org.eclipse.compare.internal.CompareUIPlugin;
 import org.eclipse.compare.internal.MergeSourceViewer;
+import org.eclipse.compare.internal.ViewerDescriptor;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
@@ -538,6 +540,11 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
 		Viewer newViewer = super.findContentViewer(oldViewer, input, parent);
+		if (newViewer.getClass().getName().contains("PhpMergeViewer")) {
+			ViewerDescriptor[] vds = CompareUIPlugin.getDefault().findContentViewerDescriptor(oldViewer, input, null);
+			setContentViewerDescriptor(vds[vds.length - 1]);
+			newViewer = super.findContentViewer(oldViewer, input, parent);
+		}
 		purgeCache();
 
 		//Force a reset of the documents before they get used. This is necessary if the document has already been opened.
