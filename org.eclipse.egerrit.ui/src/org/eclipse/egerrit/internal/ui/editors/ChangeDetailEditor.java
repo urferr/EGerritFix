@@ -14,7 +14,6 @@
 
 package org.eclipse.egerrit.internal.ui.editors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -595,7 +594,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 		Button rebaseButton = new Button(c, SWT.PUSH);
 		rebaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		rebaseButton.setText(ActionConstants.REBASE.getLiteral());
+		rebaseButton.setText(ActionConstants.REBASE.getLiteral() + "..."); //$NON-NLS-1$
 
 		//Bind the rebase button
 		{
@@ -607,19 +606,7 @@ public class ChangeDetailEditor extends EditorPart {
 			bindingContext.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebasable,
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
 		}
-		rebaseButton.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				RebaseProcess rebaseProcess = new RebaseProcess();
-				try {
-					rebaseProcess.handleRebase(rebaseButton.getShell(), fChangeInfo,
-							fChangeInfo.getUserSelectedRevision(), fGerritClient);
-				} catch (InvocationTargetException e1) {
-					EGerritCorePlugin.logError(e1.getMessage());
-				}
-			}
-		});
+		rebaseButton.addSelectionListener(rebaseButtonListener(rebaseButton.getShell()));
 
 		Button download = new Button(c, SWT.PUSH);
 		download.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -679,7 +666,6 @@ public class ChangeDetailEditor extends EditorPart {
 		bindingContext.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
 		draftButton.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(draftButton.getShell(),
@@ -745,11 +731,29 @@ public class ChangeDetailEditor extends EditorPart {
 
 				menu.setVisible(true);
 			}
-
 		});
 
 		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		return c;
+	}
+
+	private SelectionListener rebaseButtonListener(Composite parent) {
+		return new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MenuManager mgr = new MenuManager();
+				mgr.add(new RebaseProcess(false, parent.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
+						fGerritClient));
+				mgr.add(new RebaseProcess(true, parent.getShell(), fChangeInfo, fChangeInfo.getUserSelectedRevision(),
+						fGerritClient));
+				mgr.createContextMenu(parent).setVisible(true);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				//Nothing to do
+			}
+		};
 	}
 
 	private void buildReplyDynamicMenu(Map<String, Integer> adjustedAllowedButton, MenuManager mgr) {

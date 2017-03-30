@@ -11,12 +11,10 @@
 
 package org.eclipse.egerrit.internal.dashboard.ui.commands.table;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
 import org.eclipse.egerrit.internal.process.RebaseProcess;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.osgi.util.NLS;
@@ -32,13 +30,9 @@ public class RebaseHandler extends DashboardFactoryHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// Execute the rebase if we have the information
 		if (getChangeInfo() != null && getGerritClient() != null) {
-			RebaseProcess rebaseProcess = new RebaseProcess();
-			try {
-				rebaseProcess.handleRebase(HandlerUtil.getActiveShell(event), getChangeInfo(), getLatestRevision(),
-						getGerritClient());
-			} catch (InvocationTargetException e) {
-				EGerritCorePlugin.logError(e.getMessage());
-			}
+			RebaseProcess rebaseProcess = new RebaseProcess(false, HandlerUtil.getActiveShell(event), getChangeInfo(),
+					getLatestRevision(), getGerritClient());
+			rebaseProcess.run();
 		}
 		return null;
 	}

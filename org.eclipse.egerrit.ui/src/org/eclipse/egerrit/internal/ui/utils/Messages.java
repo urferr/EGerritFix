@@ -536,7 +536,13 @@ public class Messages extends NLS {
 
 	public static String RebaseProcess_FetchAppropriateBranches;
 
+	public static String RebaseProcess_LocalNoRepo;
+
 	public static String RebaseProcess_RebaseCheckedOut;
+
+	public static String RebaseProcess_RebaseLocally;
+
+	public static String RebaseProcess_RebaseRemotely;
 
 	public static String RebaseProcess_StashLocalChanges;
 

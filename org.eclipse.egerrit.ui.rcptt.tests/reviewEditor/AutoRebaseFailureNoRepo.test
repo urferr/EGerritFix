@@ -5,8 +5,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _VmzIsA_VEeeBuMHyGXWtrw
-Runtime-Version: 2.1.0.201605312320
-Save-Time: 3/23/17 3:18 PM
+Runtime-Version: 2.1.0.201606221726
+Save-Time: 3/24/17 4:03 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -20,7 +20,6 @@ try {
 	/* Create a first review with a unique content (timestamp) */
 	let [val review1 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
 		| format-time -format "hh:mm:ss:SS"]]] {
-
 		/* Create a conflicting review by creating a new review, and then submitting the first review */
 		let [val review2 [create-review -server $serverURL -filename "Project/src/file.txt" -fileContent [get-time
 			| format-time -format "hh:mm:ss:SS"]]] {
@@ -42,10 +41,13 @@ try {
 
 			with [get-editor] {
 				/* If the repository isn't imported, the automatic rebase dialog should not be displayed */
-				assert-that-button -button Rebase -is enabled
+				assert-that-button -button "Rebase..." -is enabled
 
 				/* Verify that the automatic rebase doesn't start if a non-empty string is entered */
-				get-button Rebase | click
+				with [get-button "Rebase..."] {
+					click
+					get-menu "Rebase (remotely)" | click
+				}
 				with [get-window "Code Review - Rebase Change"] {
 					get-editbox | set-text 1111111111111111
 					get-button OK | click
@@ -58,7 +60,10 @@ try {
 				}
 
 				/* Verify that the automatic rebase can't start if no local repo is found on the workspace */
-				get-button Rebase | click
+				with [get-button "Rebase..."] {
+					click
+					get-menu "Rebase (remotely)" | click
+				}
 				with [get-window "Code Review - Rebase Change"] {
 					get-button OK | click
 					wait -ms $defaultWaitTime

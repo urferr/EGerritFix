@@ -11,7 +11,6 @@
 
 package org.eclipse.egerrit.internal.process;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
@@ -29,6 +28,7 @@ import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egit.core.internal.indexdiff.IndexDiffCacheEntry;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,96 +44,144 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * This class handle all aspect of the Rebase operation
  */
-public class RebaseProcess {
+public class RebaseProcess extends Action {
+
+	private Boolean rebaseLocally = false;;
+
+	private Shell shell;
+
+	private ChangeInfo changeInfo;
+
+	private RevisionInfo toRebase;
+
+	private GerritClient gerritClient;
 
 	/**
 	 * The constructor.
 	 */
-	public RebaseProcess() {
+	public RebaseProcess(Boolean rebaseLocally, Shell shell, ChangeInfo changeInfo, RevisionInfo toRebase,
+			GerritClient gerritClient) {
+		this.rebaseLocally = rebaseLocally;
+		this.shell = shell;
+		this.changeInfo = changeInfo;
+		this.toRebase = toRebase;
+		this.gerritClient = gerritClient;
+
+		if (rebaseLocally) {
+			this.setText(Messages.RebaseProcess_RebaseLocally);
+		} else {
+			this.setText(Messages.RebaseProcess_RebaseRemotely);
+		}
 	}
 
-	public void handleRebase(Shell shell, ChangeInfo changeInfo, RevisionInfo toRebase, GerritClient gerritClient)
-			throws InvocationTargetException {
-		InputDialog inputDialog = new InputDialog(shell, Messages.RebaseProcess_title,
-				Messages.RebaseProcess_changeParent, "", null) { //$NON-NLS-1$
+	@Override
+	public void run() {
+		if (rebaseLocally) {
+			Repository repo;
+			repo = new FindLocalRepository(gerritClient, toRebase.getChangeInfo().getProject()).getRepository();
+			if (repo != null) {
+				AutoRebaseProcess process = new AutoRebaseProcess(gerritClient, repo, toRebase);
+				process.schedule();
+			} else {
+				showNoRepoDialog(true);
+			}
+		} else {
+			InputDialog inputDialog = new InputDialog(shell, Messages.RebaseProcess_title,
+					Messages.RebaseProcess_changeParent, "", null) { //$NON-NLS-1$
 
-			@Override
-			protected void createButtonsForButtonBar(Composite parent) {
-				super.createButtonsForButtonBar(parent);
-				getText().addModifyListener(new ModifyListener() {
-					@Override
-					public void modifyText(ModifyEvent e) {
-						if (!toRebase.isRebaseable()) {
-							if (!getText().getText().isEmpty()) {
-								getOkButton().setEnabled(true);
-							} else {
-								getOkButton().setEnabled(false);
-								getOkButton().getParent().setToolTipText(
-										toRebase.isRebaseable() ? "" : Messages.RebaseProcess_changeIsAlreadyUpToDate); //$NON-NLS-1$
+				@Override
+				protected void createButtonsForButtonBar(Composite parent) {
+					super.createButtonsForButtonBar(parent);
+					getText().addModifyListener(new ModifyListener() {
+						@Override
+						public void modifyText(ModifyEvent e) {
+							if (!toRebase.isRebaseable()) {
+								if (!getText().getText().isEmpty()) {
+									getOkButton().setEnabled(true);
+								} else {
+									getOkButton().setEnabled(false);
+									getOkButton().getParent().setToolTipText(toRebase.isRebaseable()
+											? "" //$NON-NLS-1$
+											: Messages.RebaseProcess_changeIsAlreadyUpToDate);
+								}
 							}
+						}
+					});
+					getOkButton().setEnabled(toRebase.isRebaseable());
+					getOkButton().getParent().setToolTipText(
+							toRebase.isRebaseable() ? "" : Messages.RebaseProcess_changeIsAlreadyUpToDate); //$NON-NLS-1$
+					return;
+				}
+			};
+
+			if (inputDialog.open() != Window.OK) {
+				return;
+			}
+			RebaseRevisionCommand rebaseCmd = gerritClient.rebase(changeInfo.getId(), toRebase.getId());
+			RebaseInput rebaseInput = new RebaseInput();
+			rebaseInput.setBase(inputDialog.getValue().trim().length() == 0 ? null : inputDialog.getValue().trim());
+
+			rebaseCmd.setCommandInput(rebaseInput);
+
+			CompletableFuture.runAsync(() -> {
+				/* Add listener for when the loadBasicInformation method will have finished updating the related changes */
+				changeInfo.eAdapters().add(new EContentAdapter() {
+					@Override
+					public void notifyChanged(Notification msg) {
+						if (msg.getFeature() == null) {
+							return;
+						}
+						if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES)
+								&& msg.getEventType() == Notification.SET) {
+							new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
+							/* We remove the adapter once the refresh has been started because it now has enough information to correctly
+							 * refresh related opened editors */
+							changeInfo.eAdapters().remove(this);
 						}
 					}
 				});
-				getOkButton().setEnabled(toRebase.isRebaseable());
-				getOkButton().getParent()
-						.setToolTipText(toRebase.isRebaseable() ? "" : Messages.RebaseProcess_changeIsAlreadyUpToDate); //$NON-NLS-1$
-				return;
-			}
-		};
+				try {
+					rebaseCmd.call();
+				} catch (EGerritException e) {
+					if (e.getCode() == EGerritException.SHOWABLE_MESSAGE) {
 
-		if (inputDialog.open() != Window.OK) {
-			return;
-		}
-		RebaseRevisionCommand rebaseCmd = gerritClient.rebase(changeInfo.getId(), toRebase.getId());
-		RebaseInput rebaseInput = new RebaseInput();
-		rebaseInput.setBase(inputDialog.getValue().trim().length() == 0 ? null : inputDialog.getValue().trim());
-
-		rebaseCmd.setCommandInput(rebaseInput);
-
-		CompletableFuture.runAsync(() -> {
-			/* Add listener for when the loadBasicInformation method will have finished updating the related changes */
-			changeInfo.eAdapters().add(new EContentAdapter() {
-				@Override
-				public void notifyChanged(Notification msg) {
-					if (msg.getFeature() == null) {
-						return;
-					}
-					if (msg.getFeature().equals(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES)
-							&& msg.getEventType() == Notification.SET) {
-						new RefreshRelatedEditors(changeInfo, gerritClient).schedule();
-						/* We remove the adapter once the refresh has been started because it now has enough information to correctly
-						 * refresh related opened editors */
-						changeInfo.eAdapters().remove(this);
-					}
-				}
-			});
-			try {
-				rebaseCmd.call();
-			} catch (EGerritException e) {
-				if (e.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-
-					/* Ask for the the automatic rebase process if no choice was entered by the user
-					 * else just show the error message. */
-					if (inputDialog.getValue().trim().length() > 0) {
-
-						Display.getDefault().syncExec(new Runnable() {
-
-							@Override
-							public void run() {
-								MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
-										Messages.RebaseProcess_notPerform, SWT.NONE);
-							}
-						});
+						/* Ask for the the automatic rebase process if no choice was entered by the user
+						 * else just show the error message. */
+						if (inputDialog.getValue().trim().length() > 0) {
+							Display.getDefault().syncExec(new Runnable() {
+								@Override
+								public void run() {
+									MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_failed,
+											Messages.RebaseProcess_notPerform, SWT.NONE);
+								}
+							});
+						} else {
+							suggestLocalRebase(toRebase, gerritClient);
+						}
 					} else {
-						suggestLocalRebase(toRebase, gerritClient);
+						EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 					}
+				}
+			}).thenRun(() -> {
+				QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true);
+				changeInfo.setUserSelectedRevision(changeInfo.getRevision());
+			});
+
+		}
+	}
+
+	private void showNoRepoDialog(Boolean isLocal) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (isLocal) {
+					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_TitleRebaseFailedNoRepo,
+							Messages.RebaseProcess_LocalNoRepo, SWT.NONE);
 				} else {
-					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
+					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_TitleRebaseFailedNoRepo,
+							Messages.RebaseProcess_CouldNotPerformRemoteRebaseNoRepo, SWT.NONE);
 				}
 			}
-		}).thenRun(() -> {
-			QueryHelpers.loadBasicInformation(gerritClient, changeInfo, true);
-			changeInfo.setUserSelectedRevision(changeInfo.getRevision());
 		});
 	}
 
@@ -156,14 +204,7 @@ public class RebaseProcess {
 				process.schedule();
 			}
 		} else {
-			Display.getDefault().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.RebaseProcess_TitleRebaseFailedNoRepo,
-							Messages.RebaseProcess_CouldNotPerformRemoteRebaseNoRepo,
-							SWT.NONE);
-				}
-			});
+			showNoRepoDialog(false);
 		}
 	}
 
