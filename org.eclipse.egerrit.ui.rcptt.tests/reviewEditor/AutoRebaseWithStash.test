@@ -59,7 +59,7 @@ try {
 
 	/* Verify that changes are correctly stashed if starting the autorebase process */
 	with [get-editor] {
-		initiate-local-rebase
+		initiate-remote-rebase
 	}
 	with [get-window "Automatic local rebase was started"] {
 		get-button OK | click

@@ -51,7 +51,7 @@ proc "delete-git-repos" {
 }
 
 // Initialte a local rebase by clicking rebase in the review editor and answer to prompts
-proc "initiate-local-rebase" [val editor -input] {
+proc "initiate-remote-rebase" [val editor -input] {
 	with [$editor] {
 		with [get-button "Rebase..."] {
 			click

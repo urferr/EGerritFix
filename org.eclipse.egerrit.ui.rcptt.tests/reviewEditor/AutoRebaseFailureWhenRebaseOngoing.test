@@ -63,7 +63,7 @@ try {
 	}
 
 	with [get-editor] {
-		initiate-local-rebase
+		initiate-remote-rebase
 	}
 
 	/* Verify that the automatic rebase can't start if the repo is in a wrong state (i.e already rebasing) */

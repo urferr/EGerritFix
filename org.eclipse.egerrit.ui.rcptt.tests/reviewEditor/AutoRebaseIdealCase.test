@@ -46,7 +46,7 @@ try {
 	}
 
 	with [get-editor] {
-		initiate-local-rebase
+		initiate-remote-rebase
 	}
 	
 	with [get-window "Automatic local rebase was started"] {
