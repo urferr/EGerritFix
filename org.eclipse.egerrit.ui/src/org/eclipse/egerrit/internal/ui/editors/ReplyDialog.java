@@ -153,7 +153,7 @@ public class ReplyDialog extends InputDialog {
 				if (keyComposite != null) { //Null when we do not create this section.
 					int widthKey = getMinimalWidth(keyComposite, -1);
 					int widthRadio = getMinimalWidth(radioButtonComposite, -1);
-					int widthdetail = getMinimalWidth(detailTextComposite, 150);
+					int widthdetail = getMinimalWidth(detailTextComposite, 350);
 					int widthTotal = 0;
 					if (widthKey < 25 || widthRadio < 25 || widthdetail < 25) {
 						widthTotal = 250;
