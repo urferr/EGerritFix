@@ -5,8 +5,8 @@ Element-Name: HelperScripts
 Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
-Runtime-Version: 2.1.0.201606221726
-Save-Time: 3/24/17 4:06 PM
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 4/5/17 2:04 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -494,5 +494,51 @@ proc "assert-column-label-in-reviewers" [val col] [val label] {
 	with [get-editor | get-group Reviewers | get-table] {
 		get-property [format "columns[%d].caption" $col] | equals $label | verify-true
 	}
+}
+
+proc "branch-rename" [val in -input] [val newBranchName] [val gitRepoBranch] {
+	with [$in] {
+		with [get-button Download] {
+			click
+			get-menu "Checkout..." | click
+		}
+	}
+
+	//Check out branch as specified
+	try {
+		with [get-window "Fetch a change from Gerrit"] {
+			get-group "Action to perform after fetch" | get-editbox -after [get-label "Branch name:"] | set-text $newBranchName
+			get-button Finish | click
+		}
+	} -catch {
+	}
+	try {
+		get-window "EGerrit Tip" | get-button OK | click
+	} -catch {
+	}
+
+	//Validation
+	branch-rename-validation -gitRepoBranch $gitRepoBranch -branch $newBranchName
+}
+
+proc "branch-rename-validation" [val gitRepoBranch] [val branch] {
+	//Validation
+	get-view "Git Repositories" | get-tree | get-item $gitRepoBranch
+			| get-property caption | contains $branch | verify-true
+}
+
+proc "assert-branch-rename-is" [val in -input] [val button] [val gitBranch ] [val lastBranchName] {
+	with [$in] {
+		with [get-button Download ] {
+			click
+    		get-menu "Checkout..." | click
+		}
+    }
+    try {
+		get-window "EGerrit rename" | get-button $button | click
+	} -times 4 -delay $defaultWaitTime
+    
+	//Validation
+	branch-rename-validation -gitRepoBranch $gitBranch -branch $lastBranchName
 }
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

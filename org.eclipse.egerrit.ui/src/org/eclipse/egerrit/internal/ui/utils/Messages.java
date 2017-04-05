@@ -168,6 +168,12 @@ public class Messages extends NLS {
 
 	public static String CheckoutRevision_4;
 
+	public static String CheckoutRevisionRenameBranchTitle;
+
+	public static String CheckoutRevisionRenameBranch;
+
+	public static String CheckoutRevisionRenameException;
+
 	public static String CherryPickDialog_0;
 
 	public static String CherryPickDialog_1;
@@ -361,6 +367,8 @@ public class Messages extends NLS {
 	public static String UIFilesTable_clearReviewedFlag;
 
 	public static String UIUtils_EGerriTipShowAgain;
+
+	public static String UIUtils_EGerriTipRenameShowAgain;
 
 	public static String UIUtils_0;
 

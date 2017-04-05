@@ -28,6 +28,7 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.table.model.BranchMatch;
 import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
@@ -38,11 +39,13 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CheckoutResult;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.RenameBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -53,6 +56,10 @@ public class CheckoutRevision extends Action {
 	private GerritClient gerritClient;
 
 	private ChangeInfo changeInfo;
+
+	private String selectedBranch;
+
+	private final String RENAME_KEY = "branchRenameTip"; //$NON-NLS-1$
 
 	public CheckoutRevision(RevisionInfo revision, GerritClient gerritClient) {
 		this.revisionCheckedOut = revision;
@@ -72,8 +79,8 @@ public class CheckoutRevision extends Action {
 			return;
 		}
 
-		String psSelected = revisionCheckedOut.getRef();
-		if ((psSelected == null) || psSelected.isEmpty()) {
+		String refSelected = revisionCheckedOut.getRef();
+		if ((refSelected == null) || refSelected.isEmpty()) {
 			Status status = new Status(IStatus.ERROR, EGerritCorePlugin.PLUGIN_ID, Messages.CheckoutRevision_4);
 			ErrorDialog.openError(getShell(), Messages.CheckoutRevision_2, Messages.CheckoutRevision_3, status);
 		}
@@ -84,27 +91,82 @@ public class CheckoutRevision extends Action {
 		} else {
 			if (potentialBranches.isEmpty()) {
 				//New selected
-				FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, psSelected);
+				FetchGerritChangeWizard var = new FetchGerritChangeWizard(localRepo, refSelected);
 				WizardDialog w = new WizardDialog(getShell(), var);
 				w.create();
 				int ret = w.open();
 				if (ret == Window.CANCEL) {
 					reActivateWorkspaceRevision = false;
 				}
-			} else if (!potentialBranches.entrySet().iterator().next().getValue().equals(BranchMatch.PERFECT_MATCH)) {
+			} else if (!potentialBranches.entrySet().iterator().next().equals(BranchMatch.PERFECT_MATCH)) {
 				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
-				reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
-			} else {
-				String branchToCheckout = potentialBranches.keySet().iterator().next();//Get the only element PERFECT_MATCH
-
+				setSelectedBranch(potentialBranches.keySet().iterator().next()); //Get the only element PERFECT_MATCH
 				try {
-					checkoutBranch(branchToCheckout, localRepo);
+					checkoutBranch(getSelectedBranch(), localRepo);
 				} catch (Exception e) {
 				}
 			}
 		}
+
+		//Verify if the user wants to rename the selected branch
+		shouldRenameBranch(potentialBranches, refSelected, localRepo);
+
 		if (reActivateWorkspaceRevision) {
 			ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
+		}
+	}
+
+	/**
+	 * Test the selected branch match the branch to check-out and see if the user would like to rename it or not
+	 *
+	 * @param potentialBranches
+	 * @param refSelected
+	 * @param localRepo
+	 */
+	private void shouldRenameBranch(Map<String, BranchMatch> potentialBranches, String refSelected,
+			Repository localRepo) {
+
+		if (getSelectedBranch() == null) {
+			return;
+		}
+		//Test to make sure it was a perfect match
+		BranchMatch branchMatch = potentialBranches.get(getSelectedBranch());
+		boolean isPerfect = branchMatch != null ? branchMatch.equals(BranchMatch.PERFECT_MATCH) : false;
+		if (isPerfect && !getSelectedBranch().trim().isEmpty()) {
+			//What would the branch name be from refspec:
+			//Parse the ref from the revision to checkout
+			Change revisionRef = Change.fromRef(refSelected);
+			if (!revisionRef.getBranchNameLabel().contains(getSelectedBranch())) {
+				//test to see if we can rename the branch or not by removing the patch set
+				int lastSlash = getSelectedBranch().lastIndexOf('/');
+				String perfectMatchModified = lastSlash == -1
+						? getSelectedBranch()
+						: getSelectedBranch().substring(0, lastSlash);
+
+				checkBranchWithNoPatchSet(localRepo, revisionRef, perfectMatchModified);
+			}
+		}
+	}
+
+	/**
+	 * Verify if we should allow to rename the selected branch to a branch showing the proper patch-set
+	 *
+	 * @param localRepo
+	 * @param revisionRef
+	 * @param branchNoPatchSet
+	 */
+	private void checkBranchWithNoPatchSet(Repository localRepo, Change revisionRef, String branchNoPatchSet) {
+		if (revisionRef.getBranchNameLabel().contains(branchNoPatchSet)) {
+			String newName = revisionRef.getBranchNameLabel();
+			//Question whether to modify the branch name or keep the old name
+			if (UIUtils.renameBranch(RENAME_KEY, Display.getDefault().getActiveShell(),
+					Messages.CheckoutRevisionRenameBranchTitle,
+					NLS.bind(Messages.CheckoutRevisionRenameBranch,
+							new String[] { Integer.toString(revisionRef.getPatchSet()),
+									Integer.toString(revisionRef.getChangeNumber()), getSelectedBranch(),
+									newName })) == IDialogConstants.YES_ID) {
+				renameBranch(newName, localRepo);
+			}
 		}
 	}
 
@@ -162,7 +224,6 @@ public class CheckoutRevision extends Action {
 		if (result == Window.CANCEL) {
 			returnOK = false;
 		}
-		String selectedBranch = branchSelectDialog.getSelectedBranch();
 		if (result == IDialogConstants.OK_ID) {
 			//New selected
 			String psSelected = revisionCheckedOut.getRef();
@@ -175,8 +236,9 @@ public class CheckoutRevision extends Action {
 			}
 		} else if (result == IDialogConstants.CLIENT_ID) { // SWITCH
 			try {
-				if (selectedBranch != null) {
-					checkoutBranch(selectedBranch, localRepo);
+				setSelectedBranch(branchSelectDialog.getSelectedBranch());
+				if (getSelectedBranch() != null) {
+					checkoutBranch(getSelectedBranch(), localRepo);
 				}
 			} catch (Exception e) {
 			}
@@ -255,4 +317,94 @@ public class CheckoutRevision extends Action {
 	private Shell getShell() {
 		return Display.getDefault().getActiveShell();
 	}
+
+	private void setSelectedBranch(String selectedBranch) {
+		this.selectedBranch = selectedBranch;
+	}
+
+	private String getSelectedBranch() {
+		return selectedBranch;
+	}
+
+	/**
+	 * Rename the branch using the default naming: change/<reviewId>/<patch-set>. Catching exception for
+	 * RefNotFoundException, InvalidRefNameException, RefAlreadyExistsException, DetachedHeadException, GitAPIException
+	 *
+	 * @param newName
+	 * @param repo
+	 */
+	private void renameBranch(String newName, Repository repo) {
+		RenameBranchCommand command = null;
+		try (Git gitRepo = new Git(repo)) {
+			command = gitRepo.branchRename();
+			command.setNewName(newName);
+			command.call();
+		} catch (Exception e) {
+
+			UIUtils.displayInformation(Messages.CheckoutRevisionRenameBranchTitle,
+					NLS.bind(Messages.CheckoutRevisionRenameException, e.getMessage()));
+		}
+	}
+
+	/**
+	 * Private class reading the information associated to a ref change
+	 */
+	private final static class Change {
+		private final String refName;
+
+		private final Integer changeNumber;
+
+		private final Integer patchSetNumber;
+
+		private final static String refChanges = "refs/changes/"; //$NON-NLS-1$
+
+		static Change fromRef(String refName) {
+			try {
+				if (!refName.startsWith(refChanges)) {
+					return null;
+				}
+				int reflen = refChanges.length();
+				String[] tokens = refName.substring(reflen).split("/"); //$NON-NLS-1$
+				if (tokens.length != 3) {
+					return null;
+				}
+				Integer changeNumber = Integer.valueOf(tokens[1]);
+				Integer patchSetNumber = Integer.valueOf(tokens[2]);
+				return new Change(refName, changeNumber, patchSetNumber);
+			} catch (NumberFormatException e) {
+				// if we can't parse this, just return null
+				return null;
+			} catch (IndexOutOfBoundsException e) {
+				// if we can't parse this, just return null
+				return null;
+			}
+		}
+
+		private Change(String refName, Integer changeNumber, Integer patchSetNumber) {
+			this.refName = refName;
+			this.changeNumber = changeNumber;
+			this.patchSetNumber = patchSetNumber;
+		}
+
+		public String getBranchNameLabel() {
+			return "change/" + changeNumber + "/" + patchSetNumber; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+
+		public Integer getPatchSet() {
+			return patchSetNumber;
+		}
+
+		public Integer getChangeNumber() {
+			return changeNumber;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return refName;
+		}
+	}
+
 }

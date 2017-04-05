@@ -359,6 +359,40 @@ public class UIUtils {
 		return;
 	}
 
+	/**
+	 * Show a dialog allowing the user to by-pass the dialogue when renaming a branch is available until the toggle is
+	 * selected
+	 *
+	 * @param key
+	 * @param shell
+	 * @param title
+	 * @param value
+	 * @return
+	 */
+	public static int renameBranch(String key, Shell shell, String title, String message) {
+		Preferences prefs = ConfigurationScope.INSTANCE.getNode(EGERRIT_PREF);
+
+		Preferences editorPrefs = prefs.node(key);
+		boolean choice = editorPrefs.getBoolean(key, false);
+
+		if (choice) {
+			return IDialogConstants.YES_ID;
+		}
+
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(shell, title, message,
+				Messages.UIUtils_EGerriTipRenameShowAgain, false, null, null);
+
+		if (dialog.getToggleState()) {
+			editorPrefs.putBoolean(key, true);
+			try {
+				editorPrefs.flush();
+			} catch (BackingStoreException e) {
+				//There is not much we can do
+			}
+		}
+		return dialog.getReturnCode();
+	}
+
 	/*********************************************/
 
 	/**
