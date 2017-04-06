@@ -23,6 +23,7 @@ import org.eclipse.egerrit.internal.core.command.SetReviewCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
@@ -47,8 +48,8 @@ public class ReplyProcess {
 	}
 
 	public void handleReplyDialog(Shell shell, ChangeInfo changeInfo, GerritClient gerritClient,
-			RevisionInfo selectedRevision) {
-		UIUtils.replyToChange(shell, selectedRevision, null, gerritClient, false);
+			RevisionInfo selectedRevision, ChangeMessageInfo messageInfo) {
+		UIUtils.replyToChange(shell, selectedRevision, null, gerritClient, false, messageInfo);
 		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
 				.thenRun(() -> changeInfo.setUserSelectedRevision(selectedRevision));
 	}

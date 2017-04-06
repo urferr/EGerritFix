@@ -649,7 +649,7 @@ public class ChangeDetailEditor extends EditorPart {
 					//Should open directly the reply dialog, no sub-menu
 					ReplyProcess replyProcess = new ReplyProcess();
 					replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
-							fChangeInfo.getUserSelectedRevision());
+							fChangeInfo.getUserSelectedRevision(), null);
 				} else {
 					MenuManager mgr = new MenuManager();
 					buildReplyDynamicMenu(adjustedAllowedButton, mgr);

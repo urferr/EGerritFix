@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.LabelInfo;
@@ -85,14 +86,16 @@ public class ReplyDialog extends InputDialog {
 
 	/**
 	 * The constructor.
+	 *
+	 * @param messageInfo
 	 */
-	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo, GerritClient gerritClient) {
+	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo, GerritClient gerritClient,
+			ChangeMessageInfo messageInfo) {
 		super(shell, Messages.ReplyDialog_0, buildMessage(reason, revisionToReplyTo), null, null);
 		fRevisionInfo = revisionToReplyTo;
 		fGerritClient = gerritClient;
 		permitted_labels = revisionToReplyTo.getChangeInfo().getSortedPermittedLabels();
 		labelsInfo = revisionToReplyTo.getChangeInfo().getLabels();
-
 		boolean isVoteAllowed = revisionToReplyTo.getId()
 				.equals(revisionToReplyTo.getChangeInfo().getCurrent_revision());
 		if (!isVoteAllowed) {

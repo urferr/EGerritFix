@@ -32,7 +32,7 @@ public class ReplyDialogHandler extends DashboardFactoryHandler {
 		if (getChangeInfo() != null && getGerritClient() != null) {
 			ReplyProcess replyProcess = new ReplyProcess();
 			replyProcess.handleReplyDialog(HandlerUtil.getActiveShell(event), getChangeInfo(), getGerritClient(),
-					getLatestRevision());
+					getLatestRevision(), null);
 		}
 		return null;
 	}

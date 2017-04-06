@@ -26,6 +26,7 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.core.utils.Utils;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
 import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.ModelFactory;
@@ -120,10 +121,10 @@ public class UIUtils {
 	}
 
 	public static void replyToChange(Shell shell, RevisionInfo revisionInfo, String reason, GerritClient client,
-			boolean waitForDataRefresh) {
+			boolean waitForDataRefresh, ChangeMessageInfo messageInfo) {
 		String current = revisionInfo.getId();
 		QueryHelpers.loadDrafts(client, revisionInfo); //Force load the drafts to make sure they are shown in the dialog.
-		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client);
+		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client, messageInfo);
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				int ret = replyDialog.open();

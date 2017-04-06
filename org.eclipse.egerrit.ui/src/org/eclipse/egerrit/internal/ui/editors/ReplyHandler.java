@@ -56,7 +56,7 @@ public class ReplyHandler extends Action {
 		if (fLabelText.equals(ActionConstants.REPLY.getLiteral())) {
 			//Deal with the reply dialog
 			replyProcess.handleReplyDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), fChangeInfo,
-					fGerritClient, fChangeInfo.getUserSelectedRevision());
+					fGerritClient, fChangeInfo.getUserSelectedRevision(), null);
 			return;
 		} else if (fLabelText.equals(ReplyProcess.REPLY_ALL_BUTTONS)) {
 			//Adjust the list of labels which the current user can set to a maximum value

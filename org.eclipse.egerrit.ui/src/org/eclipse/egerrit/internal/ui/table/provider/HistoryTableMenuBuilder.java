@@ -12,6 +12,11 @@
 package org.eclipse.egerrit.internal.ui.table.provider;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
+import org.eclipse.egerrit.internal.model.ActionConstants;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
+import org.eclipse.egerrit.internal.model.ChangeMessageInfo;
+import org.eclipse.egerrit.internal.model.RevisionInfo;
+import org.eclipse.egerrit.internal.process.ReplyProcess;
 import org.eclipse.egerrit.internal.ui.table.filter.AuthorKindFilter;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.Action;
@@ -20,10 +25,14 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.PlatformUI;
 
 public class HistoryTableMenuBuilder {
 	private Menu commonMenu;
@@ -31,6 +40,8 @@ public class HistoryTableMenuBuilder {
 	private FilterSelectionAction humanOnlyfilter = null;
 
 	private FilterSelectionAction machineOnlyfilter = null;
+
+	private ReplyMessageAction replyMessages = null;
 
 	public void addPulldownMenu(ColumnViewer viewer, GerritClient client) {
 		MenuManager menuManager = new MenuManager();
@@ -40,6 +51,7 @@ public class HistoryTableMenuBuilder {
 			humanOnlyfilter = new FilterSelectionAction(Messages.UIHistoryTable_0, viewer, new AuthorKindFilter(false));
 			machineOnlyfilter = new FilterSelectionAction(Messages.UIHistoryTable_1, viewer,
 					new AuthorKindFilter(true));
+			replyMessages = new ReplyMessageAction(ActionConstants.REPLY.getLiteral(), viewer, client);
 		}
 		menuManager.addMenuListener(new IMenuListener() {
 			@Override
@@ -75,6 +87,8 @@ public class HistoryTableMenuBuilder {
 		if (menu.getItemCount() == 0) {
 			if (viewer instanceof TableViewer) {
 				MenuManager menuMgr = new MenuManager();
+				menuMgr.add(replyMessages);
+				menuMgr.add(new Separator());
 				menuMgr.add(humanOnlyfilter);
 				menuMgr.add(machineOnlyfilter);
 				menuMgr.createContextMenu(menu.getShell()).setVisible(true);
@@ -91,4 +105,34 @@ public class HistoryTableMenuBuilder {
 			}
 		}
 	}
+
+	private class ReplyMessageAction extends Action {
+		private StructuredViewer viewer;
+
+		private GerritClient gerritClient;
+
+		public ReplyMessageAction(String actionName, StructuredViewer viewer, GerritClient client) {
+			super(actionName, AS_PUSH_BUTTON);
+			this.viewer = viewer;
+			this.gerritClient = client;
+		}
+
+		@Override
+		public void run() {
+			ISelection selection = viewer.getSelection();
+			if (!selection.isEmpty() && selection instanceof StructuredSelection) {
+				IStructuredSelection struct = (IStructuredSelection) selection;
+				Object obj = struct.getFirstElement();
+				if (obj instanceof ChangeMessageInfo) {
+					ChangeMessageInfo messageInfo = (ChangeMessageInfo) obj;
+					ReplyProcess replyProcess = new ReplyProcess();
+					ChangeInfo changeInfo = (ChangeInfo) messageInfo.eContainer();
+					RevisionInfo revisionInfo = changeInfo.getRevisionByNumber(messageInfo.get_revision_number());
+					replyProcess.handleReplyDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+							changeInfo, gerritClient, revisionInfo, messageInfo);
+				}
+			}
+		}
+	}
+
 }
