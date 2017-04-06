@@ -28,13 +28,11 @@ public class Utils {
 
 	private final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
-	private final static SimpleDateFormat sameYearFormatTimeOut = new SimpleDateFormat("MMM dd"); //$NON-NLS-1$
+	private final static SimpleDateFormat sameYearFormatTimeOut = new SimpleDateFormat("MMM dd HH:mm"); //$NON-NLS-1$
 
 	private final static SimpleDateFormat sameDayFormatTimeOut = new SimpleDateFormat("HH:mm aa"); //$NON-NLS-1$
 
 	private final static SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
-
-	private static final String CODE_REVIEW = "Code-Review"; //$NON-NLS-1$
 
 	/**
 	 * Format the UTC time from Gerrit data structure to a new desired format
