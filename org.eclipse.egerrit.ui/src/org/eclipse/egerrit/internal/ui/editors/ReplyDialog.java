@@ -91,7 +91,8 @@ public class ReplyDialog extends InputDialog {
 	 */
 	public ReplyDialog(Shell shell, String reason, RevisionInfo revisionToReplyTo, GerritClient gerritClient,
 			ChangeMessageInfo messageInfo) {
-		super(shell, Messages.ReplyDialog_0, buildMessage(reason, revisionToReplyTo), null, null);
+		super(shell, Messages.ReplyDialog_0, buildMessage(reason, revisionToReplyTo), buildMessageText(messageInfo),
+				null);
 		fRevisionInfo = revisionToReplyTo;
 		fGerritClient = gerritClient;
 		permitted_labels = revisionToReplyTo.getChangeInfo().getSortedPermittedLabels();
@@ -101,6 +102,26 @@ public class ReplyDialog extends InputDialog {
 		if (!isVoteAllowed) {
 			labelsInfo = null;
 		}
+	}
+
+	/**
+	 * Fill the message text with the comment message when available and add a two empty lines before starting the next
+	 * message
+	 *
+	 * @param messageInfo
+	 * @return String
+	 */
+	private static String buildMessageText(ChangeMessageInfo messageInfo) {
+		if (messageInfo == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		String message = messageInfo.getMessage();
+		sb.append("> "); //$NON-NLS-1$
+		message = message.replaceAll("\n", "\n> "); //$NON-NLS-1$ //$NON-NLS-2$
+		sb.append(message);
+		sb.append("\n\n"); //$NON-NLS-1$
+		return sb.toString();
 	}
 
 	private static String buildMessage(String reason, RevisionInfo revisionToReplyTo) {
@@ -133,7 +154,7 @@ public class ReplyDialog extends InputDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = (Composite) super.createDialogArea(parent);
-		((GridData) this.getText().getLayoutData()).heightHint = 100;
+		((GridData) this.getText().getLayoutData()).heightHint = 150;
 		((GridData) this.getText().getLayoutData()).grabExcessVerticalSpace = true;
 		((GridData) this.getText().getLayoutData()).verticalAlignment = SWT.FILL;
 		//Create area to display the draft comments
