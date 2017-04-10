@@ -33,6 +33,7 @@ import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.table.model.SubmitType;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * This class in used to transform the Gerrit data to a databinding display value
@@ -214,12 +215,15 @@ public class DataConverter {
 				if (!fileInfo.getComments().isEmpty()) {
 					sb.append("\n"); //$NON-NLS-1$
 					sb.append(fileInfo.getPath());
+
 					Iterator<CommentInfo> commentsIter = fileInfo.getComments().iterator();
 					while (commentsIter.hasNext()) {
-						//List the comments
+						//List the comments available for this timestamp only
 						CommentInfo comment = commentsIter.next();
-						sb.append(Messages.DataConverter_4);
-						sb.append(comment.getMessage());
+						if (chmsgInfo.getDate().equals(comment.getUpdated())) {
+							sb.append(NLS.bind(Messages.DataConverter_4,
+									new Object[] { comment.getLine(), comment.getMessage() }));
+						}
 					}
 					sb.append("\n"); //$NON-NLS-1$
 				}
