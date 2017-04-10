@@ -540,7 +540,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
 		Viewer newViewer = super.findContentViewer(oldViewer, input, parent);
-		if (newViewer.getClass().getName().contains("PhpMergeViewer")) {
+		if (newViewer != null && newViewer.getClass().getName().contains("PhpMergeViewer")) {
 			ViewerDescriptor[] vds = CompareUIPlugin.getDefault().findContentViewerDescriptor(oldViewer, input, null);
 			setContentViewerDescriptor(vds[vds.length - 1]);
 			newViewer = super.findContentViewer(oldViewer, input, parent);
