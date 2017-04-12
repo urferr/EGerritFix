@@ -331,19 +331,27 @@ public class UIUtils {
 	 * @param title
 	 * @param value
 	 */
-	public static void showDialogTip(String key, Shell shell, String title, String value) {
+	public static void showDialogTip(String key, Shell shell, String title, String value, String note) {
 		Preferences prefs = ConfigurationScope.INSTANCE.getNode(EGERRIT_PREF);
 
 		Preferences editorPrefs = prefs.node(key);
 		boolean choice = editorPrefs.getBoolean(key, false);
 
 		if (choice) {
+			if (note != null) {
+				//always show a dialog with the note here
+				MessageDialog.openInformation(shell, Messages.UIUtils_EGerriNoteTitle, note);
+			}
 			return;
 		}
 
 		//Keep the title length to TITLE_LENGTH characters max
 		if (title.length() > TITLE_LENGTH) {
 			title = title.substring(0, (TITLE_LENGTH - 3)).concat("..."); //$NON-NLS-1$
+		}
+
+		if (note != null) {
+			value = value + "\n\n" + note; //$NON-NLS-1$
 		}
 
 		MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(shell, title, value,

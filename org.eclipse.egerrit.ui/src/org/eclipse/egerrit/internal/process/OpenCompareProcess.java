@@ -36,7 +36,7 @@ public class OpenCompareProcess {
 
 		OpenCompareEditor compareEditor;
 		if (!gerritClient.getRepository().getServerInfo().isAnonymous()) {
-			UIUtils.showDialogTip(EDITOR_KEY, shell, Messages.EGerriTip, Messages.FileTabView_EGerriTipValue);
+			UIUtils.showDialogTip(EDITOR_KEY, shell, Messages.EGerriTip, Messages.FileTabView_EGerriTipValue, null);
 		}
 		//Make sure all the revisions are loaded
 		CompletableFuture.runAsync(() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false));

@@ -34,6 +34,8 @@ public class Messages extends NLS {
 
 	public static String ActiveWorkspaceRevision_1;
 
+	public static String ActiveWorkspaceRevision_Note;
+
 	public static String AutoRebaseProcess_AlreadyUpToDate;
 
 	public static String AutoRebaseProcess_AlreadyUpToDateTitle;
@@ -369,6 +371,8 @@ public class Messages extends NLS {
 	public static String UIUtils_EGerriTipShowAgain;
 
 	public static String UIUtils_EGerriTipRenameShowAgain;
+
+	public static String UIUtils_EGerriNoteTitle;
 
 	public static String UIUtils_0;
 

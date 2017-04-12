@@ -46,6 +46,7 @@ import org.eclipse.egit.ui.internal.decorators.GitQuickDiffProvider;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
@@ -94,6 +95,8 @@ public class ActiveWorkspaceRevision {
 
 	private String fDefaultProvider;
 
+	private Repository fActiveRepository;
+
 	private final class CommentAndDraftListener extends EContentAdapter {
 		@Override
 		public void notifyChanged(Notification msg) {
@@ -135,13 +138,14 @@ public class ActiveWorkspaceRevision {
 			return;
 		}
 
-		//Force deactivation if another review is already tracked
+		//Force de-activation if another review is already tracked
 		if (fRevisionInContext != null) {
 			deactiveCurrentRevision();
 		}
 		fGerritClient = gerrit;
 		fRevisionInContext = revisionInfo;
 		fChangeInfo = revisionInfo.getChangeInfo();
+		fActiveRepository = new FindLocalRepository(fGerritClient, fChangeInfo.getProject()).getRepository();
 		forceLoadRevision();
 		createMarkers();
 		hookListeners();
@@ -156,8 +160,19 @@ public class ActiveWorkspaceRevision {
 
 	private void informUserAboutMarkers() {
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
-			Display.getDefault().asyncExec(() -> UIUtils.showDialogTip(MARKERS_KEY, null, Messages.EGerriTip,
-					Messages.ChangeDetailEditor_EGerriTipValue));
+			String activeBranchId = getCurrentGitBranchId();
+			String commitId = fRevisionInContext.getId();
+			if (commitId.equals(activeBranchId)) {
+				Display.getDefault().asyncExec(() -> UIUtils.showDialogTip(MARKERS_KEY, null, Messages.EGerriTip,
+						Messages.ChangeDetailEditor_EGerriTipValue, null));
+			} else {
+				String reviewSelected = ".../" + fRevisionInContext.getChangeInfo().get_number() + "/" //$NON-NLS-1$ //$NON-NLS-2$
+						+ fRevisionInContext.get_number();
+				String note = NLS.bind(Messages.ActiveWorkspaceRevision_Note,
+						new String[] { getActiveBranchName(), reviewSelected });
+				Display.getDefault().asyncExec(() -> UIUtils.showDialogTip(MARKERS_KEY, null, Messages.EGerriTip,
+						Messages.ChangeDetailEditor_EGerriTipValue, note));
+			}
 		}
 	}
 
@@ -463,9 +478,8 @@ public class ActiveWorkspaceRevision {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
 
-		Repository repo = new FindLocalRepository(fGerritClient, fChangeInfo.getProject()).getRepository();
 		try {
-			GitQuickDiffProvider.setBaselineReference(repo, "HEAD^1"); //$NON-NLS-1$
+			GitQuickDiffProvider.setBaselineReference(fActiveRepository, "HEAD^1"); //$NON-NLS-1$
 		} catch (IOException e1) {
 			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
 		}
@@ -473,5 +487,41 @@ public class ActiveWorkspaceRevision {
 
 	public GerritClient getGerritClient() {
 		return fGerritClient;
+	}
+
+	/**
+	 * Get the name of the active Git branch
+	 *
+	 * @return String
+	 */
+	private String getActiveBranchName() {
+		String branchName = null;
+		try {
+			branchName = fActiveRepository != null ? fActiveRepository.getBranch() : null;
+		} catch (IOException e) {
+			EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
+		}
+		return branchName;
+	}
+
+	/**
+	 * Get the id for the current Git active branch
+	 *
+	 * @return String
+	 */
+	private String getCurrentGitBranchId() {
+		String branchId = null;
+		if (getActiveBranchName() != null) {
+			Ref ref = null;
+			try {
+				ref = fActiveRepository.findRef(getActiveBranchName());
+			} catch (IOException e) {
+				EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
+			}
+			if (ref != null) {
+				branchId = ref.getObjectId().getName();
+			}
+		}
+		return branchId;
 	}
 }
