@@ -98,13 +98,15 @@ public class CheckoutRevision extends Action {
 				if (ret == Window.CANCEL) {
 					reActivateWorkspaceRevision = false;
 				}
-			} else if (!potentialBranches.entrySet().iterator().next().equals(BranchMatch.PERFECT_MATCH)) {
-				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
+			} else if (potentialBranches.entrySet().iterator().next().getValue().equals(BranchMatch.PERFECT_MATCH)) {
 				setSelectedBranch(potentialBranches.keySet().iterator().next()); //Get the only element PERFECT_MATCH
 				try {
 					checkoutBranch(getSelectedBranch(), localRepo);
 				} catch (Exception e) {
 				}
+			} else {
+				//Only one branch exist, but it is not the perfect match, so we need to allow the end-user to choose
+				reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
 			}
 		}
 
