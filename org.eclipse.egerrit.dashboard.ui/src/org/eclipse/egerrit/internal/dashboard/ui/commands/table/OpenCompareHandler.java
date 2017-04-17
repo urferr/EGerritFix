@@ -17,6 +17,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.process.OpenCompareProcess;
+import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.osgi.util.NLS;
@@ -33,7 +34,10 @@ public class OpenCompareHandler extends DashboardFactoryHandler {
 		// Execute the open compare if we have the information
 		if (getChangeInfo() != null && getGerritClient() != null) {
 			FileInfo selectedFile = null;
+			//Load the files for the latest revision
+			QueryHelpers.loadFiles(gerritClient, changeInfo.getRevision());
 			EMap<String, FileInfo> files = getLatestRevision().getFiles();
+
 			if (files.size() > 0) {
 				selectedFile = files.get(0).getValue();//Get the first file of the revision
 			}

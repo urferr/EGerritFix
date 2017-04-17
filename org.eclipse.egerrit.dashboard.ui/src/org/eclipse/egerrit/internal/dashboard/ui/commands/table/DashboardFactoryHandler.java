@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
 public abstract class DashboardFactoryHandler extends AbstractHandler implements IElementUpdater {
 	private static Logger logger = LoggerFactory.getLogger(DashboardFactoryHandler.class);
 
-	private ChangeInfo changeInfo = null;
+	protected ChangeInfo changeInfo = null;
 
 	private RevisionInfo latestRevision = null;
 
-	private GerritClient gerritClient = null;
+	protected GerritClient gerritClient = null;
 
 	@Override
 	public void setEnabled(Object evaluationContext) {
