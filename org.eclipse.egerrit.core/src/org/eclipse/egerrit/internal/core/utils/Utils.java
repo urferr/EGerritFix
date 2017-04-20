@@ -26,13 +26,13 @@ import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
  */
 public class Utils {
 
-	private final static SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
+	private static final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
-	private final static SimpleDateFormat sameYearFormatTimeOut = new SimpleDateFormat("MMM dd HH:mm"); //$NON-NLS-1$
+	private static final SimpleDateFormat sameYearFormatTimeOut = new SimpleDateFormat("MMM dd HH:mm"); //$NON-NLS-1$
 
-	private final static SimpleDateFormat sameDayFormatTimeOut = new SimpleDateFormat("HH:mm aa"); //$NON-NLS-1$
+	private static final SimpleDateFormat sameDayFormatTimeOut = new SimpleDateFormat("HH:mm aa"); //$NON-NLS-1$
 
-	private final static SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
+	private static final SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
 
 	/**
 	 * Format the UTC time from Gerrit data structure to a new desired format
@@ -70,6 +70,7 @@ public class Utils {
 			date = formatTimeOut.parse(inDate);
 		} catch (ParseException e) {
 			EGerritCorePlugin.logError(e.getMessage());
+			return ""; //$NON-NLS-1$
 		}
 		boolean sameDay = DateUtils.isSameDay(date, Calendar.getInstance().getTime());
 		Calendar today = Calendar.getInstance();

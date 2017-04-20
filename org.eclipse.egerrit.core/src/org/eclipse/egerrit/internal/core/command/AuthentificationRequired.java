@@ -12,9 +12,9 @@
 package org.eclipse.egerrit.internal.core.command;
 
 /**
- * This enumeration is used to indicate whether the command requires authentification. We need a "depends" because some
+ * This enumeration is used to indicate whether the command requires authentication. We need a "depends" because some
  * commands like QueryChangesCommand can run fine in both mode
  */
-public enum AuthentificationRequired {
+enum AuthentificationRequired {
 	YES(), NO(), DEPENDS();
 }

@@ -29,7 +29,7 @@ import org.eclipse.egerrit.internal.model.ChangeInfo;
  * @since 1.0
  */
 public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
-	String queryString;
+	private String queryString;
 
 	/**
 	 * Construct a command to query for changes
@@ -42,6 +42,12 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		setPathFormat("/changes/"); //$NON-NLS-1$
 	}
 
+	/**
+	 * Adjust the query string for the command
+	 *
+	 * @param String
+	 *            query
+	 */
 	public void addQuery(String query) {
 		if (queryString == null) {
 			queryString = query;
@@ -50,24 +56,54 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		}
 	}
 
+	/**
+	 * Set the limit for the query result
+	 *
+	 * @param Int
+	 *            limit
+	 */
 	public void setMaxNumberOfResults(int limit) {
 		addQueryParameter("n", Integer.toString(limit)); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the number of result to skip
+	 *
+	 * @param int
+	 *            skip
+	 */
 	public void setSkipNumberOfResults(int skip) {
 		addQueryParameter("start", Integer.toString(skip)); //$NON-NLS-1$
 	}
 
+	/**
+	 * Add different options for the query
+	 *
+	 * @param ChangeOption
+	 *            options
+	 */
 	public void addOption(ChangeOption... options) {
 		for (ChangeOption opt : options) {
 			addQueryParameter("o", opt.getValue()); //$NON-NLS-1$
 		}
 	}
 
+	/**
+	 * Set the topic for the query
+	 *
+	 * @param String
+	 *            topic
+	 */
 	public void addTopic(String topic) {
 		addQuery("topic:" + topic); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the change Id for the query conflicts
+	 *
+	 * @param String
+	 *            changeId
+	 */
 	public void addConflicts(String changeId) {
 		addQuery("conflicts:" + changeId); //$NON-NLS-1$
 	}
@@ -82,6 +118,9 @@ public class QueryChangesCommand extends BaseCommand<ChangeInfo[]> {
 		addQuery(status.getValue());
 	}
 
+	/**
+	 * Add the query if review is Mergeable
+	 */
 	public void addMergeable() {
 		addQuery("is:mergeable"); //$NON-NLS-1$
 	}

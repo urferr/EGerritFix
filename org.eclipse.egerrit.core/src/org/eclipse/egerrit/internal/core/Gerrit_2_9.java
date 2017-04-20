@@ -19,12 +19,12 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
  *
  * @since 1.0
  */
-public class Gerrit_2_9 extends GerritClient {
+class Gerrit_2_9 extends GerritClient {
 
 	/**
 	 * This gerrit version
 	 */
-	public static final String GERRIT_VERSION = "2.9.0"; //$NON-NLS-1$
+	static final String GERRIT_VERSION = "2.9.0"; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -36,7 +36,7 @@ public class Gerrit_2_9 extends GerritClient {
 	 * @param gerritRepository
 	 *            the gerrit repository
 	 */
-	public Gerrit_2_9(GerritRepository gerritRepository) throws EGerritException {
+	Gerrit_2_9(GerritRepository gerritRepository) throws EGerritException {
 		super(gerritRepository);
 	}
 

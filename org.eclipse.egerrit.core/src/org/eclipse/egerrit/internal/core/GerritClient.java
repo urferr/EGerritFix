@@ -188,8 +188,8 @@ public abstract class GerritClient {
 	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-commit" >Gerrit REST
 	 *      API: Get Commit</a>
 	 */
-	public GetCommitMsgCommand getCommitMsg(String change_id, String commit_id) {
-		return new GetCommitMsgCommand(fGerritRepository, change_id, commit_id);
+	public GetCommitMsgCommand getCommitMsg(String changeId, String commitId) {
+		return new GetCommitMsgCommand(fGerritRepository, changeId, commitId);
 	}
 
 	/**
@@ -209,8 +209,8 @@ public abstract class GerritClient {
 	 * @param id
 	 * @return a default {@link GetChangeCommand} used to retrieve a change's ReviewersInfo from the Gerrit repository
 	 */
-	public ListReviewersCommand getReviewers(String change_id) {
-		return new ListReviewersCommand(fGerritRepository, change_id);
+	public ListReviewersCommand getReviewers(String changeId) {
+		return new ListReviewersCommand(fGerritRepository, changeId);
 	}
 
 	/**
@@ -220,8 +220,8 @@ public abstract class GerritClient {
 	 * @return a default {@link SuggestReviewersCommand} used to retrieve a list of possible reviewers from the Gerrit
 	 *         repository
 	 */
-	public SuggestReviewersCommand suggestReviewers(String change_id) {
-		return new SuggestReviewersCommand(fGerritRepository, change_id);
+	public SuggestReviewersCommand suggestReviewers(String changeId) {
+		return new SuggestReviewersCommand(fGerritRepository, changeId);
 	}
 
 	/**
@@ -241,8 +241,8 @@ public abstract class GerritClient {
 	 * @param id
 	 * @return a default {@link GetChangeCommand} used to retrieve a change's IncludedInInfo from the Gerrit repository
 	 */
-	public GetIncludedInCommand getIncludedIn(String change_id) {
-		return new GetIncludedInCommand(fGerritRepository, change_id);
+	public GetIncludedInCommand getIncludedIn(String changeId) {
+		return new GetIncludedInCommand(fGerritRepository, changeId);
 	}
 
 	/**
@@ -262,45 +262,45 @@ public abstract class GerritClient {
 	/**
 	 * Return a command to extract the list of comments related to a revision of a change set
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return ListCommentsCommand
 	 */
-	public ListCommentsCommand getListComments(String change_id, String revision_id) {
-		return new ListCommentsCommand(fGerritRepository, change_id, revision_id);
+	public ListCommentsCommand getListComments(String changeId, String revisionId) {
+		return new ListCommentsCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
 	 * Return a command to create comments related to a revision of a change
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return CreateDraftCommand
 	 */
-	public CreateDraftCommand createDraftComments(String change_id, String revision_id) {
-		return new CreateDraftCommand(fGerritRepository, change_id, revision_id);
+	public CreateDraftCommand createDraftComments(String changeId, String revisionId) {
+		return new CreateDraftCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
 	 * Return a command to set Review a revision of a change
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return SetReviewCommand
 	 */
-	public SetReviewCommand setReview(String change_id, String revision_id) {
-		return new SetReviewCommand(fGerritRepository, change_id, revision_id);
+	public SetReviewCommand setReview(String changeId, String revisionId) {
+		return new SetReviewCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
 	 * Return a command to extract the list of draft comments related to a revision of a change set
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return ListDraftsCommand
 	 */
-	public ListDraftsCommand listDraftsComments(String change_id, String revision_id) {
-		return new ListDraftsCommand(fGerritRepository, change_id, revision_id);
+	public ListDraftsCommand listDraftsComments(String changeId, String revisionId) {
+		return new ListDraftsCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
@@ -317,91 +317,91 @@ public abstract class GerritClient {
 	/**
 	 * Return a command to submit a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return SubmitCommand
 	 */
-	public SubmitCommand submit(String change_id) {
-		return new SubmitCommand(fGerritRepository, change_id);
+	public SubmitCommand submit(String changeId) {
+		return new SubmitCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to abandon a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return AbandonCommand
 	 */
-	public AbandonCommand abandon(String change_id) {
-		return new AbandonCommand(fGerritRepository, change_id);
+	public AbandonCommand abandon(String changeId) {
+		return new AbandonCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to restore a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return RestoreCommand
 	 */
-	public RestoreCommand restore(String change_id) {
-		return new RestoreCommand(fGerritRepository, change_id);
+	public RestoreCommand restore(String changeId) {
+		return new RestoreCommand(fGerritRepository, changeId);
 	}
 
 	/**
-	 * @param change_id
+	 * @param changeId
 	 * @return AddReviewerCommand
 	 */
-	public AddReviewerCommand addReviewer(String change_id) {
-		return new AddReviewerCommand(fGerritRepository, change_id);
+	public AddReviewerCommand addReviewer(String changeId) {
+		return new AddReviewerCommand(fGerritRepository, changeId);
 	}
 
 	/**
-	 * @param change_id
+	 * @param changeId
 	 * @param accountId
 	 * @return DeleteReviewerCommand.
 	 */
-	public DeleteReviewerCommand deleteReviewer(String change_id, String accountId) {
-		return new DeleteReviewerCommand(fGerritRepository, change_id, accountId);
+	public DeleteReviewerCommand deleteReviewer(String changeId, String accountId) {
+		return new DeleteReviewerCommand(fGerritRepository, changeId, accountId);
 	}
 
 	/**
-	 * @param change_id
+	 * @param changeId
 	 * @param accountId
 	 * @param draftId
 	 * @return DeleteDraftCommand.
 	 */
-	public DeleteDraftCommand deleteDraft(String change_id, String revisionId, String draftId) {
-		return new DeleteDraftCommand(fGerritRepository, change_id, revisionId, draftId);
+	public DeleteDraftCommand deleteDraft(String changeId, String revisionId, String draftId) {
+		return new DeleteDraftCommand(fGerritRepository, changeId, revisionId, draftId);
 	}
 
 	/**
-	 * @param change_id
+	 * @param changeId
 	 * @param accountId
 	 * @param draftId
 	 * @return UpdateDraftCommand.
 	 */
-	public UpdateDraftCommand updateDraftComments(String change_id, String revisionId, String draftId) {
-		return new UpdateDraftCommand(fGerritRepository, change_id, revisionId, draftId);
+	public UpdateDraftCommand updateDraftComments(String changeId, String revisionId, String draftId) {
+		return new UpdateDraftCommand(fGerritRepository, changeId, revisionId, draftId);
 	}
 
 	/**
 	 * @param project
-	 * @param commit_id
-	 * @param file_id
-	 * @return GetContentFromCommitCommand a command to getcontent of a change
+	 * @param commitId
+	 * @param fileId
+	 * @return GetContentFromCommitCommand a command to getContent of a change
 	 * @see <a href= "http://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content" >Gerrit
 	 *      REST API: Get Content</a>
 	 */
-	public GetContentFromCommitCommand getContentFromCommit(String project, String commit_id, String file_id) {
-		return new GetContentFromCommitCommand(fGerritRepository, project, commit_id, file_id);
+	public GetContentFromCommitCommand getContentFromCommit(String project, String commitId, String fileId) {
+		return new GetContentFromCommitCommand(fGerritRepository, project, commitId, fileId);
 	}
 
 	/**
 	 * Return a command to extract the list of actions related to a revision of a change set
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @param revision_id
 	 * @return GetRevisionActionsCommand
 	 */
-	public GetRevisionActionsCommand getRevisionActions(String change_id, String currentRevision) {
-		return new GetRevisionActionsCommand(fGerritRepository, change_id, currentRevision);
+	public GetRevisionActionsCommand getRevisionActions(String changeId, String currentRevision) {
+		return new GetRevisionActionsCommand(fGerritRepository, changeId, currentRevision);
 
 	}
 
@@ -418,142 +418,142 @@ public abstract class GerritClient {
 	/**
 	 * Return a command to Cherry picks a revision to a destination branch
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return CherryPickRevisionCommand
 	 */
-	public CherryPickRevisionCommand cherryPickRevision(String change_id, String revision_id) {
-		return new CherryPickRevisionCommand(fGerritRepository, change_id, revision_id);
+	public CherryPickRevisionCommand cherryPickRevision(String changeId, String revisionId) {
+		return new CherryPickRevisionCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
 	 * Return a command to edit the commit message of a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return ChangeCommitMsgCommand
 	 */
-	public ChangeCommitMsgCommand editMessage(String change_id) {
-		return new ChangeCommitMsgCommand(fGerritRepository, change_id);
+	public ChangeCommitMsgCommand editMessage(String changeId) {
+		return new ChangeCommitMsgCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to publish the commit message of a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return PublishChangeEditCommand
 	 */
-	public PublishChangeEditCommand publishChangeEdit(String change_id) {
-		return new PublishChangeEditCommand(fGerritRepository, change_id);
+	public PublishChangeEditCommand publishChangeEdit(String changeId) {
+		return new PublishChangeEditCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command that allow to mark a file as reviewed
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @param fileName
 	 * @return {@link SetReviewedCommand}
 	 */
-	public SetReviewedCommand setReviewed(String change_id, String revision_id, FileInfo file) {
-		return new SetReviewedCommand(fGerritRepository, change_id, revision_id, file);
+	public SetReviewedCommand setReviewed(String changeId, String revisionId, FileInfo file) {
+		return new SetReviewedCommand(fGerritRepository, changeId, revisionId, file);
 	}
 
 	/**
 	 * Return a command that allow to remove a reviewed mark from a file
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @param fileName
 	 * @return {@link DeleteReviewedCommand}
 	 */
-	public DeleteReviewedCommand deleteReviewed(String change_id, String revision_id, FileInfo file) {
-		return new DeleteReviewedCommand(fGerritRepository, change_id, revision_id, file);
+	public DeleteReviewedCommand deleteReviewed(String changeId, String revisionId, FileInfo file) {
+		return new DeleteReviewedCommand(fGerritRepository, changeId, revisionId, file);
 	}
 
 	/**
 	 * Return a command that allow to get the list of files that have been mark as reviewed
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @param fileName
 	 * @return {@link GetReviewedFilesCommand}
 	 */
-	public GetReviewedFilesCommand getReviewed(String change_id, String revision_id) {
-		return new GetReviewedFilesCommand(fGerritRepository, change_id, revision_id);
+	public GetReviewedFilesCommand getReviewed(String changeId, String revisionId) {
+		return new GetReviewedFilesCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
 	 * Return a command that allows to set the topic of a review
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return {@link SetTopicCommand}
 	 */
-	public SetTopicCommand setTopic(String change_id) {
-		return new SetTopicCommand(fGerritRepository, change_id);
+	public SetTopicCommand setTopic(String changeId) {
+		return new SetTopicCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command that allows to delete the topic of a review
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return {@link DeleteTopicCommand}
 	 */
-	public DeleteTopicCommand deleteTopic(String change_id) {
-		return new DeleteTopicCommand(fGerritRepository, change_id);
+	public DeleteTopicCommand deleteTopic(String changeId) {
+		return new DeleteTopicCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to revert a change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return RevertCommand
 	 */
-	public RevertCommand revert(String change_id) {
-		return new RevertCommand(fGerritRepository, change_id);
+	public RevertCommand revert(String changeId) {
+		return new RevertCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to delete a draft change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return DeleteDraftChangeCommand
 	 */
-	public DeleteDraftChangeCommand deleteDraftChange(String change_id) {
-		return new DeleteDraftChangeCommand(fGerritRepository, change_id);
+	public DeleteDraftChangeCommand deleteDraftChange(String changeId) {
+		return new DeleteDraftChangeCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to publish a draft change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return PublishDraftChangeCommand
 	 */
-	public PublishDraftChangeCommand publishDraftChange(String change_id) {
-		return new PublishDraftChangeCommand(fGerritRepository, change_id);
+	public PublishDraftChangeCommand publishDraftChange(String changeId) {
+		return new PublishDraftChangeCommand(fGerritRepository, changeId);
 	}
 
 	/**
 	 * Return a command to delete a draft revision change
 	 *
-	 * @param change_id
+	 * @param changeId
 	 * @return DeleteDraftRevisionCommand
 	 */
-	public DeleteDraftRevisionCommand deleteDraftRevision(String change_id, String commit_id) {
-		return new DeleteDraftRevisionCommand(fGerritRepository, change_id, commit_id);
+	public DeleteDraftRevisionCommand deleteDraftRevision(String changeId, String commitId) {
+		return new DeleteDraftRevisionCommand(fGerritRepository, changeId, commitId);
 	}
 
 	/**
 	 * Return a command to get the list of modified files since a given revision
 	 */
-	public GetModifiedFilesCommand getFilesModifiedSince(String change_id, String revision_id, String compareAgainst) {
-		return new GetModifiedFilesCommand(fGerritRepository, change_id, revision_id, compareAgainst);
+	public GetModifiedFilesCommand getFilesModifiedSince(String changeId, String revisionId, String compareAgainst) {
+		return new GetModifiedFilesCommand(fGerritRepository, changeId, revisionId, compareAgainst);
 	}
 
 	/**
 	 * Return a command to get the list of files
 	 */
-	public GetFilesCommand getFiles(String change_id, String revision_id) {
-		return new GetFilesCommand(fGerritRepository, change_id, revision_id);
+	public GetFilesCommand getFiles(String changeId, String revisionId) {
+		return new GetFilesCommand(fGerritRepository, changeId, revisionId);
 	}
 
 	/**
@@ -579,15 +579,15 @@ public abstract class GerritClient {
 	/**
 	 * Return a command to rebase a revision of a change
 	 *
-	 * @param change_id
-	 * @param revision_id
+	 * @param changeId
+	 * @param revisionId
 	 * @return RebaseRevisionCommand
 	 */
-	public RebaseRevisionCommand rebase(String change_id, String revision_id) {
-		return new RebaseRevisionCommand(fGerritRepository, change_id, revision_id);
+	public RebaseRevisionCommand rebase(String changeId, String revisionId) {
+		return new RebaseRevisionCommand(fGerritRepository, changeId, revisionId);
 	}
 
-	public GetDiffCommand getDiff(String change_id, String revision_id, String fileName, int base) {
-		return new GetDiffCommand(fGerritRepository, change_id, revision_id, fileName, base);
+	public GetDiffCommand getDiff(String changeId, String revisionId, String fileName, int base) {
+		return new GetDiffCommand(fGerritRepository, changeId, revisionId, fileName, base);
 	}
 }

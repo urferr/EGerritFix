@@ -64,6 +64,21 @@ public final class GerritFactory {
 			throw new EGerritException("Unsupported gerrit version (< " + MINIMAL_VERSION.toString() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
+		GerritClient gerrit = instantiateGerritClient(gerritRepository, version);
+
+		return gerrit;
+	}
+
+	/**
+	 * Find the proper version of the GerritClient.
+	 *
+	 * @param gerritRepository
+	 * @param version
+	 * @return GerritClient
+	 * @throws EGerritException
+	 */
+	private static GerritClient instantiateGerritClient(GerritRepository gerritRepository, Version version)
+			throws EGerritException {
 		// --------------------------------------------------------------------
 		// Instantiate the correct gerrit instance based on its version
 		//
@@ -93,7 +108,7 @@ public final class GerritFactory {
 
 			default:
 				// Downgrade the version as per logic above
-				if (workVersion.getQualifier() != "") { //$NON-NLS-1$
+				if (!workVersion.getQualifier().equals("")) { //$NON-NLS-1$
 					// Remove [qualifier]
 					workVersion = new Version(version.getMajor(), version.getMinor(), version.getMicro(), null);
 				} else if (workVersion.getMicro() > 0) {
@@ -114,7 +129,6 @@ public final class GerritFactory {
 			}
 
 		} while (gerrit == null);
-
 		return gerrit;
 	}
 

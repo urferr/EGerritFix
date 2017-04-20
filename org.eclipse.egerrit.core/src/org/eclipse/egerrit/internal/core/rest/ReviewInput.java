@@ -114,7 +114,7 @@ public class ReviewInput {
 	/**
 	 * @return the strict_labels
 	 */
-	public boolean isStrict_labels() {
+	public boolean isStrict_Labels() {
 		return strict_labels;
 	}
 
@@ -167,7 +167,7 @@ public class ReviewInput {
 	 * @param on_behalf_of
 	 *            the on_behalf_of to set
 	 */
-	public void setOn_behalf_of(String on_behalf_of) {
-		this.on_behalf_of = on_behalf_of;
+	public void setOn_behalf_of(String onBehalfOf) {
+		this.on_behalf_of = onBehalfOf;
 	}
 }

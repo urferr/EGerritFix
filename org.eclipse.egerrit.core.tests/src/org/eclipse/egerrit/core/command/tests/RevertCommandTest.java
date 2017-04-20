@@ -109,7 +109,7 @@ public class RevertCommandTest extends CommandTestWithSimpleReview {
 		try {
 			revertCmdResult = revertCmd.call();
 			// change id is different after revert
-			assertNotEquals(revertCmdResult.getId(), change_id);
+			assertNotEquals(revertCmdResult.getChange_id(), change_id);
 			assertEquals(revertCmdResult.getStatus(), "NEW");
 		} catch (EGerritException e) {
 			fail(e.getMessage());

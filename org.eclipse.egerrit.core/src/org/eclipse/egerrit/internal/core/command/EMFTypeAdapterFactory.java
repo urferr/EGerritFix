@@ -38,7 +38,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-public class EMFTypeAdapterFactory implements TypeAdapterFactory {
+class EMFTypeAdapterFactory implements TypeAdapterFactory {
 	private static final Logger logger = LoggerFactory.getLogger(EMFTypeAdapterFactory.class);
 
 	@SuppressWarnings("unchecked")
@@ -50,13 +50,13 @@ public class EMFTypeAdapterFactory implements TypeAdapterFactory {
 		return (TypeAdapter<T>) new EObjectTypeAdapter(gson, typeToken.getType());
 	}
 
-	public static class EObjectTypeAdapter extends TypeAdapter<EObject> {
+	private static class EObjectTypeAdapter extends TypeAdapter<EObject> {
 
 		private Type expectedType;
 
 		private Gson gson;
 
-		public EObjectTypeAdapter(Gson gson, Type expectedType) {
+		private EObjectTypeAdapter(Gson gson, Type expectedType) {
 			this.expectedType = expectedType;
 			this.gson = gson;
 		}
@@ -87,9 +87,8 @@ public class EMFTypeAdapterFactory implements TypeAdapterFactory {
 					valueType = valueFeature.getEType().getInstanceClass();
 				} else {
 					//Deal with the case where the value of the map is a list
-					valueType = TypeToken
-							.get(new MapType(BasicEList.class,
-									new Type[] { valueFeature.getEType().getInstanceClass() }))
+					valueType = TypeToken.get(
+							new MapType(BasicEList.class, new Type[] { valueFeature.getEType().getInstanceClass() }))
 							.getType();
 				}
 
@@ -140,12 +139,12 @@ public class EMFTypeAdapterFactory implements TypeAdapterFactory {
 		}
 	}
 
-	public static class MapType implements Type, ParameterizedType {
+	private static class MapType implements Type, ParameterizedType {
 		private Type[] actualTypes;
 
 		private Type rawType;
 
-		public MapType(Type raw, Type[] actualTypes) {
+		private MapType(Type raw, Type[] actualTypes) {
 			rawType = raw;
 			this.actualTypes = actualTypes;
 		}

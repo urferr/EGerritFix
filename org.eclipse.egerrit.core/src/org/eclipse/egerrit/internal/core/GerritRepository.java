@@ -13,6 +13,7 @@
 package org.eclipse.egerrit.internal.core;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -287,7 +288,7 @@ public class GerritRepository {
 
 	public static final int SSL_INVALID_ROOT_CERTIFICATE = -2;
 
-	public Version queryVersion() {
+	private Version queryVersion() {
 		Version version = null;
 		try {
 			URIBuilder builder = getURIBuilder(false);
@@ -328,10 +329,9 @@ public class GerritRepository {
 				version = parseVersion(result);
 			}
 		} catch (HttpResponseException httpException) {
-			if (httpException.getStatusCode() == 404) {
+			if (httpException.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND) {
 				version = NO_VERSION;
-			}
-			if (httpException.getStatusCode() != 404) {
+			} else {
 				EGerritCorePlugin.logError(httpException.getLocalizedMessage(), httpException);
 			}
 		} catch (SSLHandshakeException e) {

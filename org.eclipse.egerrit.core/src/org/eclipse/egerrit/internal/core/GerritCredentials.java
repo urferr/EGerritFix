@@ -36,15 +36,14 @@ public class GerritCredentials {
 	//
 	// ------------------------------------------------------------------------
 
-	public GerritCredentials() {
-	}
-
+	/**
+	 * Constructor to build this class
+	 *
+	 * @param user
+	 * @param pwd
+	 */
 	public GerritCredentials(String user, String pwd) {
 		setGerritCredentials(user, pwd);
-	}
-
-	public Credentials getCredentials() {
-		return getGerritCredentials();
 	}
 
 	public String getUsername() {
@@ -67,7 +66,7 @@ public class GerritCredentials {
 	// Gerrit credentials
 	// ------------------------------------------------------------------------
 
-	public void setGerritCredentials(String user, String pwd) {
+	private void setGerritCredentials(String user, String pwd) {
 		if (user != null) {
 			fCredentials = new UsernamePasswordCredentials(user, pwd);
 		}

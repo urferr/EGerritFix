@@ -27,7 +27,7 @@ import com.google.gson.annotations.Expose;
  *
  * @since 1.0
  */
-public class GerritServerInformation {
+public class GerritServerInformation implements Cloneable {
 	private static final int DEFAULT_PORT = 29418;
 
 	private static final String DEFAULT_SCHEME = "http"; //$NON-NLS-1$
@@ -64,25 +64,35 @@ public class GerritServerInformation {
 
 	private boolean fSelfSigned = false;
 
+	/**
+	 * Constructor of this class
+	 * 
+	 * @param String
+	 *            serverURI
+	 * @param String
+	 *            serverName
+	 * @throws URISyntaxException
+	 */
 	public GerritServerInformation(String serverURI, String serverName) throws URISyntaxException {
 		URI uri = null;
-		try {
-			if (serverURI != null) {
-				uri = new URI(serverURI);
-			} else {
-				uri = new URI(""); //$NON-NLS-1$
-			}
-		} catch (URISyntaxException e) {
-			throw e;
+		if (serverURI != null) {
+			uri = new URI(serverURI);
+		} else {
+			uri = new URI(""); //$NON-NLS-1$
 		}
 		if (uri != null) {
-
 			setSeverInfo(uri);
 		}
 		setServerURI(serverURI);
 		setServerName(serverName != null ? serverName.trim() : ""); //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the server URI
+	 *
+	 * @param String
+	 *            serverURI
+	 */
 	public void setServerURI(String serverURI) {
 		this.fServerURI = serverURI != null ? serverURI.trim() : ""; //$NON-NLS-1$
 		this.fServerURI = removeTrailingSlash(this.fServerURI);
@@ -95,38 +105,84 @@ public class GerritServerInformation {
 		return server;
 	}
 
+	/**
+	 * Return all the server information
+	 *
+	 * @return GerritServerInformation
+	 */
 	public GerritServerInformation getServerInfo() {
 		return this;
 	}
 
+	/**
+	 * Return the server port
+	 *
+	 * @return int
+	 */
 	public int getDefaultPort() {
 		return DEFAULT_PORT;
 	}
 
+	/**
+	 * Return the server scheme
+	 *
+	 * @return String
+	 */
 	public String getScheme() {
 		return fServerScheme != null ? fServerScheme : DEFAULT_SCHEME;
 	}
 
+	/**
+	 * Return the host id
+	 *
+	 * @return String
+	 */
 	public String getHostId() {
 		return fHostId != null ? fHostId : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Return the server path
+	 *
+	 * @return String
+	 */
 	public String getPath() {
 		return fServerPath != null ? fServerPath : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Return the server name
+	 *
+	 * @return String
+	 */
 	public String getName() {
 		return fServerName != null ? fServerName : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Return the server URI
+	 *
+	 * @return String
+	 */
 	public String getServerURI() {
 		return fServerURI != null ? fServerURI : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Return the server port number.
+	 *
+	 * @return int
+	 */
 	public int getPort() {
 		return fServerPort;
 	}
 
+	/**
+	 * Set the server scheme (Http, https,..)
+	 *
+	 * @param String
+	 *            text
+	 */
 	public void setScheme(String text) {
 		fServerScheme = text;
 		if (fServerScheme != null) {
@@ -134,16 +190,34 @@ public class GerritServerInformation {
 		}
 	}
 
+	/**
+	 * Set the server host name
+	 *
+	 * @param String
+	 *            serverId
+	 */
 	public void setHostId(String serverId) {
 		this.fHostId = serverId != null ? serverId.trim() : ""; //$NON-NLS-1$
 		getURI();
 	}
 
+	/**
+	 * Set the server port
+	 *
+	 * @param int
+	 *            port
+	 */
 	public void setPort(int port) {
 		fServerPort = port;
 		getURI();
 	}
 
+	/**
+	 * Set the server path.
+	 *
+	 * @param String
+	 *            text
+	 */
 	public void setPath(String text) {
 		fServerPath = text;
 		getURI();
@@ -153,10 +227,22 @@ public class GerritServerInformation {
 		fServerName = text;
 	}
 
+	/**
+	 * Set the user name for this server
+	 *
+	 * @param String
+	 *            userName
+	 */
 	public void setUserName(String userName) {
 		this.fUserName = userName != null ? userName.trim() : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the user password for this server
+	 *
+	 * @param String
+	 *            password
+	 */
 	public void setPassword(String password) {
 		this.fPassword = password != null ? password.trim() : ""; //$NON-NLS-1$
 		if (this.fPassword.length() > 0) {
@@ -165,10 +251,21 @@ public class GerritServerInformation {
 		}
 	}
 
+	/**
+	 * Return the user name for this server
+	 *
+	 * @return String
+	 */
 	public String getUserName() {
 		return fUserName != null ? fUserName : ""; //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the server information
+	 *
+	 * @param URI
+	 *            uri
+	 */
 	public void setSeverInfo(URI uri) {
 		setScheme(uri.getScheme());
 		setHostId(uri.getHost());
@@ -179,10 +276,21 @@ public class GerritServerInformation {
 		}
 	}
 
+	/**
+	 * Set the flag for self signing
+	 *
+	 * @param boolean
+	 *            signed
+	 */
 	public void setSelfSigned(boolean signed) {
 		fSelfSigned = signed;
 	}
 
+	/**
+	 * Verify if the the flag for signing is set
+	 *
+	 * @return boolean
+	 */
 	public boolean getSelfSigned() {
 		return fSelfSigned;
 	}
@@ -206,6 +314,12 @@ public class GerritServerInformation {
 		return null;
 	}
 
+	/**
+	 * Test to see if the server has a valid URI
+	 *
+	 * @return boolean
+	 * @throws URISyntaxException
+	 */
 	public boolean isValid() throws URISyntaxException {
 		URI uri = new URI(getServerURI());
 		return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(),
@@ -258,6 +372,11 @@ public class GerritServerInformation {
 		return true;
 	}
 
+	/**
+	 * Return the password
+	 *
+	 * @return String
+	 */
 	public String getPassword() {
 		if (getUserName().isEmpty()) {
 			return null;
@@ -279,7 +398,7 @@ public class GerritServerInformation {
 		}
 	}
 
-	String internalGetPassword() {
+	private String internalGetPassword() {
 		return fPassword != null ? fPassword : ""; //$NON-NLS-1$
 	}
 
@@ -305,10 +424,20 @@ public class GerritServerInformation {
 		return EGerritCorePlugin.PLUGIN_ID + '/' + getServerURI() + getName();
 	}
 
+	/**
+	 * Verify if the password has been provided
+	 *
+	 * @return boolean
+	 */
 	public boolean isPasswordProvided() {
 		return fPasswordProvided;
 	}
 
+	/**
+	 * Verify if the password has changed
+	 *
+	 * @return boolean
+	 */
 	public boolean isPasswordChanged() {
 		return fPasswordChanged;
 	}

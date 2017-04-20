@@ -29,6 +29,12 @@ public class ServersStore {
 	private static int timestamp = 0;
 
 	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private ServersStore() {
+	}
+
+	/**
 	 * Persists the list of servers
 	 *
 	 * @param servers
@@ -40,8 +46,7 @@ public class ServersStore {
 		try {
 			InstanceScope.INSTANCE.getNode(EGERRIT_NODE).flush();
 		} catch (BackingStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			EGerritCorePlugin.logError(e.getLocalizedMessage());
 		}
 		for (GerritServerInformation server : servers) {
 			server.persistPassword();

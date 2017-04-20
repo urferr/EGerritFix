@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-@SuppressWarnings("restriction")
 public class GerritHttpClient implements IProxyChangeListener {
 
 	private static Logger logger = LoggerFactory.getLogger(GerritHttpClient.class);
@@ -105,7 +104,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 	 * @param creds
 	 *            The user credentials
 	 */
-	public GerritHttpClient(GerritRepository repository, GerritCredentials creds) {
+	GerritHttpClient(GerritRepository repository, GerritCredentials creds) {
 		fRepository = repository;
 		createHttpClient(creds);
 		watchProxyChange();
@@ -147,11 +146,11 @@ public class GerritHttpClient implements IProxyChangeListener {
 				fHttpClient = newlyCreatedClient;
 			}
 		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-			e.printStackTrace();
+			EGerritCorePlugin.logError(e.getLocalizedMessage());
 		}
 	}
 
-	public synchronized HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
+	private synchronized HttpResponse execute(HttpUriRequest request) throws IOException, ClientProtocolException {
 		synchronized (this) {
 			return fHttpClient.execute(request);
 		}
@@ -171,7 +170,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 		return fCookieStore;
 	}
 
-	public boolean authenticate() {
+	boolean authenticate() {
 		if (fCredentials == null) {
 			return true;
 		}
@@ -179,7 +178,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 		// OpenId authentication
 		if (fCredentials.isOpenIdAuthenticated()) {
 			String openIdProvider = fCredentials.getOpenIdProvider();
-			Credentials creds = fCredentials.getCredentials();
+			Credentials creds = fCredentials.getGerritCredentials();
 			return openIdAuthentication(openIdProvider, creds);
 		}
 
@@ -190,12 +189,12 @@ public class GerritHttpClient implements IProxyChangeListener {
 		}
 
 		// Username + Password authentication
-		Credentials creds = fCredentials.getCredentials();
+		Credentials creds = fCredentials.getGerritCredentials();
 		if (creds != null) {
-			if (userPasswordAuthentication(creds, false)) {
+			if (userPasswordAuthentication(false)) {
 				return true;
 			}
-			return userPasswordAuthentication(creds, true);
+			return userPasswordAuthentication(true);
 		}
 
 		return false;
@@ -269,7 +268,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	private static final String LOGIN_REQUEST = "/login/mine"; //$NON-NLS-1$
 
-	private boolean userPasswordAuthentication(Credentials creds, boolean userBecomesAnyAccount) {
+	private boolean userPasswordAuthentication(boolean userBecomesAnyAccount) {
 		fStatus = 0;
 		try {
 			URIBuilder builder = fRepository.getURIBuilder(false);
@@ -392,7 +391,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 		return status;
 	}
 
-	private final String GERRIT_KEY_TAG = "gerrit_hostpagedata.xGerritAuth="; //$NON-NLS-1$
+	private static final String GERRIT_KEY_TAG = "gerrit_hostpagedata.xGerritAuth="; //$NON-NLS-1$
 
 	private volatile String fKey;
 
@@ -438,8 +437,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 
 	/*
 	 * return the error code of the http connection
-	
-	 * @return
+	 * @return int
 	 */
 	public int getStatus() {
 		return fStatus;
@@ -454,6 +452,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 	protected void finalize() throws Throwable {
 		//This is not ideal, but it is the best we can do to remove the listener
 		EGerritCorePlugin.getDefault().getProxyService().removeProxyChangeListener(this);
+		super.finalize();
 	}
 
 	public void close() {

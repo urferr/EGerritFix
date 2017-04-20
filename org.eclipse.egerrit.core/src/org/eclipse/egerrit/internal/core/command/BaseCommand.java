@@ -52,7 +52,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
-public abstract class BaseCommand<T> {
+abstract class BaseCommand<T> {
+
 	private static final String JSON_HEADER = "application/json"; //$NON-NLS-1$
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseCommand.class);
@@ -78,7 +79,64 @@ public abstract class BaseCommand<T> {
 
 	private String failureReason;
 
-	protected String getPath() throws UnsupportedEncodingException {
+	/**
+	 * Private Class to handle the response from the command
+	 */
+	private final class BaseCommandResponseHandler implements ResponseHandler<T> {
+		@Override
+		public T handleResponse(final HttpResponse response) throws IOException {
+
+			StatusLine statusLine = response.getStatusLine();
+			logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
+			if (statusLine.getStatusCode() >= 300) {
+				if (errorsExpected()) {
+					extractFailureReason(response);
+					return null;
+				}
+				throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
+			}
+			if (statusLine.getStatusCode() == HttpURLConnection.HTTP_NO_CONTENT) {
+				//Nothing to handle since the buffer is OK but empty
+				return null;
+			}
+			responseHeaders = response.getAllHeaders();
+			HttpEntity entity = response.getEntity();
+			BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
+			if (entity == null) {
+				throw new ClientProtocolException("Response has no content"); //$NON-NLS-1$
+			}
+			if (!BaseCommand.this.expectsJson()) {
+				try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+					myEntity.writeTo(os);
+					return (T) os.toString();
+				}
+			}
+			GsonBuilder builder = new GsonBuilder();
+			builder.registerTypeAdapterFactory(new EMFTypeAdapterFactory());
+			Gson gson = builder.create();
+			InputStreamReader reader = new InputStreamReader(myEntity.getContent(), "UTF-8");//$NON-NLS-1$
+
+			return gson.fromJson(reader, fResultType);
+		}
+
+		private void extractFailureReason(HttpResponse response) {
+			HttpEntity entity = response.getEntity();
+			if (entity == null) {
+				return;
+			}
+			try {
+				try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+					BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
+					myEntity.writeTo(os);
+					failureReason = os.toString();
+				}
+			} catch (IOException e) {
+				return;
+			}
+		}
+	}
+
+	private String getPath() throws UnsupportedEncodingException {
 		Set<Entry<String, String>> params = parameters.entrySet();
 		String result = pathFormat;
 		for (Entry<String, String> entry : params) {
@@ -104,6 +162,12 @@ public abstract class BaseCommand<T> {
 		instantiateRequest(operationType);
 	}
 
+	/**
+	 * Execute the command
+	 *
+	 * @return
+	 * @throws EGerritException
+	 */
 	public T call() throws EGerritException {
 		fillRequest();
 
@@ -112,59 +176,7 @@ public abstract class BaseCommand<T> {
 
 			logger.debug("Request: " + request.getURI().toString()); //$NON-NLS-1$
 
-			ResponseHandler<T> rh = new ResponseHandler<T>() {
-				@Override
-				public T handleResponse(final HttpResponse response) throws IOException {
-
-					StatusLine statusLine = response.getStatusLine();
-					logger.debug("Result : " + statusLine.toString()); //$NON-NLS-1$
-					if (statusLine.getStatusCode() >= 300) {
-						if (errorsExpected()) {
-							extractFailureReason(response);
-							return null;
-						}
-						throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
-					}
-					if (statusLine.getStatusCode() == HttpURLConnection.HTTP_NO_CONTENT) {
-						//Nothing to handle since the buffer is OK but empty
-						return null;
-					}
-					responseHeaders = response.getAllHeaders();
-					HttpEntity entity = response.getEntity();
-					BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
-					if (entity == null) {
-						throw new ClientProtocolException("Response has no content"); //$NON-NLS-1$
-					}
-					if (!BaseCommand.this.expectsJson()) {
-						try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-							myEntity.writeTo(os);
-							return (T) os.toString();
-						}
-					}
-					GsonBuilder builder = new GsonBuilder();
-					builder.registerTypeAdapterFactory(new EMFTypeAdapterFactory());
-					Gson gson = builder.create();
-					InputStreamReader reader = new InputStreamReader(myEntity.getContent(), "UTF-8");//$NON-NLS-1$
-
-					return gson.fromJson(reader, fResultType);
-				}
-
-				private void extractFailureReason(HttpResponse response) {
-					HttpEntity entity = response.getEntity();
-					if (entity == null) {
-						return;
-					}
-					try {
-						try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-							BufferedHttpEntity myEntity = new BufferedHttpEntity(entity);
-							myEntity.writeTo(os);
-							failureReason = os.toString();
-						}
-					} catch (IOException e) {
-						return;
-					}
-				}
-			};
+			ResponseHandler<T> rh = new BaseCommandResponseHandler();
 			result = postProcessResult(server.getHttpClient().execute(request, rh));
 
 		} catch (ClientProtocolException e) {
@@ -269,7 +281,7 @@ public abstract class BaseCommand<T> {
 		this.input = input;
 	}
 
-	protected T postProcessResult(T result) {
+	private T postProcessResult(T result) {
 		return result;
 	}
 
@@ -300,10 +312,6 @@ public abstract class BaseCommand<T> {
 		pathFormat = pathPattern;
 	}
 
-	protected GerritRepository getRepository() {
-		return server;
-	}
-
 	/**
 	 * Return the headers returned by the http response
 	 */
@@ -311,6 +319,11 @@ public abstract class BaseCommand<T> {
 		return responseHeaders;
 	}
 
+	/**
+	 * Return the failure reason for the command
+	 *
+	 * @return String
+	 */
 	public String getFailureReason() {
 		return failureReason;
 	}

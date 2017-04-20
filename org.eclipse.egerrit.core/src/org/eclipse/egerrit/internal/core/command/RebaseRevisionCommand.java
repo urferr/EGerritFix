@@ -12,6 +12,8 @@
 
 package org.eclipse.egerrit.internal.core.command;
 
+import java.net.HttpURLConnection;
+
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
@@ -46,7 +48,7 @@ public class RebaseRevisionCommand extends BaseCommandChangeWithInput<ChangeInfo
 	protected boolean handleHttpException(ClientProtocolException exception) throws EGerritException {
 		if (exception instanceof HttpResponseException) {
 			HttpResponseException httpException = (HttpResponseException) exception;
-			if (httpException.getStatusCode() == 409) {
+			if (httpException.getStatusCode() == HttpURLConnection.HTTP_CONFLICT) {
 				EGerritException gerritException = new EGerritException(exception.getLocalizedMessage());
 				gerritException.setCode(EGerritException.SHOWABLE_MESSAGE);
 				throw gerritException;

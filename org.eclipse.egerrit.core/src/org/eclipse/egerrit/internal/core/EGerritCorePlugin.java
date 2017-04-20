@@ -242,18 +242,25 @@ public class EGerritCorePlugin extends Plugin {
 		return ret;
 	}
 
+	/**
+	 * Get the proxy service
+	 *
+	 * @return IProxyService
+	 */
 	public IProxyService getProxyService() {
-		ServiceReference<IProxyService> sr = ctx.getServiceReference(IProxyService.class);
-		try {
-			return ctx.getService(sr);
-		} finally {
-			if (ctx != null) {
+		if (ctx == null) {
+			return null;
+		} else {
+			ServiceReference<IProxyService> sr = ctx.getServiceReference(IProxyService.class);
+			try {
+				return ctx.getService(sr);
+			} finally {
 				ctx.ungetService(sr);
 			}
 		}
 	}
 
-	public HttpHost getProxyForHost(String hostname) {
+	HttpHost getProxyForHost(String hostname) {
 		IProxyService proxyService = getProxyService();
 		if (proxyService == null) {
 			return null;
