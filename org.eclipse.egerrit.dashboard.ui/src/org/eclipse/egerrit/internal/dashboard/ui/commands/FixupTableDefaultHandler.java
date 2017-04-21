@@ -15,6 +15,7 @@ package org.eclipse.egerrit.internal.dashboard.ui.commands;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
+import org.eclipse.egerrit.internal.ui.compare.CompareUpperSectionColumn;
 import org.eclipse.egerrit.internal.ui.editors.ChangeDetailEditor;
 import org.eclipse.egerrit.internal.ui.table.UIConflictsWithTable;
 import org.eclipse.egerrit.internal.ui.table.UIFilesTable;
@@ -96,8 +97,8 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 				}
 			} else if (id.compareTo(COMPARE_EDITOR_ID) == 0) {
 				if (table instanceof Tree) {
-					FilesTableModel[] tableInfo = FilesTableModel.values();
-					((Tree) table).setColumnOrder(FilesTableModel.getDefaultOrder());
+					CompareUpperSectionColumn[] tableInfo = CompareUpperSectionColumn.values();
+					((Tree) table).setColumnOrder(CompareUpperSectionColumn.getDefaultOrder());
 					setTableDefaultWidth(table, tableInfo);
 				}
 			}
