@@ -173,7 +173,11 @@ public class ModelLoader {
 			if (basicInfoTracker != null) {
 				changeInfo.eAdapters().remove(basicInfoTracker);
 			}
-			loaders.remove(changeInfo);
+
+			Map<ChangeInfo, ModelLoader> clientMatch = loaders.get(gerritClient);
+			if (clientMatch != null) {
+				loaders.remove(gerritClient, clientMatch.get(changeInfo));
+			}
 		}
 	}
 

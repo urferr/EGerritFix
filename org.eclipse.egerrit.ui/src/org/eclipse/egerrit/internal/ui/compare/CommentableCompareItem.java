@@ -76,15 +76,15 @@ public abstract class CommentableCompareItem extends Document
 
 	private byte[] binaryFileContent; //This field is only set when the content of the file is detected to be binary
 
-	public CommentableCompareItem(String commentSide) {
+	CommentableCompareItem(String commentSide) {
 		this.commentSide = commentSide;
 	}
 
-	void setOriginalDocument(IDocument documentWithComments) {
+	private void setOriginalDocument(IDocument documentWithComments) {
 		this.originalDocument = documentWithComments;
 	}
 
-	void setOriginalComments(AnnotationModel gerritComments) {
+	private void setOriginalComments(AnnotationModel gerritComments) {
 		this.originalComments = gerritComments;
 	}
 
@@ -250,12 +250,12 @@ public abstract class CommentableCompareItem extends Document
 	//The insertion of comments starts from by last comment and proceed toward the first one. This allows for the insertion line to always be correct.
 	private void mergeCommentsInText(String text) {
 		//Create a document and an associated annotation model to keep track of the original text w/ comments
-		AnnotationModel originalComments = new CommentAnnotationManager();
-		Document originalDocument = new Document(text);
-		originalDocument.set(text);
-		originalComments.connect(originalDocument);
-		setOriginalComments(originalComments);
-		setOriginalDocument(originalDocument);
+		AnnotationModel initialComments = new CommentAnnotationManager();
+		Document initialDocument = new Document(text);
+		initialDocument.set(text);
+		initialComments.connect(initialDocument);
+		setOriginalComments(initialComments);
+		setOriginalDocument(initialDocument);
 
 		//Editable comments are a copy of the original comments but associated with the document that is presented in the UI
 		editableComments = new CommentAnnotationManager();
@@ -277,8 +277,8 @@ public abstract class CommentableCompareItem extends Document
 				String lineDelimiter = ""; //$NON-NLS-1$
 				if (commentInfo.getLine() > 0) {
 					insertionLineInDocument = commentInfo.getLine() - 1;
-					lineInfo = originalDocument.getLineInformation(insertionLineInDocument);
-					lineDelimiter = originalDocument.getLineDelimiter(insertionLineInDocument);
+					lineInfo = initialDocument.getLineInformation(insertionLineInDocument);
+					lineDelimiter = initialDocument.getLineDelimiter(insertionLineInDocument);
 					insertionPosition = lineInfo.getOffset() + lineInfo.getLength()
 							+ (lineDelimiter == null ? 0 : lineDelimiter.length());
 				}
@@ -286,13 +286,13 @@ public abstract class CommentableCompareItem extends Document
 				String formattedComment = CommentPrettyPrinter.printComment(commentInfo);
 				int commentTextLength = formattedComment.length();
 				if (lineDelimiter == null) {
-					formattedComment = originalDocument.getDefaultLineDelimiter() + formattedComment;
-					commentTextIndex += originalDocument.getDefaultLineDelimiter().length();
+					formattedComment = initialDocument.getDefaultLineDelimiter() + formattedComment;
+					commentTextIndex += initialDocument.getDefaultLineDelimiter().length();
 				}
-				formattedComment += originalDocument.getDefaultLineDelimiter();
-				originalDocument.replace(insertionPosition, 0, formattedComment);
+				formattedComment += initialDocument.getDefaultLineDelimiter();
+				initialDocument.replace(insertionPosition, 0, formattedComment);
 				replace(insertionPosition, 0, formattedComment);
-				originalComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
+				initialComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
 						new Position(commentTextIndex, commentTextLength));
 				editableComments.addAnnotation(new GerritCommentAnnotation(commentInfo, formattedComment),
 						new Position(commentTextIndex, commentTextLength));
@@ -346,5 +346,5 @@ public abstract class CommentableCompareItem extends Document
 	/**
 	 * This returns the string shown in the sub-editor header
 	 */
-	abstract public String getUserReadableName();
+	public abstract String getUserReadableName();
 }

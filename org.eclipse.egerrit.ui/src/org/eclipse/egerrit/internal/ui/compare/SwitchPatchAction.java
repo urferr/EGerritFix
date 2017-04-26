@@ -16,14 +16,14 @@ import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.action.Action;
 
-public class SwitchPatchAction extends Action {
+class SwitchPatchAction extends Action {
 	private GerritMultipleInput input;
 
 	private boolean leftSide; //Indicate whether this change is for the left side of the compare editor
 
 	private String inputToSwitchTo; //The string that will be passed to change the compare editor input
 
-	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, RevisionInfo revision, boolean left) {
+	SwitchPatchAction(GerritMultipleInput gerritMultipleInput, RevisionInfo revision, boolean left) {
 		super();
 		this.input = gerritMultipleInput;
 		this.leftSide = left;
@@ -35,7 +35,7 @@ public class SwitchPatchAction extends Action {
 		}
 	}
 
-	public SwitchPatchAction(GerritMultipleInput gerritMultipleInput, String target, boolean left) {
+	SwitchPatchAction(GerritMultipleInput gerritMultipleInput, String target, boolean left) {
 		super(target);
 		this.input = gerritMultipleInput;
 		this.leftSide = left;

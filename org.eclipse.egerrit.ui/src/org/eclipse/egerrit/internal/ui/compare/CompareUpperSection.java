@@ -87,9 +87,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private PersistentStorage persistStorage;
 
-	GerritMultipleInput compareInput;
+	private GerritMultipleInput compareInput;
 
-	DiffTreeViewer viewer;
+	private DiffTreeViewer viewer;
 
 	private Label leftPatch, rightPatch;
 
@@ -99,7 +99,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private Composite headerComposite;
 
-	public CompareUpperSection(Composite parent, int style, boolean visibility, GerritMultipleInput cei) {
+	CompareUpperSection(Composite parent, int style, boolean visibility, GerritMultipleInput cei) {
 		super(parent, style, visibility);
 		compareInput = cei;
 		createViewer(this);
@@ -233,7 +233,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		viewer.setComparator(new ReviewTableSorter(2)); // sort by File Path, descending. This way we are sorted like in the files tab
 
 		//The reviewed flag is always watched from the gerritDiffNode#fileInfo object.
-		IValueProperty leftReviewedFlag = PojoProperties.value("fileInfo")
+		IValueProperty leftReviewedFlag = PojoProperties.value("fileInfo") //$NON-NLS-1$
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
 		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$
 		IValueProperty leftComments = leftFileInfo
@@ -357,7 +357,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		for (Control element : children) {
 			if (element instanceof CLabel) {
 				CLabel cl = (CLabel) element;
-				if (cl != null && !cl.isDisposed()) {
+				if (!cl.isDisposed()) {
 					cl.setImage(image);
 				}
 				return;
@@ -413,7 +413,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	}
 
 	private static class TreeFactoryImpl implements IObservableFactory {
-		public IObservableList createObservable(final Object target) {
+		public IObservableList<?> createObservable(final Object target) {
 			return BeanProperties.list("children").observe(target); //$NON-NLS-1$
 		}
 	}

@@ -57,17 +57,16 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 			if (!(sourceViewer.getDocument() instanceof PatchSetCompareItem)) {
 				return null;
 			}
-			PatchSetCompareItem patchSetCompareItem = ((PatchSetCompareItem) sourceViewer.getDocument());
+			PatchSetCompareItem patchSetCompareItem = (PatchSetCompareItem) sourceViewer.getDocument();
 			TreeMap<Integer, GerritCommentAnnotation> sortedCommentMap = getSortedGerritAnnotation(patchSetCompareItem);
 			if (isNext) {
-				requestedCommentPosition = findNextGerritCommentPosition(sortedCommentMap, curPos, patchSetCompareItem);
+				requestedCommentPosition = findNextGerritCommentPosition(sortedCommentMap, curPos);
 			} else {
-				requestedCommentPosition = findPreviousGerritCommentPosition(sortedCommentMap, curPos,
-						patchSetCompareItem);
+				requestedCommentPosition = findPreviousGerritCommentPosition(sortedCommentMap, curPos);
 			}
 
-			//if (requestedCommentPosition == null) means there is no comment in this file yet
-			if (!(requestedCommentPosition == null)) {
+			//if requestedCommentPosition == null means there is no comment in this file yet
+			if (requestedCommentPosition != null) {
 				int offset = requestedCommentPosition.getOffset();
 				int length = requestedCommentPosition.getLength();
 				sourceViewer.setSelection(new TextSelection(offset, length), true);
@@ -93,11 +92,10 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 	 *
 	 * @param sortedCommentMap
 	 * @param curPos
-	 * @param patchSetCompareItem
 	 * @return Position
 	 */
 	private Position findNextGerritCommentPosition(TreeMap<Integer, GerritCommentAnnotation> sortedCommentMap,
-			Point curPos, PatchSetCompareItem patchSetCompareItem) {
+			Point curPos) {
 
 		Entry<Integer, GerritCommentAnnotation> entryMap = sortedCommentMap.higherEntry(curPos.x);
 		if (entryMap != null) {
@@ -112,11 +110,10 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 	 *
 	 * @param sortedCommentMap
 	 * @param curPos
-	 * @param patchSetCompareItem
 	 * @return Position
 	 */
 	private Position findPreviousGerritCommentPosition(TreeMap<Integer, GerritCommentAnnotation> sortedCommentMap,
-			Point curPos, PatchSetCompareItem patchSetCompareItem) {
+			Point curPos) {
 
 		Entry<Integer, GerritCommentAnnotation> entryMap = sortedCommentMap.lowerEntry(curPos.x);
 		if (entryMap != null) {
@@ -149,7 +146,7 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 	 */
 	private TreeMap<Integer, GerritCommentAnnotation> getSortedGerritAnnotation(
 			PatchSetCompareItem patchSetCompareItem) {
-		TreeMap<Integer, GerritCommentAnnotation> adjustedMap = new TreeMap<Integer, GerritCommentAnnotation>();
+		TreeMap<Integer, GerritCommentAnnotation> adjustedMap = new TreeMap<>();
 		Iterator<?> it = patchSetCompareItem.getEditableComments().getAnnotationIterator();
 
 		while (it.hasNext()) {
@@ -157,8 +154,6 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 			Position position = patchSetCompareItem.getEditableComments().getPosition(annotation);
 			adjustedMap.put(position.offset, annotation);
 		}
-
-//		return adjustedMap;// To navigate through each comments
 
 		//To navigate by group of comment
 		return getGroupCommentAnnotation(adjustedMap);
@@ -168,7 +163,7 @@ public class NextPreviousCommentAnnotationHandler extends AbstractHandler {
 			TreeMap<Integer, GerritCommentAnnotation> initSortedMap) {
 		//To navigate by group
 		int lastLine = -1;
-		TreeMap<Integer, GerritCommentAnnotation> groupMap = new TreeMap<Integer, GerritCommentAnnotation>();
+		TreeMap<Integer, GerritCommentAnnotation> groupMap = new TreeMap<>();
 
 		Iterator<Entry<Integer, GerritCommentAnnotation>> iterGroup = initSortedMap.entrySet().iterator();
 		while (iterGroup.hasNext()) {

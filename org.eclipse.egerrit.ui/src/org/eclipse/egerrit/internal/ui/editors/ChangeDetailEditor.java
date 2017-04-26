@@ -177,8 +177,8 @@ public class ChangeDetailEditor extends EditorPart {
 		messageTab = new MessageTabView();
 		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
 
-		detailsTab = new DetailsTabView();
-		detailsTab.create(fGerritClient, tabFolder, fChangeInfo);
+		detailsTab = new DetailsTabView(fGerritClient, fChangeInfo);
+		detailsTab.create(tabFolder);
 
 		Composite compButton = buttonSection(parent);
 		compButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
@@ -626,9 +626,9 @@ public class ChangeDetailEditor extends EditorPart {
 		cherryPickToRemoteBranch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CherryPickProcess cherryPickProcess = new CherryPickProcess();
-				cherryPickProcess.handleCherryPick(cherryPickToRemoteBranch.getShell(), fGerritClient, fChangeInfo,
-						fChangeInfo.getUserSelectedRevision());
+				CherryPickProcess cherryPickProcess = new CherryPickProcess(cherryPickToRemoteBranch.getShell(),
+						fGerritClient, fChangeInfo, fChangeInfo.getUserSelectedRevision());
+				cherryPickProcess.handleCherryPick();
 			}
 		});
 

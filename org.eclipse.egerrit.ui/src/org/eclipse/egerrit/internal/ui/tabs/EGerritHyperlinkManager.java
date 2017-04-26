@@ -39,7 +39,7 @@ import org.eclipse.swt.events.MouseEvent;
 /**
  * @author lmcbout Note: this class is a copy of the class HyperlinkManager
  */
-public class EGerritHyperlinkManager extends HyperlinkManager {
+class EGerritHyperlinkManager extends HyperlinkManager {
 	/**
 	 * Text operation code for requesting to open the hyperlink at the caret position.
 	 *
@@ -83,7 +83,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 *            {@link #LONGEST_REGION_FIRST}}
 	 * @param detectionStrategy
 	 */
-	public EGerritHyperlinkManager(DETECTION_STRATEGY detectionStrategy) {
+	EGerritHyperlinkManager(DETECTION_STRATEGY detectionStrategy) {
 		super(detectionStrategy);
 		Assert.isNotNull(detectionStrategy);
 		fDetectionStrategy = detectionStrategy;
@@ -146,7 +146,6 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 */
 	@Override
 	protected void deactivate() {
-//		fHyperlinkPresenter.hideHyperlinks();
 		fActive = false;
 	}
 
@@ -252,13 +251,12 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 			((IHyperlinkPresenterExtension2) fHyperlinkPresenter).showHyperlinks(fActiveHyperlinks, fActive);
 
 		}
-		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension) {
-			if (!((IHyperlinkPresenterExtension) fHyperlinkPresenter).canHideHyperlinks()) {
-				return;
-			}
+		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension
+				&& !((IHyperlinkPresenterExtension) fHyperlinkPresenter).canHideHyperlinks()) {
+			return;
 		}
 
-		if (!isRegisteredStateMask(event.stateMask)) {
+		if (!isLocalRegisteredStateMask(event.stateMask)) {
 			if (fActive) {
 				deactivate();
 			}
@@ -319,15 +317,15 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 			}
 
 			if (currentHyperlink != null) {
-				showHyperlinks(true);
+				localShowHyperlinks(true);
 			}
 
 		}
 	}
 
-/*
-* @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
-*/
+	/*
+	* @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
+	*/
 	@Override
 	public void mouseMove(MouseEvent event) {
 	}
@@ -340,7 +338,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 * @return <code>true</code> if a detector is registered for the given state mask
 	 * @since 3.3
 	 */
-	private boolean isRegisteredStateMask(int stateMask) {
+	private boolean isLocalRegisteredStateMask(int stateMask) {
 		if (stateMask == fHyperlinkStateMask) {
 			return true;
 		}
@@ -370,19 +368,17 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 */
 	private void showAllLinks() {
 		//Set all hyperlinks visible
-		if (fActiveHyperlinks == null) {
-			if (fTextViewer != null && !fTextViewer.getTextWidget().getText().isEmpty()) {
-				if (fTextViewer.getDocument() == null) {
-					return;
-				}
-				IRegion region = new Region(0, ((TextViewer) fTextViewer).getBottomIndexEndOffset());
-				fActiveHyperlinks = findHyperlinks(region);
-				if (fActiveHyperlinks != null && fActiveHyperlinks.length > 1) {
-					showHyperlinks(true);
-				} else {
-					//Do not trigger the open
-					showHyperlinks(false);
-				}
+		if (fActiveHyperlinks == null && fTextViewer != null && !fTextViewer.getTextWidget().getText().isEmpty()) {
+			if (fTextViewer.getDocument() == null) {
+				return;
+			}
+			IRegion region = new Region(0, ((TextViewer) fTextViewer).getBottomIndexEndOffset());
+			fActiveHyperlinks = findHyperlinks(region);
+			if (fActiveHyperlinks != null && fActiveHyperlinks.length > 1) {
+				localShowHyperlinks(true);
+			} else {
+				//Do not trigger the open
+				localShowHyperlinks(false);
 			}
 		}
 	}
@@ -397,7 +393,7 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	 *         otherwise
 	 * @since 3.7
 	 */
-	private boolean showHyperlinks(boolean takesFocusWhenVisible) {
+	private boolean localShowHyperlinks(boolean takesFocusWhenVisible) {
 
 		if (fActiveHyperlinks == null || fActiveHyperlinks.length == 0) {
 			return false;
@@ -423,10 +419,9 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 	public boolean openHyperlink() {
 		fActiveHyperlinkStateMask = fHyperlinkStateMask;
 
-		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension) {
-			if (!((IHyperlinkPresenterExtension) fHyperlinkPresenter).canHideHyperlinks()) {
-				return false;
-			}
+		if (fHyperlinkPresenter instanceof IHyperlinkPresenterExtension
+				&& !((IHyperlinkPresenterExtension) fHyperlinkPresenter).canHideHyperlinks()) {
+			return false;
 		}
 		ITextSelection sel = (ITextSelection) ((TextViewer) fTextViewer).getSelection();
 		int offset = sel.getOffset();
@@ -436,6 +431,6 @@ public class EGerritHyperlinkManager extends HyperlinkManager {
 
 		IRegion region = new Region(offset, 0);
 		fActiveHyperlinks = findHyperlinks(region);
-		return showHyperlinks(true);
+		return localShowHyperlinks(true);
 	}
 }

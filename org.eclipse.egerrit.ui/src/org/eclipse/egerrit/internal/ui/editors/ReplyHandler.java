@@ -26,7 +26,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * Code to handle the dynamic reply labels associated to a review for a specific user
  */
-public class ReplyHandler extends Action {
+class ReplyHandler extends Action {
 
 	private GerritClient fGerritClient;
 
@@ -36,11 +36,12 @@ public class ReplyHandler extends Action {
 
 	private int maxValue;
 
-	public ReplyHandler(ChangeInfo changeInfo, GerritClient gerritClient, String labelText) {
+	ReplyHandler(ChangeInfo changeInfo, GerritClient gerritClient, String labelText) {
 		this.fGerritClient = gerritClient;
 		this.fChangeInfo = changeInfo;
 		String actionLabel = labelText;
-		if (labelText != ReplyProcess.REPLY_ALL_BUTTONS && labelText != ActionConstants.REPLY.getLiteral()) {
+		if (!labelText.equals(ReplyProcess.REPLY_ALL_BUTTONS)
+				&& !labelText.equals(ActionConstants.REPLY.getLiteral())) {
 			maxValue = fChangeInfo.getPermittedMaxValue(labelText);
 			actionLabel = labelText + "  +" + maxValue; //$NON-NLS-1$
 		}

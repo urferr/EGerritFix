@@ -22,7 +22,7 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.team.internal.ui.synchronize.LocalResourceTypedElement;
 
-public class OpenWorkspaceFile extends Action {
+class OpenWorkspaceFile extends Action {
 
 	private SourceViewer sourceViewer;
 
@@ -31,7 +31,7 @@ public class OpenWorkspaceFile extends Action {
 	//This is the node that provides the input to the source viewer
 	private GerritDiffNode node;
 
-	public OpenWorkspaceFile(SourceViewer sourceViewer, GerritDiffNode node, GerritClient gerritClient) {
+	OpenWorkspaceFile(SourceViewer sourceViewer, GerritDiffNode node, GerritClient gerritClient) {
 		super(Messages.Compare_OpenFile);
 		this.sourceViewer = sourceViewer;
 		this.gerritClient = gerritClient;
@@ -58,9 +58,12 @@ public class OpenWorkspaceFile extends Action {
 			requestedPath = fileShown.getPath();
 			openSucceeded = UIUtils.openSingleFile(fileShown, gerritClient, fileShown.getRevision(), selectedLine);
 		} else if (editorInput instanceof IDocument && getWorkspaceNode() != null) {
-			IResource file = getWorkspaceNode().getResource();
-			requestedPath = file.getFullPath().toOSString();
-			openSucceeded = UIUtils.openSingleFile(file, selectedLine);
+			LocalResourceTypedElement lrte = getWorkspaceNode();
+			if (lrte != null) {
+				IResource file = lrte.getResource();
+				requestedPath = file.getFullPath().toOSString();
+				openSucceeded = UIUtils.openSingleFile(file, selectedLine);
+			}
 		} else {
 			//We don't know what the user clicked on. Best effort to try to figure out the name of the file the user wanted.
 			requestedPath = getPotentialFileName();

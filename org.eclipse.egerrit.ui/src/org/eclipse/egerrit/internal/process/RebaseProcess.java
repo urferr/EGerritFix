@@ -51,13 +51,13 @@ public class RebaseProcess extends Action {
 
 	private Boolean rebaseLocally = false;
 
-	public Shell shell;
+	private Shell shell;
 
-	public ChangeInfo changeInfo;
+	private ChangeInfo changeInfo;
 
-	public RevisionInfo toRebase;
+	private RevisionInfo toRebase;
 
-	public GerritClient gerritClient;
+	private GerritClient gerritClient;
 
 	/**
 	 * The constructor.

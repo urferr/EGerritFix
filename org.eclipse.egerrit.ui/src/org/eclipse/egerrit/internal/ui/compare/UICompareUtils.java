@@ -26,19 +26,19 @@ import org.eclipse.jface.viewers.Viewer;
 /**
  * This class provides general utility methods used in the Compare UI implementation.
  */
-public class UICompareUtils {
+class UICompareUtils {
 
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
 
-	public static final String NEXT_COMMENT_ANNOTATION_COMMAND = "org.eclipse.egerrit.internal.ui.compare.NextCommentAnnotationHandler"; //$NON-NLS-1$
+	static final String NEXT_COMMENT_ANNOTATION_COMMAND = "org.eclipse.egerrit.internal.ui.compare.NextCommentAnnotationHandler"; //$NON-NLS-1$
 
-	public static final String NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC = "N"; //$NON-NLS-1$
+	static final String NEXT_COMMENT_ANNOTATION_COMMAND_MNEMONIC = "N"; //$NON-NLS-1$
 
-	public static final String PREVIOUS_COMMENT_ANNOTATION_COMMAND = "org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler"; //$NON-NLS-1$
+	static final String PREVIOUS_COMMENT_ANNOTATION_COMMAND = "org.eclipse.egerrit.internal.ui.compare.PreviousCommentAnnotationHandler"; //$NON-NLS-1$
 
-	public static final String PREVIOUS_COMMENT_ANNOTATION_COMMAND_MNEMONIC = "P"; //$NON-NLS-1$
+	static final String PREVIOUS_COMMENT_ANNOTATION_COMMAND_MNEMONIC = "P"; //$NON-NLS-1$
 
 	private static final String COMPARE_EDITOR_TEXT_CLASS_NAME = "org.eclipse.compare.contentmergeviewer.TextMergeViewer"; //$NON-NLS-1$
 
@@ -48,7 +48,13 @@ public class UICompareUtils {
 
 	private static final String DEFAULT_OBJECT_CLASS_NAME = "Object"; //$NON-NLS-1$
 
-	public static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$ The constant used by oxygen to indicate the status of the swap side option of the compare editor
+	private static final String MIRRORED_PROPERTY = "MIRRORED"; //$NON-NLS-1$ The constant used by oxygen to indicate the status of the swap side option of the compare editor
+
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private UICompareUtils() {
+	}
 
 	/**
 	 * Method insertAnnotationNavigationCommands.
@@ -58,7 +64,7 @@ public class UICompareUtils {
 	 * @param aSupport
 	 *            IReviewAnnotationSupport
 	 */
-	public static void insertAnnotationNavigationCommands(IToolBarManager aManager) {
+	static void insertAnnotationNavigationCommands(IToolBarManager aManager) {
 		aManager.add(new Separator());
 		final AnnotationContributionItems itemsManager = new AnnotationContributionItems();
 		final IContributionItem[] items = itemsManager.getallContributionItems();
@@ -106,9 +112,7 @@ public class UICompareUtils {
 								field = textViewerClass.getDeclaredField(COMPARE_EDITOR_TEXT_FIELD_RIGHT);
 							}
 							field.setAccessible(true);
-							MergeSourceViewer sourceViewer = (MergeSourceViewer) field.get(textViewer);
-
-							return sourceViewer;
+							return (MergeSourceViewer) field.get(textViewer);
 
 						} catch (SecurityException e) {
 
@@ -127,7 +131,7 @@ public class UICompareUtils {
 		return null;
 	}
 
-	public static boolean isMirroredOn(CompareEditorInput input) {
+	static boolean isMirroredOn(CompareEditorInput input) {
 		return Boolean.TRUE.equals(input.getCompareConfiguration().getProperty(MIRRORED_PROPERTY));
 	}
 }

@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.Image;
 /**
  * Provides the label in the header of each text editor
  */
-public class GerritCompareInputLabelProvider implements ICompareInputLabelProvider {
+class GerritCompareInputLabelProvider implements ICompareInputLabelProvider {
 
 	@Override
 	public void removeListener(ILabelProviderListener listener) {

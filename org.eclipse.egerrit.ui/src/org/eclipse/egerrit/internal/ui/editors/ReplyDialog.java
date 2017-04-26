@@ -591,9 +591,9 @@ public class ReplyDialog extends InputDialog {
 			}
 		}
 
-		Label permittedLabel = new Label(keyComposite, SWT.NONE);
+		new Label(keyComposite, SWT.NONE);
 		//Create the text data display for the selection
-		Label detailLabel = new Label(detailTextComposite, SWT.NONE);
+		new Label(detailTextComposite, SWT.NONE);
 		//Create the radio buttons header labels
 		Composite radioComposite = createButtonComposite(radioButtonComposite, maxRadioChoice);
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, maxRadioChoice, 1));

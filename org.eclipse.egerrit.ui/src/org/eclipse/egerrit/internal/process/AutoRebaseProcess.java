@@ -69,7 +69,7 @@ import org.eclipse.ui.PlatformUI;
  * cannot do it. This will then stash the current changes, fetch the branch associated with the change, checkout the
  * change's branch and rebase it on the correct branch.
  */
-public class AutoRebaseProcess extends Job {
+class AutoRebaseProcess extends Job {
 	private Repository localRepo;
 
 	private RevisionInfo revisionInfo;
@@ -86,6 +86,8 @@ public class AutoRebaseProcess extends Job {
 
 	private ChangeInfo baseChange;
 
+	private final String DOUBLE_LINE_FEED = "\r\r"; //$NON-NLS-1$
+
 	private enum AutoRebaseStep {
 		NONE, FETCH_PATCHSET, STASH_CHANGES, CREATE_BRANCH, CHECKOUT_BRANCH, FETCH_BRANCH, REBASE_INIT,
 	};
@@ -100,7 +102,7 @@ public class AutoRebaseProcess extends Job {
 	 * @param revisionInfo
 	 *            Current gerrit revision on which to execute the rebase
 	 */
-	public AutoRebaseProcess(GerritClient gerritClient, Repository localRepo, RevisionInfo revisionInfo,
+	AutoRebaseProcess(GerritClient gerritClient, Repository localRepo, RevisionInfo revisionInfo,
 			ChangeInfo baseChange) {
 		super(Messages.AutoRebaseProcess_AutomaticallyRebasing);
 		this.gerritClient = gerritClient;
@@ -128,7 +130,7 @@ public class AutoRebaseProcess extends Job {
 						MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
 								Messages.AutoRebaseProcess_RebaseCancelled,
 								Messages.AutoRebaseProcess_FailedRepoFollowingState
-										+ localRepo.getRepositoryState().getDescription() + "\r\r" //$NON-NLS-1$
+										+ localRepo.getRepositoryState().getDescription() + DOUBLE_LINE_FEED
 										+ Messages.AutoRebaseProcess_PleaseFinishOrCancelCurrentRebase);
 
 						try {
@@ -146,7 +148,7 @@ public class AutoRebaseProcess extends Job {
 						MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
 								Messages.AutoRebaseProcess_RebaseCancelled,
 								Messages.AutoRebaseProcess_FailedRepoFollowingState
-										+ localRepo.getRepositoryState().getDescription() + "\r\r"); //$NON-NLS-1$
+										+ localRepo.getRepositoryState().getDescription() + DOUBLE_LINE_FEED);
 					}
 				});
 				return Status.OK_STATUS;
@@ -176,9 +178,7 @@ public class AutoRebaseProcess extends Job {
 		tempName = "automatic-rebase-" + revisionInfo.getRef().toString().substring(13) + "-" //$NON-NLS-1$ //$NON-NLS-2$
 				+ dateNowBranchFormat;
 
-		if (!
-
-		stashCurrentChanges(subMonitor)) {
+		if (!stashCurrentChanges(subMonitor)) {
 			/* Stash failed, nothing to rollback */
 			return Status.OK_STATUS;
 		}
@@ -570,8 +570,7 @@ public class AutoRebaseProcess extends Job {
 	 * @throws IOException
 	 */
 	private Ref getSourceRef() throws IOException {
-		Ref commit = localRepo.findRef(Constants.FETCH_HEAD);
-		return commit;
+		return localRepo.findRef(Constants.FETCH_HEAD);
 	}
 
 	/**
@@ -596,8 +595,7 @@ public class AutoRebaseProcess extends Job {
 	 * @throws IOException
 	 */
 	private RefSpec getSourceRefSpec() throws IOException {
-		RefSpec spec = new RefSpec().setSource(revisionInfo.getRef()).setDestination(Constants.FETCH_HEAD);
-		return spec;
+		return new RefSpec().setSource(revisionInfo.getRef()).setDestination(Constants.FETCH_HEAD);
 	}
 
 	/**
@@ -658,7 +656,7 @@ public class AutoRebaseProcess extends Job {
 							+ "-" + stashMessage + "\r" //$NON-NLS-1$//$NON-NLS-2$
 							+ "-" + Messages.AutoRebaseProcess_CheckingOutBranchToRebase + " : " + tempName + "\r" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 							+ "-" + Messages.AutoRebaseProcess_FetchingTheBranches + "\r" //$NON-NLS-1$ //$NON-NLS-2$
-							+ "-" + Messages.AutoRebaseProcess_StartingTheRebaseProcess + "\r\r" //$NON-NLS-1$//$NON-NLS-2$
+							+ "-" + Messages.AutoRebaseProcess_StartingTheRebaseProcess + DOUBLE_LINE_FEED //$NON-NLS-1$
 							+ Messages.AutoRebaseProcess_currentRebaseStatus;
 
 					String rebaseMessage = ""; //$NON-NLS-1$
@@ -674,7 +672,7 @@ public class AutoRebaseProcess extends Job {
 						break;
 					}
 
-					dialogMessage += rebaseMessage + "\r\r" + Messages.AutoRebaseProcess_CommitAndPushChanges; //$NON-NLS-1$
+					dialogMessage += rebaseMessage + DOUBLE_LINE_FEED + Messages.AutoRebaseProcess_CommitAndPushChanges;
 
 					MessageDialog.open(MessageDialog.INFORMATION, null, Messages.AutoRebaseProcess_AutoRebaseStarted,
 							dialogMessage, SWT.NONE);

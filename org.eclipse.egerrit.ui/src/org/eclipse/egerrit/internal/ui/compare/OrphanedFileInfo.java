@@ -18,11 +18,11 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
  * files for the revision. This weird situation happens when a modified file has been removed during a rebase. You can
  * see an example of this situation at https://git.eclipse.org/r/#/c/83161/1..7/
  */
-public class OrphanedFileInfo extends ModifiedFileInfoImpl {
+class OrphanedFileInfo extends ModifiedFileInfoImpl {
 
-	String filePath;
+	private String filePath;
 
-	RevisionInfo revisionInfo;
+	private RevisionInfo revisionInfo;
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;

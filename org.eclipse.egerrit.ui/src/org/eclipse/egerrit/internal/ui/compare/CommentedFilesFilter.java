@@ -25,18 +25,14 @@ public class CommentedFilesFilter extends ViewerFilter {
 		GerritDiffNode gerritNode = (GerritDiffNode) element;
 		if (gerritNode.getLeft() instanceof CommentableCompareItem) {
 			CommentableCompareItem leftFile = (CommentableCompareItem) gerritNode.getLeft();
-			if (leftFile != null) {
-				if ((leftFile.getComments().size() + leftFile.getDrafts().size()) > 0) {
-					return true;
-				}
+			if (leftFile != null && (leftFile.getComments().size() + leftFile.getDrafts().size()) > 0) {
+				return true;
 			}
 		}
 		if (gerritNode.getRight() instanceof CommentableCompareItem) {
 			CommentableCompareItem rightFile = (CommentableCompareItem) gerritNode.getRight();
-			if (rightFile != null) {
-				if ((rightFile.getComments().size() + rightFile.getDrafts().size()) > 0) {
-					return true;
-				}
+			if (rightFile != null && (rightFile.getComments().size() + rightFile.getDrafts().size()) > 0) {
+				return true;
 			}
 		}
 		return false;

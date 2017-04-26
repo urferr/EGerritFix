@@ -36,7 +36,6 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,7 +59,7 @@ import org.eclipse.ui.part.FileEditorInput;
  *
  * @since 1.0
  */
-public class FilesDialog extends Dialog {
+class FilesDialog extends Dialog {
 
 	private static final String FILES_DIALOG = "egerrit.FilesDialog"; //$NON-NLS-1$
 
@@ -93,7 +92,7 @@ public class FilesDialog extends Dialog {
 	 * @param gerritClient
 	 * @param fileInput
 	 */
-	public FilesDialog(RevisionInfo revisionInfo, GerritClient gerritClient, FileEditorInput fileInput) {
+	FilesDialog(RevisionInfo revisionInfo, GerritClient gerritClient, FileEditorInput fileInput) {
 		super(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell());
 		setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE | getDefaultOrientation());
 
@@ -418,13 +417,10 @@ public class FilesDialog extends Dialog {
 	}
 
 	private ModifyListener modifyListener(Text textMsgFilter) {
-		textModifyListener = new ModifyListener() {
+		textModifyListener = event -> {
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if (tableUIFiles != null) {
-					tableUIFiles.filterFileText(textMsgFilter.getText().trim());
-				}
+			if (tableUIFiles != null) {
+				tableUIFiles.filterFileText(textMsgFilter.getText().trim());
 			}
 		};
 		return textModifyListener;
@@ -511,11 +507,11 @@ public class FilesDialog extends Dialog {
 		return openedDialog;
 	}
 
-	public void selectNextFile() {
+	void selectNextFile() {
 		revealElementAt(fViewer.getTable().getSelectionIndex());
 	}
 
-	public void selectPreviousFile() {
+	void selectPreviousFile() {
 		revealElementAt(fViewer.getTable().getSelectionIndex() - 2);
 	}
 }

@@ -27,25 +27,21 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * @since 1.0
  */
 public class ShowFilePathHandler extends AbstractHandler {
-	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 
-		try {
-			IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
-			if (activeEditorInput instanceof GerritMultipleInput) {
-				TreeViewer treeViewer = ((GerritMultipleInput) activeEditorInput).getUpperSection().getDiffTreeViewer();
-				//Get the label provider for the FilePath column
-				IBaseLabelProvider labelProvider = treeViewer
-						.getLabelProvider(CompareUpperSectionColumn.FILE_PATH.ordinal());
-				if (labelProvider instanceof FileInfoCompareCellLabelProvider) {
-					FileInfoCompareCellLabelProvider infoProvider = (FileInfoCompareCellLabelProvider) labelProvider;
-					infoProvider.setFileNameFirst(!infoProvider.getFileOrder());
-					treeViewer.refresh();
-				}
+		IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+		if (activeEditorInput instanceof GerritMultipleInput) {
+			TreeViewer treeViewer = ((GerritMultipleInput) activeEditorInput).getUpperSection().getDiffTreeViewer();
+			//Get the label provider for the FilePath column
+			IBaseLabelProvider labelProvider = treeViewer
+					.getLabelProvider(CompareUpperSectionColumn.FILE_PATH.ordinal());
+			if (labelProvider instanceof FileInfoCompareCellLabelProvider) {
+				FileInfoCompareCellLabelProvider infoProvider = (FileInfoCompareCellLabelProvider) labelProvider;
+				infoProvider.setFileNameFirst(!infoProvider.getFileOrder());
+				treeViewer.refresh();
 			}
-		} finally {
-			return Status.OK_STATUS;
 		}
+		return Status.OK_STATUS;
 	}
 }

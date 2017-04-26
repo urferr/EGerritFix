@@ -302,7 +302,7 @@ public class CheckoutRevision extends Action {
 		return false;
 	}
 
-	public void checkoutBranch(String branchName, Repository repo) throws Exception {
+	private void checkoutBranch(String branchName, Repository repo) throws Exception {
 		CheckoutCommand command = null;
 		try (Git gitRepo = new Git(repo)) {
 			command = gitRepo.checkout();
@@ -311,8 +311,15 @@ public class CheckoutRevision extends Action {
 			command.setForce(false);
 			command.call();
 		} catch (Throwable t) {
-			CheckoutResult result = command.getResult();
-			new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList()).open();
+			if (command != null) {
+				CheckoutResult result = command.getResult();
+				if (result != null) {
+					new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList())
+							.open();
+				} else {
+					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + t.getMessage());
+				}
+			}
 		}
 	}
 

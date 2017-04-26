@@ -449,7 +449,7 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 */
 	@Override
 	public void showHyperlinks(IHyperlink[] activeHyperlinks, boolean takesFocusWhenVisible) {
-		if (activeHyperlinks.length == 1) {
+		if (activeHyperlinks != null && activeHyperlinks.length == 1) {
 			return;
 		}
 

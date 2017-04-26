@@ -21,14 +21,14 @@ import org.eclipse.jface.viewers.TreeViewer;
 /**
  * Implements the toolbar action to filter the files with comments
  */
-public class ShowCommentedFileAction extends Action {
+class ShowCommentedFileAction extends Action {
 	private boolean filterOn = false;
 
 	private Supplier<TreeViewer> viewer;
 
 	private CommentedFilesFilter filter;
 
-	public ShowCommentedFileAction(Supplier<TreeViewer> viewerRef) {
+	ShowCommentedFileAction(Supplier<TreeViewer> viewerRef) {
 		this.viewer = viewerRef;
 		this.filter = new CommentedFilesFilter();
 		setDescription(Messages.ShowCommentedFileAction_0);

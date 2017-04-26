@@ -32,63 +32,58 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class SelectNextPatchSetHandler extends AbstractHandler {
 
-	@SuppressWarnings("finally")
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 
-		try {
-			IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
-			if (activeEditorInput instanceof GerritMultipleInput) {
-				String commandName = aEvent.getCommand().getId();
-				boolean isLeftSide = commandName.contains("selectLeftPatchSet"); //$NON-NLS-1$
-				GerritMultipleInput input = (GerritMultipleInput) activeEditorInput;
+		IEditorInput activeEditorInput = HandlerUtil.getActiveEditorInput(aEvent);
+		if (activeEditorInput instanceof GerritMultipleInput) {
+			String commandName = aEvent.getCommand().getId();
+			boolean isLeftSide = commandName.contains("selectLeftPatchSet"); //$NON-NLS-1$
+			GerritMultipleInput input = (GerritMultipleInput) activeEditorInput;
 
-				ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(
-						input.getChangeInfo().getRevisions().values());
+			ArrayList<RevisionInfo> revisions = new ArrayList<>(input.getChangeInfo().getRevisions().values());
 
-				revisions.sort((o2, o1) -> o1.get_number() - o2.get_number());
+			revisions.sort((o2, o1) -> o1.get_number() - o2.get_number());
 
-				LinkedHashMap<String, String> patchNumber = new LinkedHashMap<String, String>();
-				for (ListIterator<RevisionInfo> iter = revisions.listIterator(); iter.hasNext();) {
-					RevisionInfo element = iter.next();
-					patchNumber.put(new Integer(element.get_number()).toString(), element.getId());
-				}
-				patchNumber.put(GerritMultipleInput.WORKSPACE, GerritMultipleInput.WORKSPACE);
-				patchNumber.put(GerritMultipleInput.BASE, GerritMultipleInput.BASE);
-
-				Iterator<Entry<String, String>> itr = patchNumber.entrySet().iterator();
-				Iterator<Entry<String, String>> first = patchNumber.entrySet().iterator();
-
-				while (itr.hasNext()) {
-					Entry<String, String> entry = itr.next();
-					if (isLeftSide && entry.getValue().compareTo(input.getLeftSide()) == 0) {
-						if (itr.hasNext()) {
-							entry = itr.next();
-							input.switchInputs(entry.getValue(), null);
-							break;
-						} else {
-							entry = first.next();
-							input.switchInputs(entry.getValue(), null);
-							break;
-						}
-					}
-					if (!isLeftSide && (entry).getValue().compareTo(input.getRightSide()) == 0) {
-						if (itr.hasNext()) {
-							entry = itr.next();
-							input.switchInputs(null, entry.getValue());
-							break;
-						} else {
-							entry = first.next();
-							input.switchInputs(null, entry.getValue());
-							break;
-						}
-					}
-				}
-
+			LinkedHashMap<String, String> patchNumber = new LinkedHashMap<>();
+			for (ListIterator<RevisionInfo> iter = revisions.listIterator(); iter.hasNext();) {
+				RevisionInfo element = iter.next();
+				patchNumber.put(Integer.toString(element.get_number()), element.getId());
 			}
-		} finally {
-			return Status.OK_STATUS;
+			patchNumber.put(GerritMultipleInput.WORKSPACE, GerritMultipleInput.WORKSPACE);
+			patchNumber.put(GerritMultipleInput.BASE, GerritMultipleInput.BASE);
+
+			Iterator<Entry<String, String>> itr = patchNumber.entrySet().iterator();
+			Iterator<Entry<String, String>> first = patchNumber.entrySet().iterator();
+
+			boolean found = false;
+			while (itr.hasNext()) {
+				Entry<String, String> entry = itr.next();
+				if (isLeftSide && entry.getValue().compareTo(input.getLeftSide()) == 0) {
+					if (itr.hasNext()) {
+						entry = itr.next();
+					} else {
+						entry = first.next();
+					}
+					input.switchInputs(entry.getValue(), null);
+					found = true;
+				}
+				if (!isLeftSide && (entry).getValue().compareTo(input.getRightSide()) == 0) {
+					if (itr.hasNext()) {
+						entry = itr.next();
+					} else {
+						entry = first.next();
+					}
+					input.switchInputs(null, entry.getValue());
+					found = true;
+				}
+				if (found) {
+					break;
+				}
+			}
+
 		}
+		return Status.OK_STATUS;
 	}
 
 }

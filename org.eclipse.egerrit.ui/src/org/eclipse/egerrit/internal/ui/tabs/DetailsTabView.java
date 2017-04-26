@@ -88,7 +88,6 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -223,20 +222,21 @@ public class DetailsTabView {
 
 	/**
 	 * The constructor.
+	 *
+	 * @param gerritClient
+	 * @param changeInfo
 	 */
-	public DetailsTabView() {
+	public DetailsTabView(GerritClient gerritClient, ChangeInfo changeInfo) {
+		fChangeInfo = changeInfo;
+		fGerritClient = gerritClient;
 	}
 
 	/**
-	 * @param gerritClient
 	 * @param tabFolder
-	 * @param changeInfo
 	 */
-	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
-		fChangeInfo = changeInfo;
-		fGerritClient = gerritClient;
+	public void create(TabFolder tabFolder) {
 		createContols(tabFolder);
-		loader = ModelLoader.initialize(gerritClient, changeInfo);
+		loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
 		loader.loadDetailedInformation();
 	}
 
@@ -373,12 +373,12 @@ public class DetailsTabView {
 		lblStrategy.setLayoutData(lblStrategyGridData);
 
 		genStrategyData = new Label(composite, SWT.NONE);
-		GridData gd_genStrategyData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		genStrategyData.setLayoutData(gd_genStrategyData);
+		GridData gdGenStrategyData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		genStrategyData.setLayoutData(gdGenStrategyData);
 
 		genMessageData = new Label(composite, SWT.NONE);
-		GridData gd_genMessageData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-		genMessageData.setLayoutData(gd_genMessageData);
+		GridData gdGenMessageData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+		genMessageData.setLayoutData(gdGenMessageData);
 		genMessageData.setForeground(RED);
 
 		//Updated line
@@ -457,7 +457,7 @@ public class DetailsTabView {
 	private void createReviewersTable(Group grpReviewers) {
 		//Create the dynamic column
 		HashMap<String, Integer> hashMap = extractAllVotingColumn();
-		SortedMap<String, Integer> dynamiColumnLabels = new TreeMap<String, Integer>(hashMap);
+		SortedMap<String, Integer> dynamiColumnLabels = new TreeMap<>(hashMap);
 		fillDynamicColumnArray(dynamiColumnLabels);
 
 		//Table of reviewers
@@ -540,10 +540,8 @@ public class DetailsTabView {
 					proposals.add(idString);
 				}
 
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
-					}
+				Display.getDefault().asyncExec(() -> {
+					reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
 				});
 
 				return Status.OK_STATUS;
@@ -678,36 +676,33 @@ public class DetailsTabView {
 	 * @return ISelectionChangedListener
 	 */
 	private IDoubleClickListener doubleClickSelectionChangeListener() {
-		return new IDoubleClickListener() {
+		return event -> {
 
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				StructuredSelection structuredSelection = (StructuredSelection) event.getSelection();
-				Object element = structuredSelection.getFirstElement();
-				String changeId = null;
-				String subject = null;
-				if (element instanceof ChangeInfo) {
-					ChangeInfo changeInfo = (ChangeInfo) element;
-					//Note: Need to use the id instead of the changeInfo.getChange_id() for cases where
-					//we can have the same changeId on two different branches
-					//See review 78088
-					changeId = changeInfo.getId();
-					if (changeId == null) {
-						subject = changeInfo.getSubject();
-					}
-				} else if (element instanceof RelatedChangeAndCommitInfo) {
-					RelatedChangeAndCommitInfo relChangeInfo = (RelatedChangeAndCommitInfo) element;
-					//Note: Need to use the number instead of the changeId for cases where
-					//we we can have the same changeId on two separate branches and this generates
-					//an error since we received two reviews
-					changeId = relChangeInfo.get_change_number();
-					if (changeId == null) {
-						subject = relChangeInfo.getCommit().getSubject();
-					}
+			StructuredSelection structuredSelection = (StructuredSelection) event.getSelection();
+			Object element = structuredSelection.getFirstElement();
+			String changeId = null;
+			String subject = null;
+			if (element instanceof ChangeInfo) {
+				ChangeInfo changeInfo = (ChangeInfo) element;
+				//Note: Need to use the id instead of the changeInfo.getChange_id() for cases where
+				//we can have the same changeId on two different branches
+				//See review 78088
+				changeId = changeInfo.getId();
+				if (changeId == null) {
+					subject = changeInfo.getSubject();
 				}
-				//Open a new ChangeDetailEditor
-				createDetailEditor(changeId, subject);
+			} else if (element instanceof RelatedChangeAndCommitInfo) {
+				RelatedChangeAndCommitInfo relChangeInfo = (RelatedChangeAndCommitInfo) element;
+				//Note: Need to use the number instead of the changeId for cases where
+				//we we can have the same changeId on two separate branches and this generates
+				//an error since we received two reviews
+				changeId = relChangeInfo.get_change_number();
+				if (changeId == null) {
+					subject = relChangeInfo.getCommit().getSubject();
+				}
 			}
+			//Open a new ChangeDetailEditor
+			createDetailEditor(changeId, subject);
 		};
 	}
 
@@ -773,7 +768,7 @@ public class DetailsTabView {
 					addReviewerCmd.setCommandInput(addReviewerInput);
 
 					AddReviewerResult reviewerCmdResult = null;
-					reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
+					reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput);
 					if (reviewerCmdResult != null && reviewerCmdResult.getConfirm()) {
 						//There is an error, just need to know if we should re-send or not
 						if (!MessageDialog.openConfirm(buttonPlus.getParent().getShell(), Messages.SummaryTabView_19,
@@ -782,7 +777,7 @@ public class DetailsTabView {
 						}
 						//Call again but with the flag confirm
 						addReviewerInput.setConfirmed(true);
-						reviewerCmdResult = addReviewerRequest(addReviewerCmd, addReviewerInput, reviewerCmdResult);
+						addReviewerRequest(addReviewerCmd, addReviewerInput);
 					}
 
 					loader.reload(true);
@@ -792,11 +787,11 @@ public class DetailsTabView {
 
 			/**
 			 * @param addReviewerCmd
-			 * @param reviewerCmdResult
+			 * @param input
 			 * @return
 			 */
-			private AddReviewerResult addReviewerRequest(AddReviewerCommand addReviewerCmd, AddReviewerInput input,
-					AddReviewerResult reviewerCmdResult) {
+			private AddReviewerResult addReviewerRequest(AddReviewerCommand addReviewerCmd, AddReviewerInput input) {
+				AddReviewerResult reviewerCmdResult = null;
 				try {
 					reviewerCmdResult = addReviewerCmd.call();
 				} catch (EGerritException e3) {
@@ -915,7 +910,7 @@ public class DetailsTabView {
 	/* Section adjust the DATA binding                             */
 	/*                                                             */
 	/************************************************************* */
-	protected DataBindingContext sumGenDataBindings() {
+	private DataBindingContext sumGenDataBindings() {
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
@@ -965,8 +960,7 @@ public class DetailsTabView {
 						((Control) w).getParent().pack(true);
 					}
 				}
-				IStatus status = super.doSet(observableValue, visible);
-				return status;
+				return super.doSet(observableValue, visible);
 			}
 		};
 		IObservableValue<String> observeChangeInfoStatus = EMFProperties
@@ -981,7 +975,7 @@ public class DetailsTabView {
 		return bindingContext;
 	}
 
-	protected void sumReviewerDataBindings() {
+	private void sumReviewerDataBindings() {
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		tableReviewersViewer.setContentProvider(contentProvider);
 		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
@@ -1014,7 +1008,7 @@ public class DetailsTabView {
 			 * @return String
 			 */
 			private String formatReviewersVote(HashMap<String, Integer> hashMap) {
-				SortedMap<String, Integer> sortedMap = new TreeMap<String, Integer>(hashMap);
+				SortedMap<String, Integer> sortedMap = new TreeMap<>(hashMap);
 				StringBuilder sb = new StringBuilder();
 				if (!sortedMap.isEmpty()) {
 					Iterator<Entry<String, Integer>> iterSorted = sortedMap.entrySet().iterator();
@@ -1044,7 +1038,7 @@ public class DetailsTabView {
 	 */
 	private HashMap<String, Integer> extractAllVotingColumn() {
 		EMap<String, LabelInfo> allVotes = fChangeInfo.getLabels();
-		HashMap<String, Integer> mostRevelantVotesPerLabel = new HashMap<String, Integer>();
+		HashMap<String, Integer> mostRevelantVotesPerLabel = new HashMap<>();
 		if (allVotes == null) {
 			return mostRevelantVotesPerLabel;
 		}
@@ -1055,7 +1049,7 @@ public class DetailsTabView {
 		return mostRevelantVotesPerLabel;
 	}
 
-	protected void sumIncludedDataBindings() {
+	private void sumIncludedDataBindings() {
 		hookBranches();
 		hookTags();
 	}
@@ -1106,7 +1100,7 @@ public class DetailsTabView {
 					result += object.toString() + ", "; //$NON-NLS-1$
 				}
 				if (!result.isEmpty()) {
-					int last = result.lastIndexOf(","); //$NON-NLS-1$
+					int last = result.lastIndexOf(',');
 					result = result.substring(0, last);
 				}
 				return result;
@@ -1117,7 +1111,7 @@ public class DetailsTabView {
 		bindingContext.bindValue(o, cv, null, null);
 	}
 
-	protected void sumSameTopicDataBindings() {
+	private void sumSameTopicDataBindings() {
 		ComposedAdapterFactory composedAdapterFactory = new ComposedAdapterFactory(
 				ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		composedAdapterFactory.addAdapterFactory(new ModelItemProviderAdapterFactory());
@@ -1132,7 +1126,7 @@ public class DetailsTabView {
 						EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__SUBJECT) });
 	}
 
-	protected void sumRelatedChangesDataBindings() {
+	private void sumRelatedChangesDataBindings() {
 		final FeaturePath properties = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
 				ModelPackage.Literals.RELATED_CHANGES_INFO__CHANGES);
 		IObservableList<ReviewerInfo> relatedChanges = EMFProperties.list(properties).observe(fChangeInfo);
@@ -1145,7 +1139,7 @@ public class DetailsTabView {
 		ViewerSupport.bind(tableRelatedChangesViewer, relatedChanges, valuesPresented);
 	}
 
-	protected void sumConflictWithDataBindings() {
+	private void sumConflictWithDataBindings() {
 		IObservableList<ReviewerInfo> observedList = EMFObservables.observeList(fChangeInfo,
 				ModelPackage.Literals.CHANGE_INFO__CONFLICTS_WITH);
 		ViewerSupport.bind(tableConflictsWithViewer, observedList,

@@ -41,56 +41,64 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class CherryPickProcess {
 
+	private Shell fShell;
+
 	private GerritClient fGerritClient = null;
+
+	private ChangeInfo fChangeInfo;
+
+	private RevisionInfo fRevision;
 
 	/**
 	 * The constructor.
 	 */
-	public CherryPickProcess() {
+	public CherryPickProcess(Shell shell, GerritClient gerritClient, ChangeInfo changeInfo, RevisionInfo revision) {
+		fShell = shell;
+		fGerritClient = gerritClient;
+		fChangeInfo = changeInfo;
+		fRevision = revision;
 	}
 
-	public void handleCherryPick(Shell shell, GerritClient gerritClient, ChangeInfo changeInfo, RevisionInfo revision) {
-		fGerritClient = gerritClient;
-		BranchInfo[] listBranchesCmdResult = listBranches(changeInfo);
+	public void handleCherryPick() {
+		BranchInfo[] listBranchesCmdResult = listBranches(fChangeInfo);
 
-		List<String> listBranchesRef = new ArrayList<String>();
+		List<String> listBranchesRef = new ArrayList<>();
 		Iterator<BranchInfo> it = Arrays.asList(listBranchesCmdResult).iterator();
 		while (it.hasNext()) {
 			listBranchesRef.add(it.next().getRef());
 		}
 
-		final CherryPickDialog cherryPickDialog = new CherryPickDialog(shell, listBranchesRef,
-				revision.getCommit().getMessage());
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				boolean isDone = false;
-				while (!isDone) {
-					Object cherryPickCmdResult = ""; //$NON-NLS-1$
-					int ret = cherryPickDialog.open();
-					if (ret == IDialogConstants.OK_ID) {
-						cherryPickCmdResult = cherryPickRevision(changeInfo.getId(), revision.getId(),
-								cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
-						if (cherryPickCmdResult instanceof String) {
-							MessageDialog.open(MessageDialog.ERROR, null, Messages.CherryPickRevision_9,
-									(String) cherryPickCmdResult, SWT.NONE);
-						} else {
-							ChangeInfo cherryPickedChangeInfo = (ChangeInfo) cherryPickCmdResult;
-							if (cherryPickedChangeInfo.getId().equals(changeInfo.getId())) {
-								CompletableFuture.runAsync(
-										() -> QueryHelpers.loadBasicInformation(gerritClient, changeInfo, false))
-										.thenRun(() -> changeInfo.setUserSelectedRevision(changeInfo.getRevision()));
-							} else {
-								UIUtils.openAnotherEditor(cherryPickedChangeInfo, fGerritClient);
-							}
-							isDone = true;
-						}
+		final CherryPickDialog cherryPickDialog = new CherryPickDialog(fShell, listBranchesRef,
+				fRevision.getCommit().getMessage());
+
+		Display.getDefault().syncExec(() -> {
+			boolean isDone = false;
+			while (!isDone) {
+				Object cherryPickCmdResult = ""; //$NON-NLS-1$
+				int ret = cherryPickDialog.open();
+				if (ret == IDialogConstants.OK_ID) {
+					cherryPickCmdResult = cherryPickRevision(fChangeInfo.getId(), fRevision.getId(),
+							cherryPickDialog.getBranch(), cherryPickDialog.getMessage());
+					if (cherryPickCmdResult instanceof String) {
+						MessageDialog.open(MessageDialog.ERROR, null, Messages.CherryPickRevision_9,
+								(String) cherryPickCmdResult, SWT.NONE);
 					} else {
+						ChangeInfo cherryPickedChangeInfo = (ChangeInfo) cherryPickCmdResult;
+						if (cherryPickedChangeInfo.getId().equals(fChangeInfo.getId())) {
+							CompletableFuture
+									.runAsync(
+											() -> QueryHelpers.loadBasicInformation(fGerritClient, fChangeInfo, false))
+									.thenRun(() -> fChangeInfo.setUserSelectedRevision(fChangeInfo.getRevision()));
+						} else {
+							UIUtils.openAnotherEditor(cherryPickedChangeInfo, fGerritClient);
+						}
 						isDone = true;
 					}
+				} else {
+					isDone = true;
 				}
 			}
 		});
-
 	}
 
 	private Object cherryPickRevision(String changeId, String revisionId, String branch, String message) {

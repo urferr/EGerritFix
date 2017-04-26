@@ -22,6 +22,12 @@ import org.eclipse.egerrit.internal.ui.utils.Messages;
  */
 class GerritCompareHelper {
 
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private GerritCompareHelper() {
+	}
+
 	//Given a commit id, returns a shortened commit id (the first 10 characters)
 	static String shortenCommitId(String commitId) {
 		return commitId != null && commitId.length() > 0 ? commitId.substring(0, 10) : commitId;

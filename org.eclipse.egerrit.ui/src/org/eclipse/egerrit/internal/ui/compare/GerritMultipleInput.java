@@ -54,8 +54,6 @@ import org.eclipse.egerrit.internal.ui.editors.OpenCompareEditor;
 import org.eclipse.egerrit.internal.ui.editors.QueryHelpers;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.emf.common.util.WeakInterningHashSet;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
@@ -79,7 +77,7 @@ import org.slf4j.LoggerFactory;
 public class GerritMultipleInput extends SaveableCompareEditorInput {
 	private static Logger logger = LoggerFactory.getLogger(GerritMultipleInput.class);
 
-	public static final String WORKSPACE = "WORKSPACE"; //$NON-NLS-1$
+	static final String WORKSPACE = "WORKSPACE"; //$NON-NLS-1$
 
 	public static final String BASE = "BASE"; //$NON-NLS-1$
 
@@ -219,7 +217,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		}
 	}
 
-	public void resetRoot() {
+	private void resetRoot() {
 		IDiffElement[] children = root.getChildren();
 		for (IDiffElement child : children) {
 			root.remove(child);
@@ -360,14 +358,13 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 			return GerritDifferences.ADDITION;
 		case "D": //$NON-NLS-1$
 			return GerritDifferences.DELETION;
-		case "M": //$NON-NLS-1$
-			return GerritDifferences.CHANGE;
 		case "C": //$NON-NLS-1$
 			return GerritDifferences.COPIED;
 		case "W": //$NON-NLS-1$
 			return GerritDifferences.REWRITTEN;
 		case "R": //$NON-NLS-1$
 			return GerritDifferences.RENAMED;
+		case "M": //$NON-NLS-1$
 		default:
 			return GerritDifferences.CHANGE;
 		}
@@ -540,7 +537,7 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	//We need this so we can hook the mechanism to color the comments
 	public Viewer findContentViewer(Viewer oldViewer, ICompareInput input, Composite parent) {
 		Viewer newViewer = super.findContentViewer(oldViewer, input, parent);
-		if (newViewer != null && newViewer.getClass().getName().contains("PhpMergeViewer")) {
+		if (newViewer != null && newViewer.getClass().getName().contains("PhpMergeViewer")) { //$NON-NLS-1$
 			ViewerDescriptor[] vds = CompareUIPlugin.getDefault().findContentViewerDescriptor(oldViewer, input, null);
 			setContentViewerDescriptor(vds[vds.length - 1]);
 			newViewer = super.findContentViewer(oldViewer, input, parent);
@@ -779,7 +776,8 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 		} catch (RuntimeException ex) {
 			//This works hand in hand with the PatchSetCompareItem#setContent method which raises a very specific RuntimeException
 			if (CommentableCompareItem.class.getName().equals(ex.getMessage())) {
-				if (ex.getCause().getMessage().equals(((GerritDiffNode) getSelectedEdition()).getLeft())) {
+				String leftHash = Integer.toString(((GerritDiffNode) getSelectedEdition()).getLeft().hashCode());
+				if (ex.getCause().getMessage().equals(leftHash)) {
 					problemSavingChanges = 0;
 					setLeftDirty(true);
 				} else {
@@ -919,16 +917,13 @@ public class GerritMultipleInput extends SaveableCompareEditorInput {
 	}
 
 	private void registerOpenWorkspaceVersion(MenuManager menu, final ISelectionProvider selectionProvider) {
-		menu.addMenuListener(new IMenuListener() {
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				if (!(selectionProvider instanceof SourceViewer) && !(getSelectedEdition() instanceof GerritDiffNode)) {
-					return;
-				}
-				manager.insertAfter("file", //$NON-NLS-1$
-						new OpenWorkspaceFile((SourceViewer) selectionProvider, (GerritDiffNode) getSelectedEdition(),
-								gerritClient));
+		menu.addMenuListener(manager -> {
+			if (!(selectionProvider instanceof SourceViewer) && !(getSelectedEdition() instanceof GerritDiffNode)) {
+				return;
 			}
+			manager.insertAfter("file", //$NON-NLS-1$
+					new OpenWorkspaceFile((SourceViewer) selectionProvider, (GerritDiffNode) getSelectedEdition(),
+							gerritClient));
 		});
 	}
 }

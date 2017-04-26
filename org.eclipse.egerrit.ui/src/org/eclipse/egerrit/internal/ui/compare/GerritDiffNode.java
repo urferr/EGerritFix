@@ -30,7 +30,7 @@ public class GerritDiffNode extends DiffNode {
 	//This object is used through the compare editor operations like posting/retrieving comments, marking files as viewed, etc.
 	private FileInfo fileInfo;
 
-	public GerritDiffNode(int kind) {
+	GerritDiffNode(int kind) {
 		super(kind);
 	}
 
@@ -69,7 +69,7 @@ public class GerritDiffNode extends DiffNode {
 			path = ""; //$NON-NLS-1$
 		}
 		if (nameFirst) {
-			int index = path.lastIndexOf("/"); //$NON-NLS-1$
+			int index = path.lastIndexOf('/');
 			if (index != -1) {
 				String fileName = path.substring(index + 1);
 				path = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
