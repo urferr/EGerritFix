@@ -14,6 +14,6 @@ package org.eclipse.egerrit.internal.core.command;
 /**
  * Place holder type for commands that don't return results.
  */
-public class NoResult {
+class NoResult {
 
 }

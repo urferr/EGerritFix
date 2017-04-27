@@ -26,9 +26,9 @@ public class GetDiffCommand extends BaseCommandChangeAndRevisionAndFile<DiffInfo
 
 	public GetDiffCommand(GerritRepository gerritRepository, String changeId, String revisionId, String fileName,
 			int base) {
-		super(gerritRepository, AuthentificationRequired.NO, HttpGet.class, DiffInfo.class, changeId, revisionId,
+		super( gerritRepository, AuthentificationRequired.NO, HttpGet.class, DiffInfo.class, changeId, revisionId,
 				fileName);
-		setSegment("baseRevision", Integer.toString(base));
+		setSegment("baseRevision", Integer.toString(base)); //$NON-NLS-1$
 
 		if (base == 0) {
 			setPathFormat("/changes/{change-id}/revisions/{revision-id}/files/{file-id}/diff?context=ALL&intraline"); //$NON-NLS-1$

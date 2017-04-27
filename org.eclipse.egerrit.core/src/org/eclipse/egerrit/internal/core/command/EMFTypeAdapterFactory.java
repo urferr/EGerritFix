@@ -64,14 +64,14 @@ class EMFTypeAdapterFactory implements TypeAdapterFactory {
 		private EClass toEClass() {
 			EClassifier classifier = ModelPackage.eINSTANCE.getEClassifier(
 					expectedType.getTypeName().substring(expectedType.getTypeName().lastIndexOf('.') + 1));
-			return ((EClass) classifier);
+			return (EClass) classifier;
 		}
 
 		private EStructuralFeature getAttributeWithName(EClass eclass, String name) {
 			return eclass.getEStructuralFeature(name);
 		}
 
-		private TypeAdapter getTypeAdapter(EObject instance, EStructuralFeature feature) {
+		private TypeAdapter<?> getTypeAdapter(EObject instance, EStructuralFeature feature) {
 			if (!feature.isMany()) {
 				return gson.getAdapter(feature.getEType().getInstanceClass());
 			}
@@ -135,7 +135,7 @@ class EMFTypeAdapterFactory implements TypeAdapterFactory {
 
 		@Override
 		public void write(JsonWriter out, EObject value) throws IOException {
-			new UnsupportedOperationException("Serialization is not supported"); //$NON-NLS-1$
+			throw new UnsupportedOperationException("Serialization is not supported"); //$NON-NLS-1$
 		}
 	}
 

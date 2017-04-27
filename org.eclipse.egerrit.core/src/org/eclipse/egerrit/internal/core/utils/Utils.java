@@ -35,6 +35,12 @@ public class Utils {
 	private static final SimpleDateFormat differentYearFormatTimeOut = new SimpleDateFormat("MMM dd, yyyy"); //$NON-NLS-1$
 
 	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private Utils() {
+	}
+
+	/**
 	 * Format the UTC time from Gerrit data structure to a new desired format
 	 *
 	 * @param inDate
@@ -53,7 +59,7 @@ public class Utils {
 		} catch (ParseException ex) {
 			EGerritCorePlugin.logError(ex.getMessage());
 		}
-		return formatOut.format(dateNew).toString();
+		return formatOut.format(dateNew);
 	}
 
 	/**

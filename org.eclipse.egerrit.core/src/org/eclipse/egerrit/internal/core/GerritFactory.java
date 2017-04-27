@@ -108,7 +108,7 @@ public final class GerritFactory {
 
 			default:
 				// Downgrade the version as per logic above
-				if (!workVersion.getQualifier().equals("")) { //$NON-NLS-1$
+				if (!workVersion.getQualifier().isEmpty()) {
 					// Remove [qualifier]
 					workVersion = new Version(version.getMajor(), version.getMinor(), version.getMicro(), null);
 				} else if (workVersion.getMicro() > 0) {

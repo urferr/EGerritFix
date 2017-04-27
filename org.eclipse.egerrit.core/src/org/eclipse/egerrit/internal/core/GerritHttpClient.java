@@ -316,7 +316,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 	 * @return
 	 */
 	private List<NameValuePair> getAuthParams(boolean dev) {
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<>();
 		String userName = fCredentials.getUsername();
 		if (dev) {
 			String field = "user_name"; //$NON-NLS-1$
@@ -427,7 +427,7 @@ public class GerritHttpClient implements IProxyChangeListener {
 		if (header != null) {
 			HeaderElement[] elements = header.getElements();
 			for (HeaderElement headerElement : elements) {
-				if (headerElement.getName().equals("XSRF_TOKEN")) { //$NON-NLS-1$
+				if (("XSRF_TOKEN").equals(headerElement.getName())) { //$NON-NLS-1$
 					fKey = headerElement.getValue();
 					gotKey = true;
 				}

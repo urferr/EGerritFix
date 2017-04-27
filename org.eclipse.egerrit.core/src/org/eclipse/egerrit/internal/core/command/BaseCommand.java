@@ -58,6 +58,8 @@ abstract class BaseCommand<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(BaseCommand.class);
 
+	private static final String UNIVERSAL_CHARSET = "UTF-8"; //$NON-NLS-1$
+
 	private HttpRequestBase request;
 
 	private GerritRepository server;
@@ -114,7 +116,7 @@ abstract class BaseCommand<T> {
 			GsonBuilder builder = new GsonBuilder();
 			builder.registerTypeAdapterFactory(new EMFTypeAdapterFactory());
 			Gson gson = builder.create();
-			InputStreamReader reader = new InputStreamReader(myEntity.getContent(), "UTF-8");//$NON-NLS-1$
+			InputStreamReader reader = new InputStreamReader(myEntity.getContent(), UNIVERSAL_CHARSET);
 
 			return gson.fromJson(reader, fResultType);
 		}
@@ -243,7 +245,7 @@ abstract class BaseCommand<T> {
 	private void setInput() {
 		if (input != null) {
 			if (request instanceof HttpEntityEnclosingRequestBase) {
-				StringEntity entity = new StringEntity(new Gson().toJson(input), "UTF-8"); //$NON-NLS-1$
+				StringEntity entity = new StringEntity(new Gson().toJson(input), UNIVERSAL_CHARSET);
 				entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, BaseCommand.JSON_HEADER));
 				((HttpEntityEnclosingRequestBase) request).setEntity(entity);
 			} else {
@@ -297,7 +299,7 @@ abstract class BaseCommand<T> {
 
 	protected void setSegmentToEncode(String key, String value) {
 		try {
-			parameters.put(key, URLEncoder.encode(value, "UTF-8")); //$NON-NLS-1$
+			parameters.put(key, URLEncoder.encode(value, UNIVERSAL_CHARSET));
 		} catch (UnsupportedEncodingException e) {
 			logger.debug("Can't URL encode value: " + value); //$NON-NLS-1$
 			throw new IllegalArgumentException(e);
