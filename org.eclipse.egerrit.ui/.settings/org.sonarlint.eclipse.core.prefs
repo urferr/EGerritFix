@@ -1,0 +1,5 @@
+autoEnabled=true
+eclipse.preferences.version=1
+extraProperties=
+moduleKey=org.eclipse.egerrit\:org.eclipse.egerrit.ui
+serverId=sonarqube

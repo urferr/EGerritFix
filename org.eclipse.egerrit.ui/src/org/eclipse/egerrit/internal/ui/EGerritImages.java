@@ -48,6 +48,12 @@ public class EGerritImages {
 
 	public static final String PREVIOUS_COMMENT_ANNOTATION_ICON_FILE = "icons/previousComment_menu.gif"; //$NON-NLS-1$
 
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private EGerritImages() {
+	}
+
 	static {
 		fgImageRegistry.put(AUTHOR_COMMENT, EGerritUIPlugin.getImageDescriptor(AUTHOR_COMMENT));
 		fgImageRegistry.put(ANONYMOUS_COMMENT, EGerritUIPlugin.getImageDescriptor(ANONYMOUS_COMMENT));

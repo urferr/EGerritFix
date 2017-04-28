@@ -23,11 +23,11 @@ import org.eclipse.swt.widgets.Composite;
 /**
  * A text viewer that will always show links
  */
-public class TextViewerWithLinks extends org.eclipse.jface.text.source.SourceViewer {
+class TextViewerWithLinks extends org.eclipse.jface.text.source.SourceViewer {
 	// used to fire events of registered properties
 	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-	public TextViewerWithLinks(Composite composite, int styles) {
+	TextViewerWithLinks(Composite composite, int styles) {
 		super(composite, null, styles);
 	}
 

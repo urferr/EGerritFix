@@ -38,7 +38,7 @@ public class QuickFixer implements IMarkerResolutionGenerator2 {
 						new QuickFixModifyDraft(Messages.QuickFixer_0 + truncatedMsg, fullMessage),
 						new QuickFixDeleteDraftComment(Messages.QuickFixer_1 + truncatedMsg, fullMessage) };
 			} else {
-				if (element.getMessage().equalsIgnoreCase("done")) { //$NON-NLS-1$
+				if ("done".equalsIgnoreCase(element.getMessage())) { //$NON-NLS-1$
 					return new IMarkerResolution[] {
 							new QuickFixReplyToComment(Messages.QuickFixer_3 + truncatedMsg, fullMessage) };
 				}

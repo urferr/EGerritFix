@@ -32,10 +32,10 @@ import org.eclipse.swt.widgets.TableColumn;
  */
 
 public class BranchListLabelProvider extends LabelProvider implements ITableLabelProvider {
-	private final String[] fTitles = { Messages.BranchSelectionTableModel_branch,
+	private static final String[] fTitles = { Messages.BranchSelectionTableModel_branch,
 			Messages.BranchSelectionTableModel_match };
 
-	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	/**
 	 * Return the text associated to the column

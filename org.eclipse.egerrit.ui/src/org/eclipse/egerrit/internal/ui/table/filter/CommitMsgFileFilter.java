@@ -25,7 +25,7 @@ public class CommitMsgFileFilter extends ViewerFilter {
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		String file = ((StringToFileInfoImpl) element).getKey();
-		if (file.equalsIgnoreCase("/COMMIT_MSG")) { //$NON-NLS-1$
+		if ("/COMMIT_MSG".equalsIgnoreCase(file)) { //$NON-NLS-1$
 			return false;
 		}
 		return true;

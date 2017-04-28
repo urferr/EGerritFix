@@ -23,4 +23,10 @@ public class EGerritConstants {
 
 	public static final String OWNER = "owner"; //$NON-NLS-1$
 
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private EGerritConstants() {
+	}
+
 }

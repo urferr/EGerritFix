@@ -133,7 +133,7 @@ import org.eclipse.ui.PartInitException;
  */
 public class DetailsTabView {
 
-	private final String TITLE = Messages.SummaryTabView_0;
+	private static final String TITLE = Messages.SummaryTabView_0;
 
 	private static Color RED;
 
@@ -938,7 +938,7 @@ public class DetailsTabView {
 				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
-				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter(fChangeInfo)));
+				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter()));
 
 		//Show mergeable status
 		IObservableValue<String> mergeableMergeableInfoObserveValue = EMFProperties

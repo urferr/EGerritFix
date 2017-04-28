@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Control;
  * <strong>Note:</strong> this observable works for controls within a <strong>GridLayout only</strong>.
  * </p>
  */
-public class HideControlObservable extends WritableValue implements IValueChangeListener {
+class HideControlObservable extends WritableValue implements IValueChangeListener {
 	private final DataBindingContext bindingContext = new DataBindingContext();
 
 	private final ISWTObservableValue sizeObservable;
@@ -46,7 +46,7 @@ public class HideControlObservable extends WritableValue implements IValueChange
 
 	private final Control control;
 
-	public HideControlObservable(Control control) {
+	HideControlObservable(Control control) {
 		super(control.getVisible(), Boolean.class);
 		this.control = control;
 

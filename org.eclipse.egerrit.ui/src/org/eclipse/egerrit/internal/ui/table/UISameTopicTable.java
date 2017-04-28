@@ -31,7 +31,7 @@ public class UISameTopicTable {
 
 	public static final String SAME_TOPIC_TABLE = "sameTopicTable"; //$NON-NLS-1$
 
-	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+	private static final int TABLE_STYLE = SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION;
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -76,9 +76,6 @@ public class UISameTopicTable {
 		int size = tableInfo.length;
 //		logger.debug("Table	Name	Width	Resize Moveable"); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
-//			logger.debug("index [ " + index + " ] " + tableInfo[index].getName() + "\t: " //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-//					+ tableInfo[index].getWidth() + "\t: " + tableInfo[index].getResize() + "\t: " //$NON-NLS-1$ //$NON-NLS-2$
-//					+ tableInfo[index].getMoveable());
 			createTableViewerColumn(tableInfo[index]);
 
 		}
@@ -111,6 +108,11 @@ public class UISameTopicTable {
 
 	}
 
+	/**
+	 * return the table viewer
+	 *
+	 * @return
+	 */
 	public TableViewer getViewer() {
 
 		return fViewer;

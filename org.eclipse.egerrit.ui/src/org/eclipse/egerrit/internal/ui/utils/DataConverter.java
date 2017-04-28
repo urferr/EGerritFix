@@ -43,12 +43,18 @@ import org.eclipse.osgi.util.NLS;
 public class DataConverter {
 
 	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private DataConverter() {
+	}
+
+	/**
 	 * @param outputTime
 	 *            SimpleDateFormat requested
 	 * @return an IConverter from the Gerrit Timestamp to a new format
 	 */
 	public static IConverter gerritTimeConverter(final SimpleDateFormat outputTime) {
-		IConverter converter = new Converter(String.class, String.class) {
+		return new Converter(String.class, String.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
@@ -57,21 +63,20 @@ public class DataConverter {
 
 				Date dateNew = null;
 
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+				if (fromObject != null && !"".equals(fromObject)) { //$NON-NLS-1$
 					try {
 						formatIn.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
 						dateNew = formatIn.parse((String) fromObject);
 					} catch (ParseException ex) {
 						EGerritCorePlugin.logError(ex.getMessage());
 					}
-					return outputTime.format(dateNew).toString();
+					return outputTime.format(dateNew);
 
 				}
 				return ""; //$NON-NLS-1$
 
 			}
 		};
-		return converter;
 
 	}
 
@@ -79,11 +84,11 @@ public class DataConverter {
 	 * @return an IConverter from the GitPersonInfo structure to a format having the name and e-mail information
 	 */
 	public static IConverter gitPersonConverter() {
-		IConverter converter = new Converter(GitPersonInfo.class, String.class) {
+		return new Converter(GitPersonInfo.class, String.class) {
 			@Override
 			public Object convert(Object fromObject) {
 
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+				if (fromObject != null && !"".equals(fromObject)) { //$NON-NLS-1$
 					GitPersonInfo person = (GitPersonInfo) fromObject;
 					if (person.getName() != null && person.getEmail() != null) {
 						// "<a>  </a> is to allow the link selection of the text
@@ -96,22 +101,19 @@ public class DataConverter {
 				}
 			}
 		};
-		return converter;
 
 	}
 
 	/**
-	 * @param fChangeInfo
-	 *            ChangeInfo
 	 * @return an IConverter from the Submit type structure to a format to display
 	 */
-	public static IConverter submitTypeConverter(final ChangeInfo fChangeInfo) {
-		IConverter converter = new Converter(MergeableInfo.class, String.class) {
+	public static IConverter submitTypeConverter() {
+		return new Converter(MergeableInfo.class, String.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
 
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+				if (fromObject != null && !"".equals(fromObject)) { //$NON-NLS-1$
 					MergeableInfo mInfo = (MergeableInfo) fromObject;
 					return SubmitType.getEnumName(mInfo.getSubmit_type());
 				} else {
@@ -119,7 +121,6 @@ public class DataConverter {
 				}
 			}
 		};
-		return converter;
 
 	}
 
@@ -127,19 +128,18 @@ public class DataConverter {
 	 * @return an IConverter from the boolean structure to the "Cannot Merge" to display
 	 */
 	public static IConverter cannotMergeConverter() {
-		IConverter converter = new Converter(Boolean.class, String.class) {
+		return new Converter(Boolean.class, String.class) {
 
 			@Override
 			public Object convert(Object fromObject) {
 
-				if (fromObject != null && !fromObject.equals("")) { //$NON-NLS-1$
+				if (fromObject != null && !"".equals(fromObject)) { //$NON-NLS-1$
 					return new Boolean((boolean) fromObject).booleanValue() ? "" : Messages.DataConverter_0; //$NON-NLS-1$
 				} else {
 					return null;
 				}
 			}
 		};
-		return converter;
 
 	}
 
@@ -180,7 +180,7 @@ public class DataConverter {
 				if (fromObject == null) {
 					return null;
 				}
-				ChangeMessageInfo message = ((ChangeMessageInfo) fromObject);
+				ChangeMessageInfo message = (ChangeMessageInfo) fromObject;
 
 				//There is no comment
 				if (!message.isComment()) {
@@ -246,13 +246,11 @@ public class DataConverter {
 					//Force this string to be long to reserve the space because the first time things get rendered there is no selection
 					return "                               "; //$NON-NLS-1$
 				}
-				final String PATCHSET = Messages.DataConverter_5;
-				final String SEPARATOR = "/"; //$NON-NLS-1$
 				RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
 				StringBuilder sb = new StringBuilder();
-				sb.append(PATCHSET);
+				sb.append(Messages.DataConverter_5);
 				sb.append(revInfo.get_number());
-				sb.append(SEPARATOR);
+				sb.append("/"); //$NON-NLS-1$
 				sb.append(changeInfo.getRevision().get_number());
 				return sb.toString();
 			}

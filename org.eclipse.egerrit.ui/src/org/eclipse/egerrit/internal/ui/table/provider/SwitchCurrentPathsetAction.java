@@ -17,12 +17,12 @@ import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.action.Action;
 
-public class SwitchCurrentPathsetAction extends Action {
+class SwitchCurrentPathsetAction extends Action {
 	private ChangeInfo changeInfo;
 
 	private String revisionIdToSwitchTo;
 
-	public SwitchCurrentPathsetAction(ChangeInfo changeInfo, RevisionInfo revision) {
+	SwitchCurrentPathsetAction(ChangeInfo changeInfo, RevisionInfo revision) {
 		super();
 		this.changeInfo = changeInfo;
 		this.revisionIdToSwitchTo = revision.getId();

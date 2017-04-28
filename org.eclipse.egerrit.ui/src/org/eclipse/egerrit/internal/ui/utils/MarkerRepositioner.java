@@ -42,7 +42,7 @@ public class MarkerRepositioner {
 
 	private EditList edits;
 
-	public MarkerRepositioner(Repository repo, String filePath) throws Exception {
+	MarkerRepositioner(Repository repo, String filePath) throws Exception {
 		this.repo = repo;
 		this.filePath = filePath;
 
@@ -137,7 +137,7 @@ public class MarkerRepositioner {
 
 	/**
 	 * For testing purpose only
-	 * 
+	 *
 	 * @param edits
 	 */
 	public void setEdits(EditList edits) {

@@ -12,15 +12,21 @@
 package org.eclipse.egerrit.internal.ui.editors;
 
 public class EGerritCommentMarkers {
-	public static String COMMENT_MARKER_ID = "org.eclipse.egerrit.ui.commentMarker"; //$NON-NLS-1$
+	public static final String COMMENT_MARKER_ID = "org.eclipse.egerrit.ui.commentMarker"; //$NON-NLS-1$
 
-	public static String ATTR_COMMENT_INFO = "commentInfo"; //$NON-NLS-1$
+	public static final String ATTR_COMMENT_INFO = "commentInfo"; //$NON-NLS-1$
 
-	public static String ATTR_FILE_INFO = "fileInfo"; //$NON-NLS-1$
+	public static final String ATTR_FILE_INFO = "fileInfo"; //$NON-NLS-1$
 
-	public static String ATTR_GERRIT_CLIENT = "gerritClient"; //$NON-NLS-1$
+	public static final String ATTR_GERRIT_CLIENT = "gerritClient"; //$NON-NLS-1$
 
-	public static String ATTR_IS_DRAFT = "isDraft"; //$NON-NLS-1$
+	public static final String ATTR_IS_DRAFT = "isDraft"; //$NON-NLS-1$
 
-	public static String ATTR_MESSAGE = "message"; //$NON-NLS-1$
+	public static final String ATTR_MESSAGE = "message"; //$NON-NLS-1$
+
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private EGerritCommentMarkers() {
+	}
 }

@@ -41,13 +41,13 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @since 1.0
  */
 
-public class MarkerMenuContribution extends ContributionItem {
+class MarkerMenuContribution extends ContributionItem {
 
 	private ITextEditor editor;
 
 	private int fCurrentLine = -1;
 
-	public MarkerMenuContribution(ITextEditor editor) {
+	MarkerMenuContribution(ITextEditor editor) {
 		this.editor = editor;
 	}
 

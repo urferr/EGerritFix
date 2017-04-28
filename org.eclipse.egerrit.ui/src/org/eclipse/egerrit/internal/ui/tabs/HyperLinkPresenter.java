@@ -54,8 +54,8 @@ import org.eclipse.swt.graphics.RGB;
 
 /* Change the IHyperlinkPresenterExtension by IHyperlinkPresenterExtension2 for multi hyperlink */
 
-public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresenterExtension2,
-		ITextPresentationListener, ITextInputListener, IDocumentListener, IPropertyChangeListener {
+class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresenterExtension2, ITextPresentationListener,
+		ITextInputListener, IDocumentListener, IPropertyChangeListener {
 
 	private ISourceViewer fSourceViewer;
 
@@ -73,7 +73,7 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 * @see org.eclipse.jface.resource.StringConverter
 	 * @see org.eclipse.jface.preference.PreferenceConverter
 	 */
-	public final static String HYPERLINK_COLOR = "hyperlinkColor"; //$NON-NLS-1$
+	private static final String HYPERLINK_COLOR = "hyperlinkColor"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that holds the preference whether to use the native link color.
@@ -83,7 +83,7 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 *
 	 * @since 3.5
 	 */
-	public final static String HYPERLINK_COLOR_SYSTEM_DEFAULT = "hyperlinkColor.SystemDefault"; //$NON-NLS-1$
+	private static final String HYPERLINK_COLOR_SYSTEM_DEFAULT = "hyperlinkColor.SystemDefault"; //$NON-NLS-1$
 
 	/** The text viewer. */
 	private ITextViewer fTextViewer;
@@ -147,7 +147,7 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 	 * @param gerritClient
 	 * @param changeInfo
 	 */
-	public HyperLinkPresenter(RGB rgb, ISourceViewer sourceViewer, GerritClient gerritClient, ChangeInfo changeInfo) {
+	HyperLinkPresenter(RGB rgb, ISourceViewer sourceViewer, GerritClient gerritClient, ChangeInfo changeInfo) {
 		fRGB = rgb;
 		fDisposeColor = true;
 		fSourceViewer = sourceViewer;
@@ -171,9 +171,9 @@ public class HyperLinkPresenter implements IHyperlinkPresenter, IHyperlinkPresen
 		for (IHyperlink hyperlink : hyperlinks) {
 			highlightRegion(hyperlink.getHyperlinkRegion());
 		}
-		if (hyperlinks.length > 1) {
+		if (hyperlinks != null && hyperlinks.length > 1) {
 			for (IHyperlink hyperlink : hyperlinks) {
-				if (isWithinRegion(hyperlink.getHyperlinkRegion()) == true && fClickedOffset != -1) {
+				if (isWithinRegion(hyperlink.getHyperlinkRegion()) && fClickedOffset != -1) {
 					hyperlink.open();
 				}
 			}

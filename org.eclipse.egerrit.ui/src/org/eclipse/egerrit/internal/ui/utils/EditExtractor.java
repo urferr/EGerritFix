@@ -25,10 +25,10 @@ import org.eclipse.jgit.patch.FileHeader;
  * only interested in knowing the structural changes that happened to the file, we create our own formatter to only
  * extract that information.
  */
-public class EditExtractor extends DiffFormatter {
+class EditExtractor extends DiffFormatter {
 	private EditList fileEdits = null;
 
-	public EditExtractor(OutputStream out) {
+	EditExtractor(OutputStream out) {
 		super(out);
 	}
 

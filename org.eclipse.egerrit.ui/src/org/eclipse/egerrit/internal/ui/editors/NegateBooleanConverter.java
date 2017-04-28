@@ -16,7 +16,7 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 /**
  * Return the boolean value opposite to the one provided
  */
-public class NegateBooleanConverter extends UpdateValueStrategy {
+class NegateBooleanConverter extends UpdateValueStrategy {
 	@Override
 	public Object convert(Object value) {
 		return !((Boolean) value).booleanValue();

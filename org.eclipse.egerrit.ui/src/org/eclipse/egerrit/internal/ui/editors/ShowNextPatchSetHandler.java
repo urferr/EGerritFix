@@ -39,14 +39,14 @@ public class ShowNextPatchSetHandler extends AbstractHandler {
 		if (editor instanceof ChangeDetailEditor) {
 			ChangeDetailEditorInput input = (ChangeDetailEditorInput) ((ChangeDetailEditor) editor).getEditorInput();
 
-			ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(input.getChange().getRevisions().values());
+			ArrayList<RevisionInfo> revisions = new ArrayList<>(input.getChange().getRevisions().values());
 
 			revisions.sort((o2, o1) -> o1.get_number() - o2.get_number());
 
-			LinkedHashMap<String, RevisionInfo> patchNumber = new LinkedHashMap<String, RevisionInfo>();
+			LinkedHashMap<String, RevisionInfo> patchNumber = new LinkedHashMap<>();
 			for (ListIterator<RevisionInfo> iter = revisions.listIterator(); iter.hasNext();) {
 				RevisionInfo element = iter.next();
-				patchNumber.put(new Integer(element.get_number()).toString(), element);
+				patchNumber.put(Integer.toString(element.get_number()), element);
 			}
 
 			Iterator<Entry<String, RevisionInfo>> itr = patchNumber.entrySet().iterator();
@@ -57,13 +57,11 @@ public class ShowNextPatchSetHandler extends AbstractHandler {
 				if (entry.getValue().get_number() == input.getChange().getUserSelectedRevision().get_number()) {
 					if (itr.hasNext()) {
 						entry = itr.next();
-						input.getChange().setUserSelectedRevision(entry.getValue());
-						break;
 					} else {
 						entry = first.next();
-						input.getChange().setUserSelectedRevision(entry.getValue());
-						break;
 					}
+					input.getChange().setUserSelectedRevision(entry.getValue());
+					break;
 				}
 			}
 

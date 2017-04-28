@@ -36,7 +36,7 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixModifyDraft extends EGerritQuickFix {
+class QuickFixModifyDraft extends EGerritQuickFix {
 	QuickFixModifyDraft(String label, String completeMessage) {
 		super(label, completeMessage);
 	}

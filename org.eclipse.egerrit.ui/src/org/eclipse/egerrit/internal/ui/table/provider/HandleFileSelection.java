@@ -52,28 +52,38 @@ public class HandleFileSelection {
 			Iterator<?> itr = structuredSelection.iterator();
 			String failedFiles = ""; //$NON-NLS-1$
 			while (itr.hasNext()) {
-				Object element = itr.next();
-				if (element == null) {
-					return;
-				}
-				FileInfo fileInfo;
-				if (fViewer instanceof TableViewer) {
-					fileInfo = ((StringToFileInfoImpl) element).getValue();
-				} else {
-					fileInfo = ((GerritDiffNode) element).getFileInfo();
-				}
-				String status = fileInfo.getStatus();
-				if (status.compareTo("D") != 0) { //$NON-NLS-1$
-					if (UIUtils.openSingleFile(fileInfo, fGerritClient, fileInfo.getRevision(), 0) == false) {
-						failedFiles += fileInfo.getPath() + '\n';
-					}
-				}
-				QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
+				failedFiles = findFailedFiles(itr);
 			}
 			if (!failedFiles.isEmpty()) {
 				UIUtils.displayInformation(Messages.UIFilesTable_3, Messages.UIFilesTable_2 + '\n' + failedFiles);
 			}
 		}
 
+	}
+
+	/**
+	 * @param itr
+	 * @param failedFiles
+	 * @return
+	 */
+	private String findFailedFiles(Iterator<?> itr) {
+		String failedFiles = ""; //$NON-NLS-1$
+		Object element = itr.next();
+		if (element == null) {
+			return ""; //$NON-NLS-1$
+		}
+		FileInfo fileInfo;
+		if (fViewer instanceof TableViewer) {
+			fileInfo = ((StringToFileInfoImpl) element).getValue();
+		} else {
+			fileInfo = ((GerritDiffNode) element).getFileInfo();
+		}
+		String status = fileInfo.getStatus();
+		if ((status.compareTo("D") != 0) //$NON-NLS-1$
+				&& (!UIUtils.openSingleFile(fileInfo, fGerritClient, fileInfo.getRevision(), 0))) {
+			failedFiles += fileInfo.getPath() + '\n';
+		}
+		QueryHelpers.markAsReviewed(fGerritClient, fileInfo);
+		return failedFiles;
 	}
 }

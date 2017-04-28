@@ -44,9 +44,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -89,33 +86,43 @@ public class CherryPickRevision extends Action {
 			return;
 		}
 		URIish remoteURI = getRemoteURI();
-		Job job = new WorkspaceJob(Messages.CherryPickRevision_4 + remoteURI.toPrivateString()) {
-			@Override
-			public IStatus runInWorkspace(IProgressMonitor monitor) {
-				try {
-					fetchChange(monitor);
-				} catch (CoreException | URISyntaxException | IOException e) {
-					return new Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
-							Messages.CherryPickRevision_5 + remoteURI.toPrivateString(), e);
+		if (remoteURI != null) {
+			Job job = new WorkspaceJob(Messages.CherryPickRevision_4 + remoteURI.toPrivateString()) {
+				@Override
+				public IStatus runInWorkspace(IProgressMonitor monitor) {
+					try {
+						fetchChange(monitor);
+					} catch (CoreException | URISyntaxException | IOException e) {
+						return new Status(IStatus.ERROR, EGerritUIPlugin.PLUGIN_ID,
+								Messages.CherryPickRevision_5 + remoteURI.toPrivateString(), e);
+					}
+					return Status.OK_STATUS;
 				}
-				return Status.OK_STATUS;
-			}
 
-			@Override
-			public boolean belongsTo(Object family) {
-				if (JobFamilies.FETCH.equals(family)) {
-					return true;
+				@Override
+				public boolean belongsTo(Object family) {
+					if (JobFamilies.FETCH.equals(family)) {
+						return true;
+					}
+					return super.belongsTo(family);
 				}
-				return super.belongsTo(family);
+			};
+			job.setUser(true);
+			job.schedule();
+			try {
+				job.join();
+			} catch (InterruptedException e) {
+				return;
 			}
-		};
-		job.setUser(true);
-		job.schedule();
-		try {
-			job.join();
-		} catch (InterruptedException e) {
-			return;
+			cherryPickAfterFetch(job);
 		}
+
+	}
+
+	/**
+	 * @param job
+	 */
+	private void cherryPickAfterFetch(Job job) {
 		try {
 			if (!job.getResult().isOK()) {
 				return;
@@ -138,8 +145,7 @@ public class CherryPickRevision extends Action {
 		}
 	}
 
-	private void initializeCommitFromRevision() throws RevisionSyntaxException, AmbiguousObjectException,
-			IncorrectObjectTypeException, IOException, CoreException {
+	private void initializeCommitFromRevision() throws IOException, CoreException {
 		ObjectId commitId = repo.resolve(revision.getCommit().getCommit());
 		commit = null;
 		try (org.eclipse.jgit.revwalk.RevWalk revWalk = new org.eclipse.jgit.revwalk.RevWalk(repo)) {

@@ -36,7 +36,7 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixReplyToComment extends EGerritQuickFix {
+class QuickFixReplyToComment extends EGerritQuickFix {
 	QuickFixReplyToComment(String label, String completeMessage) {
 		super(label, completeMessage);
 	}
@@ -49,7 +49,7 @@ public class QuickFixReplyToComment extends EGerritQuickFix {
 			CommentInfo existingComment = (CommentInfo) marker.getAttribute(EGerritCommentMarkers.ATTR_COMMENT_INFO);
 
 			final InputDialog replyDialog = new InputDialog(shell, Messages.QuickFixReplyToComment_0,
-					Messages.QuickFixReplyToComment_1 + message.toString(), "", null) { //$NON-NLS-1$
+					Messages.QuickFixReplyToComment_1 + message, "", null) { //$NON-NLS-1$
 				@Override
 				protected int getInputTextStyle() {
 					return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;

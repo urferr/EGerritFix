@@ -24,8 +24,6 @@ import org.eclipse.egerrit.internal.ui.utils.UIUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.StringConverter;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.osgi.util.NLS;
@@ -136,13 +134,9 @@ class FilesDialog extends Dialog {
 		tableUIFiles.createTableViewerSection(composite);
 		fViewer = tableUIFiles.getViewer();
 		//Create a second listener to close the dialog
-		fViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				storeDialogSettings();
-				FilesDialog.this.close();
-			}
+		fViewer.addDoubleClickListener(event -> {
+			storeDialogSettings();
+			FilesDialog.this.close();
 		});
 		tableUIFiles.setDialogSelection();
 		createFilterArea(composite, tableUIFiles);
@@ -288,10 +282,10 @@ class FilesDialog extends Dialog {
 	private int getcommitMessageIndex(Table table) {
 		TableItem[] items = table.getItems();
 		int size = items.length;
-		String COMMIT_MSG = "COMMIT_MSG".toLowerCase(); //$NON-NLS-1$
+		String commitMsg = "COMMIT_MSG".toLowerCase(); //$NON-NLS-1$
 		for (int index = 0; index < size; index++) {
 			StringToFileInfoImpl data = (StringToFileInfoImpl) items[index].getData();
-			if (data.getKey().toLowerCase().contains(COMMIT_MSG)) {
+			if (data.getKey().toLowerCase().contains(commitMsg)) {
 				return index;
 			}
 		}
@@ -457,7 +451,7 @@ class FilesDialog extends Dialog {
 			nextIndex = 0;
 		}
 		if (nextIndex <= maxTableItem) {
-			table.setSelection((nextIndex));
+			table.setSelection(nextIndex);
 		} else {
 			//Select the last item in the table (Even the Commit MSG )
 			table.setSelection(maxTableItem);

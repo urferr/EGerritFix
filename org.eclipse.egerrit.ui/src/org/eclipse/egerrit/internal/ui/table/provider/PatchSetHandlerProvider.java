@@ -41,8 +41,6 @@ public class PatchSetHandlerProvider {
 
 	private ChangeInfo fChangeInfo;
 
-	private Button fButtonPatchSet;
-
 	private Label patchsetlabel;
 
 	private DataBindingContext bindingContext = new DataBindingContext();
@@ -59,13 +57,14 @@ public class PatchSetHandlerProvider {
 	public Button create(Composite parent, ChangeInfo changeInfo) {
 		this.fChangeInfo = changeInfo;
 		patchsetlabel = new Label(parent, SWT.NONE);
-		fButtonPatchSet = new Button(parent, SWT.DROP_DOWN | SWT.ARROW | SWT.DOWN);
+
+		Button fButtonPatchSet = new Button(parent, SWT.DROP_DOWN | SWT.ARROW | SWT.DOWN);
 		fButtonPatchSet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		fButtonPatchSet.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MenuManager mgr = new MenuManager();
-				fillMenuItemForChangeInfo(mgr, patchsetlabel);
+				fillMenuItemForChangeInfo(mgr);
 				mgr.createContextMenu(parent).setVisible(true);
 			}
 		});
@@ -73,8 +72,8 @@ public class PatchSetHandlerProvider {
 		return fButtonPatchSet;
 	}
 
-	private void fillMenuItemForChangeInfo(MenuManager menu, Label labelToUpdate) {
-		ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(fChangeInfo.getRevisions().values());
+	private void fillMenuItemForChangeInfo(MenuManager menu) {
+		ArrayList<RevisionInfo> revisions = new ArrayList<>(fChangeInfo.getRevisions().values());
 		revisions.sort((o1, o2) -> o2.get_number() - o1.get_number());
 		revisions.stream().forEach(rev -> menu.add(new SwitchCurrentPathsetAction(fChangeInfo, rev)));
 	}
@@ -92,8 +91,7 @@ public class PatchSetHandlerProvider {
 
 		//See when a REBASE occurs, the current revision is updated
 		IObservableValue observerRevisionsValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)
-				.observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION).observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerRevisionsValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));

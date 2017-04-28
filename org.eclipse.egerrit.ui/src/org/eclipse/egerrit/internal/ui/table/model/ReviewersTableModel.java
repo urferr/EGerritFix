@@ -27,8 +27,8 @@ import org.eclipse.swt.SWT;
 // ------------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------------
-// Definition of the Conflict with table {name, width of the column, Resizeable,
-// Moveable, Alignment}
+// Definition of the Conflict with table :name, width of the column, Resizeable,
+// Moveable, Alignment
 public enum ReviewersTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	SELECT("", 24, false, true, SWT.LEFT), // //$NON-NLS-1$
@@ -53,34 +53,55 @@ public enum ReviewersTableModel implements ITableModel {
 		fAlignment = align;
 	}
 
+	/**
+	 * return the name
+	 */
 	public String getName() {
 		return fHeader;
 	}
 
+	/**
+	 * return the column width
+	 */
 	public int getWidth() {
 		return fwidth;
 	}
 
+	/**
+	 * return boolean if the field is resize-able
+	 */
 	public boolean getResize() {
 		return fResize;
 	}
 
+	/**
+	 * return boolean if the column is move-able
+	 */
 	public boolean getMoveable() {
 		return fMoveable;
 	}
 
+	/**
+	 * return the alignment of the field
+	 */
 	public int getAlignment() {
 		return fAlignment;
 	}
 
+	/**
+	 * return an array with the column name
+	 */
 	public String[] getColumnName() {
-		ArrayList<String> listName = new ArrayList<String>();
+		ArrayList<String> listName = new ArrayList<>();
 		for (ITableModel st : ReviewersTableModel.values()) {
 			listName.add(st.getName());
 		}
 		return listName.toArray(new String[] {});
 	}
 
+	/**
+	 * return the minimum width for all columns
+	 */
 	public int getMinimumWidth() {
 		int width = 0;
 		for (int index = 0; index < ReviewersTableModel.values().length; index++) {

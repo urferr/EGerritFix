@@ -26,7 +26,7 @@ public class DeletedFilesFilter extends ViewerFilter {
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-		if (fileInfo.getStatus().equalsIgnoreCase("D")) { //$NON-NLS-1$
+		if ("D".equalsIgnoreCase(fileInfo.getStatus())) { //$NON-NLS-1$
 			return false;
 		}
 		return true;

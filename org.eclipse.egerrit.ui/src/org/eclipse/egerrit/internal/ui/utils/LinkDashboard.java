@@ -37,8 +37,8 @@ public class LinkDashboard {
 	/**
 	 * The constructor.
 	 */
-	public LinkDashboard(GerritClient GerritClient) {
-		this.fGerritClient = GerritClient;
+	public LinkDashboard(GerritClient gerritClient) {
+		this.fGerritClient = gerritClient;
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class LinkDashboard {
 	 */
 	public void invokeRefreshDashboardCommand(String key, String value) {
 		// Optionally pass a ExecutionEvent instance, default no-param arg creates blank event
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new HashMap<>();
 		if ((key != null && !key.isEmpty()) || (value != null && !value.isEmpty())) {
 			parameters.put(key, value);
 		}
@@ -63,7 +63,7 @@ public class LinkDashboard {
 	 */
 	public void invokeRefreshDashboardCommand(Map<String, String> parameters) {
 		IServiceLocator serviceLocator = PlatformUI.getWorkbench();
-		ICommandService commandService = (ICommandService) serviceLocator.getService(ICommandService.class);
+		ICommandService commandService = serviceLocator.getService(ICommandService.class);
 
 		try {
 			// Lookup command with its ID

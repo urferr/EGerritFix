@@ -42,7 +42,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -84,6 +83,8 @@ public class MessageTabView {
 
 	private GerritClient fGerritClient;
 
+	private ChangeInfo fChangeInfo;
+
 	private Boolean fShowExtraInfo = true;
 
 	private DataBindingContext bindingContext = new DataBindingContext();
@@ -96,8 +97,13 @@ public class MessageTabView {
 
 	/**
 	 * The constructor.
+	 *
+	 * @param changeInfo
+	 * @param gerritClient
 	 */
-	public MessageTabView() {
+	public MessageTabView(GerritClient gerritClient, ChangeInfo changeInfo) {
+		fGerritClient = gerritClient;
+		fChangeInfo = changeInfo;
 	}
 
 	/**
@@ -105,9 +111,9 @@ public class MessageTabView {
 	 * @param Composite
 	 * @param ChangeInfo
 	 */
-	public void create(GerritClient gerritClient, Composite tabFolder, ChangeInfo changeInfo) {
-		fGerritClient = gerritClient;
-		createControls(tabFolder, changeInfo);
+	public void create(Composite tabFolder) {
+
+		createControls(tabFolder);
 	}
 
 	private boolean isEditingAllowed() {
@@ -149,8 +155,6 @@ public class MessageTabView {
 		scrollComposite.addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
-//				Rectangle r = scrollComposite.getClientArea();
-//				scrollComposite.setMinSize(messagesComposite.computeSize(r.width, SWT.DEFAULT));
 				scrollComposite.setMinSize(messagesComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 		});
@@ -160,7 +164,7 @@ public class MessageTabView {
 		return messagesComposite;
 	}
 
-	private void createControls(Composite composite, final ChangeInfo changeInfo) {
+	private void createControls(Composite composite) {
 		final Composite messagesComposite;
 
 		//Define the proper instance of the composite, i.e. Tabfolder or anything else
@@ -178,14 +182,14 @@ public class MessageTabView {
 		msgTextData.setEditable(isEditingAllowed());
 
 		final Button btnCancel = new Button(messagesComposite, SWT.NONE);
-		GridData gd_btnCancel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		btnCancel.setLayoutData(gd_btnCancel);
+		GridData gdBtnCancel = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		btnCancel.setLayoutData(gdBtnCancel);
 		btnCancel.setText(Messages.MessageTabView_2);
 		btnCancel.setEnabled(false);
 
 		final Button fBtnSave = new Button(messagesComposite, SWT.NONE);
-		GridData gd_btnSave_1 = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
-		fBtnSave.setLayoutData(gd_btnSave_1);
+		GridData gdBtnSave = new GridData(SWT.LEFT, SWT.TOP, false, false, 3, 1);
+		fBtnSave.setLayoutData(gdBtnSave);
 		fBtnSave.setText(Messages.MessageTabView_3);
 		fBtnSave.setEnabled(false);
 
@@ -193,7 +197,7 @@ public class MessageTabView {
 			btnCancel.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					msgTextData.setText(changeInfo.getUserSelectedRevision().getCommit().getMessage());
+					msgTextData.setText(fChangeInfo.getUserSelectedRevision().getCommit().getMessage());
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
 				}
@@ -201,17 +205,16 @@ public class MessageTabView {
 		}
 
 		if (isEditingAllowed()) {
-			ModifyListener textModifiedListener = new ModifyListener() {
-				public void modifyText(ModifyEvent event) {
-					if (changeInfo.getUserSelectedRevision() != null
-							&& changeInfo.getUserSelectedRevision().getCommit().getMessage().compareTo(
-									msgTextData.getText()) != 0) {
-						fBtnSave.setEnabled(true);
-						btnCancel.setEnabled(true);
-					} else {
-						fBtnSave.setEnabled(false);
-						btnCancel.setEnabled(false);
-					}
+			ModifyListener textModifiedListener = event -> {
+				if (fChangeInfo.getUserSelectedRevision() != null && fChangeInfo.getUserSelectedRevision()
+						.getCommit()
+						.getMessage()
+						.compareTo(msgTextData.getText()) != 0) {
+					fBtnSave.setEnabled(true);
+					btnCancel.setEnabled(true);
+				} else {
+					fBtnSave.setEnabled(false);
+					btnCancel.setEnabled(false);
 				}
 			};
 			msgTextData.addModifyListener(textModifiedListener);
@@ -258,8 +261,8 @@ public class MessageTabView {
 			});
 
 			msgDatecommitterData = new Label(messagesComposite, SWT.NONE);
-			GridData gd_DateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-			msgDatecommitterData.setLayoutData(gd_DateCommitter);
+			GridData gdDateCommitter = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
+			msgDatecommitterData.setLayoutData(gdDateCommitter);
 
 			//LINE 3 - Commit: <commitId>
 			Label lblCommit = new Label(messagesComposite, SWT.NONE);
@@ -311,11 +314,12 @@ public class MessageTabView {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					super.widgetSelected(e);
-					ChangeCommitMsgCommand editMessageCmd = fGerritClient.editMessage(changeInfo.getId());
+					ChangeCommitMsgCommand editMessageCmd = fGerritClient.editMessage(fChangeInfo.getId());
 					ChangeEditMessageInput changeEditMessageInput = new ChangeEditMessageInput();
 					changeEditMessageInput.setMessage(msgTextData.getText());
 					editMessageCmd.setCommandInput(changeEditMessageInput);
-					PublishChangeEditCommand publishChangeEditCmd = fGerritClient.publishChangeEdit(changeInfo.getId());
+					PublishChangeEditCommand publishChangeEditCmd = fGerritClient
+							.publishChangeEdit(fChangeInfo.getId());
 
 					try {
 						editMessageCmd.call();
@@ -326,7 +330,7 @@ public class MessageTabView {
 					}
 					fBtnSave.setEnabled(false);
 					btnCancel.setEnabled(false);
-					ModelLoader loader = ModelLoader.initialize(fGerritClient, changeInfo);
+					ModelLoader loader = ModelLoader.initialize(fGerritClient, fChangeInfo);
 					loader.loadBasicInformation(false);
 					loader.dispose();
 				}
@@ -338,91 +342,131 @@ public class MessageTabView {
 		}
 
 		//Set the binding for this section
-		msgTabDataBindings(changeInfo);
+		msgTabDataBindings();
 	}
 
-	protected void msgTabDataBindings(ChangeInfo changeInfo) {
-		{
-			//the commit message
-			final FeaturePath commitMessage = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__MESSAGE);
-			IObservableValue msgTextDataValue = EMFProperties.value(commitMessage).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgTextData), msgTextDataValue, null, null);
-		}
+	private void msgTabDataBindings() {
+		bindCommitMessage();
 		if (!fShowExtraInfo) {
 			observableCollector = new ObservableCollector(bindingContext);
 			return;// Do not bind any other functionality when not shown
 		}
 
-		{
-			//show commit author
-			final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR);
-			IObservableValue msgAuthorDataValue = EMFProperties.value(authorName).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgAuthorData), msgAuthorDataValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
-		}
-		{
-			final FeaturePath commitDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR,
-					ModelPackage.Literals.GIT_PERSON_INFO__DATE);
-			IObservableValue msgAuthorDateDataValue = EMFProperties.value(commitDate).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgDatePushData), msgAuthorDateDataValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
-		}
-		{
-			//Show committer name
-			final FeaturePath committerName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER);
-			IObservableValue msgCommitterDataValue = EMFProperties.value(committerName).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgCommitterData), msgCommitterDataValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
-		}
-		{
-			//Show committer date
-			final FeaturePath commiterDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER,
-					ModelPackage.Literals.GIT_PERSON_INFO__DATE);
-			IObservableValue msgCommitterDateDataValue = EMFProperties.value(commiterDate).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgDatecommitterData), msgCommitterDateDataValue,
-					null, new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
-		}
-		{
-			//show commit id
-			final FeaturePath commitId = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMIT);
-			IObservableValue msgCommitidDataValue = EMFProperties.value(commitId).observe(changeInfo);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgCommitidData), msgCommitidDataValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.linkText()));
-		}
-		{
-			//show commit parents
-			FeaturePath commitParents = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-					ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__PARENTS);
-			final IObservableList parents = EMFProperties.list(commitParents).observe(changeInfo);
-			ComputedValue parentCommitsAsString = new ComputedValue<String>() {
-				@Override
-				protected String calculate() {
-					Iterator it = parents.iterator();
-					String result = ""; //$NON-NLS-1$
-					while (it.hasNext()) {
-						CommitInfo info = (CommitInfo) it.next();
-						result += info.getCommit() + " "; //$NON-NLS-1$
-					}
-					return result;
-				}
-			};
-			bindingContext.bindValue(WidgetProperties.text().observe(msgParentIdData), parentCommitsAsString, null,
-					null);
-		}
-		{
-			//Show change id
-			IObservableValue msgChangeIdDataValue = EMFObservables.observeValue(changeInfo,
-					ModelPackage.Literals.CHANGE_INFO__CHANGE_ID);
-			bindingContext.bindValue(WidgetProperties.text().observe(msgChangeIdData), msgChangeIdDataValue, null,
-					new UpdateValueStrategy().setConverter(DataConverter.linkText()));
-		}
+		bindComitAuthor();
+		bindCommitDate();
+		bindCommitterName();
+		bindCommitterDate();
+		bindCommitId();
+		bindCommitParents();
+		bindChangeId();
 		observableCollector = new ObservableCollector(bindingContext);
+	}
+
+	/**
+	 *
+	 */
+	private void bindChangeId() {
+		//Show change id
+		IObservableValue<String> msgChangeIdDataValue = EMFObservables.observeValue(fChangeInfo,
+				ModelPackage.Literals.CHANGE_INFO__CHANGE_ID);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgChangeIdData), msgChangeIdDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitParents() {
+		//show commit parents
+		FeaturePath commitParents = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__PARENTS);
+		final IObservableList parents = EMFProperties.list(commitParents).observe(fChangeInfo);
+		ComputedValue<String> parentCommitsAsString = new ComputedValue<String>() {
+			@Override
+			protected String calculate() {
+				Iterator it = parents.iterator();
+				StringBuilder result = new StringBuilder();
+				while (it.hasNext()) {
+					CommitInfo info = (CommitInfo) it.next();
+					result.append(info.getCommit());
+					result.append(" "); //$NON-NLS-1$
+				}
+				return result.toString().trim();
+			}
+		};
+		bindingContext.bindValue(WidgetProperties.text().observe(msgParentIdData), parentCommitsAsString, null, null);
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitId() {
+		//show commit id
+		final FeaturePath commitId = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMIT);
+		IObservableValue<String> msgCommitidDataValue = EMFProperties.value(commitId).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgCommitidData), msgCommitidDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitterDate() {
+		//Show committer date
+		final FeaturePath commiterDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER,
+				ModelPackage.Literals.GIT_PERSON_INFO__DATE);
+		IObservableValue<String> msgCommitterDateDataValue = EMFProperties.value(commiterDate).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgDatecommitterData), msgCommitterDateDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitterName() {
+		//Show committer name
+		final FeaturePath committerName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER);
+		IObservableValue<String> msgCommitterDataValue = EMFProperties.value(committerName).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgCommitterData), msgCommitterDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitDate() {
+		final FeaturePath commitDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR,
+				ModelPackage.Literals.GIT_PERSON_INFO__DATE);
+		IObservableValue<String> msgAuthorDateDataValue = EMFProperties.value(commitDate).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgDatePushData), msgAuthorDateDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
+	}
+
+	/**
+	 *
+	 */
+	private void bindComitAuthor() {
+		//show commit author
+		final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR);
+		IObservableValue<String> msgAuthorDataValue = EMFProperties.value(authorName).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgAuthorData), msgAuthorDataValue, null,
+				new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
+	}
+
+	/**
+	 *
+	 */
+	private void bindCommitMessage() {
+		//the commit message
+		final FeaturePath commitMessage = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__MESSAGE);
+		IObservableValue<String> msgTextDataValue = EMFProperties.value(commitMessage).observe(fChangeInfo);
+		bindingContext.bindValue(WidgetProperties.text().observe(msgTextData), msgTextDataValue, null, null);
 	}
 
 	public void dispose() {

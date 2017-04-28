@@ -80,10 +80,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
@@ -109,7 +107,7 @@ public class ChangeDetailEditor extends EditorPart {
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
-	public static int REFRESH_RATE = 60000;
+	private static int REFRESH_RATE = 60000;
 
 	private DetailsTabView detailsTab = null;
 
@@ -171,11 +169,11 @@ public class ChangeDetailEditor extends EditorPart {
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tabFolder.setBackground(parent.getBackground());
 
-		historytab = new HistoryTabView();
-		historytab.create(fGerritClient, tabFolder, fChangeInfo);
+		historytab = new HistoryTabView(fGerritClient, fChangeInfo);
+		historytab.create(tabFolder);
 
-		messageTab = new MessageTabView();
-		messageTab.create(fGerritClient, tabFolder, fChangeInfo);
+		messageTab = new MessageTabView(fGerritClient, fChangeInfo);
+		messageTab.create(tabFolder);
 
 		detailsTab = new DetailsTabView(fGerritClient, fChangeInfo);
 		detailsTab.create(tabFolder);
@@ -191,72 +189,48 @@ public class ChangeDetailEditor extends EditorPart {
 	}
 
 	private Composite headerSection(final Composite parent) {
-		Group group_header = new Group(parent, SWT.NONE);
-		group_header.setLayout(new GridLayout(10, false));
-		group_header.setBackground(parent.getBackground());
+		Group groupHeader = new Group(parent, SWT.NONE);
+		groupHeader.setLayout(new GridLayout(10, false));
+		groupHeader.setBackground(parent.getBackground());
 
-		Label lblId = new Label(group_header, SWT.NONE);
+		Label lblId = new Label(groupHeader, SWT.NONE);
 		lblId.setText(Messages.ChangeDetailEditor_2);
 
-		shortIdData = new Text(group_header, SWT.NONE);
+		shortIdData = new Text(groupHeader, SWT.NONE);
 		shortIdData.setEditable(false);
 		shortIdData.setBackground(parent.getBackground());
 		shortIdData.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 
-		statusData = new Text(group_header, SWT.LEFT);
-		GridData gd_lblStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		statusData.setLayoutData(gd_lblStatus);
+		statusData = new Text(groupHeader, SWT.LEFT);
+		GridData gdLblStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		statusData.setLayoutData(gdLblStatus);
 		statusData.setEditable(false);
-		statusData.addListener(SWT.Modify, new Listener() {
+		statusData.addListener(SWT.Modify, event -> statusData.getParent().layout());
 
-			@Override
-			public void handleEvent(Event event) {
-				statusData.getParent().layout();
-			}
-		});
-
-		Label lblSubject = new Label(group_header, SWT.NONE);
+		Label lblSubject = new Label(groupHeader, SWT.NONE);
 		lblSubject.setText(Messages.ChangeDetailEditor_3);
-		GridData gd_Subject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_Subject.horizontalIndent = 10;
-		lblSubject.setLayoutData(gd_Subject);
+		GridData gdSubject = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gdSubject.horizontalIndent = 10;
+		lblSubject.setLayoutData(gdSubject);
 
-		subjectData = new Text(group_header, SWT.NONE);
-		GridData gd_lblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		subjectData.setLayoutData(gd_lblSubjectData);
+		subjectData = new Text(groupHeader, SWT.NONE);
+		GridData gdLblSubjectData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		subjectData.setLayoutData(gdLblSubjectData);
 		subjectData.setEditable(false);
 		subjectData.setBackground(parent.getBackground());
 
 		final ToolTip tip = new ToolTip(parent.getShell(), SWT.NONE);
 
-		subjectData.addListener(SWT.MouseMove, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				tip.setVisible(false);
-
-			}
-		});
-		subjectData.addListener(SWT.MouseHover, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-
-				tip.setMessage(subjectData.getText());
-				tip.setVisible(true);
-			}
+		subjectData.addListener(SWT.MouseMove, event -> tip.setVisible(false));
+		subjectData.addListener(SWT.MouseHover, event -> {
+			tip.setMessage(subjectData.getText());
+			tip.setVisible(true);
 		});
 
-		subjectData.addListener(SWT.Modify, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				subjectData.getParent().layout();
-			}
-		});
+		subjectData.addListener(SWT.Modify, event -> subjectData.getParent().layout());
 
 		final String ACTIVATION_MESSAGE = Messages.ChangeDetailEditor_4;
-		Button activeReview = new Button(group_header, SWT.CHECK);
+		Button activeReview = new Button(groupHeader, SWT.CHECK);
 		activeReview.setSelection(false);
 		activeReview.setText(ACTIVATION_MESSAGE);
 		activeReview.setToolTipText(Messages.ChangeDetailEditor_5);
@@ -271,7 +245,7 @@ public class ChangeDetailEditor extends EditorPart {
 							return ACTIVATION_MESSAGE;
 						}
 						if (((RevisionInfo) value).getChangeInfo().getId().equals(fChangeInfo.getId())) {
-							return Messages.ChangeDetailEditor_7 + (((RevisionInfo) value)).get_number();
+							return Messages.ChangeDetailEditor_7 + ((RevisionInfo) value).get_number();
 						}
 						return ACTIVATION_MESSAGE;
 					}
@@ -317,15 +291,15 @@ public class ChangeDetailEditor extends EditorPart {
 
 		//Add Delete revision button for DRAFT patchset
 		deleteDraftRevision = new DeleteDraftRevisionProvider();
-		deleteDraftRevision.create(group_header, fGerritClient, fChangeInfo);
+		deleteDraftRevision.create(groupHeader, fGerritClient, fChangeInfo);
 
 		//Create the PatchSetButton
 		patchSetSelector = new PatchSetHandlerProvider();
-		patchSetSelector.create(group_header, fChangeInfo);
+		patchSetSelector.create(groupHeader, fChangeInfo);
 
 		//Set the binding for this section
 		headerSectionDataBindings();
-		return group_header;
+		return groupHeader;
 	}
 
 	private Composite buttonSection(final Composite parent) {
@@ -355,129 +329,14 @@ public class ChangeDetailEditor extends EditorPart {
 		revertButton.setEnabled(false);
 
 		//Bind the submit button
-		{
-			IObservableValue observeSubmitable = EMFProperties
-					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
-					.value(ModelPackage.Literals.REVISION_INFO__SUBMITABLE)
-					.observe(fChangeInfo);
-			bindingContext.bindValue(WidgetProperties.enabled().observe(submitButton), observeSubmitable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeSubmitable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
-						@Override
-						public Object convert(Object value) {
-							if (value == null) {
-								return false;
-							}
-							boolean state = ((Boolean) value).booleanValue();
-							if (state) {
-								return true;
-							}
-							if (revertButton.isVisible()) {
-								return false;
-							}
-							return true;
-						}
-					});
-		}
+		bindSubmitButton(submitButton, revertButton);
 
 		//Bind the revert button
-		{
-			IObservableValue observeRevertable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__REVERTABLE)
-					.observe(fChangeInfo);
-			bindingContext.bindValue(WidgetProperties.enabled().observe(revertButton), observeRevertable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			bindingContext.bindValue(WidgetProperties.visible().observe(revertButton), observeRevertable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+		bindRevertButton(submitButton, revertButton);
 
-			//When the revert is not enable, we need to force the submit button to be visible
-			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeRevertable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+		submitButton.addSelectionListener(submitSelectionListener());
 
-			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
-			hidableSubmitButton = new HideControlObservable(submitButton);
-			bindingContext.bindValue(hidableSubmitButton, observeRevertable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
-			hidableRevertButton = new HideControlObservable(revertButton);
-			bindingContext.bindValue(new HideControlObservable(revertButton), observeRevertable, null, null);
-		}
-
-		submitButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				SubmitProcess submitProcess = new SubmitProcess();
-				submitProcess.handleSubmit(fChangeInfo, fGerritClient);
-			}
-		});
-
-		revertButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean revertSuccessfull = false;
-				String revertMsg = NLS.bind(Messages.Revert_message, new Object[] { fChangeInfo.getSubject(),
-						fChangeInfo.getRevision().getCommit().getCommit(), fChangeInfo.get_number() });
-				ChangeInfo revertResult = null;
-				String revertErrorMessage = null;
-
-				while (!revertSuccessfull) {
-					final String errorMsg = revertErrorMessage;
-					final InputDialog replyDialog = new InputDialog(revertButton.getShell(),
-							Messages.Revert_dialog_title, Messages.Revert_dialog_message, revertMsg,
-							revertErrorMessage == null ? null : new IInputValidator() {
-								//Because InputDialog does not allow us to set the text w/o disabling the ok button,
-								//we need to trick the dialog in displaying what we want with this counter.
-								private int count = 0;
-
-								@Override
-								public String isValid(String newText) {
-									if (count == 0) {
-										count++;
-										return errorMsg;
-									} else {
-										return null;
-									}
-								}
-							}) {
-						@Override
-						protected int getInputTextStyle() {
-							return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
-						}
-
-						@Override
-						protected Control createDialogArea(Composite parent) {
-							Control res = super.createDialogArea(parent);
-							((GridData) this.getText().getLayoutData()).heightHint = 100;
-							((GridData) this.getText().getLayoutData()).widthHint = 500;
-							return res;
-						}
-					};
-					if (replyDialog.open() != Window.OK) {
-						return;
-					}
-
-					RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
-					RevertInput revertInput = new RevertInput();
-					revertMsg = replyDialog.getValue();
-					revertInput.setMessage(revertMsg);
-					revertCmd.setCommandInput(revertInput);
-
-					try {
-						revertResult = revertCmd.call();
-						if (revertResult == null) {
-							revertErrorMessage = revertCmd.getFailureReason();
-						} else {
-							revertSuccessfull = true;
-						}
-					} catch (EGerritException e3) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-						return;
-					}
-				}
-				UIUtils.openAnotherEditor(revertResult, fGerritClient);
-			}
-		});
+		revertButton.addSelectionListener(revertSelectionListener(revertButton));
 
 		Button fAbandon = new Button(c, SWT.PUSH);
 		fAbandon.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -488,130 +347,29 @@ public class ChangeDetailEditor extends EditorPart {
 		fRestore.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		fRestore.setEnabled(false);
 		fRestore.setText(ActionConstants.RESTORE.getLiteral());
+
 		//Bind the abandon button
-		{
-			IObservableValue observeAbandonable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__ABANDONABLE)
-					.observe(fChangeInfo);
-			bindingContext.bindValue(WidgetProperties.enabled().observe(fAbandon), observeAbandonable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
-						@Override
-						public Object convert(Object value) {
-							boolean state = ((Boolean) value).booleanValue();
-							if (state) {
-								return true;
-							}
-							if (fRestore.isVisible()) {
-								//We want to make sure to always show the submit button even if the restore is disabled so we at least get one button
-								return false;
-							}
-							return true;
-						}
-					});
-		}
+		bindAbandonButton(fAbandon, fRestore);
+
 		//Bind the restore button
-		{
-			IObservableValue observeRestorable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__RESTOREABLE)
-					.observe(fChangeInfo);
-			bindingContext.bindValue(WidgetProperties.enabled().observe(fRestore), observeRestorable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-			bindingContext.bindValue(WidgetProperties.visible().observe(fRestore), observeRestorable, null,
-					new NegateBooleanConverter());
+		bindRestoreButton(fAbandon, fRestore);
 
-			//When restore is not enable, we need to force the abandon button to be visible
-			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeRestorable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+		fAbandon.addSelectionListener(abandonSelectionListener(fAbandon));
 
-			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
-			bindingContext.bindValue(new HideControlObservable(fAbandon), observeRestorable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
-			bindingContext.bindValue(new HideControlObservable(fRestore), observeRestorable, null, null);
-		}
-
-		fAbandon.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
-						Messages.ChangeDetailEditor_13, Messages.ChangeDetailEditor_14, "", null); //$NON-NLS-1$
-				if (inputDialog.open() != Window.OK) {
-					return;
-				}
-
-				AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
-				AbandonInput abandonInput = new AbandonInput();
-				abandonInput.setMessage(inputDialog.getValue());
-
-				abandonCmd.setCommandInput(abandonInput);
-
-				CompletableFuture.runAsync(() -> {
-					try {
-						abandonCmd.call();
-					} catch (EGerritException e1) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-					}
-					refreshStatus();
-				}).thenRun(() -> {
-					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
-				});
-			}
-		});
-
-		fRestore.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
-						Messages.ChangeDetailEditor_16, Messages.ChangeDetailEditor_17, "", null); //$NON-NLS-1$
-				if (inputDialog.open() != Window.OK) {
-					return;
-				}
-
-				RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
-				RestoreInput restoreInput = new RestoreInput();
-				restoreInput.setMessage(inputDialog.getValue());
-
-				restoreCmd.setCommandInput(restoreInput);
-
-				CompletableFuture.runAsync(() -> {
-					try {
-						restoreCmd.call();
-					} catch (EGerritException e1) {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
-					}
-					refreshStatus();
-				}).thenRun(() -> {
-					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
-				});
-			}
-		});
+		fRestore.addSelectionListener(restoreSelectionListener(fAbandon));
 
 		Button rebaseButton = new Button(c, SWT.PUSH);
 		rebaseButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		rebaseButton.setText(ActionConstants.REBASE.getLiteral() + "..."); //$NON-NLS-1$
 
 		//Bind the rebase button
-		{
-			IObservableValue observeRebasable = EMFProperties
-					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
-					.value(ModelPackage.Literals.REVISION_INFO__REBASEABLE)
-					.observe(fChangeInfo);
-
-			bindingContext.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebasable,
-					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-		}
+		bindRebaseButton(rebaseButton);
 		rebaseButton.addSelectionListener(rebaseButtonListener(rebaseButton.getShell()));
 
 		Button download = new Button(c, SWT.PUSH);
 		download.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		download.setText(Messages.ChangeDetailEditor_24);
-		download.addSelectionListener(downloadButtonListener(parent));//checkoutButtonListener(parent));
+		download.addSelectionListener(downloadButtonListener(parent));
 
 		Button cherryPickToRemoteBranch = new Button(c, SWT.PUSH);
 		cherryPickToRemoteBranch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -623,14 +381,7 @@ public class ChangeDetailEditor extends EditorPart {
 		bindingContext.bindValue(WidgetProperties.enabled().observe(cherryPickToRemoteBranch), cherryPickAble, null,
 				null);
 
-		cherryPickToRemoteBranch.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				CherryPickProcess cherryPickProcess = new CherryPickProcess(cherryPickToRemoteBranch.getShell(),
-						fGerritClient, fChangeInfo, fChangeInfo.getUserSelectedRevision());
-				cherryPickProcess.handleCherryPick();
-			}
-		});
+		cherryPickToRemoteBranch.addSelectionListener(cherryPickSelectionListener(cherryPickToRemoteBranch));
 
 		Button replyButton = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		replyButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -638,25 +389,7 @@ public class ChangeDetailEditor extends EditorPart {
 		if (fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			replyButton.setEnabled(false);
 		}
-		replyButton.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				//Adjust the list of label which the current user can set to a maximum value
-				String loginUser = fGerritClient.getRepository().getServerInfo().getUserName();
-				Map<String, Integer> adjustedAllowedButton = fChangeInfo.getLabelsNotAtMax(loginUser);
-				if (adjustedAllowedButton.isEmpty()) {
-					//Should open directly the reply dialog, no sub-menu
-					ReplyProcess replyProcess = new ReplyProcess();
-					replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
-							fChangeInfo.getUserSelectedRevision(), null);
-				} else {
-					MenuManager mgr = new MenuManager();
-					buildReplyDynamicMenu(adjustedAllowedButton, mgr);
-					mgr.createContextMenu(replyButton).setVisible(true);
-				}
-			}
-		});
+		replyButton.addSelectionListener(replySelectionListener(replyButton));
 
 		Button draftButton = new Button(c, SWT.PUSH | SWT.DROP_DOWN | SWT.ARROW_DOWN);
 		draftButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -665,7 +398,18 @@ public class ChangeDetailEditor extends EditorPart {
 				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.enabled().observe(draftButton), observeDeleteable,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
-		draftButton.addSelectionListener(new SelectionAdapter() {
+		draftButton.addSelectionListener(draftSelectionListener(draftButton));
+
+		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		return c;
+	}
+
+	/**
+	 * @param draftButton
+	 * @return
+	 */
+	private SelectionAdapter draftSelectionListener(Button draftButton) {
+		return new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				org.eclipse.swt.widgets.Menu menu = new org.eclipse.swt.widgets.Menu(draftButton.getShell(),
@@ -731,10 +475,209 @@ public class ChangeDetailEditor extends EditorPart {
 
 				menu.setVisible(true);
 			}
-		});
+		};
+	}
 
-		c.setSize(c.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		return c;
+	/**
+	 * @param replyButton
+	 * @return
+	 */
+	private SelectionAdapter replySelectionListener(Button replyButton) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//Adjust the list of label which the current user can set to a maximum value
+				String loginUser = fGerritClient.getRepository().getServerInfo().getUserName();
+				Map<String, Integer> adjustedAllowedButton = fChangeInfo.getLabelsNotAtMax(loginUser);
+				if (adjustedAllowedButton.isEmpty()) {
+					//Should open directly the reply dialog, no sub-menu
+					ReplyProcess replyProcess = new ReplyProcess();
+					replyProcess.handleReplyDialog(replyButton.getShell(), fChangeInfo, fGerritClient,
+							fChangeInfo.getUserSelectedRevision(), null);
+				} else {
+					MenuManager mgr = new MenuManager();
+					buildReplyDynamicMenu(adjustedAllowedButton, mgr);
+					mgr.createContextMenu(replyButton).setVisible(true);
+				}
+			}
+		};
+	}
+
+	/**
+	 * @param cherryPickToRemoteBranch
+	 * @return
+	 */
+	private SelectionAdapter cherryPickSelectionListener(Button cherryPickToRemoteBranch) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CherryPickProcess cherryPickProcess = new CherryPickProcess(cherryPickToRemoteBranch.getShell(),
+						fGerritClient, fChangeInfo, fChangeInfo.getUserSelectedRevision());
+				cherryPickProcess.handleCherryPick();
+			}
+		};
+	}
+
+	/**
+	 * @return
+	 */
+	private SelectionAdapter submitSelectionListener() {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				SubmitProcess submitProcess = new SubmitProcess();
+				submitProcess.handleSubmit(fChangeInfo, fGerritClient);
+			}
+		};
+	}
+
+	/**
+	 * @param fAbandon
+	 * @return
+	 */
+	private SelectionAdapter restoreSelectionListener(Button fAbandon) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
+						Messages.ChangeDetailEditor_16, Messages.ChangeDetailEditor_17, "", null); //$NON-NLS-1$
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				RestoreCommand restoreCmd = fGerritClient.restore(fChangeInfo.getId());
+				RestoreInput restoreInput = new RestoreInput();
+				restoreInput.setMessage(inputDialog.getValue());
+
+				restoreCmd.setCommandInput(restoreInput);
+
+				CompletableFuture.runAsync(() -> {
+					try {
+						restoreCmd.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+					refreshStatus();
+				}).thenRun(() -> {
+					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
+				});
+			}
+		};
+	}
+
+	/**
+	 * @param fAbandon
+	 * @return
+	 */
+	private SelectionAdapter abandonSelectionListener(Button fAbandon) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				InputDialog inputDialog = new InputDialog(fAbandon.getParent().getShell(),
+						Messages.ChangeDetailEditor_13, Messages.ChangeDetailEditor_14, "", null); //$NON-NLS-1$
+				if (inputDialog.open() != Window.OK) {
+					return;
+				}
+
+				AbandonCommand abandonCmd = fGerritClient.abandon(fChangeInfo.getId());
+				AbandonInput abandonInput = new AbandonInput();
+				abandonInput.setMessage(inputDialog.getValue());
+
+				abandonCmd.setCommandInput(abandonInput);
+
+				CompletableFuture.runAsync(() -> {
+					try {
+						abandonCmd.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e1.getMessage());
+					}
+					refreshStatus();
+				}).thenRun(() -> {
+					new RefreshRelatedEditors(fChangeInfo, fGerritClient).schedule();
+				});
+			}
+		};
+	}
+
+	/**
+	 * @param revertButton
+	 * @return
+	 */
+	private SelectionAdapter revertSelectionListener(Button revertButton) {
+		return new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean revertSuccessfull = false;
+				String revertMsg = NLS.bind(Messages.Revert_message, new Object[] { fChangeInfo.getSubject(),
+						fChangeInfo.getRevision().getCommit().getCommit(), fChangeInfo.get_number() });
+				ChangeInfo revertResult = null;
+				String revertErrorMessage = null;
+
+				while (!revertSuccessfull) {
+					final String errorMsg = revertErrorMessage;
+					final InputDialog replyDialog = new InputDialog(revertButton.getShell(),
+							Messages.Revert_dialog_title, Messages.Revert_dialog_message, revertMsg,
+							revertErrorMessage == null ? null : new IInputValidator() {
+								//Because InputDialog does not allow us to set the text w/o disabling the ok button,
+								//we need to trick the dialog in displaying what we want with this counter.
+								private int count = 0;
+
+								@Override
+								public String isValid(String newText) {
+									if (count == 0) {
+										count++;
+										return errorMsg;
+									} else {
+										return null;
+									}
+								}
+							}) {
+						@Override
+						protected int getInputTextStyle() {
+							return SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.WRAP;
+						}
+
+						@Override
+						protected Control createDialogArea(Composite parent) {
+							Control res = super.createDialogArea(parent);
+							((GridData) this.getText().getLayoutData()).heightHint = 100;
+							((GridData) this.getText().getLayoutData()).widthHint = 500;
+							return res;
+						}
+					};
+					if (replyDialog.open() != Window.OK) {
+						return;
+					}
+
+					RevertCommand revertCmd = fGerritClient.revert(fChangeInfo.getId());
+					RevertInput revertInput = new RevertInput();
+					revertMsg = replyDialog.getValue();
+					revertInput.setMessage(revertMsg);
+					revertCmd.setCommandInput(revertInput);
+
+					try {
+						revertResult = revertCmd.call();
+						if (revertResult == null) {
+							revertErrorMessage = revertCmd.getFailureReason();
+						} else {
+							revertSuccessfull = true;
+						}
+					} catch (EGerritException e3) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+						return;
+					}
+				}
+				UIUtils.openAnotherEditor(revertResult, fGerritClient);
+			}
+		};
 	}
 
 	private SelectionListener rebaseButtonListener(Composite parent) {
@@ -754,6 +697,133 @@ public class ChangeDetailEditor extends EditorPart {
 				//Nothing to do
 			}
 		};
+	}
+
+	/**
+	 * @param rebaseButton
+	 */
+	private void bindRebaseButton(Button rebaseButton) {
+		{
+			IObservableValue observeRebasable = EMFProperties
+					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+					.value(ModelPackage.Literals.REVISION_INFO__REBASEABLE)
+					.observe(fChangeInfo);
+
+			bindingContext.bindValue(WidgetProperties.enabled().observe(rebaseButton), observeRebasable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+		}
+	}
+
+	/**
+	 * @param fAbandon
+	 * @param fRestore
+	 */
+	private void bindRestoreButton(Button fAbandon, Button fRestore) {
+		{
+			IObservableValue observeRestorable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__RESTOREABLE)
+					.observe(fChangeInfo);
+			bindingContext.bindValue(WidgetProperties.enabled().observe(fRestore), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			bindingContext.bindValue(WidgetProperties.visible().observe(fRestore), observeRestorable, null,
+					new NegateBooleanConverter());
+
+			//When restore is not enable, we need to force the abandon button to be visible
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+
+			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
+			bindingContext.bindValue(new HideControlObservable(fAbandon), observeRestorable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+			bindingContext.bindValue(new HideControlObservable(fRestore), observeRestorable, null, null);
+		}
+	}
+
+	/**
+	 * @param fAbandon
+	 * @param fRestore
+	 */
+	private void bindAbandonButton(Button fAbandon, Button fRestore) {
+		{
+			IObservableValue observeAbandonable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__ABANDONABLE)
+					.observe(fChangeInfo);
+			bindingContext.bindValue(WidgetProperties.enabled().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			bindingContext.bindValue(WidgetProperties.visible().observe(fAbandon), observeAbandonable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
+						@Override
+						public Object convert(Object value) {
+							boolean state = ((Boolean) value).booleanValue();
+							if (state) {
+								return true;
+							}
+							if (fRestore.isVisible()) {
+								//We want to make sure to always show the submit button even if the restore is disabled so we at least get one button
+								return false;
+							}
+							return true;
+						}
+					});
+		}
+	}
+
+	/**
+	 * @param submitButton
+	 * @param revertButton
+	 */
+	private void bindRevertButton(Button submitButton, Button revertButton) {
+		{
+			IObservableValue observeRevertable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__REVERTABLE)
+					.observe(fChangeInfo);
+			bindingContext.bindValue(WidgetProperties.enabled().observe(revertButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			bindingContext.bindValue(WidgetProperties.visible().observe(revertButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+
+			//When the revert is not enable, we need to force the submit button to be visible
+			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+
+			//We need to force a redraw of the layout to remove the whitespace that would otherwise be left by the buttons being hidden
+			hidableSubmitButton = new HideControlObservable(submitButton);
+			bindingContext.bindValue(hidableSubmitButton, observeRevertable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new NegateBooleanConverter());
+			hidableRevertButton = new HideControlObservable(revertButton);
+			bindingContext.bindValue(new HideControlObservable(revertButton), observeRevertable, null, null);
+		}
+	}
+
+	/**
+	 * @param submitButton
+	 * @param revertButton
+	 */
+	private void bindSubmitButton(Button submitButton, Button revertButton) {
+		{
+			IObservableValue observeSubmitable = EMFProperties
+					.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
+					.value(ModelPackage.Literals.REVISION_INFO__SUBMITABLE)
+					.observe(fChangeInfo);
+			bindingContext.bindValue(WidgetProperties.enabled().observe(submitButton), observeSubmitable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+			bindingContext.bindValue(WidgetProperties.visible().observe(submitButton), observeSubmitable,
+					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
+						@Override
+						public Object convert(Object value) {
+							if (value == null) {
+								return false;
+							}
+							boolean state = ((Boolean) value).booleanValue();
+							if (state) {
+								return true;
+							}
+							if (revertButton.isVisible()) {
+								return false;
+							}
+							return true;
+						}
+					});
+		}
 	}
 
 	private void buildReplyDynamicMenu(Map<String, Integer> adjustedAllowedButton, MenuManager mgr) {
@@ -839,7 +909,7 @@ public class ChangeDetailEditor extends EditorPart {
 		loader.reload(true);
 	}
 
-	protected void headerSectionDataBindings() {
+	private void headerSectionDataBindings() {
 		//Show id
 		IObservableValue idObservable = EMFProperties.value(ModelPackage.Literals.CHANGE_INFO__NUMBER)
 				.observe(fChangeInfo);

@@ -66,7 +66,7 @@ public class ReplyDialog extends InputDialog {
 	// A map of the permitted labels that maps a label name to the list of
 	// values that are allowed for that label. Only set if 'detailed labels' are
 	// requested.
-	private Map<String, EList<String>> permitted_labels;
+	private Map<String, EList<String>> permittedLabels;
 
 	private Composite keyComposite;
 
@@ -76,9 +76,9 @@ public class ReplyDialog extends InputDialog {
 
 	private ScrolledComposite scrolledDraftArea;
 
-	private final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
+	private static final String DISPLAYWIDGET = "displayWidget"; //$NON-NLS-1$
 
-	private Map<String, Integer> lastUserVotes = new LinkedHashMap<String, Integer>();
+	private Map<String, Integer> lastUserVotes = new LinkedHashMap<>();
 
 	private RevisionInfo fRevisionInfo;
 
@@ -95,7 +95,7 @@ public class ReplyDialog extends InputDialog {
 				null);
 		fRevisionInfo = revisionToReplyTo;
 		fGerritClient = gerritClient;
-		permitted_labels = revisionToReplyTo.getChangeInfo().getSortedPermittedLabels();
+		permittedLabels = revisionToReplyTo.getChangeInfo().getSortedPermittedLabels();
 		labelsInfo = revisionToReplyTo.getChangeInfo().getLabels();
 		boolean isVoteAllowed = revisionToReplyTo.getId()
 				.equals(revisionToReplyTo.getChangeInfo().getCurrent_revision());
@@ -305,13 +305,13 @@ public class ReplyDialog extends InputDialog {
 			scrolledDraftArea.setLayoutData(grid);
 			Composite composite = new Composite(scrolledDraftArea, SWT.NONE);
 
-			GridLayout gl_composite = new GridLayout(1, false);
-			gl_composite.marginTop = 0;
-			gl_composite.marginHeight = 0;
-			composite.setLayout(gl_composite);
-			GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-			gd_composite.heightHint = 150;
-			composite.setLayoutData(gd_composite);
+			GridLayout glComposite = new GridLayout(1, false);
+			glComposite.marginTop = 0;
+			glComposite.marginHeight = 0;
+			composite.setLayout(glComposite);
+			GridData gdComposite = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+			gdComposite.heightHint = 150;
+			composite.setLayoutData(gdComposite);
 			composite.addControlListener(new ControlListener() {
 
 				@Override
@@ -397,14 +397,14 @@ public class ReplyDialog extends InputDialog {
 			return;//no need to create the composite
 		}
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout gl_composite = new GridLayout(3, false);
-		gl_composite.marginTop = 3;
-		composite.setLayout(gl_composite);
-		GridData gd_composite = new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1);
-		int height = 75 + (30 * (permitted_labels.size() - 1));//Increase by 30  for each line to add after
-		gd_composite.minimumHeight = height;
-		gd_composite.heightHint = height;
-		composite.setLayoutData(gd_composite);
+		GridLayout glComposite = new GridLayout(3, false);
+		glComposite.marginTop = 3;
+		composite.setLayout(glComposite);
+		GridData gdComposite = new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1);
+		int height = 75 + (30 * (permittedLabels.size() - 1));//Increase by 30  for each line to add after
+		gdComposite.minimumHeight = height;
+		gdComposite.heightHint = height;
+		composite.setLayoutData(gdComposite);
 		keyComposite = createComposite(composite, SWT.LEFT, 1, false);
 		radioButtonComposite = createComposite(composite, SWT.CENTER, 1, false);
 		detailTextComposite = createComposite(composite, SWT.LEFT, 1, true);
@@ -415,11 +415,11 @@ public class ReplyDialog extends InputDialog {
 
 	private Composite createComposite(Composite parent, int horizontalSwt, int numColumn, boolean grabHorizon) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout gl_composite = new GridLayout(numColumn, false);
-		gl_composite.marginTop = 3;
-		composite.setLayout(gl_composite);
-		GridData gd_composite = new GridData(horizontalSwt, SWT.CENTER, grabHorizon, false);
-		composite.setLayoutData(gd_composite);
+		GridLayout glComposite = new GridLayout(numColumn, false);
+		glComposite.marginTop = 3;
+		composite.setLayout(glComposite);
+		GridData gdComposite = new GridData(horizontalSwt, SWT.CENTER, grabHorizon, false);
+		composite.setLayoutData(gdComposite);
 		return composite;
 	}
 
@@ -460,7 +460,7 @@ public class ReplyDialog extends InputDialog {
 		lastUserVotes = fRevisionInfo.getChangeInfo().getUserLastLabelSet(loginUser);
 
 		//Set the radio buttons
-		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
+		Iterator<Map.Entry<String, EList<String>>> iterator = permittedLabels.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, EList<String>> permittedlabel = iterator.next();
 			sizeRadio = createARowRadioLabel(permittedlabel, maxRadio, fontSize.x);
@@ -498,7 +498,7 @@ public class ReplyDialog extends InputDialog {
 
 		radioComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		//Fill the dummy space
-		int middlePoint = (maxRadio + 1) / 2; //button position for the column = 0;
+		int middlePoint = (maxRadio + 1) / 2; //button position for the column  = 0
 		int minValue = Integer.parseInt(listPermitted.get(0)); //get the first minimum value
 		int numEmptyBefore = middlePoint + minValue - 1;
 		int numEmptyAfter = middlePoint - Integer.parseInt(listPermitted.get(listPermitted.size() - 1)) - 1;//compute the number of empty space to add at the end
@@ -581,7 +581,7 @@ public class ReplyDialog extends InputDialog {
 	 */
 	private Composite getRadioButtonHeaderLabels(int maxRadioChoice) {
 		EList<String> listPermitted = null;
-		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
+		Iterator<Map.Entry<String, EList<String>>> iterator = permittedLabels.entrySet().iterator();
 		//Get the structure having all the possible options
 		while (iterator.hasNext()) {
 			Entry<String, EList<String>> permittedlabel = iterator.next();
@@ -631,7 +631,7 @@ public class ReplyDialog extends InputDialog {
 	private int getMaxCountLabels() {
 		int maxButtons = 0;
 		int count = 0;
-		Iterator<Map.Entry<String, EList<String>>> iterator = permitted_labels.entrySet().iterator();
+		Iterator<Map.Entry<String, EList<String>>> iterator = permittedLabels.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<String, EList<String>> permittedlabel = iterator.next();
 			count = permittedlabel.getValue().size();
@@ -646,24 +646,21 @@ public class ReplyDialog extends InputDialog {
 	 * @return Listener
 	 */
 	private Listener radioGroupListener() {
-		return new Listener() {
 
-			@Override
-			public void handleEvent(Event event) {
-				Widget wid = event.widget;
-				Object obj = wid.getData();
-				String keyLabel = (String) wid.getData((String) obj);
-				String tootip = ((Button) wid).getToolTipText();
-				Object objWidget = wid.getData(DISPLAYWIDGET);
-				Label toShow = (Label) objWidget;
-				toShow.setText(tootip);
-				toShow.pack();
-				String st = (String) obj;
-				if (st.startsWith("+")) { //$NON-NLS-1$
-					st = st.substring(1);//parse the string for the positive value
-				}
-				lastUserVotes.put(keyLabel, Integer.parseInt(st.trim()));
+		return event -> {
+			Widget wid = event.widget;
+			Object obj = wid.getData();
+			String keyLabel = (String) wid.getData((String) obj);
+			String tootip = ((Button) wid).getToolTipText();
+			Object objWidget = wid.getData(DISPLAYWIDGET);
+			Label toShow = (Label) objWidget;
+			toShow.setText(tootip);
+			toShow.pack();
+			String st = (String) obj;
+			if (st.startsWith("+")) { //$NON-NLS-1$
+				st = st.substring(1);//parse the string for the positive value
 			}
+			lastUserVotes.put(keyLabel, Integer.parseInt(st.trim()));
 		};
 	}
 

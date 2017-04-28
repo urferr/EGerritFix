@@ -31,9 +31,9 @@ public class ReviewersTableLabelProvider extends BaseTableLabelProvider {
 	private static Display fDisplay = Display.getCurrent();
 
 	//Color used depending on the review state
-	private static Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
+	private static final Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
 
-	private static Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
+	private static final Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
 
 	private String[] dynamicName;
 

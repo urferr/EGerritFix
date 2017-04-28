@@ -56,7 +56,9 @@ public class HistoryTabView {
 
 	private TextViewerWithLinks msgTextData;
 
-	private GerritClient gerritClient;
+	private GerritClient fGerritClient;
+
+	private ChangeInfo fChangeInfo;
 
 	private UIFilesTable tableUIFiles;
 
@@ -66,29 +68,32 @@ public class HistoryTabView {
 
 	/**
 	 * The constructor.
+	 *
+	 * @param fChangeInfo
+	 * @param fGerritClient
 	 */
-	public HistoryTabView() {
+	public HistoryTabView(GerritClient gerritClient, ChangeInfo changeInfo) {
+		this.fGerritClient = gerritClient;
+		this.fChangeInfo = changeInfo;
 	}
 
 	/**
-	 * @param fGerritClient
 	 * @param tabFolder
-	 * @param listMessages
 	 *            List<ChangeMessageInfo>
 	 */
-	public void create(GerritClient gerritClient, TabFolder tabFolder, ChangeInfo changeInfo) {
-		this.gerritClient = gerritClient;
-		createControls(tabFolder, changeInfo);
+	public void create(TabFolder tabFolder) {
+
+		createControls(tabFolder);
 	}
 
-	private void createControls(TabFolder tabFolder, ChangeInfo changeInfo) {
+	private void createControls(TabFolder tabFolder) {
 		TabItem tbtmHistory = new TabItem(tabFolder, SWT.NONE);
 		tbtmHistory.setText(Messages.HistoryTabView_0);
 
 		SashForm sashForm = new SashForm(tabFolder, SWT.VERTICAL);
 		tbtmHistory.setControl(sashForm);
 
-		UIHistoryTable tableUIHistory = new UIHistoryTable(gerritClient);
+		UIHistoryTable tableUIHistory = new UIHistoryTable(fGerritClient);
 		tableUIHistory.createTableViewerSection(sashForm);
 
 		tableHistoryViewer = tableUIHistory.getViewer();
@@ -96,7 +101,7 @@ public class HistoryTabView {
 
 		msgTextData = new TextViewerWithLinks(sashFormHorizon, SWT.BORDER | SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);
 		msgTextData.setEditable(false);
-		tableUIFiles = new UIFilesTable(gerritClient, changeInfo, HISTORY_FILES);
+		tableUIFiles = new UIFilesTable(fGerritClient, fChangeInfo, HISTORY_FILES);
 		tableUIFiles.createTableViewerSection(sashFormHorizon);
 
 		//Set the % of display data.40% table and 60% for the comment message
@@ -110,21 +115,18 @@ public class HistoryTabView {
 
 			@Override
 			public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-				return new IHyperlinkDetector[] { new HyperLinkDetector(gerritClient, changeInfo) };
+				return new IHyperlinkDetector[] { new HyperLinkDetector(fGerritClient, fChangeInfo) };
 			}
 
 			@Override
 			public IHyperlinkPresenter getHyperlinkPresenter(final ISourceViewer sourceViewer) {
-				HyperLinkPresenter presenter = new HyperLinkPresenter(new RGB(0, 0, 255), sourceViewer, gerritClient,
-						changeInfo);
-
-				return presenter;
-			};
+				return new HyperLinkPresenter(new RGB(0, 0, 255), sourceViewer, fGerritClient, fChangeInfo);
+			}
 		});
 
 		//Set the % of display data.40% table and 60% for the comment message
 		sashForm.setWeights(new int[] { 40, 60 });
-		bind(changeInfo);
+		bind(fChangeInfo);
 	}
 
 	private void bind(ChangeInfo changeInfo) {
@@ -137,7 +139,7 @@ public class HistoryTabView {
 				new IValueProperty[] { EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__DATE),
 						EMFProperties.value(authorName),
 						EMFProperties.value(ModelPackage.Literals.CHANGE_MESSAGE_INFO__MESSAGE) });
-		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(watchedProperties, gerritClient));
+		tableHistoryViewer.setLabelProvider(new HistoryTableLabelProvider(watchedProperties, fGerritClient));
 		tableHistoryViewer
 				.setInput(EMFProperties.list(ModelPackage.Literals.CHANGE_INFO__MESSAGES).observe(changeInfo));
 
@@ -146,13 +148,12 @@ public class HistoryTabView {
 		IObservableValue textViewerDocument = BeanProperties.value(msgTextData.getClass(), "document") //$NON-NLS-1$
 				.observe(Realm.getDefault(), msgTextData);
 		UpdateValueStrategy textToDocumentStrategy = new UpdateValueStrategy();
-		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(gerritClient));
+		textToDocumentStrategy.setConverter(DataConverter.fromStringToDocument(fGerritClient));
 		dataBindingContext.bindValue(textViewerDocument, selection, null, textToDocumentStrategy);
 
 		//Automatically update the user selected revision as the user changes the selection
 		IObservableValue settableUserRevision = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION)
-				.observe(changeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION).observe(changeInfo);
 		dataBindingContext.bindValue(settableUserRevision, selection, null, new UpdateValueStrategy() {
 			@Override
 			public Object convert(Object value) {
@@ -160,7 +161,7 @@ public class HistoryTabView {
 					return null;
 				}
 				//-> from the message info to the revision
-				ChangeMessageInfo message = ((ChangeMessageInfo) value);
+				ChangeMessageInfo message = (ChangeMessageInfo) value;
 				ChangeInfo containingChange = (ChangeInfo) message.eContainer();
 				return containingChange.getRevisionByNumber(message.get_revision_number());
 			}

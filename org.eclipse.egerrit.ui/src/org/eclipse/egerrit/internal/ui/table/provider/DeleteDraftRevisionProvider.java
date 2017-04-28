@@ -56,8 +56,8 @@ public class DeleteDraftRevisionProvider {
 	public void create(Composite parent, GerritClient gerritClient, ChangeInfo changeInfo) {
 		fDeleteDraftRevisionButton = new Button(parent, SWT.BORDER);
 		fDeleteDraftRevisionButton.setText(Messages.DeleteDraft_Text);
-		GridData gd_deleteDraft = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
-		fDeleteDraftRevisionButton.setLayoutData(gd_deleteDraft);
+		GridData gdDeleteDraft = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
+		fDeleteDraftRevisionButton.setLayoutData(gdDeleteDraft);
 		fDeleteDraftRevisionButton.setToolTipText(Messages.DeleteDraft_Tip);
 
 		IObservableValue revisionInfoObserveValue = EMFProperties

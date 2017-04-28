@@ -21,7 +21,6 @@ import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.ui.EGerritImages;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -41,9 +40,6 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	private static final String COMMENTS = Messages.FileTableLabelProvider_1;
 
 	private static final String DRAFTS = Messages.FileTableLabelProvider_2;
-
-	// For the images
-	private static ImageRegistry fImageRegistry = new ImageRegistry();
 
 	//Layout selection for the file path. Also as a default value
 	private boolean nameFirst = true;
@@ -82,7 +78,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 				String path = null;
 				if (nameFirst) {
 					path = fileInfo.getPath();
-					int index = path.lastIndexOf("/"); //$NON-NLS-1$
+					int index = path.lastIndexOf('/');
 					if (index != -1) {
 						String fileName = path.substring(index + 1);
 						String firstName = fileName + " - " + path.substring(0, index); //$NON-NLS-1$
@@ -125,7 +121,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 						Iterator<CommentInfo> iterator2 = fileInfo.getComments().iterator();
 						while (iterator2.hasNext()) {
 							CommentInfo aComment2 = iterator2.next();
-							if ((Timestamp.valueOf(aComment2.getUpdated()).after(Timestamp.valueOf(currentUpdate)))) {
+							if (Timestamp.valueOf(aComment2.getUpdated()).after(Timestamp.valueOf(currentUpdate))) {
 								newCommentCount++;
 							}
 						}
@@ -166,7 +162,7 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 	 * @return Image
 	 */
 	private Image getReviewedStateImage(boolean aState) {
-		if (aState == true) {
+		if (aState) {
 			return EGerritImages.get(EGerritImages.CHECKED_IMAGE);
 		} else {
 			return null;
@@ -196,14 +192,9 @@ public class FileTableLabelProvider extends BaseTableLabelProvider {
 				}
 				break;
 			case 1:
-				return image;
 			case 2:
-				return image;
 			case 3:
-				return image;
 			case 4:
-				return image;
-
 			default:
 				return image;
 			}

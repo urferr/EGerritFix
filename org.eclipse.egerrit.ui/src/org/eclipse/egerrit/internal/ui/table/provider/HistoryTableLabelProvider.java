@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.Image;
  * @since 1.0
  */
 public class HistoryTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider {
-	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	private GerritClient gerritClient;
 
@@ -104,14 +104,9 @@ public class HistoryTableLabelProvider extends ObservableMapLabelProvider implem
 				}
 				break;
 			case 1:
-				return image;
 			case 2:
-				return image;
 			case 3:
-				return image;
 			case 4:
-				return image;
-
 			default:
 				return image;
 			}

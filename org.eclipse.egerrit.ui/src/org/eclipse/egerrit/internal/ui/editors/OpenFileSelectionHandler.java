@@ -43,7 +43,7 @@ public class OpenFileSelectionHandler extends AbstractHandler {
 			if (editorInput == null) {
 				FilesDialog dialog = FilesDialog.openedDialog();
 				if (dialog != null) {
-					if (event.getCommand().getId().equals("org.eclipse.egerrit.internal.ui.SelectPreviousFile")) { //$NON-NLS-1$
+					if ("org.eclipse.egerrit.internal.ui.SelectPreviousFile".equals(event.getCommand().getId())) { //$NON-NLS-1$
 						dialog.selectPreviousFile();
 					} else {
 						dialog.selectNextFile();

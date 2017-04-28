@@ -74,11 +74,9 @@ public class ReviewTableSorter extends ViewerComparator {
 
 	private int defaultCompare(Viewer aViewer, Object aE1, Object aE2) {
 		if (aViewer instanceof TreeViewer) {
-			if (fColumnIndex == 0) {
-				if (aE1 instanceof GerritDiffNode && aE2 instanceof GerritDiffNode) {
-					return getComparator().compare(Boolean.toString(((GerritDiffNode) aE1).getFileInfo().isReviewed()),
-							Boolean.toString(((GerritDiffNode) aE2).getFileInfo().isReviewed()));
-				}
+			if ((fColumnIndex == 0) && (aE1 instanceof GerritDiffNode && aE2 instanceof GerritDiffNode)) {
+				return getComparator().compare(Boolean.toString(((GerritDiffNode) aE1).getFileInfo().isReviewed()),
+						Boolean.toString(((GerritDiffNode) aE2).getFileInfo().isReviewed()));
 			}
 			TreeViewer tv = (TreeViewer) aViewer;
 			FileInfoCompareCellLabelProvider provider = (FileInfoCompareCellLabelProvider) tv

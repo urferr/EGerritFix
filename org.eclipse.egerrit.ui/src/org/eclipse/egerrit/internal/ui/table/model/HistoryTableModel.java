@@ -25,7 +25,7 @@ import org.eclipse.swt.SWT;
 // ------------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------------
-// Definition of the history table {date, author, message}
+// Definition of the history table :date, author, message
 public enum HistoryTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	COMMENT("", 20, false, true, SWT.LEFT), // //$NON-NLS-1$
@@ -51,26 +51,44 @@ public enum HistoryTableModel implements ITableModel {
 		fAlignment = align;
 	}
 
+	/**
+	 * return the name
+	 */
 	public String getName() {
 		return fHeader;
 	}
 
+	/**
+	 * return the column width
+	 */
 	public int getWidth() {
 		return fwidth;
 	}
 
+	/**
+	 * return boolean if the field is resize-able
+	 */
 	public boolean getResize() {
 		return fResize;
 	}
 
+	/**
+	 * return boolean if the column is move-able
+	 */
 	public boolean getMoveable() {
 		return fMoveable;
 	}
 
+	/**
+	 * return the alignment of the field
+	 */
 	public int getAlignment() {
 		return fAlignment;
 	}
 
+	/**
+	 * return an array with the column name
+	 */
 	public String[] getColumnName() {
 		ArrayList<String> listName = new ArrayList<String>();
 		for (ITableModel st : HistoryTableModel.values()) {
@@ -79,6 +97,9 @@ public enum HistoryTableModel implements ITableModel {
 		return listName.toArray(new String[] {});
 	}
 
+	/**
+	 * return the minimum width for all columns
+	 */
 	public int getMinimumWidth() {
 		int width = 0;
 		for (int index = 0; index < HistoryTableModel.values().length; index++) {

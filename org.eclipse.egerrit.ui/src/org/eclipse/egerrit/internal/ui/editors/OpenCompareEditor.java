@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OpenCompareEditor {
-	final static Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
+	private static final Logger logger = LoggerFactory.getLogger(OpenCompareEditor.class);
 
-	final static boolean SUPPORT_SWAP = Platform.getBundle("org.eclipse.compare") //$NON-NLS-1$
+	private static final boolean SUPPORT_SWAP = Platform.getBundle("org.eclipse.compare") //$NON-NLS-1$
 			.getVersion()
 			.compareTo(new Version("3.7.0")) > 0; //$NON-NLS-1$
 

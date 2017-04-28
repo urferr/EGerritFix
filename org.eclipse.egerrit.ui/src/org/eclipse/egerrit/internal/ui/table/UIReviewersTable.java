@@ -32,7 +32,7 @@ public class UIReviewersTable {
 
 	public static final String REVIEWERS_TABLE = "reviewersTable"; //$NON-NLS-1$
 
-	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+	private static final int TABLE_STYLE = SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION;
 
 	// ------------------------------------------------------------------------
 	// Variables

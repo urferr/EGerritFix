@@ -16,10 +16,10 @@ import org.eclipse.ui.IMarkerResolution2;
 /**
  * Base class for the quick fixes provided by egerrit
  */
-public abstract class EGerritQuickFix implements IMarkerResolution2 {
-	String label;
+abstract class EGerritQuickFix implements IMarkerResolution2 {
+	private String label;
 
-	String description;
+	private String description;
 
 	EGerritQuickFix(String label, String completeMessage) {
 		this.label = label;

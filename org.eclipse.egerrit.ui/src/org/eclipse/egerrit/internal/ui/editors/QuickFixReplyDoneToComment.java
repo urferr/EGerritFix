@@ -31,7 +31,7 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixReplyDoneToComment extends EGerritQuickFix {
+class QuickFixReplyDoneToComment extends EGerritQuickFix {
 
 	QuickFixReplyDoneToComment(String label, String completeMessage) {
 		super(label, completeMessage);

@@ -69,7 +69,7 @@ public class EGerritUIPlugin extends AbstractUIPlugin {
 	 *            the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String aPath) {
+	static ImageDescriptor getImageDescriptor(String aPath) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, aPath);
 	}
 

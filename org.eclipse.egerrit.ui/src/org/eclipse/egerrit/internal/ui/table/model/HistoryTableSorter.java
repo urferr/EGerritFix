@@ -106,68 +106,90 @@ public class HistoryTableSorter extends ViewerSorter {
 
 		if (aViewer instanceof TableViewer) {
 
-			// We are in a table
-			TableViewer tv = (TableViewer) aViewer;
-			tv.getTable().setSortColumn(tv.getTable().getColumn(fColumnIndex));
+			return defaultSortTable(aViewer, aE1, aE2);
+		}
 
-			// Lookup aE1 and aE2
-			int idx1 = -1, idx2 = -1;
-			for (int i = 0; i < tv.getTable().getItemCount(); i++) {
-				Object obj = tv.getElementAt(i);
+		else if (aViewer instanceof TreeViewer) {
+
+			return defaultSortTree(aViewer, aE1, aE2);
+		}
+		return 0;
+	}
+
+	/**
+	 * @param aViewer
+	 * @param aE1
+	 * @param aE2
+	 * @return
+	 */
+	private int defaultSortTree(Viewer aViewer, Object aE1, Object aE2) {
+		TreeViewer tv = (TreeViewer) aViewer;
+		tv.getTree().setSortColumn(tv.getTree().getColumn(fColumnIndex));
+		int idx1 = -1;
+		int idx2 = -1;
+
+		Object[] listObj = tv.getTree().getItems();
+
+		for (int i = 0; i < listObj.length; i++) {
+			Object obj = ((TreeItem) listObj[i]).getData();
+			((TreeItem) listObj[i]).setExpanded(true);
+
+			if (obj != null) {
 				if (obj.equals(aE1)) {
 					idx1 = i;
 				} else if (obj.equals(aE2)) {
 					idx2 = i;
 				}
-				if (idx1 != -1 && idx2 != -1) {
+				if (idx1 > 0 && idx2 > 0) {
 					break;
 				}
 			}
-
-			// Compare the respective fields
-			int order = 0;
-
-			if (idx1 > -1 && idx2 > -1) {
-				String str1 = tv.getTable().getItems()[idx1].getText(this.fColumnIndex);
-				String str2 = tv.getTable().getItems()[idx2].getText(this.fColumnIndex);
-				order = str1.compareTo(str2);
-			}
-			return order;
 		}
 
-		else if (aViewer instanceof TreeViewer) {
-
-			TreeViewer tv = (TreeViewer) aViewer;
-			tv.getTree().setSortColumn(tv.getTree().getColumn(fColumnIndex));
-			int idx1 = -1, idx2 = -1;
-
-			Object[] listObj = tv.getTree().getItems();
-
-			for (int i = 0; i < listObj.length; i++) {
-				Object obj = ((TreeItem) listObj[i]).getData();
-				((TreeItem) listObj[i]).setExpanded(true);
-
-				if (obj != null) {
-					if (obj.equals(aE1)) {
-						idx1 = i;
-					} else if (obj.equals(aE2)) {
-						idx2 = i;
-					}
-					if (idx1 > 0 && idx2 > 0) {
-						break;
-					}
-				}
-			}
-
-			int order = 0;
-			if (idx1 > -1 && idx2 > -1) {
-				String str1 = tv.getTree().getItems()[idx1].getText(this.fColumnIndex);
-				String str2 = tv.getTree().getItems()[idx2].getText(this.fColumnIndex);
-				order = str1.compareTo(str2);
-			}
-			return order;
+		int order = 0;
+		if (idx1 > -1 && idx2 > -1) {
+			String str1 = tv.getTree().getItems()[idx1].getText(this.fColumnIndex);
+			String str2 = tv.getTree().getItems()[idx2].getText(this.fColumnIndex);
+			order = str1.compareTo(str2);
 		}
-		return 0;
+		return order;
+	}
+
+	/**
+	 * @param aViewer
+	 * @param aE1
+	 * @param aE2
+	 * @return
+	 */
+	private int defaultSortTable(Viewer aViewer, Object aE1, Object aE2) {
+		// We are in a table
+		TableViewer tv = (TableViewer) aViewer;
+		tv.getTable().setSortColumn(tv.getTable().getColumn(fColumnIndex));
+
+		// Lookup aE1 and aE2
+		int idx1 = -1;
+		int idx2 = -1;
+		for (int i = 0; i < tv.getTable().getItemCount(); i++) {
+			Object obj = tv.getElementAt(i);
+			if (obj.equals(aE1)) {
+				idx1 = i;
+			} else if (obj.equals(aE2)) {
+				idx2 = i;
+			}
+			if (idx1 != -1 && idx2 != -1) {
+				break;
+			}
+		}
+
+		// Compare the respective fields
+		int order = 0;
+
+		if (idx1 > -1 && idx2 > -1) {
+			String str1 = tv.getTable().getItems()[idx1].getText(this.fColumnIndex);
+			String str2 = tv.getTable().getItems()[idx2].getText(this.fColumnIndex);
+			order = str1.compareTo(str2);
+		}
+		return order;
 	}
 
 	// ------------------------------------------------------------------------

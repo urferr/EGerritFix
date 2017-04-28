@@ -29,13 +29,9 @@ import org.eclipse.swt.graphics.Image;
 
 public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 
-	final String EMPTY_STRING = ""; //$NON-NLS-1$
-
 	private static final String COMMENTS = Messages.FileInfoCompareCellLabelProvider_1;
 
 	private static final String DRAFTS = Messages.FileInfoCompareCellLabelProvider_2;
-
-	public static final String CHECKED_IMAGE = "greenCheck.png"; //$NON-NLS-1$
 
 	//Layout selection for the file path. Also as a default value
 	private boolean nameFirst = true;
@@ -70,12 +66,11 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 				return "A"; //$NON-NLS-1$
 			case GerritDifferences.DELETION:
 				return "D"; //$NON-NLS-1$
-			case GerritDifferences.CHANGE:
-				return "M"; //$NON-NLS-1$
 			case GerritDifferences.RENAMED:
 				return "R"; //$NON-NLS-1$
 			case GerritDifferences.COPIED:
 				return "C"; //$NON-NLS-1$
+			case GerritDifferences.CHANGE:
 			default:
 				return "M"; //$NON-NLS-1$
 			}
@@ -86,12 +81,12 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 			if (gerrritNode.getLeft() == null || !(gerrritNode.getLeft() instanceof CommentableCompareItem)) {
 				return ""; //$NON-NLS-1$
 			}
-			return prettyPrintComments(((CommentableCompareItem) gerrritNode.getLeft()));
+			return prettyPrintComments((CommentableCompareItem) gerrritNode.getLeft());
 		case 4:
 			if (gerrritNode.getRight() == null || !(gerrritNode.getRight() instanceof CommentableCompareItem)) {
 				return ""; //$NON-NLS-1$
 			}
-			return prettyPrintComments(((CommentableCompareItem) gerrritNode.getRight()));
+			return prettyPrintComments((CommentableCompareItem) gerrritNode.getRight());
 		case 5:
 			StringBuilder modifySize = new StringBuilder();
 			FileInfo file = gerrritNode.getDiffFileInfo() != null
@@ -152,7 +147,7 @@ public class FileInfoCompareCellLabelProvider extends CellLabelProvider {
 	 * @return Image
 	 */
 	private Image getReviewedStateImage(boolean aState) {
-		if (aState == true) {
+		if (aState) {
 			return EGerritImages.get(EGerritImages.CHECKED_IMAGE);
 		} else {
 			return null;

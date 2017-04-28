@@ -69,7 +69,19 @@ import org.slf4j.LoggerFactory;
  */
 
 public class ActiveWorkspaceRevision {
-	private final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
+	private static final String MARKERS_KEY = "markertip"; //$NON-NLS-1$
+
+	private static final String UI_EDITORS = "org.eclipse.ui.editors"; //$NON-NLS-1$
+
+	private static final String QUICKDIFF_QUICKDIFF = "quickdiff.quickDiff"; //$NON-NLS-1$
+
+	private static final String QUICKDIFF_DEFAULT = "quickdiff.defaultProvider"; //$NON-NLS-1$
+
+	private static final String ADDITION_INDICATION_OVERVIEW_RULE = "additionIndicationInOverviewRule"; //$NON-NLS-1$
+
+	private static final String CHANGE_INDICATION_OVERVIEW_RULE = "changeIndicationInOverviewRuler"; //$NON-NLS-1$
+
+	private static final String DELETION_INDICATION_OVERVIEW_RULE = "deletionIndicationInOverviewRuler"; //$NON-NLS-1$
 
 	private static Logger logger = LoggerFactory.getLogger(ChangeDetailEditor.class);
 
@@ -112,6 +124,17 @@ public class ActiveWorkspaceRevision {
 				}
 				if (msg.getEventType() == Notification.REMOVE) {
 					deleteMarker((CommentInfo) msg.getOldValue());
+				}
+			}
+		}
+
+		private void deleteMarker(CommentInfo commentToDelete) {
+			IMarker marker = markersManaged.remove(commentToDelete.getId());
+			if (marker != null) {
+				try {
+					marker.delete();
+				} catch (CoreException e) {
+					logger.debug("Failed to delete marker", e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -196,15 +219,13 @@ public class ActiveWorkspaceRevision {
 		if (!isProblemViewOpen()) {
 			IWorkbenchWindow[] listWW = PlatformUI.getWorkbench().getWorkbenchWindows();
 			for (IWorkbenchWindow element : listWW) {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						try {
-							element.getActivePage().showView("org.eclipse.ui.views.AllMarkersView", //$NON-NLS-1$
-									null, mode);
-						} catch (PartInitException e) {
-							EGerritCorePlugin
-									.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
-						}
+				Display.getDefault().asyncExec(() -> {
+					try {
+						element.getActivePage().showView("org.eclipse.ui.views.AllMarkersView", //$NON-NLS-1$
+								null, mode);
+					} catch (PartInitException e) {
+						EGerritCorePlugin
+								.logError(fGerritClient.getRepository().formatGerritVersion() + e.getMessage());
 					}
 				});
 			}
@@ -335,15 +356,13 @@ public class ActiveWorkspaceRevision {
 
 	private void deactivateQuickDiff() {
 		//Restore the values captured when we enabled the quickdiff
-		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+		Preferences preferences = InstanceScope.INSTANCE.getNode(UI_EDITORS);
 
-		preferences.put("quickdiff.quickDiff", new Boolean(fIsQuickDiffOn).toString());//$NON-NLS-1$
-		preferences.put("additionIndicationInOverviewRule", //$NON-NLS-1$
-				new Boolean(fIsAdditionIndicationInOverviewRule).toString());
-		preferences.put("changeIndicationInOverviewRuler", new Boolean(fIsChangeIndicationInOverviewRuler).toString());//$NON-NLS-1$
-		preferences.put("deletionIndicationInOverviewRuler", //$NON-NLS-1$
-				new Boolean(fIsDeletionIndicationInOverviewRuler).toString());
-		preferences.put("quickdiff.defaultProvider", fDefaultProvider); //$NON-NLS-1$
+		preferences.put(QUICKDIFF_QUICKDIFF, Boolean.toString(fIsQuickDiffOn));
+		preferences.put(ADDITION_INDICATION_OVERVIEW_RULE, Boolean.toString(fIsAdditionIndicationInOverviewRule));
+		preferences.put(CHANGE_INDICATION_OVERVIEW_RULE, Boolean.toString(fIsChangeIndicationInOverviewRuler));
+		preferences.put(DELETION_INDICATION_OVERVIEW_RULE, Boolean.toString(fIsDeletionIndicationInOverviewRuler));
+		preferences.put(QUICKDIFF_DEFAULT, fDefaultProvider);
 
 		try {
 			// forces the application to save the preferences
@@ -361,17 +380,6 @@ public class ActiveWorkspaceRevision {
 			}
 		}
 		return false;
-	}
-
-	private void deleteMarker(CommentInfo commentToDelete) {
-		IMarker marker = markersManaged.remove(commentToDelete.getId());
-		if (marker != null) {
-			try {
-				marker.delete();
-			} catch (CoreException e) {
-				logger.debug("Failed to delete marker", e); //$NON-NLS-1$
-			}
-		}
 	}
 
 	//Add a marker for the specified comment.
@@ -433,7 +441,7 @@ public class ActiveWorkspaceRevision {
 	}
 
 	//The following code is used to enable the databinding
-	private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
@@ -451,26 +459,24 @@ public class ActiveWorkspaceRevision {
 	 * enables the quickdiff feature inside the editor
 	 */
 	private void enableQuickDiff() {
-		Preferences preferences = InstanceScope.INSTANCE.getNode("org.eclipse.ui.editors"); //$NON-NLS-1$
+		Preferences preferences = InstanceScope.INSTANCE.getNode(UI_EDITORS);
 
 		//Remember the value of the preferences we are modifying
-		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"quickdiff.quickDiff", false, null); //$NON-NLS-1$
-		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"additionIndicationInOverviewRule", false, null); //$NON-NLS-1$
-		fIsChangeIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"changeIndicationInOverviewRuler", false, null); //$NON-NLS-1$
-		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean("org.eclipse.ui.editors", //$NON-NLS-1$
-				"deletionIndicationInOverviewRuler", false, null); //$NON-NLS-1$
-		fDefaultProvider = Platform.getPreferencesService().getString("org.eclipse.ui.editors", //$NON-NLS-1$
-				"quickdiff.defaultProvider", "", null); //$NON-NLS-1$  //$NON-NLS-2$
+		fIsQuickDiffOn = Platform.getPreferencesService().getBoolean(UI_EDITORS, QUICKDIFF_QUICKDIFF, false, null);
+		fIsAdditionIndicationInOverviewRule = Platform.getPreferencesService().getBoolean(UI_EDITORS,
+				ADDITION_INDICATION_OVERVIEW_RULE, false, null);
+		fIsChangeIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean(UI_EDITORS,
+				CHANGE_INDICATION_OVERVIEW_RULE, false, null);
+		fIsDeletionIndicationInOverviewRuler = Platform.getPreferencesService().getBoolean(UI_EDITORS,
+				DELETION_INDICATION_OVERVIEW_RULE, false, null);
+		fDefaultProvider = Platform.getPreferencesService().getString(UI_EDITORS, QUICKDIFF_DEFAULT, "", //$NON-NLS-1$
+				null);
 
-		preferences.putBoolean("quickdiff.quickDiff", true);//$NON-NLS-1$
-		preferences.putBoolean("additionIndicationInOverviewRule", true);//$NON-NLS-1$
-		preferences.putBoolean("changeIndicationInOverviewRuler", true);//$NON-NLS-1$
-		preferences.putBoolean("deletionIndicationInOverviewRuler", true);//$NON-NLS-1$
-		preferences.put("quickdiff.defaultProvider", //$NON-NLS-1$
-				"org.eclipse.egit.ui.internal.decorators.GitQuickDiffProvider");//$NON-NLS-1$
+		preferences.putBoolean(QUICKDIFF_QUICKDIFF, true);
+		preferences.putBoolean(ADDITION_INDICATION_OVERVIEW_RULE, true);
+		preferences.putBoolean(CHANGE_INDICATION_OVERVIEW_RULE, true);
+		preferences.putBoolean(DELETION_INDICATION_OVERVIEW_RULE, true);
+		preferences.put(QUICKDIFF_DEFAULT, "org.eclipse.egit.ui.internal.decorators.GitQuickDiffProvider");//$NON-NLS-1$
 		try {
 			// forces the application to save the preferences
 			preferences.flush();

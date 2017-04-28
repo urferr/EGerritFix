@@ -20,8 +20,6 @@ import org.eclipse.egerrit.internal.process.ReplyProcess;
 import org.eclipse.egerrit.internal.ui.table.filter.AuthorKindFilter;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -53,12 +51,7 @@ public class HistoryTableMenuBuilder {
 					new AuthorKindFilter(true));
 			replyMessages = new ReplyMessageAction(ActionConstants.REPLY.getLiteral(), viewer, client);
 		}
-		menuManager.addMenuListener(new IMenuListener() {
-			@Override
-			public void menuAboutToShow(IMenuManager manager) {
-				addMenuItem(commonMenu, viewer, client);
-			}
-		});
+		menuManager.addMenuListener(manager -> addMenuItem(commonMenu, viewer));
 		menuManager.update(true);
 	}
 
@@ -83,26 +76,24 @@ public class HistoryTableMenuBuilder {
 		}
 	}
 
-	private void addMenuItem(Menu menu, ColumnViewer viewer, GerritClient client) {
-		if (menu.getItemCount() == 0) {
-			if (viewer instanceof TableViewer) {
-				MenuManager menuMgr = new MenuManager();
-				menuMgr.add(replyMessages);
-				menuMgr.add(new Separator());
-				menuMgr.add(humanOnlyfilter);
-				menuMgr.add(machineOnlyfilter);
-				menuMgr.createContextMenu(menu.getShell()).setVisible(true);
-				menuMgr.add(new Separator());
-				menuMgr.add(new Action(Messages.UIHistoryTable_reset) {
-					@Override
-					public void run() {
-						humanOnlyfilter.setChecked(false);
-						humanOnlyfilter.run();
-						machineOnlyfilter.setChecked(false);
-						machineOnlyfilter.run();
-					}
-				});
-			}
+	private void addMenuItem(Menu menu, ColumnViewer viewer) {
+		if ((menu.getItemCount() == 0) && (viewer instanceof TableViewer)) {
+			MenuManager menuMgr = new MenuManager();
+			menuMgr.add(replyMessages);
+			menuMgr.add(new Separator());
+			menuMgr.add(humanOnlyfilter);
+			menuMgr.add(machineOnlyfilter);
+			menuMgr.createContextMenu(menu.getShell()).setVisible(true);
+			menuMgr.add(new Separator());
+			menuMgr.add(new Action(Messages.UIHistoryTable_reset) {
+				@Override
+				public void run() {
+					humanOnlyfilter.setChecked(false);
+					humanOnlyfilter.run();
+					machineOnlyfilter.setChecked(false);
+					machineOnlyfilter.run();
+				}
+			});
 		}
 	}
 

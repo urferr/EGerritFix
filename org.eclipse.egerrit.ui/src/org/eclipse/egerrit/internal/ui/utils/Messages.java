@@ -74,15 +74,9 @@ public class Messages extends NLS {
 
 	public static String AutoRebaseProcess_RebaseCancelled;
 
-	public static String AutoRebaseProcess_RebaseConflicts;
-
-	public static String AutoRebaseProcess_RebaseFailed;
-
 	public static String AutoRebaseProcess_RebaseFF;
 
 	public static String AutoRebaseProcess_RebaseSuccessful;
-
-	public static String AutoRebaseProcess_RebaseUpToDate;
 
 	public static String AutoRebaseProcess_RebasingLocally;
 
@@ -97,8 +91,6 @@ public class Messages extends NLS {
 	public static String AutoRebaseProcess_StashingTheLocalChanges;
 
 	public static String AutoRebaseProcess_StoppedConflict;
-
-	public static String AutoRebaseProcess_UncommitedChanges;
 
 	public static String Branch_perfect_match;
 
@@ -118,8 +110,6 @@ public class Messages extends NLS {
 
 	public static String BranchSelectionTableModel_question;
 
-	public static String ChangeDetailEditor_12;
-
 	public static String ChangeDetailEditor_13;
 
 	public static String ChangeDetailEditor_14;
@@ -132,8 +122,6 @@ public class Messages extends NLS {
 
 	public static String ChangeDetailEditor_24;
 
-	public static String ChangeDetailEditor_25;
-
 	public static String ChangeDetailEditor_27;
 
 	public static String ChangeDetailEditor_28;
@@ -141,8 +129,6 @@ public class Messages extends NLS {
 	public static String ChangeDetailEditor_29;
 
 	public static String ChangeDetailEditor_3;
-
-	public static String ChangeDetailEditor_30;
 
 	public static String ChangeDetailEditor_4;
 
@@ -159,10 +145,6 @@ public class Messages extends NLS {
 	public static String CheckoutRevision_0;
 
 	public static String CheckoutRevision_1;
-
-	public static String CheckoutRevision_12;
-
-	public static String CheckoutRevision_13;
 
 	public static String CheckoutRevision_2;
 
@@ -238,8 +220,6 @@ public class Messages extends NLS {
 
 	public static String MarkerMenuContribution_2;
 
-	public static String MessageTabView_0;
-
 	public static String MessageTabView_1;
 
 	public static String MessageTabView_2;
@@ -283,16 +263,6 @@ public class Messages extends NLS {
 	public static String QuickFixReplyDoneToComment_1;
 
 	public static String QuickFixReplyDoneToComment_2;
-
-	public static String ReplyAction_0;
-
-	public static String ReplyAction_1;
-
-	public static String ReplyAction_2;
-
-	public static String ReplyAction_3;
-
-	public static String ReplyAction_4;
 
 	public static String ReplyDialog_0;
 
@@ -404,12 +374,6 @@ public class Messages extends NLS {
 
 	public static String ShowCommentedFileAction_1;
 
-	public static String ShowFilePathAction_0;
-
-	public static String ShowFilePathAction_1;
-
-	public static String SwitchPatchAction_0;
-
 	public static String RelatedChangesTableDefinition_id;
 
 	public static String RelatedChangesTableDefinition_headline;
@@ -494,10 +458,6 @@ public class Messages extends NLS {
 
 	public static String CheckoutHandler_specificMessage;
 
-	public static String CherryPickHandler_title;
-
-	public static String CherryPickHandler_notAvailable;
-
 	public static String CherryPickHandler_generalMessage;
 
 	public static String CherryPickHandler_specificMessage;
@@ -505,8 +465,6 @@ public class Messages extends NLS {
 	public static String OpenCompareHandler_generalMessage;
 
 	public static String OpenCompareHandler_specificMessage;
-
-	public static String RebaseHandler_title;
 
 	public static String RebaseHandler_generalMessage;
 
@@ -517,8 +475,6 @@ public class Messages extends NLS {
 	public static String RebaseProcess_title;
 
 	public static String RebaseProcess_changeParent;
-
-	public static String RebaseProcess_failed;
 
 	public static String RebaseProcess_notPerform;
 

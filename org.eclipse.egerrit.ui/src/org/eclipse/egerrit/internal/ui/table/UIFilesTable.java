@@ -42,7 +42,6 @@ import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -81,11 +80,9 @@ public class UIFilesTable {
 
 	public static final String FILES_TABLE = "filesTable"; //$NON-NLS-1$
 
-	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+	private static final int TABLE_STYLE = SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION;
 
 	private TableViewer fViewer = null;
-
-	private IDoubleClickListener fdoubleClickListener;
 
 	private GerritClient fGerritClient;
 
@@ -340,25 +337,24 @@ public class UIFilesTable {
 
 	private void adjustTableData() {
 		fViewer.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 10, 1));
-		fdoubleClickListener = new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				if (!popupEnabled) {
-					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
-					handleSelection.showFileSelection();
-				} else {
-					IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-					Object element = sel.getFirstElement();
-					if (element instanceof StringToFileInfoImpl) {
-						FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
-						OpenCompareProcess openCompare = new OpenCompareProcess();
-						openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
-								selectedFile, fChangeInfo.getUserSelectedRevision());
-					}
+
+		IDoubleClickListener doubleClickListener = event -> {
+			if (!popupEnabled) {
+				HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
+				handleSelection.showFileSelection();
+			} else {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				Object element = sel.getFirstElement();
+				if (element instanceof StringToFileInfoImpl) {
+					FileInfo selectedFile = ((StringToFileInfoImpl) element).getValue();
+					OpenCompareProcess openCompare = new OpenCompareProcess();
+					openCompare.handleOpenCompare(fViewer.getTable().getShell(), fGerritClient, fChangeInfo,
+							selectedFile, fChangeInfo.getUserSelectedRevision());
 				}
 			}
 		};
 
-		fViewer.addDoubleClickListener(fdoubleClickListener);
+		fViewer.addDoubleClickListener(doubleClickListener);
 		if (!fGerritClient.getRepository().getServerInfo().isAnonymous()) {
 			fViewer.getTable().addMouseListener(toggleReviewedStateListener());
 		}
@@ -412,7 +408,7 @@ public class UIFilesTable {
 		});
 	}
 
-	protected void filesTabDataBindings() {
+	private void filesTabDataBindings() {
 		//Set the FilesViewer
 		if (fViewer != null) {
 			final FeaturePath reviewed = FeaturePath.fromList(ModelPackage.Literals.STRING_TO_FILE_INFO__VALUE,

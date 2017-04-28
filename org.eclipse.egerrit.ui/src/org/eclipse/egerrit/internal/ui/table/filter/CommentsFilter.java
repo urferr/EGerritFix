@@ -26,7 +26,7 @@ public class CommentsFilter extends ViewerFilter {
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		FileInfo fileInfo = ((StringToFileInfoImpl) element).getValue();
-		if (fileInfo.getAllComments().size() != 0) {
+		if (!fileInfo.getAllComments().isEmpty()) {
 			return true;
 		}
 		return false;

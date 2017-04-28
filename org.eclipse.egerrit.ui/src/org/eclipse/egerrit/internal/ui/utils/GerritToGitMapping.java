@@ -125,7 +125,7 @@ public class GerritToGitMapping {
 
 	}
 
-	protected void findMatchingRepository() throws IOException {
+	private void findMatchingRepository() throws IOException {
 		RepositoryUtil repoUtil = getRepositoryUtil();
 		RepositoryCache repoCache = getRepositoryCache();
 		for (String dirs : repoUtil.getConfiguredRepositories()) {
@@ -141,7 +141,7 @@ public class GerritToGitMapping {
 		match = null;
 	}
 
-	protected RemoteConfig findMatchingRemote() throws IOException {
+	private RemoteConfig findMatchingRemote() throws IOException {
 		Assert.isNotNull(match);
 		List<RemoteConfig> remotes;
 		try {

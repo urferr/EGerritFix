@@ -59,7 +59,7 @@ public class CheckoutRevision extends Action {
 
 	private String selectedBranch;
 
-	private final String RENAME_KEY = "branchRenameTip"; //$NON-NLS-1$
+	private static final String RENAME_KEY = "branchRenameTip"; //$NON-NLS-1$
 
 	public CheckoutRevision(RevisionInfo revision, GerritClient gerritClient) {
 		this.revisionCheckedOut = revision;
@@ -86,6 +86,25 @@ public class CheckoutRevision extends Action {
 		}
 
 		Map<String, BranchMatch> potentialBranches = findAllPotentialBranches(localRepo);
+		reActivateWorkspaceRevision = selectAndCheckoutBranch(localRepo, refSelected, potentialBranches);
+
+		//Verify if the user wants to rename the selected branch
+		shouldRenameBranch(potentialBranches, refSelected, localRepo);
+
+		if (reActivateWorkspaceRevision) {
+			ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
+		}
+	}
+
+	/**
+	 * @param localRepo
+	 * @param refSelected
+	 * @param potentialBranches
+	 * @return
+	 */
+	private boolean selectAndCheckoutBranch(Repository localRepo, String refSelected,
+			Map<String, BranchMatch> potentialBranches) {
+		boolean reActivateWorkspaceRevision = true;
 		if (potentialBranches.size() > 1) {
 			reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
 		} else {
@@ -109,13 +128,7 @@ public class CheckoutRevision extends Action {
 				reActivateWorkspaceRevision = branchUiSelection(localRepo, potentialBranches);
 			}
 		}
-
-		//Verify if the user wants to rename the selected branch
-		shouldRenameBranch(potentialBranches, refSelected, localRepo);
-
-		if (reActivateWorkspaceRevision) {
-			ActiveWorkspaceRevision.getInstance().activateCurrentRevision(gerritClient, revisionCheckedOut);
-		}
+		return reActivateWorkspaceRevision;
 	}
 
 	/**
@@ -138,7 +151,7 @@ public class CheckoutRevision extends Action {
 			//What would the branch name be from refspec:
 			//Parse the ref from the revision to checkout
 			Change revisionRef = Change.fromRef(refSelected);
-			if (!revisionRef.getBranchNameLabel().contains(getSelectedBranch())) {
+			if (revisionRef != null && !revisionRef.getBranchNameLabel().contains(getSelectedBranch())) {
 				//test to see if we can rename the branch or not by removing the patch set
 				int lastSlash = getSelectedBranch().lastIndexOf('/');
 				String perfectMatchModified = lastSlash == -1
@@ -175,10 +188,10 @@ public class CheckoutRevision extends Action {
 	public Map<String, BranchMatch> findAllPotentialBranches(Repository localRepo) {
 		Git gitRepo = new Git(localRepo);
 		//Map <Key,value> = Map<Short branch name, commit id>
-		Map<String, String> mapBranches = new HashMap<String, String>();
+		Map<String, String> mapBranches = new HashMap<>();
 		Map<String, BranchMatch> potentialBranches = null;
 		//Map <Key,Map<keycommit, ListChangeIdvalue> = Map<Short branch name, commit id, list of changeId>
-		Map<String, Map<String, List<String>>> mapBranchesChangeId = new HashMap<String, Map<String, List<String>>>();
+		Map<String, Map<String, List<String>>> mapBranchesChangeId = new HashMap<>();
 		try (RevWalk walk = new RevWalk(localRepo)) {
 			mapBranchNameWithCommitId(gitRepo, mapBranches, mapBranchesChangeId, walk);
 			//Get only potential branches
@@ -250,9 +263,7 @@ public class CheckoutRevision extends Action {
 
 	//Filter the branches that need to be shown and indicate the level of matching for these branches
 	private Map<String, BranchMatch> mapPotentialBranch(Map<String, Map<String, List<String>>> mapBranchesChangeId) {
-		String lookingChangeId = revisionCheckedOut.getChangeInfo().getChange_id().trim();
-		String lookingCommitIdForRevision = revisionCheckedOut.getCommit().getCommit().trim();
-		Map<String, BranchMatch> mapBranches = new TreeMap<String, BranchMatch>();
+		Map<String, BranchMatch> mapBranches = new TreeMap<>();
 		String defaultBranchName = changeInfo.get_number() + "/" //$NON-NLS-1$
 				+ revisionCheckedOut.get_number();
 		Iterator<Entry<String, Map<String, List<String>>>> iterBranch = mapBranchesChangeId.entrySet().iterator();
@@ -265,26 +276,42 @@ public class CheckoutRevision extends Action {
 				List<String> listChangeIds = entryCommitIds.getValue();
 				Iterator<String> iterChangeId = listChangeIds.iterator();
 				while (iterChangeId.hasNext()) {
-					String changeId = iterChangeId.next().trim();
-					if (matchesPerfectlyAnotherRevision(revisionCheckedOut, entryCommitIds.getKey())) {
-						continue;
-					}
-					if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
-						mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
-						continue;
-					}
-					if (lookingChangeId.equals(changeId)) {
-						mapBranches.put(entryBranch.getKey(), BranchMatch.CHANGE_ID_MATCH);//Potential branch for this changeId, but with some modification on the branch
-						continue;
-					}
-					if (entryBranch.getKey().contains(defaultBranchName)) {
-						mapBranches.put(entryBranch.getKey(), BranchMatch.BRANCH_NAME_MATCH);//Perfect match branch
-						continue;
-					}
+					fillMappForPotentialBranch(mapBranches, defaultBranchName, entryBranch, entryCommitIds,
+							iterChangeId);
 				}
 			}
 		}
 		return mapBranches;
+	}
+
+	/**
+	 * @param mapBranches
+	 * @param defaultBranchName
+	 * @param entryBranch
+	 * @param entryCommitIds
+	 * @param iterChangeId
+	 */
+	private void fillMappForPotentialBranch(Map<String, BranchMatch> mapBranches, String defaultBranchName,
+			Entry<String, Map<String, List<String>>> entryBranch, Entry<String, List<String>> entryCommitIds,
+			Iterator<String> iterChangeId) {
+		String lookingChangeId = revisionCheckedOut.getChangeInfo().getChange_id().trim();
+		String lookingCommitIdForRevision = revisionCheckedOut.getCommit().getCommit().trim();
+		String changeId = iterChangeId.next().trim();
+		if (matchesPerfectlyAnotherRevision(revisionCheckedOut, entryCommitIds.getKey())) {
+			return;
+		}
+		if (lookingCommitIdForRevision.equals(entryCommitIds.getKey())) {
+			mapBranches.put(entryBranch.getKey(), BranchMatch.PERFECT_MATCH);//Perfect match branch with commit Id
+			return;
+		}
+		if (lookingChangeId.equals(changeId)) {
+			mapBranches.put(entryBranch.getKey(), BranchMatch.CHANGE_ID_MATCH);//Potential branch for this changeId, but with some modification on the branch
+			return;
+		}
+		if (entryBranch.getKey().contains(defaultBranchName)) {
+			mapBranches.put(entryBranch.getKey(), BranchMatch.BRANCH_NAME_MATCH);//Perfect match branch
+			return;
+		}
 	}
 
 	//Check if the given commitId matches the commitId of a revision that is not the current one
@@ -358,21 +385,21 @@ public class CheckoutRevision extends Action {
 	/**
 	 * Private class reading the information associated to a ref change
 	 */
-	private final static class Change {
+	private static final class Change {
 		private final String refName;
 
 		private final Integer changeNumber;
 
 		private final Integer patchSetNumber;
 
-		private final static String refChanges = "refs/changes/"; //$NON-NLS-1$
+		private static final String REF_CHANGES = "refs/changes/"; //$NON-NLS-1$
 
 		static Change fromRef(String refName) {
 			try {
-				if (!refName.startsWith(refChanges)) {
+				if (!refName.startsWith(REF_CHANGES)) {
 					return null;
 				}
-				int reflen = refChanges.length();
+				int reflen = REF_CHANGES.length();
 				String[] tokens = refName.substring(reflen).split("/"); //$NON-NLS-1$
 				if (tokens.length != 3) {
 					return null;

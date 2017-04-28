@@ -43,17 +43,13 @@ import org.slf4j.LoggerFactory;
  */
 public class CherryPickDialog extends Dialog {
 
-	final static Logger logger = LoggerFactory.getLogger(CherryPickDialog.class);
+	private static final Logger logger = LoggerFactory.getLogger(CherryPickDialog.class);
 
 	private String commitMessage;
 
 	private String[] branchesRef;
 
 	private Text msgTextData;
-
-	private Composite buttonComposite;
-
-	private Button cancel;
 
 	private Combo fBranch;
 
@@ -100,12 +96,12 @@ public class CherryPickDialog extends Dialog {
 		fBranch = new Combo(parent, SWT.NONE);
 		addContentProposal(fBranch);
 
-		GridData gd_combo = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
-		gd_combo.verticalIndent = 5;
-		gd_combo.grabExcessVerticalSpace = false;
+		GridData gdCombo = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 3);
+		gdCombo.verticalIndent = 5;
+		gdCombo.grabExcessVerticalSpace = false;
 		lblBranch.setText(Messages.CherryPickDialog_1);
-		lblBranch.setLayoutData(gd_combo);
-		fBranch.setLayoutData(gd_combo);
+		lblBranch.setLayoutData(gdCombo);
+		fBranch.setLayoutData(gdCombo);
 		fBranch.setItems(branchesRef);
 
 		Label lblMessage = new Label(parent, SWT.LEFT);
@@ -114,14 +110,14 @@ public class CherryPickDialog extends Dialog {
 		gridlbl.verticalIndent = 20;
 		lblMessage.setLayoutData(gridlbl);
 
-		ScrolledComposite sc_msgtxt = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		sc_msgtxt.setExpandHorizontal(true);
-		sc_msgtxt.setExpandVertical(true);
+		ScrolledComposite scMsgTxt = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		scMsgTxt.setExpandHorizontal(true);
+		scMsgTxt.setExpandVertical(true);
 		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 
-		msgTextData = new Text(sc_msgtxt, SWT.WRAP | SWT.MULTI);
-		sc_msgtxt.setLayoutData(grid);
-		sc_msgtxt.setContent(msgTextData);
+		msgTextData = new Text(scMsgTxt, SWT.WRAP | SWT.MULTI);
+		scMsgTxt.setLayoutData(grid);
+		scMsgTxt.setContent(msgTextData);
 		msgTextData.setText(commitMessage);
 
 		//Create the bottom section for the buttons
@@ -133,21 +129,17 @@ public class CherryPickDialog extends Dialog {
 	}
 
 	private void addContentProposal(Combo combo) {
-		IContentProposalProvider cp = new IContentProposalProvider() {
-			@Override
-			public IContentProposal[] getProposals(String contents, int position) {
-				List<IContentProposal> resultList = new ArrayList<>();
+		IContentProposalProvider cp = (contents, position) -> {
+			List<IContentProposal> resultList = new ArrayList<>();
 
-				for (final String branch : branchesRef) {
-					if (branch.indexOf(contents) != -1) {
-						resultList.add(new ContentProposal(branch));
-					}
+			for (final String branch : branchesRef) {
+				if (branch.indexOf(contents) != -1) {
+					resultList.add(new ContentProposal(branch));
 				}
-
-				return resultList.toArray(new IContentProposal[resultList.size()]);
 			}
-		};
 
+			return resultList.toArray(new IContentProposal[resultList.size()]);
+		};
 		ContentProposalAdapter adapter = new ContentProposalAdapter(combo, new ComboContentAdapter(), cp, null, null);
 		// set the acceptance style to always replace the complete content
 		adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
@@ -162,21 +154,21 @@ public class CherryPickDialog extends Dialog {
 		sepGrid.grabExcessHorizontalSpace = true;
 		separator.setLayoutData(sepGrid);
 
-		buttonComposite = new Composite(parent, SWT.NONE);
+		Composite buttonComposite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(4, false);
 		buttonComposite.setLayout(gridLayout);
 
-		GridData gd_button = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		gd_button.grabExcessHorizontalSpace = true;
-		buttonComposite.setLayoutData(gd_button);
+		GridData gdButton = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		gdButton.grabExcessHorizontalSpace = true;
+		buttonComposite.setLayoutData(gdButton);
 
 		//Callback handle by the okPressed()
 		createButton(buttonComposite, IDialogConstants.OK_ID, Messages.CherryPickDialog_3, false);
 
-		cancel = createButton(buttonComposite, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
-		GridData gd_cancel = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		gd_cancel.grabExcessHorizontalSpace = true;
-		cancel.setLayoutData(gd_cancel);
+		Button cancel = createButton(buttonComposite, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
+		GridData gdCancel = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		gdCancel.grabExcessHorizontalSpace = true;
+		cancel.setLayoutData(gdCancel);
 	}
 
 	@Override

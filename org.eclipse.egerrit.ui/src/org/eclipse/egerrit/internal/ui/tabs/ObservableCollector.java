@@ -22,7 +22,7 @@ import org.eclipse.core.databinding.observable.IObservable;
  * A Helper class to automatically dispose the EMF Observable values.
  */
 public class ObservableCollector {
-	HashSet<IObservable> observables = new HashSet<>();
+	private HashSet<IObservable> observables = new HashSet<>();
 
 	public ObservableCollector(DataBindingContext context) {
 		Iterator<Binding> it = context.getBindings().iterator();

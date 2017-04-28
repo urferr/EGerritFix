@@ -27,10 +27,7 @@ import org.eclipse.swt.widgets.Display;
  *
  * @since 1.0
  */
-public class BaseTableLabelProvider extends ObservableMapLabelProvider
-		implements ITableLabelProvider, ITableColorProvider {
-
-	private static final int INTEGER_BASE = 10;
+class BaseTableLabelProvider extends ObservableMapLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
@@ -47,7 +44,7 @@ public class BaseTableLabelProvider extends ObservableMapLabelProvider
 	/**
 	 * Color used depending on the review state
 	 */
-	protected static Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+	private static final Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 
 	// ------------------------------------------------------------------------
 	// Constructors

@@ -25,8 +25,8 @@ import org.eclipse.swt.SWT;
 // ------------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------------
-// Definition of the Conflict with table {name, width of the column, Resizeable,
-// Moveable, Alignment}
+// Definition of the Conflict with table :name, width of the column, Resizeable,
+// Moveable, Alignment
 public enum FilesTableModel implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	REVIEWED("", 35, true, true, SWT.LEFT), //$NON-NLS-1$
@@ -59,34 +59,55 @@ public enum FilesTableModel implements ITableModel {
 		fVisible = true;
 	}
 
+	/**
+	 * return the name
+	 */
 	public String getName() {
 		return fHeader;
 	}
 
+	/**
+	 * return the column width
+	 */
 	public int getWidth() {
 		return fwidth;
 	}
 
+	/**
+	 * return boolean if the field is resize-able
+	 */
 	public boolean getResize() {
 		return fResize;
 	}
 
+	/**
+	 * return boolean if the column is move-able
+	 */
 	public boolean getMoveable() {
 		return fMoveable;
 	}
 
+	/**
+	 * return the alignment of the field
+	 */
 	public int getAlignment() {
 		return fAlignment;
 	}
 
+	/**
+	 * return an array with the column name
+	 */
 	public String[] getColumnName() {
-		ArrayList<String> listName = new ArrayList<String>();
+		ArrayList<String> listName = new ArrayList<>();
 		for (ITableModel st : FilesTableModel.values()) {
 			listName.add(st.getName());
 		}
 		return listName.toArray(new String[] {});
 	}
 
+	/**
+	 * return the minimum width for all columns
+	 */
 	public int getMinimumWidth() {
 		int width = 0;
 		for (int index = 0; index < FilesTableModel.values().length; index++) {
@@ -95,6 +116,11 @@ public enum FilesTableModel implements ITableModel {
 		return width;
 	}
 
+	/**
+	 * return if the column is visible
+	 *
+	 * @return
+	 */
 	public boolean isColumnVisible() {
 		return fVisible;
 	}

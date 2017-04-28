@@ -46,7 +46,7 @@ public class RefreshRelatedEditors extends Job {
 	@Override
 	public IStatus run(IProgressMonitor monitor) {
 		/* Get list of related changes and remove current one */
-		List<String> changeIds = new ArrayList<String>();
+		List<String> changeIds = new ArrayList<>();
 		if (fChangeInfo.getRelatedChanges() != null) {
 			for (RelatedChangeAndCommitInfo change : fChangeInfo.getRelatedChanges().getChanges()) {
 				if (change.getChange_id() != null && !change.getChange_id().equals(fChangeInfo.getChange_id())) {
@@ -54,15 +54,16 @@ public class RefreshRelatedEditors extends Job {
 				}
 			}
 		}
-		if (changeIds.size() == 0) {
+		if (changeIds.isEmpty()) {
 			return Status.OK_STATUS;
 		}
 
 		//Obtain the list of editors opened
 		IEditorReference[][] editorRefs = new IEditorReference[1][];
-		Display.getDefault().syncExec(() -> {
-			editorRefs[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getEditorReferences();
-		});
+		Display.getDefault().syncExec(() -> editorRefs[0] = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow()
+				.getActivePage()
+				.getEditorReferences());
 
 		/* Iterate over all the open editors in the workbench */
 		for (IEditorReference editorRef : editorRefs[0]) {
@@ -71,10 +72,9 @@ public class RefreshRelatedEditors extends Job {
 
 			if (part instanceof ChangeDetailEditor) {
 				ChangeDetailEditorInput changeInput = (ChangeDetailEditorInput) part.getEditorInput();
-				if (!changeInput.getChange().getChange_id().equals(fChangeInfo.getChange_id())) {
-					if (changeIds.contains(changeInput.getChange().getChange_id())) {
-						QueryHelpers.loadBasicInformation(fGerritClient, changeInput.getChange(), true);
-					}
+				if (!changeInput.getChange().getChange_id().equals(fChangeInfo.getChange_id())
+						&& (changeIds.contains(changeInput.getChange().getChange_id()))) {
+					QueryHelpers.loadBasicInformation(fGerritClient, changeInput.getChange(), true);
 				}
 			}
 		}

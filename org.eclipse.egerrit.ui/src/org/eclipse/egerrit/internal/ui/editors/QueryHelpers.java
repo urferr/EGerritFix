@@ -57,6 +57,12 @@ import org.eclipse.emf.common.util.EList;
 public class QueryHelpers {
 
 	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private QueryHelpers() {
+	}
+
+	/**
 	 * Get the changes that have a given subject
 	 */
 	public static ChangeInfo[] lookupPartialChangeInfoFromSubject(GerritClient gerritClient, String subject,
@@ -79,7 +85,7 @@ public class QueryHelpers {
 			} catch (EGerritException e) {
 				EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + e.getMessage());
 			}
-			return null;
+			return new ChangeInfo[0];
 		} finally {
 			monitor.done();
 		}
@@ -87,20 +93,19 @@ public class QueryHelpers {
 
 	private static String setFreeText(String subject) {
 		// use the subject to query the server
-		String query = "message:\"" + subject + "\""; //$NON-NLS-1$ //$NON-NLS-2$
-		return query;
+		return "message:\"" + subject + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
 	 * Get a review by changeId
 	 */
-	public static ChangeInfo lookupPartialChangeInfoFromChangeId(GerritClient gerrit, String change_id,
+	public static ChangeInfo lookupPartialChangeInfoFromChangeId(GerritClient gerrit, String changeId,
 			IProgressMonitor monitor) {
 		try {
 			monitor.beginTask(Messages.QueryHelpers_executingQuery, IProgressMonitor.UNKNOWN);
 
 			GetChangeCommand command = null;
-			command = gerrit.getChange(change_id);
+			command = gerrit.getChange(changeId);
 			command.addOption(ChangeOption.LABELS);
 			command.addOption(ChangeOption.DETAILED_LABELS);
 			command.addOption(ChangeOption.DETAILED_ACCOUNTS);
@@ -170,14 +175,14 @@ public class QueryHelpers {
 			//There is no more drafts, so we need to clear our data structure
 			if (drafts.entrySet().isEmpty()) {
 				Collection<FileInfo> files = revision.getFiles().values();
-				files.stream().filter(f -> f.getDraftComments().size() != 0).forEach(f -> f.getDraftComments().clear());
+				files.stream().filter(f -> !f.getDraftComments().isEmpty()).forEach(f -> f.getDraftComments().clear());
 				return;
 			}
 
 			for (Entry<String, ArrayList<CommentInfo>> draftComment : drafts.entrySet()) {
 				FileInfo files = revision.getFiles().get(draftComment.getKey());
 				if (files != null) {
-					if (files.getDraftComments().size() != 0) {
+					if (!files.getDraftComments().isEmpty()) {
 						files.getDraftComments().clear();
 					}
 					files.getDraftComments().addAll(draftComment.getValue());
@@ -512,7 +517,7 @@ public class QueryHelpers {
 		ChangeInfo[] conflictsWithChangeInfo = null;
 
 		synchronized (element) {
-			if (("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus()))) { //$NON-NLS-1$ //$NON-NLS-2$
+			if ("MERGED".equals(element.getStatus()) || "ABANDONED".equals(element.getStatus())) { //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 		}
@@ -540,7 +545,7 @@ public class QueryHelpers {
 		}
 	}
 
-	public static void loadDetailedInformation(GerritClient gerritClient, ChangeInfo toLoad) {
+	static void loadDetailedInformation(GerritClient gerritClient, ChangeInfo toLoad) {
 		loadSameTopic(gerritClient, toLoad);
 		loadConflictsWith(gerritClient, toLoad);
 		loadIncludedIn(gerritClient, toLoad);
@@ -549,7 +554,7 @@ public class QueryHelpers {
 		loadRelatedChanges(gerritClient, toLoad);
 	}
 
-	public static void deleteDraft(GerritClient gerritClient, CommentInfo toDelete) {
+	static void deleteDraft(GerritClient gerritClient, CommentInfo toDelete) {
 		RevisionInfo revision = ModelHelpers.getRevision(toDelete);
 		DeleteDraftCommand deleteDraft = gerritClient.deleteDraft(revision.getChangeInfo().getId(), revision.getId(),
 				toDelete.getId());

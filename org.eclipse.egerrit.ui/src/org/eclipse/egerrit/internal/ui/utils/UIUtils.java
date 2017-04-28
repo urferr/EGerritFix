@@ -76,9 +76,15 @@ public class UIUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
 
-	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
+	private static final String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
 
-	private final static int TITLE_LENGTH = 75;
+	private static final int TITLE_LENGTH = 75;
+
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private UIUtils() {
+	}
 
 	/**
 	 * To display some information to the end-user
@@ -87,11 +93,7 @@ public class UIUtils {
 	 * @param message
 	 */
 	public static void displayInformation(final String title, final String message) {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(null, title, message);
-			}
-		});
+		PlatformUI.getWorkbench().getDisplay().syncExec(() -> MessageDialog.openInformation(null, title, message));
 	}
 
 	/**
@@ -125,33 +127,30 @@ public class UIUtils {
 		String current = revisionInfo.getId();
 		QueryHelpers.loadDrafts(client, revisionInfo); //Force load the drafts to make sure they are shown in the dialog.
 		final ReplyDialog replyDialog = new ReplyDialog(shell, reason, revisionInfo, client, messageInfo);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				int ret = replyDialog.open();
-				if (ret == IDialogConstants.OK_ID) {
-					//Fill the data structure for the reply
-					ReviewInput reviewInput = new ReviewInput();
-					reviewInput.setMessage(replyDialog.getValue());
-					reviewInput.setLabels(replyDialog.getRadiosSelection());
-					reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
+		Display.getDefault().syncExec(() -> {
+			int ret = replyDialog.open();
+			if (ret == IDialogConstants.OK_ID) {
+				//Fill the data structure for the reply
+				ReviewInput reviewInput = new ReviewInput();
+				reviewInput.setMessage(replyDialog.getValue());
+				reviewInput.setLabels(replyDialog.getRadiosSelection());
+				reviewInput.setDrafts(ReviewInput.DRAFT_PUBLISH);
 
-					CompletableFuture<Void> reloading = CompletableFuture.runAsync(() -> {
-						try {
-							SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(),
-									current);
-							reviewToEmit.setCommandInput(reviewInput);
-							reviewToEmit.call();
-						} catch (EGerritException e1) {
-							EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
+				CompletableFuture<Void> reloading = CompletableFuture.runAsync(() -> {
+					try {
+						SetReviewCommand reviewToEmit = client.setReview(revisionInfo.getChangeInfo().getId(), current);
+						reviewToEmit.setCommandInput(reviewInput);
+						reviewToEmit.call();
+					} catch (EGerritException e1) {
+						EGerritCorePlugin.logError(client.getRepository().formatGerritVersion() + e1.getMessage());
 
-						}
-					}).thenRun(() -> {
-						//Here we don't use the model loader because we need the re-loading of the comments to be done synchronously
-						QueryHelpers.loadBasicInformation(client, revisionInfo.getChangeInfo(), false);
-					});
-					if (waitForDataRefresh) {
-						reloading.join();
 					}
+				}).thenRun(() -> {
+					//Here we don't use the model loader because we need the re-loading of the comments to be done synchronously
+					QueryHelpers.loadBasicInformation(client, revisionInfo.getChangeInfo(), false);
+				});
+				if (waitForDataRefresh) {
+					reloading.join();
 				}
 			}
 		});
@@ -347,7 +346,7 @@ public class UIUtils {
 
 		//Keep the title length to TITLE_LENGTH characters max
 		if (title.length() > TITLE_LENGTH) {
-			title = title.substring(0, (TITLE_LENGTH - 3)).concat("..."); //$NON-NLS-1$
+			title = title.substring(0, TITLE_LENGTH - 3).concat("..."); //$NON-NLS-1$
 		}
 
 		if (note != null) {

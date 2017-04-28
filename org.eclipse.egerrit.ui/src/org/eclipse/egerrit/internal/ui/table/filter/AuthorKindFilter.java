@@ -22,7 +22,7 @@ public class AuthorKindFilter extends ViewerFilter {
 	private boolean fIsMachine;
 
 	//Enum for potential CI user
-	enum AuthorCiName {
+	private enum AuthorCiName {
 		// 	Name
 		HUDSON("Hudson"), //$NON-NLS-1$
 		JENKINS("Jenkins"), // //$NON-NLS-1$
@@ -39,7 +39,7 @@ public class AuthorKindFilter extends ViewerFilter {
 		}
 
 		private static String[] getAllNames() {
-			ArrayList<String> listName = new ArrayList<String>();
+			ArrayList<String> listName = new ArrayList<>();
 			for (AuthorCiName st : AuthorCiName.values()) {
 				listName.add(st.getName());
 			}

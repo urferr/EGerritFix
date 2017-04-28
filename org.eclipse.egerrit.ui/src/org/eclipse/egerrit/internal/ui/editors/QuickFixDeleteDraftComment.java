@@ -29,7 +29,7 @@ import org.eclipse.ui.PlatformUI;
  * @since 1.0
  */
 
-public class QuickFixDeleteDraftComment extends EGerritQuickFix {
+class QuickFixDeleteDraftComment extends EGerritQuickFix {
 	QuickFixDeleteDraftComment(String label, String completeMessage) {
 		super(label, completeMessage);
 	}
