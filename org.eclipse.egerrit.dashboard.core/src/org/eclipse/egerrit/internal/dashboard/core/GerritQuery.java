@@ -29,37 +29,9 @@ public class GerritQuery {
 	public static final String MY_RECENTLY_CLOSED_CHANGES = "is:closed AND (owner:self OR reviewer:self) AND limit:10"; //$NON-NLS-1$
 
 	/**
-	 * Query type: my watched changes
+	 * The default constructor. Do not allow to build an object of this class
 	 */
-	public static final String MY_WATCHED_CHANGES = "is:watched status:open"; //$NON-NLS-1$
+	private GerritQuery() {
+	}
 
-	/**
-	 * Query : my starred changes
-	 */
-	public static final String QUERY_MY_STARRED_CHANGES = "is:starred status:open"; //$NON-NLS-1$
-
-	/**
-	 * Query : my drafts changes
-	 */
-	public static final String QUERY_MY_DRAFTS_CHANGES = "is:draft"; //$NON-NLS-1$
-
-	/**
-	 * Query : my drafts comment changes
-	 */
-	public static final String QUERY_MY_DRAFTS_COMMENTS_CHANGES = "has:draft"; //$NON-NLS-1$
-
-	/**
-	 * Query type: all open changes
-	 */
-	public static final String ALL_OPEN_CHANGES = "status:open"; //$NON-NLS-1$
-
-	/**
-	 * Query : all merged changes
-	 */
-	public static final String QUERY_ALL_MERGED_CHANGES = "status:merged"; //$NON-NLS-1$
-
-	/**
-	 * Query : all abandoned changes
-	 */
-	public static final String QUERY_ALL_ABANDONED_CHANGES = "status:abandoned"; //$NON-NLS-1$
 }

@@ -27,26 +27,11 @@ import org.osgi.framework.BundleContext;
 public class GerritPlugin extends Plugin {
 
 	// ------------------------------------------------------------------------
-	// Constants
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Field PLUGIN_ID. (value is ""org.eclipse.egerrit.dashboard.core"")
-	 */
-	// The plug-in ID
-	public static final String PLUGIN_ID = "org.eclipse.egerrit.dashboard.core"; //$NON-NLS-1$
-
-	/**
-	 * Field DASHBOARD_VERSION_QUALIFIER. (value is ""qualifier"")
-	 */
-	private static final String DASHBOARD_VERSION_QUALIFIER = "qualifier"; //$NON-NLS-1$
-
-	// ------------------------------------------------------------------------
 	// Member variables
 	// ------------------------------------------------------------------------
 
 	// The shared instance
-	private static GerritPlugin Fplugin;
+	private static GerritPlugin fPlugin;
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -73,7 +58,7 @@ public class GerritPlugin extends Plugin {
 	@Override
 	public void start(BundleContext aContext) throws Exception {
 		super.start(aContext);
-		Fplugin = this;
+		fPlugin = this;
 	}
 
 	/**
@@ -86,7 +71,7 @@ public class GerritPlugin extends Plugin {
 	 */
 	@Override
 	public void stop(BundleContext aContext) throws Exception {
-		Fplugin = null;
+		fPlugin = null;
 		super.stop(aContext);
 	}
 
@@ -96,6 +81,6 @@ public class GerritPlugin extends Plugin {
 	 * @return the shared instance
 	 */
 	public static GerritPlugin getDefault() {
-		return Fplugin;
+		return fPlugin;
 	}
 }

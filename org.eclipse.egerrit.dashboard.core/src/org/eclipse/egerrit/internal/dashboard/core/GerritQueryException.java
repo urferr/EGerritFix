@@ -23,7 +23,7 @@ public class GerritQueryException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	private final IStatus fStatus;
+	private final transient IStatus fStatus;
 
 	public GerritQueryException(IStatus status, String message) {
 		super(message);

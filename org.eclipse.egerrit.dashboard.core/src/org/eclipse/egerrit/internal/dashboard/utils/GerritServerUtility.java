@@ -61,12 +61,12 @@ public class GerritServerUtility {
 	/**
 	 * Field ECLIPSE_GERRIT_DEFAULT. (value is ""https://git.eclipse.org/r/"")
 	 */
-	private final String ECLIPSE_GERRIT_DEFAULT = "https://git.eclipse.org/r/"; //$NON-NLS-1$
+	private static final String ECLIPSE_GERRIT_DEFAULT = "https://git.eclipse.org/r/"; //$NON-NLS-1$
 
 	/**
 	 * Field SLASH. (value is ""/"")
 	 */
-	private final char SLASH = '/';
+	private static final char SLASH = '/';
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -96,8 +96,7 @@ public class GerritServerUtility {
 	private File getLastGerritFile(String aFile) {
 		IPath ipath = GerritPlugin.getDefault().getStateLocation();
 		String fileName = ipath.append(aFile).toPortableString();
-		File file = new File(fileName);
-		return file;
+		return new File(fileName);
 	}
 
 	/**
@@ -166,8 +165,9 @@ public class GerritServerUtility {
 			BufferedWriter out = new BufferedWriter(fw);
 			out.write(Integer.toString(server.hashCode()));
 			out.close();
+			fw.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			logger.debug("Saved last Gerrit server " + e1); //$NON-NLS-1$
 			ok = false;
 		}
 
@@ -192,6 +192,7 @@ public class GerritServerUtility {
 				BufferedReader in = new BufferedReader(fr);
 				lastServerId = in.readLine();
 				in.close();
+				fr.close();
 			} catch (IOException e1) {
 				//When there is no file,
 				//e1.printStackTrace();
@@ -210,7 +211,6 @@ public class GerritServerUtility {
 		try {
 			saveLastGerritServer(new GerritServerInformation("", "")); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
@@ -237,10 +237,10 @@ public class GerritServerUtility {
 				String id = getEditorId(url);
 				workBenchSupport.createBrowser(id).openURL(url);
 			} catch (PartInitException e) {
-				e.printStackTrace();
+				logger.debug("PartInitException openWebBrowser for " + e); //$NON-NLS-1$
 			}
 		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
+			logger.debug("MalformedURLException openWebBrowser for " + e1); //$NON-NLS-1$
 		}
 		logger.debug("openWebBrowser for " + url); //$NON-NLS-1$
 	}
@@ -265,8 +265,9 @@ public class GerritServerUtility {
 				out.newLine();
 			}
 			out.close();
+			fw.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			logger.debug("Saved last command  IOException " + e1); //$NON-NLS-1$
 			ok = false;
 		}
 
@@ -279,7 +280,7 @@ public class GerritServerUtility {
 	 * @return Set
 	 */
 	public Set<String> getListLastCommands() {
-		LinkedHashSet<String> lastCommands = new LinkedHashSet<String>();
+		LinkedHashSet<String> lastCommands = new LinkedHashSet<>();
 		File file = getLastGerritFile(LAST_COMMANDS_FILE);
 		if (file != null) {
 			try {
@@ -290,6 +291,7 @@ public class GerritServerUtility {
 					lastCommands.add(line);
 				}
 				in.close();
+				fr.close();
 			} catch (IOException e1) {
 				//When there is no file,
 				//e1.printStackTrace();
