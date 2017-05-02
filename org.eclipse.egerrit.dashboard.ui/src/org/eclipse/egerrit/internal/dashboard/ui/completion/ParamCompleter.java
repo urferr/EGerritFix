@@ -13,20 +13,20 @@ package org.eclipse.egerrit.internal.dashboard.ui.completion;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
 
-public abstract class ParamCompleter {
+abstract class ParamCompleter {
 
 	private String[] fApplicableStrings;
 
-	public ParamCompleter(String[] applicableStrings) {
+	ParamCompleter(String[] applicableStrings) {
 		fApplicableStrings = applicableStrings;
 	}
 
-	public boolean isApplicable(String query) {
+	boolean isApplicable(String query) {
 		String applicableStr = getApplicableString(query);
 		return applicableStr != null && query.length() > applicableStr.length();
 	}
 
-	public String getApplicableString(String query) {
+	private String getApplicableString(String query) {
 		for (String applicableStr : fApplicableStrings) {
 			if (query.startsWith(applicableStr)) {
 				return applicableStr;
@@ -35,9 +35,12 @@ public abstract class ParamCompleter {
 		return null;
 	}
 
-	public SearchContentProposal[] suggest(String lastWord, String query, GerritClient client) {
+	SearchContentProposal[] suggest(String lastWord, String query, GerritClient client) {
 		String applicableStr = getApplicableString(lastWord);
-		return requestCompletionList(lastWord.substring(applicableStr.length()), query, client);
+		if (applicableStr != null) {
+			return requestCompletionList(lastWord.substring(applicableStr.length()), query, client);
+		}
+		return null;
 	}
 
 	/**

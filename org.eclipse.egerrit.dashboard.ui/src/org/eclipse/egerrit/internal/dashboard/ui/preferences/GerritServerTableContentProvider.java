@@ -32,15 +32,13 @@ import org.eclipse.jface.viewers.Viewer;
  *
  */
 
-public class GerritServerTableContentProvider implements IStructuredContentProvider {
+class GerritServerTableContentProvider implements IStructuredContentProvider {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)
@@ -48,8 +46,6 @@ public class GerritServerTableContentProvider implements IStructuredContentProvi
 	 */
 	@Override
 	public void inputChanged(Viewer aViewer, Object aOldInput, Object aNewInput) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/* (non-Javadoc)
@@ -57,14 +53,13 @@ public class GerritServerTableContentProvider implements IStructuredContentProvi
 	 */
 	@Override
 	public Object[] getElements(Object aInputElement) {
-		//logger.debug("getElements() content provider Object: " + aInputElement);
+		//logger.debug("getElements() content provider Object: " + aInputElement)
 		if (aInputElement instanceof GerritServerInformation[]) {
-			GerritServerInformation[] itemList = (GerritServerInformation[]) aInputElement;
-			return itemList;
+			return (GerritServerInformation[]) aInputElement;
 		}
 		//This null will generate an error if we reach this point, may be we should log an error and
 		// initiate an empty structure to return
-		//return null;
+		//return null
 		return new GerritServerInformation[0];
 	}
 

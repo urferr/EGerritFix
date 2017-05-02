@@ -47,7 +47,7 @@ public class DynamicMenuAddition extends CompoundContributionItem implements IWo
 					server.getName(), UIConstants.SELECT_SERVER_COMMAND_ID, CommandContributionItem.STYLE_CHECK);
 			menuEntry.label = !server.getName().isEmpty() ? server.getName() : server.getServerURI();
 			menuEntry.visibleEnabled = true;
-			Map params = new HashMap();
+			Map<String, String> params = new HashMap();
 			params.put(UIConstants.SELECT_SERVER_COMMAND_ID_PARAM, Integer.toString(server.hashCode()));
 			menuEntry.parameters = params;
 			contributionItems[count++] = new CommandContributionItem(menuEntry);

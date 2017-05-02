@@ -91,7 +91,7 @@ public abstract class DashboardFactoryHandler extends AbstractHandler implements
 		return latestRevision;
 	}
 
-	public ActionInfo getRevisionAction(String action) {
+	ActionInfo getRevisionAction(String action) {
 		return latestRevision != null ? latestRevision.getActions().get(action) : null;
 	}
 }

@@ -34,7 +34,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * This class handles the creation of the table widget shown in the dashboard.
  */
 public class UIReviewTable {
-	private final String DASHBOARD_CONTEXT_MENU = "org.eclipse.egerrit.dashboard.contextMenu"; //$NON-NLS-1$
+	private static final String DASHBOARD_CONTEXT_MENU = "org.eclipse.egerrit.dashboard.contextMenu"; //$NON-NLS-1$
 
 	private static final String EGERRIT_DASHBOARD = "egerrit.dashboard"; //$NON-NLS-1$
 
@@ -60,7 +59,7 @@ public class UIReviewTable {
 
 	private static Logger logger = LoggerFactory.getLogger(UIReviewTable.class);
 
-	private final int TABLE_STYLE = (SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+	private static final int TABLE_STYLE = SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION;
 
 	private TableViewer fViewer;
 
@@ -82,9 +81,7 @@ public class UIReviewTable {
 		// Create the table viewer to maintain the list of reviews
 		fViewer = new TableViewer(viewerForm, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
-		fViewer.getTable().addDisposeListener(e -> {
-			storeColumnsSettings();
-		});
+		fViewer.getTable().addDisposeListener(e -> storeColumnsSettings());
 
 		// Add a Key event and mouse down listener
 		fViewer.getTable().addListener(SWT.MouseDown, mouseButtonListener);
@@ -160,29 +157,20 @@ public class UIReviewTable {
 			final Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			final ToolTip tip = new ToolTip(shell, SWT.ICON_INFORMATION);
 
-			table.addListener(SWT.MouseMove, new Listener() {
+			table.addListener(SWT.MouseMove, event -> tip.setVisible(false));
 
-				@Override
-				public void handleEvent(Event event) {
-					tip.setVisible(false);
-
-				}
-			});
-
-			table.addListener(SWT.MouseHover, new Listener() {
-				public void handleEvent(Event event) {
-					Point pt = new Point(event.x, event.y);
-					ViewerCell viewerCell = fViewer.getCell(pt);
-					if (viewerCell != null) {
-						int columnIndex = viewerCell.getColumnIndex();
-						TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
-						Rectangle rect = item.getBounds(columnIndex);
-						if (rect.contains(pt)) {
-							tip.setMessage(item.getText(columnIndex));
-							Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
-							tip.setLocation(displayPos.x, displayPos.y);
-							tip.setVisible(true);
-						}
+			table.addListener(SWT.MouseHover, event -> {
+				Point pt = new Point(event.x, event.y);
+				ViewerCell viewerCell = fViewer.getCell(pt);
+				if (viewerCell != null) {
+					int columnIndex = viewerCell.getColumnIndex();
+					TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
+					Rectangle rect = item.getBounds(columnIndex);
+					if (rect.contains(pt)) {
+						tip.setMessage(item.getText(columnIndex));
+						Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
+						tip.setLocation(displayPos.x, displayPos.y);
+						tip.setVisible(true);
 					}
 				}
 			});
@@ -214,42 +202,40 @@ public class UIReviewTable {
 		return viewerColumn;
 	}
 
-	private final Listener mouseButtonListener = new Listener() {
-		public void handleEvent(Event aEvent) {
-			logger.debug("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
-			switch (aEvent.type) {
-			case SWT.MouseDown:
-				// Left Click, Selection over the STAR column only will activate the request to modify it
-				if (aEvent.button == 1) {
-					Point p = new Point(aEvent.x, aEvent.y);
-					ViewerCell viewerCell = fViewer.getCell(p);
-					if (viewerCell != null && viewerCell.getColumnIndex() == ReviewTableDefinition.STARRED.ordinal()) {
+	private final Listener mouseButtonListener = aEvent -> {
+		logger.debug("mouseButtonListener() for " + aEvent.button); //$NON-NLS-1$
+		switch (aEvent.type) {
+		case SWT.MouseDown:
+			// Left Click, Selection over the STAR column only will activate the request to modify it
+			if (aEvent.button == 1) {
+				Point p = new Point(aEvent.x, aEvent.y);
+				ViewerCell viewerCell = fViewer.getCell(p);
+				if (viewerCell != null && viewerCell.getColumnIndex() == ReviewTableDefinition.STARRED.ordinal()) {
 
-						// Execute the command to adjust the column: ID with the
-						// starred information
-						AdjustMyStarredHandler handler = new AdjustMyStarredHandler();
-						try {
-							handler.execute(new ExecutionEvent());
-						} catch (ExecutionException excutionException) {
-							logger.error(excutionException.getMessage());
-						}
+					// Execute the command to adjust the column: ID with the
+					// starred information
+					AdjustMyStarredHandler handler = new AdjustMyStarredHandler();
+					try {
+						handler.execute(new ExecutionEvent());
+					} catch (ExecutionException excutionException) {
+						logger.error(excutionException.getMessage());
 					}
 				}
-
-				// For now, button 2 not used
-				if (aEvent.button == 2) {
-
-				}
-
-				// Right Click
-				if (aEvent.button == 3) {
-					// Process the Item table handling
-					// processItemSelection();
-				}
-				break;
-			default:
-				break;
 			}
+
+			// For now, button 2 not used
+			if (aEvent.button == 2) {
+
+			}
+
+			// Right Click
+			if (aEvent.button == 3) {
+				// Process the Item table handling
+				// processItemSelection()
+			}
+			break;
+		default:
+			break;
 		}
 
 	};
@@ -335,10 +321,10 @@ public class UIReviewTable {
 		int nextColumSize = nextTableColumn.length;
 		int numberColumnToMove = 0;
 		for (int i = 0; i < nextColumSize; i++) {
-			if (!(nextTableColumn[i] < nextColumSize)) {
+			if ((nextTableColumn[i] >= nextColumSize)) {
 				numberColumnToMove++;
 				//Move by one slot the array
-				System.arraycopy(columnOrderStored, (i + numberColumnToMove), nextTableColumn, i, (nextColumSize - i));
+				System.arraycopy(columnOrderStored, i + numberColumnToMove, nextTableColumn, i, nextColumSize - i);
 				//need to maintain the counter for next loop if the new number has to move as well
 				i--;
 			}

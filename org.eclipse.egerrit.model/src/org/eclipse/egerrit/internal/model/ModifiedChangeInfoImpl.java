@@ -117,7 +117,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 					if (actionName.equals(ActionConstants.RESTORE.getName())) {
 						notifySet(modifiedChangeInfo, ModelPackage.Literals.CHANGE_INFO__RESTOREABLE);
 					}
-					if (actionName.equals("/")) {
+					if ("/".equals(actionName)) {
 						notifySet(modifiedChangeInfo, ModelPackage.Literals.CHANGE_INFO__DELETEABLE);
 					}
 				}
@@ -143,7 +143,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 					if (actionName.equals(ActionConstants.CHERRYPICK.getName())) {
 						notifySet(modifiedRevision, ModelPackage.Literals.REVISION_INFO__CHERRYPICKABLE);
 					}
-					if (actionName.equals("/")) {
+					if ("/".equals(actionName)) {
 						notifySet(modifiedRevision, ModelPackage.Literals.REVISION_INFO__DELETEABLE);
 					}
 					if (actionName.equals(ActionConstants.PUBLISH.getName())) {
@@ -241,6 +241,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		return false;
 	}
 
+	@Override
 	public boolean isRevertable() {
 		return isActionAllowed(ActionConstants.REVERT.getName());
 	}
@@ -289,7 +290,7 @@ public class ModifiedChangeInfoImpl extends ChangeInfoImpl {
 		}
 	}
 
-	private static ApprovalInfo NO_VOTE = ModelFactory.eINSTANCE.createApprovalInfo();
+	private static final ApprovalInfo NO_VOTE = ModelFactory.eINSTANCE.createApprovalInfo();
 
 	@Override
 	public ApprovalInfo getMostRelevantVote(String label) {

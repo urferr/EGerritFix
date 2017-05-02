@@ -20,12 +20,10 @@ import org.eclipse.egerrit.internal.core.ServersStore;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -55,27 +53,27 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  */
 public class GerritDashboardPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private final static String ID = "org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"; //$NON-NLS-1$
+	private static final String ID = "org.eclipse.egerrit.dashboard.ui.preferences.GerritDashbardPreferencePage"; //$NON-NLS-1$
 
-	private final static String NEW = Messages.GerritDashboardPreferencePage_0;
+	private static final String NEW = Messages.GerritDashboardPreferencePage_0;
 
-	private final static String REMOVE = Messages.GerritDashboardPreferencePage_1;
+	private static final String REMOVE = Messages.GerritDashboardPreferencePage_1;
 
-	private final static String MODIFY = Messages.GerritDashboardPreferencePage_2;
+	private static final String MODIFY = Messages.GerritDashboardPreferencePage_2;
 
-	private final static String TITLE = Messages.GerritDashboardPreferencePage_3;
+	private static final String TITLE = Messages.GerritDashboardPreferencePage_3;
 
-	private final static String SELECTION_MESSAGE = Messages.GerritDashboardPreferencePage_4;
+	private static final String SELECTION_MESSAGE = Messages.GerritDashboardPreferencePage_4;
 
-	private final static String REMOVE_MESSAGE = Messages.GerritDashboardPreferencePage_5;
+	private static final String REMOVE_MESSAGE = Messages.GerritDashboardPreferencePage_5;
 
-	private final static String NO_SERVER_SAVED = Messages.GerritDashboardPreferencePage_6;
+	private static final String NO_SERVER_SAVED = Messages.GerritDashboardPreferencePage_6;
 
-	private final static String INVALID_SERVER = Messages.GerritDashboardPreferencePage_7;
+	private static final String INVALID_SERVER = Messages.GerritDashboardPreferencePage_7;
 
 	private Composite prefsContainer = null;
 
-	private List<GerritServerInformation> listServers = new ArrayList<GerritServerInformation>();
+	private List<GerritServerInformation> listServers = new ArrayList<>();
 
 	private TableViewer serverInfoViewer;
 
@@ -154,16 +152,12 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 	}
 
 	private ISelectionChangedListener selectionChangedListener() {
-		return new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				ISelection tableSelection = serverInfoViewer.getSelection();
-				boolean validSelection = (tableSelection instanceof IStructuredSelection)
-						&& ((IStructuredSelection) tableSelection).getFirstElement() instanceof GerritServerInformation;
-				buttonModify.setEnabled(validSelection);
-				buttonRemove.setEnabled(validSelection);
-			}
+		return event -> {
+			ISelection tableSelection = serverInfoViewer.getSelection();
+			boolean validSelection = (tableSelection instanceof IStructuredSelection)
+					&& ((IStructuredSelection) tableSelection).getFirstElement() instanceof GerritServerInformation;
+			buttonModify.setEnabled(validSelection);
+			buttonRemove.setEnabled(validSelection);
 		};
 	}
 
@@ -211,7 +205,7 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 	}
 
 	private SelectionListener buttonModifyListener() {
-		SelectionListener modifyListener = new SelectionListener() {
+		return new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -234,11 +228,10 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 				// ignore
 			}
 		};
-		return modifyListener;
 	}
 
 	private SelectionListener buttonNewListener() {
-		SelectionListener newListener = new SelectionListener() {
+		return new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -250,11 +243,10 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 				// ignore
 			}
 		};
-		return newListener;
 	}
 
 	private SelectionListener buttonRemoveListener() {
-		SelectionListener removeListener = new SelectionListener() {
+		return new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -276,24 +268,19 @@ public class GerritDashboardPreferencePage extends FieldEditorPreferencePage imp
 				// ignore
 			}
 		};
-		return removeListener;
 	}
 
 	private IDoubleClickListener doubleClickListener() {
-		return new IDoubleClickListener() {
+		return event -> {
+			IStructuredSelection selection = (IStructuredSelection) serverInfoViewer.getSelection();
+			if (selection.isEmpty()) {
+				return;
+			} else {
+				Object obj = selection.getFirstElement();
+				int selectedIndex = serverInfoViewer.getTable().getSelectionIndex();
 
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) serverInfoViewer.getSelection();
-				if (selection.isEmpty()) {
-					return;
-				} else {
-					Object obj = selection.getFirstElement();
-					int selectedIndex = serverInfoViewer.getTable().getSelectionIndex();
-
-					if (obj instanceof GerritServerInformation) {
-						processDialogInfo((GerritServerInformation) obj, selectedIndex);
-					}
+				if (obj instanceof GerritServerInformation) {
+					processDialogInfo((GerritServerInformation) obj, selectedIndex);
 				}
 			}
 		};

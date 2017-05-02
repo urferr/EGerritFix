@@ -65,7 +65,7 @@ public class AdjustMyStarredHandler extends AbstractHandler {
 
 						try {
 							// Update the Gerrit Server
-							reviewTableView.setStarred(fItem, !Boolean.valueOf(fItem.isStarred()), monitor);
+							reviewTableView.setStarred(fItem, !Boolean.valueOf(fItem.isStarred()));
 							// Toggle the STARRED value for the Dashboard
 						} catch (CoreException e) {
 							UIUtils.showErrorDialog(e.getMessage(), e.getStatus().getException().getMessage());

@@ -15,7 +15,6 @@ package org.eclipse.egerrit.internal.dashboard.ui.commands.documentation;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.dashboard.utils.GerritServerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class SearchingHandler extends AbstractHandler {
 	private static Logger logger = LoggerFactory.getLogger(SearchingHandler.class);
 
-	private final String SEARCHING_DOCUMENTATION = "Documentation/user-search.html"; //$NON-NLS-1$
+	private static final String SEARCHING_DOCUMENTATION = "Documentation/user-search.html"; //$NON-NLS-1$
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)

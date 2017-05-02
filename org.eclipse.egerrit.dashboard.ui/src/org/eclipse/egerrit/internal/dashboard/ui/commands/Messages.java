@@ -22,7 +22,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.dashboard.ui.commands.messages"; //$NON-NLS-1$
 
-	public static String AddGerritSiteHandler_commandAdd;
+	public static String addGerritSiteHandlerCommand;
 
 	static {
 		// initialize resource bundle

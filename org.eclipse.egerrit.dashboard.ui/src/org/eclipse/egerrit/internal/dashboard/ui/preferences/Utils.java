@@ -21,15 +21,17 @@ import org.eclipse.ui.PlatformUI;
  */
 public class Utils {
 
-	public static void displayInformation(final Shell shell, final String title, final String message) {
-		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(shell, title, message);
-			}
-		});
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private Utils() {
 	}
 
-	protected static boolean queryReturn;
+	public static void displayInformation(final Shell shell, final String title, final String message) {
+		PlatformUI.getWorkbench().getDisplay().syncExec(() -> MessageDialog.openInformation(shell, title, message));
+	}
+
+	private static boolean queryReturn;
 
 	/**
 	 * Message box asking a question and waiting for an answer
@@ -39,7 +41,7 @@ public class Utils {
 	 * @param message
 	 * @return boolean
 	 */
-	public static boolean queryInformation(final Shell shell, final String title, final String message) {
+	static boolean queryInformation(final Shell shell, final String title, final String message) {
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			public void run() {
 				boolean b = MessageDialog.openQuestion(shell, title, message);

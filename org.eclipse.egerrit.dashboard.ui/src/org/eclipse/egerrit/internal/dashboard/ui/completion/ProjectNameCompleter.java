@@ -23,7 +23,7 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.model.ProjectInfo;
 
-public class ProjectNameCompleter extends ParamCompleter {
+class ProjectNameCompleter extends ParamCompleter {
 
 	public ProjectNameCompleter() {
 		super(new String[] { SearchContentProposalProvider.PROJECT, SearchContentProposalProvider.PARENT_PROJECT });

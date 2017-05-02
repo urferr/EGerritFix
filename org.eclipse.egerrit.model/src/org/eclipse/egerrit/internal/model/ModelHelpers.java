@@ -20,6 +20,17 @@ import org.eclipse.emf.common.util.EList;
  */
 public class ModelHelpers {
 
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private ModelHelpers() {
+	}
+
+	/**
+	 * Sort the list of comments
+	 * @param comments
+	 * @return
+	 */
 	public static EList<CommentInfo> sortComments(EList<CommentInfo> comments) {
 		Collections.sort(comments, (CommentInfo o1, CommentInfo o2) -> {
 			if (o1.getLine() == o2.getLine()) {
@@ -33,14 +44,29 @@ public class ModelHelpers {
 		return comments;
 	}
 
+	/**
+	 * return the revision info associated to the comment
+	 * @param comment
+	 * @return
+	 */
 	public static RevisionInfo getRevision(CommentInfo comment) {
 		return getFileInfo(comment).getRevision();
 	}
 
+	/**
+	 * return the FileInfo
+	 * @param comment
+	 * @return
+	 */
 	public static FileInfo getFileInfo(CommentInfo comment) {
 		return (FileInfo) comment.eContainer();
 	}
 
+	/**
+	 * Find the highest revision number/
+	 * @param revisions
+	 * @return
+	 */
 	public static int getHighestRevisionNumber(Collection<RevisionInfo> revisions) {
 		int match = 0;
 		for (RevisionInfo rev : revisions) {

@@ -3,12 +3,9 @@ package org.eclipse.egerrit.internal.model;
 import org.eclipse.egerrit.internal.model.impl.FileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
 import org.eclipse.egerrit.internal.model.impl.StringToRevisionInfoImpl;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EContentAdapter;
-
+ 
 public class ModifiedFileInfoImpl extends FileInfoImpl {
 	@Override
 	public String getPath() {

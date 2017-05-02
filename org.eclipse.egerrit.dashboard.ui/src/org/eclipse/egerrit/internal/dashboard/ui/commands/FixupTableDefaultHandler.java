@@ -50,13 +50,12 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 	public Object execute(final ExecutionEvent aEvent) {
 		Display disp = Display.getCurrent();
 		Control control = disp.getFocusControl();
-		if (control instanceof Table) {
-			if (control.getData() != null && control.getData().equals(UIFilesTable.FILES_TABLE)) {
-				FilesTableModel[] tableInfo = FilesTableModel.values();
-				((Table) control).setColumnOrder(FilesTableModel.getDefaultOrder());
-				setTableDefaultWidth(control, tableInfo);
-				return null;
-			}
+		if (control instanceof Table
+				&& (control.getData() != null && control.getData().equals(UIFilesTable.FILES_TABLE))) {
+			FilesTableModel[] tableInfo = FilesTableModel.values();
+			((Table) control).setColumnOrder(FilesTableModel.getDefaultOrder());
+			setTableDefaultWidth(control, tableInfo);
+			return null;
 		}
 		IWorkbenchPage wbp = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		String id = wbp.getActivePartReference().getId();
@@ -68,42 +67,56 @@ public class FixupTableDefaultHandler extends AbstractHandler {
 			Control table = display.getFocusControl();
 
 			if (id.compareTo(ChangeDetailEditor.EDITOR_ID) == 0) {
-				if (table instanceof Table) {
-					if (table.getData().toString().compareTo(UIReviewersTable.REVIEWERS_TABLE) == 0) {
-						ReviewersTableModel[] tableInfo = ReviewersTableModel.values();
-						((Table) table).setColumnOrder(ReviewersTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					} else if (table.getData().toString().compareTo(UIFilesTable.FILES_TABLE) == 0) {
-						FilesTableModel[] tableInfo = FilesTableModel.values();
-						((Table) table).setColumnOrder(FilesTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					} else if (table.getData().toString().compareTo(UIHistoryTable.HISTORY_TABLE) == 0) {
-						HistoryTableModel[] tableInfo = HistoryTableModel.values();
-						((Table) table).setColumnOrder(HistoryTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					} else if (table.getData().toString().compareTo(UISameTopicTable.SAME_TOPIC_TABLE) == 0) {
-						SameTopicTableModel[] tableInfo = SameTopicTableModel.values();
-						((Table) table).setColumnOrder(SameTopicTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					} else if (table.getData().toString().compareTo(UIRelatedChangesTable.RELATED_CHANGES_TABLE) == 0) {
-						RelatedChangesTableModel[] tableInfo = RelatedChangesTableModel.values();
-						((Table) table).setColumnOrder(RelatedChangesTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					} else if (table.getData().toString().compareTo(UIConflictsWithTable.CONFLICTS_WITH_TABLE) == 0) {
-						ConflictWithTableModel[] tableInfo = ConflictWithTableModel.values();
-						((Table) table).setColumnOrder(ConflictWithTableModel.getDefaultOrder());
-						setTableDefaultWidth(table, tableInfo);
-					}
-				}
+				handleChangeDetailEditor(table);
 			} else if (id.compareTo(COMPARE_EDITOR_ID) == 0) {
-				if (table instanceof Tree) {
-					CompareUpperSectionColumn[] tableInfo = CompareUpperSectionColumn.values();
-					((Tree) table).setColumnOrder(CompareUpperSectionColumn.getDefaultOrder());
-					setTableDefaultWidth(table, tableInfo);
-				}
+				handleCompareEditor(table);
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param table
+	 */
+	private void handleCompareEditor(Control table) {
+		if (table instanceof Tree) {
+			CompareUpperSectionColumn[] tableInfo = CompareUpperSectionColumn.values();
+			((Tree) table).setColumnOrder(CompareUpperSectionColumn.getDefaultOrder());
+			setTableDefaultWidth(table, tableInfo);
+		}
+	}
+
+	/**
+	 * @param table
+	 */
+	private void handleChangeDetailEditor(Control table) {
+		if (table instanceof Table) {
+			if (table.getData().toString().compareTo(UIReviewersTable.REVIEWERS_TABLE) == 0) {
+				ReviewersTableModel[] tableInfo = ReviewersTableModel.values();
+				((Table) table).setColumnOrder(ReviewersTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			} else if (table.getData().toString().compareTo(UIFilesTable.FILES_TABLE) == 0) {
+				FilesTableModel[] tableInfo = FilesTableModel.values();
+				((Table) table).setColumnOrder(FilesTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			} else if (table.getData().toString().compareTo(UIHistoryTable.HISTORY_TABLE) == 0) {
+				HistoryTableModel[] tableInfo = HistoryTableModel.values();
+				((Table) table).setColumnOrder(HistoryTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			} else if (table.getData().toString().compareTo(UISameTopicTable.SAME_TOPIC_TABLE) == 0) {
+				SameTopicTableModel[] tableInfo = SameTopicTableModel.values();
+				((Table) table).setColumnOrder(SameTopicTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			} else if (table.getData().toString().compareTo(UIRelatedChangesTable.RELATED_CHANGES_TABLE) == 0) {
+				RelatedChangesTableModel[] tableInfo = RelatedChangesTableModel.values();
+				((Table) table).setColumnOrder(RelatedChangesTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			} else if (table.getData().toString().compareTo(UIConflictsWithTable.CONFLICTS_WITH_TABLE) == 0) {
+				ConflictWithTableModel[] tableInfo = ConflictWithTableModel.values();
+				((Table) table).setColumnOrder(ConflictWithTableModel.getDefaultOrder());
+				setTableDefaultWidth(table, tableInfo);
+			}
+		}
 	}
 
 	private void setTableDefaultWidth(Control table, ITableModel[] tableInfo) {

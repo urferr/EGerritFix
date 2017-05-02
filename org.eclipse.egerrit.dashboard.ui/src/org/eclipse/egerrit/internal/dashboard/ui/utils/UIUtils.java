@@ -32,9 +32,15 @@ import org.osgi.service.prefs.Preferences;
 
 public class UIUtils {
 
-	private final static String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
+	private static final String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
 
-	private final static int TITLE_LENGTH = 75;
+	private static final int TITLE_LENGTH = 75;
+
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private UIUtils() {
+	}
 
 	/**
 	 * Method showErrorDialog.
@@ -47,21 +53,13 @@ public class UIUtils {
 	public static void showErrorDialog(String aMsg, String aReason) {
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, aMsg,
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, 0, aReason, null), IStatus.INFO);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				dialog.open();
-			}
-		});
+		Display.getDefault().syncExec(() -> dialog.open());
 	}
 
 	public static void showNoServerMessage() {
 		final ErrorDialog dialog = new ErrorDialog(null, Messages.UIUtils_dashboardInfo, null,
 				new Status(IStatus.INFO, GerritUi.PLUGIN_ID, Messages.UIUtils_configureMessage), IStatus.INFO);
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				dialog.open();
-			}
-		});
+		Display.getDefault().syncExec(() -> dialog.open());
 	}
 
 	public static String quoteIfNeeded(String s) {

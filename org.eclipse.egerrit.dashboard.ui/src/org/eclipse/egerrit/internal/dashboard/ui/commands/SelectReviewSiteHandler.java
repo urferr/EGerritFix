@@ -80,7 +80,7 @@ public class SelectReviewSiteHandler extends AbstractHandler implements IElement
 			return ServersStore.getAllServers().get(0);
 		}
 		//No server, prompt the user to enter one
-		if (allServers.size() == 0) {
+		if (allServers.isEmpty()) {
 			PreferenceDialog prefDialog = PreferencesUtil.createPreferenceDialogOn(null,
 					GerritDashboardPreferencePage.getID(), null, null);
 			prefDialog.setBlockOnOpen(true);

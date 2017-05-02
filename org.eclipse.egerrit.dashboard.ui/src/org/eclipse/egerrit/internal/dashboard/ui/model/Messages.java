@@ -25,8 +25,6 @@ public class Messages extends NLS {
 
 	public static String ReviewTableDefinition_branch;
 
-	public static String ReviewTableDefinition_codeReview;
-
 	public static String ReviewTableDefinition_id;
 
 	public static String ReviewTableDefinition_owner;
@@ -38,8 +36,6 @@ public class Messages extends NLS {
 	public static String ReviewTableDefinition_status;
 
 	public static String ReviewTableDefinition_updated;
-
-	public static String ReviewTableDefinition_verify;
 
 	public static String Starred;
 

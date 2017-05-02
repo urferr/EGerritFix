@@ -18,8 +18,8 @@ import org.eclipse.jface.fieldassist.ContentProposal;
  * one string to the user for selection, and once chosen, insert a different string. For example, the label can be:
  * "org.eclipse.cdt (C/C++ project)" which, once selected, will be used as "org.eclipse.cdt"
  */
-public class SearchContentProposal extends ContentProposal {
-	public SearchContentProposal(String content, String label) {
+class SearchContentProposal extends ContentProposal {
+	SearchContentProposal(String content, String label) {
 		// Add a space to the query if it is a complete operation (e.g. "status:open") so the user can keep on typing.
 		super(content.endsWith(":") ? content : content + ' ', label, null); //$NON-NLS-1$
 	}

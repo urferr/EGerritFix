@@ -13,14 +13,13 @@ package org.eclipse.egerrit.internal.dashboard.ui.completion;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
 
-public class AccountGroupCompleter extends ParamCompleter {
+class AccountGroupCompleter extends ParamCompleter {
 	public AccountGroupCompleter() {
 		super(new String[] { SearchContentProposalProvider.OWNER_IN, SearchContentProposalProvider.REVIEWER_IN });
 	}
 
 	@Override
 	public SearchContentProposal[] requestCompletionList(String lastWord, String query, GerritClient client) {
-		//TODO
 		return null;
 	}
 }

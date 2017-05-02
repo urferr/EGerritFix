@@ -37,6 +37,7 @@ import org.eclipse.egerrit.internal.core.GerritRepository;
 import org.eclipse.egerrit.internal.core.GerritServerInformation;
 import org.eclipse.egerrit.internal.core.ServersStore;
 import org.eclipse.egerrit.internal.core.command.ChangeOption;
+import org.eclipse.egerrit.internal.core.command.ChangeStatus;
 import org.eclipse.egerrit.internal.core.command.QueryChangesCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.dashboard.core.GerritQueryException;
@@ -56,8 +57,6 @@ import org.eclipse.egerrit.internal.ui.editors.model.ChangeDetailEditorInput;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -81,10 +80,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
@@ -116,15 +113,15 @@ public class GerritTableView extends ViewPart {
 	//Numbers of menu items in the Search pulldown menu; SEARCH_SIZE_MENU_LIST + 1 will be the max
 	private static final int SEARCH_SIZE_MENU_LIST = 4;
 
-	private final String TITLE = "Gerrit Server "; //$NON-NLS-1$
+	private static final String TITLE = "Gerrit Server "; //$NON-NLS-1$
 
-	public static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$
+	private static final String CHECKED_IMAGE = "personSignIn.png"; //$NON-NLS-1$
 
-	public static final String ANONYMOUS_IMAGE = "personAnonymous.png"; //$NON-NLS-1$
+	private static final String ANONYMOUS_IMAGE = "personAnonymous.png"; //$NON-NLS-1$
 
-	public static final String INVALID_IMAGE = "personInvalid.png"; //$NON-NLS-1$
+	private static final String INVALID_IMAGE = "personInvalid.png"; //$NON-NLS-1$
 
-	protected static final String JOB_FAMILY = "DASHBOARD_UI"; //$NON-NLS-1$
+	private static final String JOB_FAMILY = "DASHBOARD_UI"; //$NON-NLS-1$
 
 	// For the images
 
@@ -158,7 +155,7 @@ public class GerritTableView extends ViewPart {
 
 	private Button fSearchRequestBtn;
 
-	private Set<String> fRequestList = new LinkedHashSet<String>();
+	private Set<String> fRequestList = new LinkedHashSet<>();
 
 	private TableViewer fViewer;
 
@@ -168,7 +165,7 @@ public class GerritTableView extends ViewPart {
 
 	private Action doubleClickAction;
 
-	private final LinkedHashSet<Job> fJobs = new LinkedHashSet<Job>();
+	private final LinkedHashSet<Job> fJobs = new LinkedHashSet<>();
 
 	private GerritClient gerritClient = null;
 
@@ -178,7 +175,7 @@ public class GerritTableView extends ViewPart {
 
 	private UIReviewTable reviewTable;
 
-	SearchContentProposalProvider searchProposalProvider = new SearchContentProposalProvider(() -> {
+	private SearchContentProposalProvider searchProposalProvider = new SearchContentProposalProvider(() -> {
 		initializeDefaultServer();
 		if (defaultServerInfo != null) {
 			connectToServer(defaultServerInfo);
@@ -243,7 +240,7 @@ public class GerritTableView extends ViewPart {
 	public void createPartControl(Composite aParent) {
 		parentComposite = aParent;
 		if (fServerUtil.getLastSavedGerritServer() == null) {
-			createEmptyPage(ServersStore.getAllServers().size() == 0);
+			createEmptyPage(ServersStore.getAllServers().isEmpty());
 		} else {
 			createReviewList(null);
 		}
@@ -275,7 +272,7 @@ public class GerritTableView extends ViewPart {
 					GerritServerInformation server = askUserToSelectRepo(ServersStore.getAllServers());
 					if (server != null) {
 						fServerUtil.saveLastGerritServer(server);
-						processCommands("status:open"); //$NON-NLS-1$
+						processCommands(ChangeStatus.OPEN.getValue());
 					}
 				}
 			});
@@ -303,24 +300,21 @@ public class GerritTableView extends ViewPart {
 			fViewer.getControl().dispose();
 			fViewer = null;
 		}
-		Display.getDefault().syncExec(new Runnable() {
+		Display.getDefault().syncExec(() -> {
 
-			@Override
-			public void run() {
-				reviewTable = new UIReviewTable();
-				reviewTable.createTableViewerSection(fTopComposite, voteColumns)
-						.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			reviewTable = new UIReviewTable();
+			reviewTable.createTableViewerSection(fTopComposite, voteColumns)
+					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-				fViewer = reviewTable.getViewer();
+			fViewer = reviewTable.getViewer();
 
-				getSite().setSelectionProvider(fViewer);
-				makeActions();
-				hookDoubleClickAction();
+			getSite().setSelectionProvider(fViewer);
+			makeActions();
+			hookDoubleClickAction();
 
-				parentComposite.layout(true); //Here we force a re-layout
-				voteHandler = new VoteHandler(fTopComposite.getShell(), rtv, fViewer);
-				voteHandler.connect();
-			}
+			parentComposite.layout(true); //Here we force a re-layout
+			voteHandler = new VoteHandler(fTopComposite.getShell(), rtv, fViewer);
+			voteHandler.connect();
 		});
 
 	}
@@ -400,13 +394,7 @@ public class GerritTableView extends ViewPart {
 		fSearchRequestBtn = new Button(searchComposite, SWT.NONE);
 		fSearchRequestBtn.setText(Messages.GerritTableView_search);
 		fSearchRequestBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, false, false));
-		fSearchRequestBtn.addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				processCommands(fSearchTextBox.getText());
-			}
-		});
+		fSearchRequestBtn.addListener(SWT.Selection, event -> processCommands(fSearchTextBox.getText()));
 
 		adaptSearchSectionLayout(searchComposite);
 		return searchComposite;
@@ -483,45 +471,63 @@ public class GerritTableView extends ViewPart {
 					return;
 				}
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+				verifySelectionToOpen(structuredSelection);
+
+			}
+
+			/**
+			 * @param structuredSelection
+			 */
+			private void verifySelectionToOpen(IStructuredSelection structuredSelection) {
 				Iterator<?> selections = structuredSelection.iterator();
 				while (selections.hasNext()) {
 					Object element = selections.next();
 					if (element instanceof ChangeInfo) {
-						IWorkbench workbench = GerritUi.getDefault().getWorkbench();
-						IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-						IWorkbenchPage page = null;
-						if (window != null) {
-							page = workbench.getActiveWorkbenchWindow().getActivePage();
-						}
-
-						if (page != null) {
-							try {
-								IEditorInput input = new ChangeDetailEditorInput(gerritClient, (ChangeInfo) element);
-								IEditorPart reusedEditor = page.findEditor(input);
-								page.openEditor(input, ChangeDetailEditor.EDITOR_ID);
-								if (reusedEditor instanceof ChangeDetailEditor) {
-									((ChangeDetailEditor) reusedEditor).refreshStatus();
-								}
-							} catch (PartInitException e) {
-								EGerritCorePlugin.logError(gerritClient != null
-										? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
-										: e.getMessage());
-							}
-						}
+						openEditorWithInfo((ChangeInfo) element);
 					}
 
 				}
+			}
 
+			/**
+			 * @param changeInfo
+			 */
+			private void openEditorWithInfo(ChangeInfo changeInfo) {
+				IWorkbenchPage page = getActivePage();
+
+				if (page != null) {
+					try {
+						IEditorInput input = new ChangeDetailEditorInput(gerritClient, changeInfo);
+						IEditorPart reusedEditor = page.findEditor(input);
+						page.openEditor(input, ChangeDetailEditor.EDITOR_ID);
+						if (reusedEditor instanceof ChangeDetailEditor) {
+							((ChangeDetailEditor) reusedEditor).refreshStatus();
+						}
+					} catch (PartInitException e) {
+						EGerritCorePlugin.logError(gerritClient != null
+								? gerritClient.getRepository().formatGerritVersion() + e.getMessage()
+								: e.getMessage());
+					}
+				}
+			}
+
+			/**
+			 * @return
+			 */
+			private IWorkbenchPage getActivePage() {
+				IWorkbench workbench = GerritUi.getDefault().getWorkbench();
+				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+				IWorkbenchPage page = null;
+				if (window != null) {
+					page = workbench.getActiveWorkbenchWindow().getActivePage();
+				}
+				return page;
 			}
 		};
 	}
 
 	private void hookDoubleClickAction() {
-		fViewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-			}
-		});
+		fViewer.addDoubleClickListener(event -> doubleClickAction.run());
 	}
 
 	/**
@@ -580,7 +586,7 @@ public class GerritTableView extends ViewPart {
 		// if the review view is not showed yet,
 		if (viewPart == null) {
 			try {
-				viewPart = page.showView(VIEW_ID);
+				page.showView(VIEW_ID);
 			} catch (PartInitException e) {
 				logger.warn(e.getMessage());
 			}
@@ -609,12 +615,7 @@ public class GerritTableView extends ViewPart {
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
 			final AddOneServerDialog addOneServer = new AddOneServerDialog();
-			Display.getDefault().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					addOneServer.promptForNewServer(true);
-				}
-			});
+			Display.getDefault().syncExec(() -> addOneServer.promptForNewServer(true));
 			defaultServerInfo = addOneServer.getServer();
 			if (defaultServerInfo == null) {
 				logger.debug("No new server entered by the user. "); //$NON-NLS-1$
@@ -623,7 +624,7 @@ public class GerritTableView extends ViewPart {
 		}
 
 		//At this point we have a server, execute the query if we can
-		if (aQuery != null && !aQuery.equals("")) { //$NON-NLS-1$
+		if (aQuery != null && !"".equals(aQuery)) { //$NON-NLS-1$
 			updateTable(defaultServerInfo, aQuery);
 		}
 	}
@@ -654,16 +655,17 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private String handleHttpInQuery(String aQuery) {
+		String latestQuery = aQuery;
 		ChangeIdExtractor extractedData = new ChangeIdExtractor(aQuery);
 		if (extractedData.getServer() != null) {
 			selectServer(extractedData.getServer());
 			if (extractedData.getChangeId() != null) {
-				aQuery = "change:" + extractedData.getChangeId(); //$NON-NLS-1$
+				latestQuery = "change:" + extractedData.getChangeId(); //$NON-NLS-1$
 			} else {
-				aQuery = "status:open"; //$NON-NLS-1$
+				latestQuery = ChangeStatus.OPEN.getValue();
 			}
 		}
-		return aQuery;
+		return latestQuery;
 	}
 
 	private void selectServer(GerritServerInformation server) {
@@ -698,7 +700,7 @@ public class GerritTableView extends ViewPart {
 		}
 
 		//No match at all, then we will the one we have
-		if (matches.size() == 0) {
+		if (matches.isEmpty()) {
 			knownServers.add(searched);
 			ServersStore.saveServers(knownServers);
 			matches.add(searched);
@@ -710,12 +712,10 @@ public class GerritTableView extends ViewPart {
 	/**
 	 * Process the command to set the Starred flag on the Gerrit server String taskId boolean starred
 	 *
-	 * @param progressMonitor
 	 * @return void
 	 * @throws CoreException
 	 */
-	public void setStarred(ChangeInfo changeInfo, boolean starred, IProgressMonitor progressMonitor)
-			throws CoreException {
+	public void setStarred(ChangeInfo changeInfo, boolean starred) throws CoreException {
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
 		} else {
@@ -745,7 +745,7 @@ public class GerritTableView extends ViewPart {
 	 *
 	 * @return Version
 	 */
-	public Version getlastGerritServerVersion() {
+	private Version getlastGerritServerVersion() {
 		Version version = null;
 		GerritServerInformation lastSaved = fServerUtil.getLastSavedGerritServer();
 
@@ -780,10 +780,8 @@ public class GerritTableView extends ViewPart {
 		boolean ret = false;
 
 		Version version = getlastGerritServerVersion();
-		if (version != null && version.getMajor() >= 2) {
-			if (version.getMinor() < 5) {
-				ret = true;
-			}
+		if (version != null && version.getMajor() >= 2 && version.getMinor() < 5) {
+			ret = true;
 		}
 		return ret;
 	}
@@ -811,12 +809,7 @@ public class GerritTableView extends ViewPart {
 				try {
 					status = getReviews(server, aQueryType);
 					if (status.isOK()) {
-						Display.getDefault().syncExec(new Runnable() {
-							@Override
-							public void run() {
-								setSearchText(aQueryType);
-							}
-						});
+						Display.getDefault().syncExec(() -> setSearchText(aQueryType));
 					}
 					status = Status.OK_STATUS;
 				} catch (GerritQueryException e) {
@@ -843,38 +836,63 @@ public class GerritTableView extends ViewPart {
 	private void setSearchText(String aSt) {
 		if (!fSearchTextBox.isDisposed()) {
 			if (aSt != null && aSt != "") { //$NON-NLS-1$
-				int index = -1;
 				String[] ar = fSearchTextBox.getItems();
-				for (int i = 0; i < ar.length; i++) {
-					if (ar[i].equals(aSt.trim())) {
-						index = i;
-						break;
-					}
-				}
+				int index = findSearchBoxIndexCombo(aSt, ar);
 
-				if (index != -1) {
-					fRequestList.remove(fRequestList.remove(ar[index]));
-				} else {
-					//Remove the oldest element from the list
-					if (fRequestList.size() > SEARCH_SIZE_MENU_LIST) {
-						Object obj = fRequestList.iterator().next(); //Should be the first item in the list
-						fRequestList.remove(fRequestList.remove(obj));
-					}
-				}
+				removeElementSearchComboList(ar, index);
 				//Add the new text in the combo
 				fRequestList.add(aSt.trim());
 				//Save the list of commands in file
 				fServerUtil.saveLastCommandList(fRequestList);
-
 			}
 
-			fSearchTextBox.setItems(reverseOrder(fRequestList.toArray(new String[0])));
-			if (aSt != null && aSt != "") { //$NON-NLS-1$
-				fSearchTextBox.select(0);
-			} else {
-				//Leave the text empty
-				fSearchTextBox.setText(""); //$NON-NLS-1$
+			adjustSearchBox(aSt);
+		}
+	}
+
+	/**
+	 * @param ar
+	 * @param index
+	 */
+	private void removeElementSearchComboList(String[] ar, int index) {
+		if (index != -1) {
+			fRequestList.remove(ar[index]);
+		} else {
+			//Remove the oldest element from the list
+			if (fRequestList.size() > SEARCH_SIZE_MENU_LIST) {
+				Object obj = fRequestList.iterator().next(); //Should be the first item in the list
+				fRequestList.remove(obj);
 			}
+		}
+	}
+
+	/**
+	 * @param aSt
+	 * @param index
+	 * @param ar
+	 * @return
+	 */
+	private int findSearchBoxIndexCombo(String aSt, String[] ar) {
+		int index = -1;
+		for (int i = 0; i < ar.length; i++) {
+			if (ar[i].equals(aSt.trim())) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+
+	/**
+	 * @param aSt
+	 */
+	private void adjustSearchBox(String aSt) {
+		fSearchTextBox.setItems(reverseOrder(fRequestList.toArray(new String[0])));
+		if (aSt != null && aSt != "") { //$NON-NLS-1$
+			fSearchTextBox.select(0);
+		} else {
+			//Leave the text empty
+			fSearchTextBox.setText(""); //$NON-NLS-1$
 		}
 	}
 
@@ -897,11 +915,8 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private void displayInformation(final String server, final String st) {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(null, NLS.bind(Messages.GerritTableView_information, server), st);
-			}
-		});
+		Display.getDefault().syncExec(
+				() -> MessageDialog.openInformation(null, NLS.bind(Messages.GerritTableView_information, server), st));
 	}
 
 	/**
@@ -930,7 +945,7 @@ public class GerritTableView extends ViewPart {
 		Reviews shownReviews = ModelFactory.eINSTANCE.createReviews();
 		if (gerritClient != null) {
 			// Fetch the list of reviews and pre-populate the table
-			ChangeInfo[] loadedReviews = getReviewList(repository, queryString);
+			ChangeInfo[] loadedReviews = getReviewList(queryString);
 
 			// Get the name of the columns for the votes and setup the table
 			String[] columns = extractColumnNames(loadedReviews);
@@ -972,15 +987,15 @@ public class GerritTableView extends ViewPart {
 		}
 
 		if (uri != null) {
-			String SCHEME = uri.getScheme();
-			String HOST = uri.getHost();
-			int PORT = uri.getPort();
-			String PATH = uri.getPath();
-			String USER = repository.getUserName();
-			String PASSWORD = repository.getPassword();
-			GerritCredentials creds = new GerritCredentials(USER, PASSWORD);
+			String scheme = uri.getScheme();
+			String host = uri.getHost();
+			int port = uri.getPort();
+			String path = uri.getPath();
+			String user = repository.getUserName();
+			String passwd = repository.getPassword();
+			GerritCredentials creds = new GerritCredentials(user, passwd);
 			// Initialize
-			GerritRepository gerritRepository = new GerritRepository(SCHEME, HOST, PORT, PATH);
+			GerritRepository gerritRepository = new GerritRepository(scheme, host, port, path);
 			gerritRepository.setCredentials(creds);
 			gerritRepository.setServerInfo(repository);
 			gerritRepository.acceptSelfSignedCerts(repository.getSelfSigned());
@@ -1014,7 +1029,7 @@ public class GerritTableView extends ViewPart {
 		return false;
 	}
 
-	private ChangeInfo[] getReviewList(GerritServerInformation repository, String aQuery) throws GerritQueryException {
+	private ChangeInfo[] getReviewList(String aQuery) throws GerritQueryException {
 		ChangeInfo[] reviews = null;
 		try {
 			reviews = performQuery(aQuery, new NullProgressMonitor());
@@ -1066,25 +1081,22 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private void setRepositoryVersionLabel(String aRepo, String aVersion) {
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				if (!fRepositoryVersionResulLabel.isDisposed()) {
-					// e.g. "Eclipse.org Reviews - Gerrit 2.6.1"
-					fRepositoryVersionResulLabel.setText(aRepo);
-					if (gerritClient == null) {
-						fRepositoryVersionResulLabel.setImage(fImageRegistry.get(INVALID_IMAGE));
-						fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipInvalid);
-					} else if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
-						fRepositoryVersionResulLabel.setImage(fImageRegistry.get(ANONYMOUS_IMAGE));
-						fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous + '\n'
-								+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
-					} else {
-						fRepositoryVersionResulLabel.setImage(fImageRegistry.get(CHECKED_IMAGE));
-						fRepositoryVersionResulLabel.setToolTipText(NLS.bind(Messages.GerritTableView_tooltipLoggedOnAs,
-								gerritClient.getRepository().getServerInfo().getUserName()) + '\n'
-								+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
-					}
+		Display.getDefault().asyncExec(() -> {
+			if (!fRepositoryVersionResulLabel.isDisposed()) {
+				// e.g. "Eclipse.org Reviews - Gerrit 2.6.1"
+				fRepositoryVersionResulLabel.setText(aRepo);
+				if (gerritClient == null) {
+					fRepositoryVersionResulLabel.setImage(fImageRegistry.get(INVALID_IMAGE));
+					fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipInvalid);
+				} else if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
+					fRepositoryVersionResulLabel.setImage(fImageRegistry.get(ANONYMOUS_IMAGE));
+					fRepositoryVersionResulLabel.setToolTipText(Messages.GerritTableView_tooltipAnonymous + '\n'
+							+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
+				} else {
+					fRepositoryVersionResulLabel.setImage(fImageRegistry.get(CHECKED_IMAGE));
+					fRepositoryVersionResulLabel.setToolTipText(NLS.bind(Messages.GerritTableView_tooltipLoggedOnAs,
+							gerritClient.getRepository().getServerInfo().getUserName()) + '\n'
+							+ NLS.bind(Messages.GerritTableView_gerritVersion, aVersion));
 				}
 			}
 		});
@@ -1119,7 +1131,7 @@ public class GerritTableView extends ViewPart {
 			return;
 		}
 		if (fSearchTextBox == null || fSearchTextBox.getText().isEmpty()) {
-			processCommands("status:open"); //$NON-NLS-1$
+			processCommands(ChangeStatus.OPEN.getValue());
 		} else {
 			processCommands(fSearchTextBox.getText());
 		}
@@ -1160,7 +1172,7 @@ public class GerritTableView extends ViewPart {
 	 * @return
 	 */
 	private String[] extractColumnNames(ChangeInfo[] reviews) {
-		TreeSet<String> allLabels = new TreeSet<String>();
+		TreeSet<String> allLabels = new TreeSet<>();
 		if (reviews == null || reviews.length == 0) {
 			return new String[0];
 		}

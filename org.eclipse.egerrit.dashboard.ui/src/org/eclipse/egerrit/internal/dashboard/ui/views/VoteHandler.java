@@ -42,14 +42,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Class providing the logic to enable tooltip and click on the vote columns in the dashboard
  */
-public class VoteHandler implements Listener, MouseListener {
+class VoteHandler implements Listener, MouseListener {
 	private static Logger logger = LoggerFactory.getLogger(VoteHandler.class);
 
-	private final static String URLRegexp = "(?:^|[\\W])((http|https|ftp|file):\\/\\/|[A-Za-z][\\.|\\/])(([\\w\\-]+[\\.|\\/]){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)"; //$NON-NLS-1$
+	private static final String URL_REG_EXP = "(?:^|[\\W])((http|https|ftp|file):\\/\\/|[A-Za-z][\\.|\\/])(([\\w\\-]+[\\.|\\/]){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)"; //$NON-NLS-1$
 
-	private final static Pattern URLpattern = Pattern.compile(URLRegexp);
+	private static final Pattern URLpattern = Pattern.compile(URL_REG_EXP);
 
-	private final String OPEN_URL_FOR_VERIFY_KEY = "openURLFromVerify"; //$NON-NLS-1$;
+	private static final String OPEN_URL_FOR_VERIFY_KEY = "openURLFromVerify"; //$NON-NLS-1$
 
 	private TableViewer table;
 
@@ -161,7 +161,7 @@ public class VoteHandler implements Listener, MouseListener {
 		return messageToShow;
 	}
 
-	public void connect() {
+	void connect() {
 		table.getTable().addListener(SWT.MouseHover, this);
 		table.getTable().addMouseListener(this);
 	}

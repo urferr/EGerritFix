@@ -28,9 +28,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -52,31 +50,31 @@ public class GerritServerDialog extends Dialog {
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
-	private final int fWIDTH = 450;
+	private static final int WIDTH = 450;
 
-	private final int fHEIGHT = 275;
+	private static final int HEIGHT = 275;
 
-	private final String DIALOG_TITLE = Messages.GerritServerDialog_0;
+	private static final String DIALOG_TITLE = Messages.GerritServerDialog_0;
 
-	private final String fOkTooltip = Messages.GerritServerDialog_1;
+	private static final String OK_TOOLTIP = Messages.GerritServerDialog_1;
 
-	private final String fCancelTooltip = Messages.GerritServerDialog_2;
+	private static final String CANCEL_TOOLTIP = Messages.GerritServerDialog_2;
 
-	private final String HEADER = Messages.GerritServerDialog_3;
+	private static final String HEADER = Messages.GerritServerDialog_3;
 
-	private final String URL_TOOLTIP = Messages.GerritServerDialog_4;
+	private static final String URL_TOOLTIP = Messages.GerritServerDialog_4;
 
-	private final String URL_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_5;
+	private static final String URL_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_5;
 
-	private final String SHORTNAME_TOOLTIP = Messages.GerritServerDialog_6;
+	private static final String SHORTNAME_TOOLTIP = Messages.GerritServerDialog_6;
 
-	private final String SHORTNAME_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_7;
+	private static final String SHORTNAME_EXAMPLE_TOOLTIP = Messages.GerritServerDialog_7;
 
-	private final String INVALID_MESSAGE = Messages.GerritServerDialog_8;
+	private static final String INVALID_MESSAGE = Messages.GerritServerDialog_8;
 
-	private final static String TITLE = Messages.GerritServerDialog_9;
+	private static final String TITLE = Messages.GerritServerDialog_9;
 
-	private final String WANT_TO_SAVE = Messages.GerritServerDialog_10 + Messages.GerritServerDialog_11;
+	private static final String WANT_TO_SAVE = Messages.GerritServerDialog_10 + Messages.GerritServerDialog_11;
 
 	// ------------------------------------------------------------------------
 	// Variables
@@ -87,8 +85,6 @@ public class GerritServerDialog extends Dialog {
 	private Text txtServerURL;
 
 	private Text txtUserName;
-
-	private Text txtPassword;
 
 	private Shell shell;
 
@@ -128,7 +124,7 @@ public class GerritServerDialog extends Dialog {
 		layout.marginLeft = 5;
 		composite.setLayout(layout);
 		// Set the minimum size for the window
-		composite.getShell().setMinimumSize(fWIDTH, fHEIGHT);
+		composite.getShell().setMinimumSize(WIDTH, HEIGHT);
 
 		buildDialog(composite);
 
@@ -183,7 +179,7 @@ public class GerritServerDialog extends Dialog {
 		labelPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		labelPassword.setText(Messages.GerritServerDialog_15);
 
-		txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
+		Text txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtPassword.setText(workingCopy == null ? "" : (workingCopy.isPasswordProvided() ? "********" : "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		txtPassword.addModifyListener(passwdListener());
@@ -212,33 +208,24 @@ public class GerritServerDialog extends Dialog {
 	}
 
 	private ModifyListener serverNameListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setServerName(((Text) e.widget).getText());
-				txtServerURL.setText(workingCopy.getServerURI());
-			}
+		return e -> {
+			isServerInfoReady();
+			workingCopy.setServerName(((Text) e.widget).getText());
+			txtServerURL.setText(workingCopy.getServerURI());
 		};
 	}
 
 	private ModifyListener userListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setUserName(((Text) e.widget).getText());
-			}
+		return e -> {
+			isServerInfoReady();
+			workingCopy.setUserName(((Text) e.widget).getText());
 		};
 	}
 
 	private ModifyListener passwdListener() {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				isServerInfoReady();
-				workingCopy.setPassword(((Text) e.widget).getText());
-			}
+		return e -> {
+			isServerInfoReady();
+			workingCopy.setPassword(((Text) e.widget).getText());
 		};
 	}
 
@@ -280,12 +267,9 @@ public class GerritServerDialog extends Dialog {
 	}
 
 	private TraverseListener keyTraversedListener() {
-		return new TraverseListener() {
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				if (e.keyCode == SWT.CR) {
-					validateSettings();
-				}
+		return e -> {
+			if (e.keyCode == SWT.CR) {
+				validateSettings();
 			}
 		};
 	}
@@ -294,8 +278,8 @@ public class GerritServerDialog extends Dialog {
 	protected void createButtonsForButtonBar(Composite aParent) {
 		ok = createButton(aParent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
 		cancel = createButton(aParent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		ok.setToolTipText(fOkTooltip);
-		cancel.setToolTipText(fCancelTooltip);
+		ok.setToolTipText(OK_TOOLTIP);
+		cancel.setToolTipText(CANCEL_TOOLTIP);
 	}
 
 	@Override
@@ -360,11 +344,7 @@ public class GerritServerDialog extends Dialog {
 		if (b) {
 			super.setReturnCode(IDialogConstants.OK_ID);
 			if (!ok.isDisposed()) {
-				ok.getDisplay().syncExec(new Runnable() {
-					public void run() {
-						okPressed();
-					}
-				});
+				ok.getDisplay().syncExec(() -> okPressed());
 			}
 		} else {
 
@@ -376,11 +356,7 @@ public class GerritServerDialog extends Dialog {
 				if (bool) {
 					super.setReturnCode(IDialogConstants.OK_ID);
 					if (!ok.isDisposed()) {
-						ok.getDisplay().syncExec(new Runnable() {
-							public void run() {
-								okPressed();
-							}
-						});
+						ok.getDisplay().syncExec(() -> okPressed());
 					}
 				}
 			}
@@ -390,15 +366,13 @@ public class GerritServerDialog extends Dialog {
 	private void setProgress(IProgressMonitor monitor, int value) {
 		monitor.worked(value);
 		if (!progressBar.isDisposed()) {
-			progressBar.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					if (!progressBar.isDisposed()) {
-						int toset = progressBar.getSelection() + value;
-						if (toset >= 100) {
-							progressBar.setVisible(false);
-						}
-						progressBar.setSelection(toset);
+			progressBar.getDisplay().asyncExec(() -> {
+				if (!progressBar.isDisposed()) {
+					int toset = progressBar.getSelection() + value;
+					if (toset >= 100) {
+						progressBar.setVisible(false);
 					}
+					progressBar.setSelection(toset);
 				}
 			});
 		}

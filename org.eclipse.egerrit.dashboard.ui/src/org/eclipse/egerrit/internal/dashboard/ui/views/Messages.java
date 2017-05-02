@@ -19,7 +19,7 @@ import org.eclipse.osgi.util.NLS;
  *
  * @since 1.0
  */
-public class Messages extends NLS {
+class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.dashboard.ui.views.messages"; //$NON-NLS-1$
 
 	public static String GerritTableView_confirmOpenExternalPage;
@@ -30,15 +30,7 @@ public class Messages extends NLS {
 
 	public static String GerritTableView_gerritVersion;
 
-	public static String GerritTableView_missingGitConnector;
-
-	public static String GerritTableView_popupMenu;
-
-	public static String GerritTableView_refreshTable;
-
 	public static String GerritTableView_search;
-
-	public static String GerritTableView_serverNotRead;
 
 	public static String GerritTableView_tooltipSearch;
 
@@ -47,10 +39,6 @@ public class Messages extends NLS {
 	public static String GerritTableView_information;
 
 	public static String GerritTableView_informationAnonymous;
-
-	public static String GerritTableView_warningEmptyValue;
-
-	public static String GerritTableView_starredName;
 
 	public static String GerritTableView_tooltipAnonymous;
 
@@ -67,8 +55,6 @@ public class Messages extends NLS {
 	public static String Server_connection_401;
 
 	public static String Server_connection_401_title;
-
-	public static String Unauthorized_Query;
 
 	public static String Unsupported_Server_Version;
 

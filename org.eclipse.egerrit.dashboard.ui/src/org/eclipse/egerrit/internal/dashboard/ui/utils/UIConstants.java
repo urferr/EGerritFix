@@ -19,17 +19,20 @@ package org.eclipse.egerrit.internal.dashboard.ui.utils;
  */
 public class UIConstants {
 
-	public static final String ADD_GERRIT_SITE_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.addGerritSite"; //$NON-NLS-1$
-
 	public static final String SELECT_SERVER_COMMAND_ID_PARAM = "org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit.serverId"; //$NON-NLS-1$
 
 	public static final String SELECT_SERVER_COMMAND_ID = "org.eclipse.egerrit.dashboard.ui.selectCurrentGerrit"; //$NON-NLS-1$
-
-	public static final String REPLY_COMMAND_ID = "org.eclipse.egerrit.internal.dashboard.ui.commands.table.replyHandlerDynamic"; //$NON-NLS-1$
 
 	public static final String REPLY_COMMAND_VOTE_ID = "org.eclipse.egerrit.dashboard.ui.vote"; //$NON-NLS-1$
 
 	public static final String REPLY_COMMAND_ID_LABEL_PARAM = "org.eclipse.egerrit.dashboard.ui.vote.label"; //$NON-NLS-1$
 
 	public static final String REPLY_COMMAND_ID_VALUE_PARAM = "org.eclipse.egerrit.dashboard.ui.vote.value"; //$NON-NLS-1$
+
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private UIConstants() {
+	}
+
 }

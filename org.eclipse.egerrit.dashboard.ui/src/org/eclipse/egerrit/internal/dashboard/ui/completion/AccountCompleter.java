@@ -22,7 +22,7 @@ import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.model.AccountInfo;
 
-public class AccountCompleter extends ParamCompleter {
+class AccountCompleter extends ParamCompleter {
 
 	public AccountCompleter() {
 		super(new String[] { SearchContentProposalProvider.OWNER, SearchContentProposalProvider.REVIEWER,

@@ -20,29 +20,29 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
 public class SearchContentProposalProvider implements IContentProposalProvider {
 
-	public static final String SELF = "self"; //$NON-NLS-1$
+	static final String SELF = "self"; //$NON-NLS-1$
 
-	public static final String REVIEWER_IN = "reviewerin:"; //$NON-NLS-1$
+	static final String REVIEWER_IN = "reviewerin:"; //$NON-NLS-1$
 
-	public static final String OWNER_IN = "ownerin:"; //$NON-NLS-1$
+	static final String OWNER_IN = "ownerin:"; //$NON-NLS-1$
 
-	public static final String FROM = "from:"; //$NON-NLS-1$
+	static final String FROM = "from:"; //$NON-NLS-1$
 
-	public static final String COMMITTER = "committer:"; //$NON-NLS-1$
+	static final String COMMITTER = "committer:"; //$NON-NLS-1$
 
-	public static final String AUTHOR = "author:"; //$NON-NLS-1$
+	static final String AUTHOR = "author:"; //$NON-NLS-1$
 
-	public static final String REVIEWED_BY = "reviewedby:"; //$NON-NLS-1$
+	static final String REVIEWED_BY = "reviewedby:"; //$NON-NLS-1$
 
-	public static final String COMMENT_BY = "commentby:"; //$NON-NLS-1$
+	static final String COMMENT_BY = "commentby:"; //$NON-NLS-1$
 
-	public static final String OWNER = "owner:"; //$NON-NLS-1$
+	static final String OWNER = "owner:"; //$NON-NLS-1$
 
-	public static final String REVIEWER = "reviewer:"; //$NON-NLS-1$
+	static final String REVIEWER = "reviewer:"; //$NON-NLS-1$
 
-	public static final String PARENT_PROJECT = "parentproject:"; //$NON-NLS-1$
+	static final String PARENT_PROJECT = "parentproject:"; //$NON-NLS-1$
 
-	public static final String PROJECT = "project:"; //$NON-NLS-1$
+	static final String PROJECT = "project:"; //$NON-NLS-1$
 
 	private static final String OWNER_SELF = "owner:self"; //$NON-NLS-1$
 
@@ -65,32 +65,32 @@ public class SearchContentProposalProvider implements IContentProposalProvider {
 		completionList.add("added:"); //$NON-NLS-1$
 
 		completionList.add("AND"); //$NON-NLS-1$
-//		completionList.add(AUTHOR);
+//		completionList.add(AUTHOR)
 
 		completionList.add("branch:"); //$NON-NLS-1$
 		completionList.add("bug:"); //$NON-NLS-1$
 
 		completionList.add("change:"); //$NON-NLS-1$
-//		completionList.add(COMMITTER);
+//		completionList.add(COMMITTER)
 		completionList.add("commit:"); //$NON-NLS-1$
 		completionList.add("comment:"); //$NON-NLS-1$
-//		completionList.add(COMMENT_BY);
+//		completionList.add(COMMENT_BY)
 		completionList.add("conflicts:"); //$NON-NLS-1$
 
 		completionList.add("deleted:"); //$NON-NLS-1$
 		completionList.add("delta:"); //$NON-NLS-1$
 
 		completionList.add("file:"); //$NON-NLS-1$
-		//		completionList.add(FROM);
+		//		completionList.add(FROM)
 
 		completionList.add("has:"); //$NON-NLS-1$
 		completionList.add("has:draft"); //$NON-NLS-1$
 //		completionList.add("has:edit"); //$NON-NLS-1$
 		completionList.add("has:star"); //$NON-NLS-1$
 //		completionList.add("has:stars"); //$NON-NLS-1$
-//		if (isNoteDbEnabled()) {
+//		if (isNoteDbEnabled())
 //			completionList.add("hashtag:");
-//		}
+//
 
 		completionList.add("is:"); //$NON-NLS-1$
 		completionList.add("is:open"); //$NON-NLS-1$
@@ -131,7 +131,7 @@ public class SearchContentProposalProvider implements IContentProposalProvider {
 		completionList.add(REVIEWER);
 		completionList.add("reviewer:self"); //$NON-NLS-1$
 		completionList.add(REVIEWER_IN);
-//		completionList.add(REVIEWED_BY);
+//		completionList.add(REVIEWED_BY)
 		completionList.add("ref:"); //$NON-NLS-1$
 
 		completionList.add("status:"); //$NON-NLS-1$
@@ -143,7 +143,7 @@ public class SearchContentProposalProvider implements IContentProposalProvider {
 		completionList.add("status:reviewed"); //$NON-NLS-1$
 		completionList.add("status:submitted"); //$NON-NLS-1$
 		completionList.add("status:closed"); //$NON-NLS-1$
-//		completionList.add("star:"); //$NON-NLS-1$
+//		completionList.add("star:") //$NON-NLS-1$
 		completionList.add("size:"); //$NON-NLS-1$
 
 		completionList.add("topic:"); //$NON-NLS-1$
@@ -210,10 +210,8 @@ public class SearchContentProposalProvider implements IContentProposalProvider {
 		// First run through any applicable suggestion logic
 		for (ParamCompleter completer : paramCompleters) {
 			if (completer.isApplicable(lastWord)) {
-				if (fGerritClient == null) {
-					if (fConnectRequest != null) {
-						fConnectRequest.run();
-					}
+				if (fGerritClient == null && fConnectRequest != null) {
+					fConnectRequest.run();
 				}
 
 				if (fGerritClient == null) {

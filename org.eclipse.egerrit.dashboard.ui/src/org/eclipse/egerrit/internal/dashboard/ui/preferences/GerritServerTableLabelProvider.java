@@ -27,15 +27,15 @@ import org.eclipse.swt.widgets.TableColumn;
  * @author Jacques Bouthillier
  * @since 1.0
  */
-public class GerritServerTableLabelProvider extends LabelProvider implements ITableLabelProvider {
+class GerritServerTableLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 	// ------------------------------------------------------------------------
 	// Constants
 	// ------------------------------------------------------------------------
-	private final String[] fTitles = { Messages.GerritServerTableLabelProvider_0,
+	private static final String[] fTitles = { Messages.GerritServerTableLabelProvider_0,
 			Messages.GerritServerTableLabelProvider_1, Messages.GerritServerTableLabelProvider_2 };
 
-	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	// ------------------------------------------------------------------------
 	// Constructors
@@ -86,7 +86,7 @@ public class GerritServerTableLabelProvider extends LabelProvider implements ITa
 		return null;
 	}
 
-	public void createColumns(TableViewer viewer) {
+	void createColumns(TableViewer viewer) {
 		for (String title : fTitles) {
 			TableColumn column = new TableViewerColumn(viewer, SWT.NONE).getColumn();
 			column.setText(title);

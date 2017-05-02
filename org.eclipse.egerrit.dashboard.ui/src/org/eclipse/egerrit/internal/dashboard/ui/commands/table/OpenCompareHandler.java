@@ -38,7 +38,7 @@ public class OpenCompareHandler extends DashboardFactoryHandler {
 			QueryHelpers.loadFiles(gerritClient, changeInfo.getRevision());
 			EMap<String, FileInfo> files = getLatestRevision().getFiles();
 
-			if (files.size() > 0) {
+			if (!files.isEmpty()) {
 				selectedFile = files.get(0).getValue();//Get the first file of the revision
 			}
 

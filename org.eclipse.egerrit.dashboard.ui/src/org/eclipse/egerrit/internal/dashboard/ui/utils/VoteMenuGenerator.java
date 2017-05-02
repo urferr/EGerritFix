@@ -54,12 +54,11 @@ public class VoteMenuGenerator extends CompoundContributionItem implements IWork
 		IWorkbench workbench = GerritUi.getDefault().getWorkbench();
 		IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
 		IViewPart viewPart = page.findView(VIEW_ID);
-		if (viewPart != null) {
-			if (viewPart instanceof GerritTableView) {
-				GerritTableView gerritTable = (GerritTableView) viewPart;
-				fGerritClient = gerritTable.getGerritClient();
-				contributionItems = getData();
-			}
+		if (viewPart != null && viewPart instanceof GerritTableView) {
+			GerritTableView gerritTable = (GerritTableView) viewPart;
+			fGerritClient = gerritTable.getGerritClient();
+			contributionItems = getData();
+
 		}
 		return contributionItems;
 	}
@@ -115,7 +114,7 @@ public class VoteMenuGenerator extends CompoundContributionItem implements IWork
 	 */
 	private ContributionItem createItem(String key, String value, String menuLabel) {
 		//Add the label value as parameters
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 		params.put(UIConstants.REPLY_COMMAND_ID_LABEL_PARAM, key);
 		params.put(UIConstants.REPLY_COMMAND_ID_VALUE_PARAM, value);
 		CommandContributionItemParameter menuEntry = new CommandContributionItemParameter(fServiceLocator, menuLabel,

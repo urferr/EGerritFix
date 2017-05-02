@@ -19,7 +19,7 @@ import org.eclipse.osgi.util.NLS;
  *
  * @since 1.0
  */
-public class Messages extends NLS {
+class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.egerrit.internal.dashboard.ui.commands.table.messages"; //$NON-NLS-1$
 
 	public static String AdjustMyStarredHandler_commandMessage;

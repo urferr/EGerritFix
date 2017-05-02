@@ -23,8 +23,8 @@ import org.eclipse.swt.SWT;
 // ------------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------------
-// Definition of the review table list {name, width of the column, Resizeable,
-// Moveable}
+// Definition of the review table list :name, width of the column, Resizeable,
+// Moveable
 public enum ReviewTableDefinition {
 	STARRED("", 20, false, true, SWT.LEFT), //$NON-NLS-1$
 	ID(Messages.ReviewTableDefinition_id, 60, true, true, SWT.LEFT), //

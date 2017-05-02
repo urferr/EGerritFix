@@ -23,16 +23,16 @@ import org.eclipse.ui.PlatformUI;
 /**
  * A helper class opening a dialog to enter/modify one server
  */
-public class AddOneServerDialog {
+class AddOneServerDialog {
 	private GerritServerInformation server;
 
 	/**
 	 * Open a dialog prompting the user to enter a new server
 	 *
 	 * @param saveAsDefaultServer
-	 *            set to true to cause the new server to be remebered as the last server
+	 *            set to true to cause the new server to be remembered as the last server
 	 */
-	public void promptForNewServer(boolean saveAsDefaultServer) {
+	void promptForNewServer(boolean saveAsDefaultServer) {
 		promptToModifyServer(null, saveAsDefaultServer);
 	}
 
@@ -42,7 +42,7 @@ public class AddOneServerDialog {
 	 * @param saveAsDefaultServer
 	 *            set to true to cause the new server to be remebered as the last server
 	 */
-	public void promptToModifyServer(GerritServerInformation serverToEdit, boolean saveAsDefaultServer) {
+	void promptToModifyServer(GerritServerInformation serverToEdit, boolean saveAsDefaultServer) {
 		List<GerritServerInformation> listServers;
 		GerritServerDialog dialog = new GerritServerDialog(PlatformUI.getWorkbench().getDisplay().getActiveShell(),
 				serverToEdit);
@@ -67,7 +67,7 @@ public class AddOneServerDialog {
 
 	/**
 	 * Return a gerrit server for the information input in the dialog
-	 * 
+	 *
 	 * @return a gerrit server object or null if the user has cancelled
 	 */
 	public GerritServerInformation getServer() {

@@ -35,8 +35,7 @@ public class AddGerritSiteHandler extends AbstractHandler {
 	@Override
 	public Object execute(final ExecutionEvent aEvent) {
 		//Open the dialog to enter a new Gerrit URL
-		Object dialogObj = openDialog();
-		return dialogObj;
+		return openDialog();
 	}
 
 	/**
@@ -45,7 +44,7 @@ public class AddGerritSiteHandler extends AbstractHandler {
 	 * @return Object
 	 */
 	private Object openDialog() {
-		final Job job = new Job(Messages.AddGerritSiteHandler_commandAdd) {
+		final Job job = new Job(Messages.addGerritSiteHandlerCommand) {
 
 			@Override
 			public boolean belongsTo(Object aFamily) {
@@ -54,14 +53,12 @@ public class AddGerritSiteHandler extends AbstractHandler {
 
 			@Override
 			public IStatus run(final IProgressMonitor aMonitor) {
-				aMonitor.beginTask(Messages.AddGerritSiteHandler_commandAdd, IProgressMonitor.UNKNOWN);
+				aMonitor.beginTask(Messages.addGerritSiteHandlerCommand, IProgressMonitor.UNKNOWN);
 
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						PreferenceDialog prefDialogue = PreferencesUtil.createPreferenceDialogOn(null,
-								GerritDashboardPreferencePage.getID(), null, null);
-						prefDialogue.open();
-					}
+				Display.getDefault().syncExec(() -> {
+					PreferenceDialog prefDialogue = PreferencesUtil.createPreferenceDialogOn(null,
+							GerritDashboardPreferencePage.getID(), null, null);
+					prefDialogue.open();
 				});
 
 				aMonitor.done();

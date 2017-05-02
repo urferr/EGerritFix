@@ -37,7 +37,7 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 	// Constants
 	// ------------------------------------------------------------------------
 
-	private final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
 	private int fState;
 
@@ -55,19 +55,19 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 	private static Display fDisplay = Display.getCurrent();
 
 	//Color used depending on the review state
-	private static Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+	private static final Color DEFAULT_COLOR = fDisplay.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 
-	private static Color DEFAULT_FOREGROUND_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GRAY);
+	private static final Color DEFAULT_FOREGROUND_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GRAY);
 
-	private static Color BOLD_COLOR = fDisplay.getSystemColor(SWT.COLOR_BLACK);
+	private static final Color BOLD_COLOR = fDisplay.getSystemColor(SWT.COLOR_BLACK);
 
-	private static Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
+	private static final Color INCOMING_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
 
-	private static Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
+	private static final Color CLOSED_COLOR = fDisplay.getSystemColor(SWT.COLOR_WHITE);
 
-	private static Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
+	private static final Color RED_COLOR = fDisplay.getSystemColor(SWT.COLOR_RED);
 
-	private static Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
+	private static final Color GREEN_COLOR = fDisplay.getSystemColor(SWT.COLOR_DARK_GREEN);
 
 	// For the images
 
@@ -134,7 +134,7 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 			case 2:
 				return reviewSummary.getSubject();
 			case 3:
-				String attribute = reviewSummary.getStatus().toString();
+				String attribute = reviewSummary.getStatus();
 				return attribute;
 			case 4:
 				return reviewSummary.getOwner().getName();
@@ -147,9 +147,9 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 					branch += " (" + topic + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return branch;
-			case 7: {
+			case 7:
 				return Utils.prettyPrintDate(reviewSummary.getUpdated());
-			}
+
 			default:
 				String label = getColumnLabels(aIndex);
 				fState = reviewSummary.getMostRelevantVote(label).getValue();
@@ -195,19 +195,12 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 				}
 				break;
 			case 1:
-				return image;
 			case 2:
-				return image;
 			case 3:
-				return image;
 			case 4:
-				return image;
 			case 5:
-				return image;
 			case 6:
-				return image;
 			case 7:
-				return image;
 			default:
 				return image;
 			}
@@ -259,7 +252,7 @@ public class ReviewTableLabelProvider extends ChangeInfoItemProvider {
 			ChangeInfo item = (ChangeInfo) aElement;
 			//
 			// To modify when we can verify the review state
-			String state = new Boolean(item.isStarred()).toString();
+			String state = Boolean.toString(item.isStarred());
 			if (state != null) {
 				if (state.equals(Boolean.toString(true))) {
 					return INCOMING_COLOR;
