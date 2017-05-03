@@ -28,7 +28,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -132,15 +131,18 @@ class VoteHandler implements Listener, MouseListener {
 	}
 
 	private String getRequestedLabel(Event event) {
-		ViewerCell viewerCell = table.getCell(new Point(event.x, event.y));
-		if (viewerCell != null) {
-			return view.getReviewTable().getColumnLabel(viewerCell.getColumnIndex());
+		ViewerCell viewerCellAdjusted = UIUtils.getAdjustedViewerCell(event, table);
+
+		//Viewer cell adjusted if there is an horizontal scroll or not
+		if (viewerCellAdjusted != null) {
+			return view.getReviewTable().getColumnLabel(viewerCellAdjusted.getColumnIndex());
 		}
 		return null;
 	}
 
 	private ChangeInfo fromEventToChangeInfo(Event event) {
-		ViewerCell viewerCell = table.getCell(new Point(event.x, event.y));
+		ViewerCell viewerCell = UIUtils.getAdjustedViewerCell(event, table);
+
 		if (viewerCell != null) {
 			Object element = viewerCell.getViewerRow().getItem().getData();
 			if (element instanceof ChangeInfo) {

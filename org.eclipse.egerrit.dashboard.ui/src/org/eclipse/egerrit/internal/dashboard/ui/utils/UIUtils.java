@@ -18,9 +18,16 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Widget;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -111,4 +118,21 @@ public class UIUtils {
 		return dialog.getReturnCode();
 	}
 
+	/**
+	 * Return the value of the viewer cell adjusted if the viewing area has a horizontal scroll
+	 *
+	 * @param event
+	 * @return
+	 */
+	public static ViewerCell getAdjustedViewerCell(Event event, TableViewer aViewer) {
+		ViewerCell viewerCellAdjusted = null;
+		Widget widget = event.widget;
+		if (widget instanceof Table) {
+			Table tableEvent = (Table) widget;
+			Rectangle clientArea = tableEvent.getClientArea();
+			Point adjustedPoint = new Point(event.x + clientArea.x, event.y);
+			viewerCellAdjusted = aViewer.getCell(adjustedPoint);
+		}
+		return viewerCellAdjusted;
+	}
 }

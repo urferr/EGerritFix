@@ -18,6 +18,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.dashboard.ui.commands.table.AdjustMyStarredHandler;
+import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
@@ -160,18 +161,15 @@ public class UIReviewTable {
 			table.addListener(SWT.MouseMove, event -> tip.setVisible(false));
 
 			table.addListener(SWT.MouseHover, event -> {
-				Point pt = new Point(event.x, event.y);
-				ViewerCell viewerCell = fViewer.getCell(pt);
+				ViewerCell viewerCell = UIUtils.getAdjustedViewerCell(event, aViewer);
 				if (viewerCell != null) {
 					int columnIndex = viewerCell.getColumnIndex();
 					TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
 					Rectangle rect = item.getBounds(columnIndex);
-					if (rect.contains(pt)) {
-						tip.setMessage(item.getText(columnIndex));
-						Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
-						tip.setLocation(displayPos.x, displayPos.y);
-						tip.setVisible(true);
-					}
+					tip.setMessage(item.getText(columnIndex));
+					Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
+					tip.setLocation(displayPos.x, displayPos.y);
+					tip.setVisible(true);
 				}
 			});
 		}
@@ -321,7 +319,7 @@ public class UIReviewTable {
 		int nextColumSize = nextTableColumn.length;
 		int numberColumnToMove = 0;
 		for (int i = 0; i < nextColumSize; i++) {
-			if ((nextTableColumn[i] >= nextColumSize)) {
+			if (nextTableColumn[i] >= nextColumSize) {
 				numberColumnToMove++;
 				//Move by one slot the array
 				System.arraycopy(columnOrderStored, i + numberColumnToMove, nextTableColumn, i, nextColumSize - i);
@@ -332,6 +330,20 @@ public class UIReviewTable {
 
 		fViewer.getTable().setColumnOrder(nextTableColumn);
 
+		restoreColumnWidth(columnOrderStored, columInTable, oldvalue, lastStoredColumnSize, nextTableColumn);
+
+	}
+
+	/**
+	 * @param columnOrderStored
+	 * @param columInTable
+	 * @param oldvalue
+	 * @param lastStoredColumnSize
+	 * @param nextTableColumn
+	 */
+	private void restoreColumnWidth(int[] columnOrderStored, int columInTable, int[] oldvalue, int lastStoredColumnSize,
+			int[] nextTableColumn) {
+		String[] backedUpValue;
 		//Lets deal now with the columns width
 		backedUpValue = getDialogSettings().getArray(VIEW_COLUMN_WIDTH);
 		if (backedUpValue == null) {
@@ -371,7 +383,6 @@ public class UIReviewTable {
 			}
 			fViewer.getTable().getColumn(testCol).setWidth(defaultWidth);
 		}
-
 	}
 
 	/**
