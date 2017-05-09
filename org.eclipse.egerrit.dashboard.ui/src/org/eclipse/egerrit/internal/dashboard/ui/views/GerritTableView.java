@@ -182,8 +182,6 @@ public class GerritTableView extends ViewPart {
 		}
 	});
 
-	private VoteHandler voteHandler;
-
 	// ------------------------------------------------------------------------
 	// Constructor and life cycle
 	// ------------------------------------------------------------------------
@@ -313,7 +311,7 @@ public class GerritTableView extends ViewPart {
 			hookDoubleClickAction();
 
 			parentComposite.layout(true); //Here we force a re-layout
-			voteHandler = new VoteHandler(fTopComposite.getShell(), rtv, fViewer);
+			VoteToolTipHandler voteHandler = new VoteToolTipHandler(fTopComposite.getShell(), rtv);
 			voteHandler.connect();
 		});
 

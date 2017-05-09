@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Class providing the logic to enable tooltip and click on the vote columns in the dashboard
  */
-class VoteHandler implements Listener, MouseListener {
-	private static Logger logger = LoggerFactory.getLogger(VoteHandler.class);
+class VoteToolTipHandler implements Listener, MouseListener {
+	private static Logger logger = LoggerFactory.getLogger(VoteToolTipHandler.class);
 
 	private static final String URL_REG_EXP = "(?:^|[\\W])((http|https|ftp|file):\\/\\/|[A-Za-z][\\.|\\/])(([\\w\\-]+[\\.|\\/]){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)"; //$NON-NLS-1$
 
@@ -57,8 +57,8 @@ class VoteHandler implements Listener, MouseListener {
 
 	private Shell shell;
 
-	VoteHandler(Shell shell, GerritTableView view, TableViewer table) {
-		this.table = table;
+	VoteToolTipHandler(Shell shell, GerritTableView view) {
+		this.table = view.getTableViewer();
 		this.view = view;
 		this.shell = shell;
 	}

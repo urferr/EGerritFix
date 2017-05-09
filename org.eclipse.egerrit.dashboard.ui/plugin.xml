@@ -268,7 +268,7 @@
                   name="additions"
                   visible="true">
             </separator>
-             <dynamic class="org.eclipse.egerrit.internal.dashboard.ui.utils.VoteMenuGenerator"
+             <dynamic class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.VoteMenuGenerator"
                     id="org.eclipse.egerrit.dashboard.ui.votes.generator" />
           </menu>
        </menuContribution>
@@ -518,7 +518,7 @@
 
        <!-- Reply voting handler -->
        <handler
-             class="org.eclipse.egerrit.internal.dashboard.ui.utils.VoteHandler"
+             class="org.eclipse.egerrit.internal.dashboard.ui.commands.table.VoteReplyHandler"
              commandId="org.eclipse.egerrit.dashboard.ui.vote">
        </handler>
 

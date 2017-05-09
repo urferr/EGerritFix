@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.internal.dashboard.ui.utils;
+package org.eclipse.egerrit.internal.dashboard.ui.commands.table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
+import org.eclipse.egerrit.internal.dashboard.ui.utils.UIConstants;
 import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.process.ReplyProcess;

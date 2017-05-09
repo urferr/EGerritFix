@@ -9,7 +9,7 @@
  *     Ericsson - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.egerrit.internal.dashboard.ui.utils;
+package org.eclipse.egerrit.internal.dashboard.ui.commands.table;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -18,14 +18,13 @@ import java.util.TreeMap;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.egerrit.internal.dashboard.ui.commands.table.DashboardFactoryHandler;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.process.ReplyProcess;
 
 /**
  * This handler is used to manipulate the dynamic menu items related to the reply option
  */
-public class VoteHandler extends DashboardFactoryHandler {
+public class VoteReplyHandler extends DashboardFactoryHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
