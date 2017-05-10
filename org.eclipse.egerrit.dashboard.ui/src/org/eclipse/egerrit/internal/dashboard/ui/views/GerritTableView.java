@@ -1131,21 +1131,23 @@ public class GerritTableView extends ViewPart {
 		if (fAddOneServerDialog == null) {
 			fAddOneServerDialog = new AddOneServerDialog();
 			fAddOneServerDialog.promptToModifyServer(defaultServerInfo, true);
-			defaultServerInfo = fAddOneServerDialog.getServer();
+			GerritServerInformation serverInfo = fAddOneServerDialog.getServer();
 			fAddOneServerDialog = null; //Reset the instance
+			if (serverInfo == null) {
+				logger.debug("No new server entered by the user."); //$NON-NLS-1$
+				return;
+			}
+			defaultServerInfo = serverInfo; //Set the default server with the latest value
+
 			if (defaultServerInfo == null) {
 				logger.debug("No new server entered by the user."); //$NON-NLS-1$
 				return;
 			}
-		}
-		if (defaultServerInfo == null) {
-			logger.debug("No new server entered by the user."); //$NON-NLS-1$
-			return;
-		}
-		if (fSearchTextBox == null || fSearchTextBox.getText().isEmpty()) {
-			processCommands(ChangeStatus.OPEN.getValue());
-		} else {
-			processCommands(fSearchTextBox.getText());
+			if (fSearchTextBox == null || fSearchTextBox.getText().isEmpty()) {
+				processCommands(ChangeStatus.OPEN.getValue());
+			} else {
+				processCommands(fSearchTextBox.getText());
+			}
 		}
 	}
 
