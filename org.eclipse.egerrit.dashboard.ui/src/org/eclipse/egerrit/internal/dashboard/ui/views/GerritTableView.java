@@ -123,6 +123,8 @@ public class GerritTableView extends ViewPart {
 
 	private static final String JOB_FAMILY = "DASHBOARD_UI"; //$NON-NLS-1$
 
+	private AddOneServerDialog fAddOneServerDialog = null;
+
 	// For the images
 
 	private static ImageRegistry fImageRegistry = new ImageRegistry();
@@ -612,12 +614,16 @@ public class GerritTableView extends ViewPart {
 
 		if (defaultServerInfo == null) {
 			UIUtils.showNoServerMessage();
-			final AddOneServerDialog addOneServer = new AddOneServerDialog();
-			Display.getDefault().syncExec(() -> addOneServer.promptForNewServer(true));
-			defaultServerInfo = addOneServer.getServer();
-			if (defaultServerInfo == null) {
-				logger.debug("No new server entered by the user. "); //$NON-NLS-1$
-				return;
+			//Only one instance of the pop-up
+			if (fAddOneServerDialog == null) {
+				fAddOneServerDialog = new AddOneServerDialog();
+				Display.getDefault().syncExec(() -> fAddOneServerDialog.promptForNewServer(true));
+				defaultServerInfo = fAddOneServerDialog.getServer();
+				fAddOneServerDialog = null; //reset the instance
+				if (defaultServerInfo == null) {
+					logger.debug("No new server entered by the user. "); //$NON-NLS-1$
+					return;
+				}
 			}
 		}
 
@@ -1121,9 +1127,17 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private void addOrChangeServerThenLoad() {
-		final AddOneServerDialog addOneServer = new AddOneServerDialog();
-		addOneServer.promptToModifyServer(defaultServerInfo, true);
-		defaultServerInfo = addOneServer.getServer();
+		//Only one instance of the pop-up
+		if (fAddOneServerDialog == null) {
+			fAddOneServerDialog = new AddOneServerDialog();
+			fAddOneServerDialog.promptToModifyServer(defaultServerInfo, true);
+			defaultServerInfo = fAddOneServerDialog.getServer();
+			fAddOneServerDialog = null; //Reset the instance
+			if (defaultServerInfo == null) {
+				logger.debug("No new server entered by the user."); //$NON-NLS-1$
+				return;
+			}
+		}
 		if (defaultServerInfo == null) {
 			logger.debug("No new server entered by the user."); //$NON-NLS-1$
 			return;
