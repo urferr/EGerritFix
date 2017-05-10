@@ -241,9 +241,9 @@ public class DetailsTabView {
 	}
 
 	private void createContols(final TabFolder tabFolder) {
-		final int HEIGHT_FIRST_ROW = UIUtils.computeFontSize(tabFolder).y * 8;
-		final int HEIGHT_LISTS = 150;
-		final int SCROLL_AREA_HEIGHT = HEIGHT_FIRST_ROW + (HEIGHT_LISTS * 2);
+		final int heightFirstRow = UIUtils.computeFontSize(tabFolder).y * 8;
+		final int heightLists = 150;
+		final int scrollAreaHeight = heightFirstRow + (heightLists * 2);
 
 		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
 
@@ -253,7 +253,7 @@ public class DetailsTabView {
 		final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(false);
 		scrolledComposite.setExpandVertical(true);
-		scrolledComposite.setMinHeight(SCROLL_AREA_HEIGHT);
+		scrolledComposite.setMinHeight(scrollAreaHeight);
 		scrolledComposite.setLayout(new FillLayout());
 		tabSummary.setControl(scrolledComposite);
 
@@ -262,12 +262,12 @@ public class DetailsTabView {
 
 		Composite general = summaryGeneral(composite);
 		GridData generalGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		generalGridData.heightHint = HEIGHT_FIRST_ROW;
+		generalGridData.heightHint = heightFirstRow;
 		general.setLayoutData(generalGridData);
 
 		Composite reviewers = summaryReviewers(composite);
 		GridData reviewersGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
-		reviewersGridData.heightHint = HEIGHT_FIRST_ROW;
+		reviewersGridData.heightHint = heightFirstRow;
 		reviewers.setLayoutData(reviewersGridData);
 
 		Composite includedIn = summaryIncluded(composite);
@@ -275,7 +275,7 @@ public class DetailsTabView {
 
 		Composite sameTopic = summarySameTopic(composite);
 		GridData sameTopicGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2);
-		sameTopicGridData.heightHint = HEIGHT_LISTS;
+		sameTopicGridData.heightHint = heightLists;
 		sameTopic.setLayoutData(sameTopicGridData);
 
 		Composite relatedChanges = summaryRelatedChanges(composite);
@@ -283,29 +283,27 @@ public class DetailsTabView {
 
 		Composite conflicts = summaryConflicts(composite);
 		GridData conflictsGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
-		conflictsGridData.heightHint = HEIGHT_LISTS;
+		conflictsGridData.heightHint = heightLists;
 		conflicts.setLayoutData(conflictsGridData);
 
 		scrolledComposite.setContent(composite);
-		Listener l = new Listener() {
-			public void handleEvent(Event e) {
-				Point size = scrolledComposite.getSize();
-				Point cUnrestrainedSize = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				if (size.y >= cUnrestrainedSize.y && size.x >= cUnrestrainedSize.x) {
-					composite.setSize(size);
-					return;
-				}
-				// does not fit
-				Rectangle hostRect = scrolledComposite.getBounds();
-				int border = scrolledComposite.getBorderWidth();
-				if (scrolledComposite.getVerticalBar().isVisible() || size.y <= SCROLL_AREA_HEIGHT) {
-					hostRect.width -= 2 * border;
-					hostRect.width -= scrolledComposite.getVerticalBar().getSize().x;
-				}
-				hostRect.height -= 2 * border;
-				composite.setSize(Math.max(cUnrestrainedSize.x, hostRect.width),
-						Math.max(cUnrestrainedSize.y, hostRect.height));
+		Listener l = event -> {
+			Point size = scrolledComposite.getSize();
+			Point cUnrestrainedSize = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			if (size.y >= cUnrestrainedSize.y && size.x >= cUnrestrainedSize.x) {
+				composite.setSize(size);
+				return;
 			}
+			// does not fit
+			Rectangle hostRect = scrolledComposite.getBounds();
+			int border = scrolledComposite.getBorderWidth();
+			if (scrolledComposite.getVerticalBar().isVisible() || size.y <= scrollAreaHeight) {
+				hostRect.width -= 2 * border;
+				hostRect.width -= scrolledComposite.getVerticalBar().getSize().x;
+			}
+			hostRect.height -= 2 * border;
+			composite.setSize(Math.max(cUnrestrainedSize.x, hostRect.width),
+					Math.max(cUnrestrainedSize.y, hostRect.height));
 		};
 		scrolledComposite.addListener(SWT.Resize, l);
 	}
@@ -344,7 +342,7 @@ public class DetailsTabView {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				LinkDashboard linkDash = new LinkDashboard(fGerritClient);
-				Map<String, String> parameters = new LinkedHashMap<String, String>();
+				Map<String, String> parameters = new LinkedHashMap<>();
 				parameters.put(EGerritConstants.BRANCH, e.text);
 				parameters.put(EGerritConstants.PROJECT, UIUtils.getLinkText(genProjectData.getText()));
 
@@ -428,7 +426,7 @@ public class DetailsTabView {
 					return;
 				}
 
-				if (handleKeyReleased(userName.getText(), reviewerProposal) == true && event.keyCode == SWT.CR) {
+				if (handleKeyReleased(userName.getText(), reviewerProposal) && event.keyCode == SWT.CR) {
 					fButtonPlus.notifyListeners(SWT.Selection, new Event());
 				}
 			}
@@ -540,9 +538,8 @@ public class DetailsTabView {
 					proposals.add(idString);
 				}
 
-				Display.getDefault().asyncExec(() -> {
-					reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()]));
-				});
+				Display.getDefault().asyncExec(
+						() -> reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()])));
 
 				return Status.OK_STATUS;
 			}
@@ -884,7 +881,7 @@ public class DetailsTabView {
 			return;
 		}
 
-		if (!topic.trim().equals("")) { //$NON-NLS-1$
+		if (!"".equals(topic.trim())) { //$NON-NLS-1$
 			SetTopicCommand command = fGerritClient.setTopic(fChangeInfo.getChange_id());
 			TopicInput topicInput = new TopicInput();
 			topicInput.setTopic(topic);
@@ -951,14 +948,17 @@ public class DetailsTabView {
 			@Override
 			protected IStatus doSet(IObservableValue observableValue, Object value) {
 				Boolean visible = Boolean.TRUE;
-				if ("MERGED".equals(value) //$NON-NLS-1$
-						|| "ABANDONED".equals(value)) { //$NON-NLS-1$
-					visible = Boolean.FALSE;
-					Widget w = ((ISWTObservable) observableValue).getWidget();
-					if (!w.isDisposed() && w instanceof Control) {
+				Widget w = ((ISWTObservable) observableValue).getWidget();
+				if (!w.isDisposed() && w instanceof Control) {
+					if ("MERGED".equals(value) //$NON-NLS-1$
+							|| "ABANDONED".equals(value)) { //$NON-NLS-1$
+						visible = Boolean.FALSE;
+
 						((GridData) ((Control) w).getLayoutData()).exclude = !((Control) w).isVisible();
-						((Control) w).getParent().pack(true);
+					} else {
+						((GridData) ((Control) w).getLayoutData()).exclude = false;
 					}
+					((Control) w).getParent().layout(true);
 				}
 				return super.doSet(observableValue, visible);
 			}
@@ -1071,7 +1071,7 @@ public class DetailsTabView {
 					result += object.toString() + ", "; //$NON-NLS-1$
 				}
 				if (!result.isEmpty()) {
-					int last = result.lastIndexOf(","); //$NON-NLS-1$
+					int last = result.lastIndexOf(',');
 					result = result.substring(0, last);
 				}
 				return result;
