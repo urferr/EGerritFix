@@ -91,9 +91,9 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 	private DiffTreeViewer viewer;
 
-	private Label leftPatch, rightPatch;
+	private Label leftPatch;
 
-	private FileInfoCompareCellLabelProvider labelProvider;
+	private Label rightPatch;
 
 	private DynamicMenuBuilder dynamicMenu = new DynamicMenuBuilder();
 
@@ -235,13 +235,13 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 		//The reviewed flag is always watched from the gerritDiffNode#fileInfo object.
 		IValueProperty leftReviewedFlag = PojoProperties.value("fileInfo") //$NON-NLS-1$
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__REVIEWED));
-		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$
+		IBeanValueProperty leftFileInfo = PojoProperties.value("left").value("fileInfo"); //$NON-NLS-1$ //$NON-NLS-2$
 		IValueProperty leftComments = leftFileInfo
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
 		IValueProperty leftDraftComments = leftFileInfo
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__DRAFTS_COUNT));
 
-		IBeanValueProperty rightFileInfo = PojoProperties.value("right").value("fileInfo"); //$NON-NLS-1$
+		IBeanValueProperty rightFileInfo = PojoProperties.value("right").value("fileInfo"); //$NON-NLS-1$ //$NON-NLS-2$
 		IValueProperty rightComments = rightFileInfo
 				.value(EMFProperties.value(ModelPackage.Literals.FILE_INFO__COMMENTS_COUNT));
 		IValueProperty rightDraftComments = rightFileInfo
@@ -249,7 +249,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 
 		final IObservableMap[] watchedProperties = Properties.observeEach(cp.getKnownElements(), new IValueProperty[] {
 				leftReviewedFlag, leftComments, leftDraftComments, rightComments, rightDraftComments });
-		labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
+		FileInfoCompareCellLabelProvider labelProvider = new FileInfoCompareCellLabelProvider(watchedProperties);
 		viewer.setLabelProvider(labelProvider);
 		dynamicMenu.addPulldownMenu(viewer, compareInput.gerritClient, true);
 
@@ -258,8 +258,7 @@ public class CompareUpperSection extends CompareViewerSwitchingPane {
 	}
 
 	private void fillMenuItemForChangeInfo(MenuManager menu, boolean side) {
-		ArrayList<RevisionInfo> revisions = new ArrayList<RevisionInfo>(
-				compareInput.getChangeInfo().getRevisions().values());
+		ArrayList<RevisionInfo> revisions = new ArrayList<>(compareInput.getChangeInfo().getRevisions().values());
 		revisions.sort((o1, o2) -> o2.get_number() - o1.get_number());
 		revisions.stream().forEach(rev -> menu.add(new SwitchPatchAction(compareInput, rev, side)));
 	}

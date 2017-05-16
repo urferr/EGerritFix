@@ -113,31 +113,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		try {
 			//Text is deleted, check where this is happening
 			if ("".equals(text)) { //$NON-NLS-1$
-				if (!isEditableLine(start, length)) {
-					return false;
-				}
-				Iterator<?> it = annotations.getAnnotationIterator(start, length, true, true);
-				Position impactedArea = new Position(start, length);
-				while (it.hasNext()) {
-					GerritCommentAnnotation comment = (GerritCommentAnnotation) it.next();
-					Position commentPosition = annotations.getPosition(comment);
-
-					try {
-						if (commentPosition.length == 0 && (document.get(start, length)
-								.equals(TextUtilities.getDefaultLineDelimiter(document)))) {
-							annotations.removeAnnotation(comment);
-							return true;
-						}
-					} catch (BadLocationException e) {
-						//Can't happen
-					}
-					//Bail if the impacted area is not completely included in the comment
-					if (!completelyIncludes(commentPosition, impactedArea)) {
-						return false; //we don't want the proposed modification to be performed
-					}
-				}
-
-				return true;
+				return testEmptyText(start, length);
 			}
 
 			if (deletionOnly) {
@@ -145,60 +121,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 			}
 			//The user is typing text in a non-authorized area
 			if (!isEditableLine(start, text.length())) {
-				boolean annotationAlreadyAdded = false;
-				int insertionPosition = start;
-				String commentText = text.trim();
-				if (!fromDoc) {
-					//Move insertion point to the next line if we are not inserting at the beginning of the line
-					//or move at the end of the comment if we are in a middle of a comment
-					if (!isBeginningOfLine(insertionPosition)
-							|| (isBeginningOfLine(insertionPosition) && getCurrentAnnotation(start) != null)) {
-						GerritCommentAnnotation currentAnnotation = getCurrentAnnotation(start);
-						if (currentAnnotation != null) {
-							Position position = annotations.getPosition(currentAnnotation);
-							insertionPosition = getNextLine(position.getOffset() + position.getLength());
-						} else {
-							insertionPosition = getNextLine(start);
-						}
-
-						if (insertionPosition == -1) {
-							//If there is no next line, we first insert one, then compute it's position and proceed as usual
-							try {
-								document.replace(textWidget.getCharCount(), 0,
-										TextUtilities.getDefaultLineDelimiter(document));
-							} catch (BadLocationException e) {
-								// not possible
-							}
-							insertionPosition = getNextLine(start);
-						}
-					}
-					//We now have the final insertion position.
-					//If the document is writable at insertion position, we add content to the document.
-					if (isEditableLine(insertionPosition, text.length())) {
-						try {
-							document.replace(insertionPosition, 0, commentText);
-							textWidget.setCaretOffset(insertionPosition + commentText.length());
-							return false;
-						} catch (BadLocationException e) {
-							return false;
-						}
-					}
-					try {
-						document.replace(insertionPosition, 0, TextUtilities.getDefaultLineDelimiter(document));
-						annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
-								new Position(insertionPosition, 0));
-						annotationAlreadyAdded = true;
-						document.replace(insertionPosition, 0, commentText);
-					} catch (BadLocationException e) {
-						logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
-					}
-					textWidget.setCaretOffset(insertionPosition + commentText.length());
-				}
-				if (!annotationAlreadyAdded) {
-					annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
-							new Position(insertionPosition, commentText.length()));
-				}
-				return false;
+				return testUnAuthorizeTextArea(start, text, fromDoc);
 			}
 
 			//When we reach this point, it means that the modification attempted by the user are authorized
@@ -206,6 +129,112 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		} finally {
 			printAnnotationsCount();
 		}
+	}
+
+	/**
+	 * @param start
+	 * @param text
+	 * @param fromDoc
+	 * @return
+	 */
+	private boolean testUnAuthorizeTextArea(int start, String text, boolean fromDoc) {
+		boolean annotationAlreadyAdded = false;
+		int insertionPosition = start;
+		String commentText = text.trim();
+		if (!fromDoc) {
+			//Move insertion point to the next line if we are not inserting at the beginning of the line
+			//or move at the end of the comment if we are in a middle of a comment
+			if (!isBeginningOfLine(insertionPosition)
+					|| (isBeginningOfLine(insertionPosition) && getCurrentAnnotation(start) != null)) {
+				insertionPosition = setInsertPosToNextLine(start);
+			}
+			//We now have the final insertion position.
+			//If the document is writable at insertion position, we add content to the document.
+			if (isEditableLine(insertionPosition, text.length())) {
+				try {
+					document.replace(insertionPosition, 0, commentText);
+					textWidget.setCaretOffset(insertionPosition + commentText.length());
+					return false;
+				} catch (BadLocationException e) {
+					return false;
+				}
+			}
+			try {
+				document.replace(insertionPosition, 0, TextUtilities.getDefaultLineDelimiter(document));
+				annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
+						new Position(insertionPosition, 0));
+				annotationAlreadyAdded = true;
+				document.replace(insertionPosition, 0, commentText);
+			} catch (BadLocationException e) {
+				logger.debug("Exception inserting " + commentText, e); //$NON-NLS-1$
+			}
+			textWidget.setCaretOffset(insertionPosition + commentText.length());
+		}
+		if (!annotationAlreadyAdded) {
+			annotations.addAnnotation(new GerritCommentAnnotation(null, commentText),
+					new Position(insertionPosition, commentText.length()));
+		}
+		return false;
+	}
+
+	/**
+	 * @param start
+	 * @return
+	 */
+	private int setInsertPosToNextLine(int start) {
+		int insertionPosition;
+		GerritCommentAnnotation currentAnnotation = getCurrentAnnotation(start);
+		if (currentAnnotation != null) {
+			Position position = annotations.getPosition(currentAnnotation);
+			insertionPosition = getNextLine(position.getOffset() + position.getLength());
+		} else {
+			insertionPosition = getNextLine(start);
+		}
+
+		if (insertionPosition == -1) {
+			//If there is no next line, we first insert one, then compute it's position and proceed as usual
+			try {
+				document.replace(textWidget.getCharCount(), 0,
+						TextUtilities.getDefaultLineDelimiter(document));
+			} catch (BadLocationException e) {
+				// not possible
+			}
+			insertionPosition = getNextLine(start);
+		}
+		return insertionPosition;
+	}
+
+	/**
+	 * @param start
+	 * @param length
+	 * @return
+	 */
+	private boolean testEmptyText(int start, int length) {
+		if (!isEditableLine(start, length)) {
+			return false;
+		}
+		Iterator<?> it = annotations.getAnnotationIterator(start, length, true, true);
+		Position impactedArea = new Position(start, length);
+		while (it.hasNext()) {
+			GerritCommentAnnotation comment = (GerritCommentAnnotation) it.next();
+			Position commentPosition = annotations.getPosition(comment);
+
+			try {
+				if (commentPosition.length == 0 && (document.get(start, length)
+						.equals(TextUtilities.getDefaultLineDelimiter(document)))) {
+					annotations.removeAnnotation(comment);
+					return true;
+				}
+			} catch (BadLocationException e) {
+				//Can't happen
+			}
+			//Bail if the impacted area is not completely included in the comment
+			if (!completelyIncludes(commentPosition, impactedArea)) {
+				return false; //we don't want the proposed modification to be performed
+			}
+		}
+
+		return true;
 	}
 
 	//Returns the offset of the line number after the line of the given offset
@@ -235,7 +264,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 				return true;
 			}
 		}
-		return isInsertingAtTheEndOfExistingComment(offset, length);
+		return isInsertingAtTheEndOfExistingComment(offset);
 	}
 
 	private GerritCommentAnnotation getCurrentAnnotation(int offset) {
@@ -251,7 +280,7 @@ public class EditionLimiter implements VerifyListener, IDocumentListener {
 		return null;
 	}
 
-	private boolean isInsertingAtTheEndOfExistingComment(int offset, int length) {
+	private boolean isInsertingAtTheEndOfExistingComment(int offset) {
 		Iterator<?> it = annotations.getAnnotationIterator();
 
 		while (it.hasNext()) {

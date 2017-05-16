@@ -64,8 +64,6 @@ public abstract class CommentableCompareItem extends Document
 
 	protected GerritClient gerrit;
 
-//	private final long time;
-
 	protected FileInfo fileInfo;
 
 	private boolean dataLoaded = false; //Indicate whether the data has been retrieved from the server
@@ -318,14 +316,14 @@ public abstract class CommentableCompareItem extends Document
 
 	protected abstract EList<CommentInfo> filterComments(EList<CommentInfo> eList);
 
-	public void reset() {
+	void reset() {
 		dataLoaded = false;
 		if (editableComments != null) {
 			editableComments.disconnect(this);
 		}
 	}
 
-	protected boolean isBinary() {
+	private boolean isBinary() {
 		IFileContentManager manager = Team.getFileContentManager();
 		return manager.getTypeForExtension(getType()) == Team.BINARY;
 	}

@@ -95,7 +95,7 @@ class UICompareUtils {
 
 					if (viewer instanceof TextMergeViewer) {
 						TextMergeViewer textViewer = (TextMergeViewer) viewer;
-						Class textViewerClass = textViewer.getClass();
+						Class<?> textViewerClass = textViewer.getClass();
 						if (!textViewerClass.getName().equals(COMPARE_EDITOR_TEXT_CLASS_NAME)) {
 							do {
 								textViewerClass = textViewerClass.getSuperclass();

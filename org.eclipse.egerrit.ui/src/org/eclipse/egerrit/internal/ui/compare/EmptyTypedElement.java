@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.Image;
  * ITypedElement without content. May be used to indicate that a file is not available. Copied from
  * GitCompareFileRevisionEditorInput
  */
-public class EmptyTypedElement implements ITypedElement {
+class EmptyTypedElement implements ITypedElement {
 
 	private String name;
 
@@ -25,7 +25,7 @@ public class EmptyTypedElement implements ITypedElement {
 	 * @param name
 	 *            the name used for display
 	 */
-	public EmptyTypedElement(String name) {
+	EmptyTypedElement(String name) {
 		this.name = name;
 	}
 

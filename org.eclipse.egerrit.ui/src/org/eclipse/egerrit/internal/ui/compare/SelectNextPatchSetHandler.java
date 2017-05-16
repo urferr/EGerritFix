@@ -56,34 +56,53 @@ public class SelectNextPatchSetHandler extends AbstractHandler {
 			Iterator<Entry<String, String>> itr = patchNumber.entrySet().iterator();
 			Iterator<Entry<String, String>> first = patchNumber.entrySet().iterator();
 
-			boolean found = false;
-			while (itr.hasNext()) {
-				Entry<String, String> entry = itr.next();
-				if (isLeftSide && entry.getValue().compareTo(input.getLeftSide()) == 0) {
-					if (itr.hasNext()) {
-						entry = itr.next();
-					} else {
-						entry = first.next();
-					}
-					input.switchInputs(entry.getValue(), null);
-					found = true;
-				}
-				if (!isLeftSide && (entry).getValue().compareTo(input.getRightSide()) == 0) {
-					if (itr.hasNext()) {
-						entry = itr.next();
-					} else {
-						entry = first.next();
-					}
-					input.switchInputs(null, entry.getValue());
-					found = true;
-				}
-				if (found) {
-					break;
-				}
-			}
+			selectNext(isLeftSide, input, itr, first);
 
 		}
 		return Status.OK_STATUS;
+	}
+
+	/**
+	 * @param isLeftSide
+	 * @param input
+	 * @param itr
+	 * @param first
+	 */
+	private void selectNext(boolean isLeftSide, GerritMultipleInput input, Iterator<Entry<String, String>> itr,
+			Iterator<Entry<String, String>> first) {
+		boolean found = false;
+		while (itr.hasNext()) {
+			Entry<String, String> entry = itr.next();
+			if (isLeftSide && entry.getValue().compareTo(input.getLeftSide()) == 0) {
+				entry = selectFirstOrNext(itr, first);
+				input.switchInputs(entry.getValue(), null);
+				found = true;
+			}
+			if (!isLeftSide && (entry).getValue().compareTo(input.getRightSide()) == 0) {
+				entry = selectFirstOrNext(itr, first);
+				input.switchInputs(null, entry.getValue());
+				found = true;
+			}
+			if (found) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * @param itr
+	 * @param first
+	 * @return
+	 */
+	private Entry<String, String> selectFirstOrNext(Iterator<Entry<String, String>> itr,
+			Iterator<Entry<String, String>> first) {
+		Entry<String, String> entry;
+		if (itr.hasNext()) {
+			entry = itr.next();
+		} else {
+			entry = first.next();
+		}
+		return entry;
 	}
 
 }

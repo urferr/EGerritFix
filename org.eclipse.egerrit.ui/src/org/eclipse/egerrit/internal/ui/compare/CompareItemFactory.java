@@ -11,7 +11,6 @@
 
 package org.eclipse.egerrit.internal.ui.compare;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
@@ -19,7 +18,7 @@ import org.eclipse.egerrit.internal.model.RevisionInfo;
 /**
  * Factory class to create compare items
  */
-public class CompareItemFactory {
+class CompareItemFactory {
 
 	private static final String COMMIT_MSG = "/COMMIT_MSG"; //$NON-NLS-1$
 
@@ -27,12 +26,11 @@ public class CompareItemFactory {
 
 	private PatchSetCompareItem newCompareItem = new PatchSetCompareItem();
 
-	public CompareItemFactory(GerritClient gerrit) {
+	CompareItemFactory(GerritClient gerrit) {
 		this.gerrit = gerrit;
 	}
 
-	public PatchSetCompareItem createCompareItemFromRevision(String filename, String change_id, FileInfo fileInfo,
-			IProgressMonitor monitor) {
+	PatchSetCompareItem createCompareItemFromRevision(FileInfo fileInfo) {
 		if (fileInfo == null || fileInfo.getRevision() == null) {
 			throw new IllegalArgumentException();
 		}
@@ -44,13 +42,12 @@ public class CompareItemFactory {
 		return newCompareItem;
 	}
 
-	public CommitCompareItem createCompareItemFromCommit(RevisionInfo revision, FileInfo file, String fileName,
-			int baseRevisionNumber, IProgressMonitor progressMonitor) {
+	CommitCompareItem createCompareItemFromCommit(RevisionInfo revision, FileInfo file, String fileName,
+			int baseRevisionNumber) {
 		return new CommitCompareItem(gerrit, revision, file, fileName, baseRevisionNumber);
 	}
 
-	public CommitCompareItem createCompareItemFromBase(RevisionInfo revision, FileInfo file, String fileName,
-			IProgressMonitor progressMonitor) {
+	CommitCompareItem createCompareItemFromBase(RevisionInfo revision, FileInfo file, String fileName) {
 		return new CommitCompareItem(gerrit, revision, file, fileName, 0);
 	}
 }

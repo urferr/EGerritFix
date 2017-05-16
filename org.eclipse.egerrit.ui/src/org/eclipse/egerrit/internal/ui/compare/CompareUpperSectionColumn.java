@@ -14,8 +14,8 @@ import org.eclipse.swt.SWT;
 // ------------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------------
-// Definition of the Conflict with table {name, width of the column, Resizeable,
-// Moveable, Alignment}
+// Definition of the Conflict with table :name, width of the column, Resizeable,
+// Moveable, Alignment
 public enum CompareUpperSectionColumn implements ITableModel {
 	// 			Name 			                               Width 	Resize Moveable Alignment
 	REVIEWED("", 35, true, true, SWT.LEFT), //$NON-NLS-1$
@@ -29,24 +29,18 @@ public enum CompareUpperSectionColumn implements ITableModel {
 
 	private int fwidth;
 
-	private final int fInitialwidth;
-
 	private final boolean fResize;
 
 	private final boolean fMoveable;
 
 	private final int fAlignment;
 
-	private boolean fVisible = true;
-
 	private CompareUpperSectionColumn(String aName, int aWidth, boolean aResize, boolean aMove, int align) {
 		fHeader = aName;
 		fwidth = aWidth;
-		fInitialwidth = aWidth;
 		fResize = aResize;
 		fMoveable = aMove;
 		fAlignment = align;
-		fVisible = true;
 	}
 
 	@Override
@@ -76,7 +70,7 @@ public enum CompareUpperSectionColumn implements ITableModel {
 
 	@Override
 	public String[] getColumnName() {
-		ArrayList<String> listName = new ArrayList<String>();
+		ArrayList<String> listName = new ArrayList<>();
 		for (ITableModel st : CompareUpperSectionColumn.values()) {
 			listName.add(st.getName());
 		}
@@ -90,19 +84,6 @@ public enum CompareUpperSectionColumn implements ITableModel {
 			width += CompareUpperSectionColumn.values()[index].getWidth();
 		}
 		return width;
-	}
-
-	public boolean isColumnVisible() {
-		return fVisible;
-	}
-
-	public void setColumnVisible(boolean value) {
-		fVisible = value;
-		if (value) {
-			fwidth = fInitialwidth;
-		} else {
-			fwidth = 0;
-		}
 	}
 
 	/**

@@ -41,7 +41,7 @@ class AnnotationContributionItems extends CompoundContributionItem {
 	@Override
 	protected IContributionItem[] getContributionItems() {
 
-		final List<IContributionItem> list = new ArrayList<IContributionItem>();
+		final List<IContributionItem> list = new ArrayList<>();
 
 		CommandContributionItemParameter params = new CommandContributionItemParameter(
 				EGerritUIPlugin.getDefault()

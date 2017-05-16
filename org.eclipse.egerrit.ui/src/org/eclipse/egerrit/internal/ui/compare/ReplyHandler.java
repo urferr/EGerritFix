@@ -65,9 +65,7 @@ public class ReplyHandler extends AbstractHandler {
 		IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor instanceof CompareEditor) {
 			GerritMultipleInput input = (GerritMultipleInput) ((CompareEditor) editor).getEditorInput();
-			if (input.gerritClient.getRepository().getServerInfo().isAnonymous()) {
-				return false;
-			} else {
+			if (!input.gerritClient.getRepository().getServerInfo().isAnonymous()) {
 				return true;
 			}
 		}
