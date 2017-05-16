@@ -70,6 +70,8 @@ import org.eclipse.swt.widgets.TableColumn;
 public class UIFilesTable {
 	private boolean popupEnabled = true;
 
+	private boolean selectionOk = true;
+
 	private boolean filterDeletedFiles = false;
 
 	private boolean filterCommitMsgFile = false;
@@ -341,7 +343,7 @@ public class UIFilesTable {
 		IDoubleClickListener doubleClickListener = event -> {
 			if (!popupEnabled) {
 				HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
-				handleSelection.showFileSelection();
+				selectionOk = handleSelection.showFileSelection();
 			} else {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				Object element = sel.getFirstElement();
@@ -425,7 +427,7 @@ public class UIFilesTable {
 							EMFProperties.value(draftCount) });
 			fViewer.setLabelProvider(new FileTableLabelProvider(watchedProperties));
 
-			IObservableList revisionFiles = null;
+			IObservableList<?> revisionFiles = null;
 			if (fChangeInfo != null) {
 				FeaturePath changerev = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 						ModelPackage.Literals.REVISION_INFO__FILES);
@@ -441,6 +443,11 @@ public class UIFilesTable {
 		loader.dispose();
 	}
 
+	/**
+	 * Get the persistent storage settings
+	 *
+	 * @return IDialogSettings
+	 */
 	public IDialogSettings getDialogSettings() {
 		if (persistStorage == null) {
 			persistStorage = new PersistentStorage(fViewer, storageSectionName);
@@ -448,4 +455,10 @@ public class UIFilesTable {
 		return persistStorage.getDialogSettings(storageSectionName);
 	}
 
+	/**
+	 * @return true when the file selection is found in the workspace
+	 */
+	public boolean isSelectionOk() {
+		return selectionOk;
+	}
 }

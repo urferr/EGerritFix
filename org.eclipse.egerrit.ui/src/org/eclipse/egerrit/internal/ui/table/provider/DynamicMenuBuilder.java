@@ -181,7 +181,7 @@ public class DynamicMenuBuilder {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				HandleFileSelection handleSelection = new HandleFileSelection(client, viewer);
+				HandleFileSelection handleSelection = new HandleFileSelection(client, viewer);//Open the workspace file from the context menu
 				handleSelection.showFileSelection();
 			}
 

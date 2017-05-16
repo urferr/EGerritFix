@@ -135,8 +135,10 @@ class FilesDialog extends Dialog {
 		fViewer = tableUIFiles.getViewer();
 		//Create a second listener to close the dialog
 		fViewer.addDoubleClickListener(event -> {
-			storeDialogSettings();
-			FilesDialog.this.close();
+			if (tableUIFiles.isSelectionOk()) {
+				storeDialogSettings();
+				FilesDialog.this.close();
+			}
 		});
 		tableUIFiles.setDialogSelection();
 		createFilterArea(composite, tableUIFiles);
@@ -159,16 +161,6 @@ class FilesDialog extends Dialog {
 			}
 		});
 
-		fViewer.getTable().addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.SPACE) {
-					HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
-					handleSelection.showFileSelection();
-					return;
-				}
-			}
-		});
 		//Add Navigation Listener
 		Control[] children = getChildren(composite);
 		addNavigationListener(children);
@@ -200,7 +192,10 @@ class FilesDialog extends Dialog {
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == IDialogConstants.OK_ID) {
 			HandleFileSelection handleSelection = new HandleFileSelection(fGerritClient, fViewer);
-			handleSelection.showFileSelection();
+			boolean selectionOk = handleSelection.showFileSelection();
+			if (!selectionOk) {
+				return; //Keep the FileDialog open since the selected file is not available in the workspace
+			}
 			storeDialogSettings();
 		}
 

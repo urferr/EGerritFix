@@ -43,8 +43,11 @@ public class HandleFileSelection {
 
 	/**
 	 * Open the selected file in the Files table and open the workspace file
+	 *
+	 * @return boolean
 	 */
-	public void showFileSelection() {
+	public boolean showFileSelection() {
+		boolean ok = true;
 		ISelection selection = fViewer.getSelection();
 		if (selection instanceof IStructuredSelection) {
 
@@ -56,8 +59,10 @@ public class HandleFileSelection {
 			}
 			if (!failedFiles.isEmpty()) {
 				UIUtils.displayInformation(Messages.UIFilesTable_3, Messages.UIFilesTable_2 + '\n' + failedFiles);
+				ok = false;
 			}
 		}
+		return ok;
 
 	}
 
