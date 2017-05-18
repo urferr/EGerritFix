@@ -6,7 +6,7 @@ Element-Type: context
 Element-Version: 2.0
 Id: _jPStUFRJEeaXLqlXvYQIgg
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 4/5/17 2:04 PM
+Save-Time: 5/18/17 10:42 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -541,4 +541,30 @@ proc "assert-branch-rename-is" [val in -input] [val button] [val gitBranch ] [va
 	//Validation
 	branch-rename-validation -gitRepoBranch $gitBranch -branch $lastBranchName
 }
+
+proc "prepare-a-server" [val serverURL] [val serverName]  {
+    get-view "Gerrit Dashboard (EGerrit)" | get-button "Select current Gerrit repository" | click -arrow
+    get-menu "Add\\/Modify Gerrit Repository..." | click
+    with [get-window Preferences] {
+        get-button "New..." | click
+        with [get-window "Gerrit Server Selection"] {
+            get-editbox -after [get-label "URL:"] | set-text $serverURL
+            get-editbox -after [get-label "Label:"] | set-text $serverName
+            get-button OK | click
+        }
+    }
+}
+
+proc "close_preference-and-dialog" [val popupLevel1] [val popupLevel2] [val buttonLevel2] {
+    with [get-window Preferences] {
+        with [get-window $popupLevel1 ] {
+            with [get-window $popupLevel2 ] { get-button $buttonLevel2 | click }
+        }
+        with [get-window $popupLevel1 ] {
+            get-button Cancel | click
+        }
+        get-button Cancel | click
+    }
+}
+
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998--

@@ -1,0 +1,62 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: TestInvalidGerritServer
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _Hoy80DsDEeeAI5jvkgUOsA
+Runtime-Version: 2.1.0.201605312320
+Save-Time: 5/18/17 10:50 AM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+Validate when we enter some invalid server to connect to
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+//Open the EGerrit Dashboard
+get-quick-access | set-text eger
+get-quick-access | key-type Enter
+
+//Test 1 Unknown server at the moment
+prepare-a-server -serverURL "htpps://a/b/c" -serverName "abc"
+
+//Validation
+get-window Preferences | get-window "Gerrit Server Selection" | get-window "Gerrit selection" 
+    | get-label "The information provided doesn't allow a connection to the Gerrit server at the moment, do you still want to save it ?" 
+    | get-property caption
+    | equals "The information provided doesn't allow a connection to the Gerrit server at the moment,\n"
+    + " do you still want to save it ?" | verify-true
+
+//Close the Preference dialog box
+get-window Preferences | get-window "Gerrit Server Selection" | get-window "Gerrit selection" | get-button Yes | click
+get-window Preferences | get-button OK | click
+remove-gerrit-server -serverName abc
+
+//Test 2 for older URL message
+prepare-a-server -serverURL "http://git.eclipse.org/t" -serverName "testEF"
+//Validation
+get-window Preferences | get-window "Gerrit Server Selection" | get-window "Gerrit Server Selection" 
+    | get-label "The server you are connecting to is older than 2.8 and this tool cannot connect to it. This tool can only connect to servers that are more recent than 2.9.0." 
+    | get-property caption
+    | equals "The server you are connecting to is older than 2.8 and this tool cannot connect to it. This tool can only connect to servers that are more recent than 2.9.0." 
+    | verify-true
+//Close the Preference dialog box
+close_preference-and-dialog -popupLevel1 "Gerrit Server Selection" -popupLevel2 "Gerrit Server Selection" -buttonLevel2 "OK"
+
+
+//Test 3 for invalid URL message
+prepare-a-server -serverURL "http://hahaha" -serverName "testHaha"
+//Validation
+get-window Preferences | get-window "Gerrit Server Selection" | get-window "Gerrit Server Selection" 
+    | get-label "Server http://hahaha : URL is NOT valid" | get-property caption
+    | equals "Server http://hahaha : URL is NOT valid" | verify-true
+//Close the Preference dialog box
+close_preference-and-dialog -popupLevel1 "Gerrit Server Selection" -popupLevel2 "Gerrit Server Selection" -buttonLevel2 "OK"
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
