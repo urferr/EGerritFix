@@ -18,7 +18,7 @@ abstract class ParamCompleter {
 	private String[] fApplicableStrings;
 
 	ParamCompleter(String[] applicableStrings) {
-		fApplicableStrings = applicableStrings;
+		fApplicableStrings = applicableStrings.clone();
 	}
 
 	boolean isApplicable(String query) {

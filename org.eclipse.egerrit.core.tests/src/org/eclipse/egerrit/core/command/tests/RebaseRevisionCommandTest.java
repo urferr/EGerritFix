@@ -25,8 +25,6 @@ import org.eclipse.egerrit.internal.core.command.SubmitCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.core.rest.SubmitInput;
-import org.eclipse.egerrit.internal.model.ChangeInfo;
-import org.eclipse.egerrit.internal.model.ReviewInfo;
 import org.eclipse.jgit.api.Git;
 import org.junit.Test;
 
@@ -60,9 +58,8 @@ public class RebaseRevisionCommandTest extends CommandTestWithSimpleReview {
 
 		submitCmd.setCommandInput(submitInput);
 
-		ChangeInfo submitCmdResult = null;
 		try {
-			submitCmdResult = submitCmd.call();
+			submitCmd.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
@@ -112,16 +109,15 @@ public class RebaseRevisionCommandTest extends CommandTestWithSimpleReview {
 		SetReviewCommand setReviewcommand = fGerrit.setReview(change_id, commit_id);
 		ReviewInput reviewInput = new ReviewInput();
 		reviewInput.setMessage("This review is NOW ready to go ...");
-		Map obj = new HashMap();
-		obj.put("Code-Review", "2");
+		Map<String, Integer> obj = new HashMap<>();
+		obj.put("Code-Review", 2);
 
 		reviewInput.setLabels(obj);
 
 		setReviewcommand.setCommandInput(reviewInput);
 
-		ReviewInfo result2 = null;
 		try {
-			result2 = setReviewcommand.call();
+			setReviewcommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
@@ -133,9 +129,8 @@ public class RebaseRevisionCommandTest extends CommandTestWithSimpleReview {
 
 		submitCmd.setCommandInput(submitInput);
 
-		ChangeInfo submitCmdResult = null;
 		try {
-			submitCmdResult = submitCmd.call();
+			submitCmd.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}

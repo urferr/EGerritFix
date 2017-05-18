@@ -37,7 +37,7 @@ import org.osgi.service.prefs.Preferences;
  * @since 1.0
  */
 
-public class UIUtils {
+public final class UIUtils {
 
 	private static final String EGERRIT_PREF = "org.eclipse.egerrit.prefs"; //$NON-NLS-1$
 
@@ -91,7 +91,7 @@ public class UIUtils {
 	 */
 	public static int showConfirmDialog(String key, Shell shell, String title, String value) {
 		Preferences prefs = ConfigurationScope.INSTANCE.getNode(EGERRIT_PREF);
-
+		String adjustedTitle;
 		Preferences editorPrefs = prefs.node(key);
 		boolean choice = editorPrefs.getBoolean(key, false);
 
@@ -101,10 +101,12 @@ public class UIUtils {
 
 		//Keep the title length to TITLE_LENGTH characters max
 		if (title.length() > TITLE_LENGTH) {
-			title = title.substring(0, (TITLE_LENGTH - 3)).concat("..."); //$NON-NLS-1$
+			adjustedTitle = title.substring(0, TITLE_LENGTH - 3).concat("..."); //$NON-NLS-1$
+		} else {
+			adjustedTitle = title;
 		}
 
-		MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(shell, title, value,
+		MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(shell, adjustedTitle, value,
 				Messages.UIUtils_dontShowAgain, false, null, null);
 
 		if (dialog.getToggleState()) {

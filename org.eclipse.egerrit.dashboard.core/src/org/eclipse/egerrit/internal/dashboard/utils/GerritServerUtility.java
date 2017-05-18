@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.0
  */
-public class GerritServerUtility {
+public final class GerritServerUtility {
 
 	private static Logger logger = LoggerFactory.getLogger(GerritServerUtility.class);
 	// ------------------------------------------------------------------------

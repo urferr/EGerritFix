@@ -27,7 +27,6 @@ import org.eclipse.egerrit.internal.core.command.SubmitCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.ReviewInput;
 import org.eclipse.egerrit.internal.core.rest.SubmitInput;
-import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.junit.Test;
 
 /**
@@ -52,8 +51,8 @@ public class GetContentFromCommitCommandTest extends CommandTestWithSimpleReview
 		SetReviewCommand setReviewcommand = fGerrit.setReview(change_id, commit_id);
 		ReviewInput reviewInput = new ReviewInput();
 		reviewInput.setMessage("This review is NOW ready to go ...");
-		Map obj = new HashMap();
-		obj.put("Code-Review", "2");
+		Map<String, Integer> obj = new HashMap<>();
+		obj.put("Code-Review", 2);
 		reviewInput.setLabels(obj);
 		setReviewcommand.setCommandInput(reviewInput);
 		try {
@@ -68,9 +67,8 @@ public class GetContentFromCommitCommandTest extends CommandTestWithSimpleReview
 		submitInput.setWait_for_merge(true);
 		submitCmd.setCommandInput(submitInput);
 
-		ChangeInfo submitCmdResult = null;
 		try {
-			submitCmdResult = submitCmd.call();
+			submitCmd.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}

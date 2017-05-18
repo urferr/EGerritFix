@@ -14,12 +14,8 @@ package org.eclipse.egerrit.core.command.tests;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.eclipse.egerrit.internal.core.command.ListCommentsCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
-import org.eclipse.egerrit.internal.model.CommentInfo;
 import org.junit.Test;
 
 /**
@@ -31,9 +27,8 @@ public class ListCommentsCommandTest extends CommandTestWithSimpleReview {
 	@Test
 	public void testCall() {
 		ListCommentsCommand command = fGerrit.getListComments(change_id, commit_id);
-		Map<String, ArrayList<CommentInfo>> result = null;
 		try {
-			result = command.call();
+			command.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}

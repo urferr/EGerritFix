@@ -19,7 +19,6 @@ import org.eclipse.egerrit.internal.core.command.AddReviewerCommand;
 import org.eclipse.egerrit.internal.core.command.DeleteReviewerCommand;
 import org.eclipse.egerrit.internal.core.exception.EGerritException;
 import org.eclipse.egerrit.internal.core.rest.AddReviewerInput;
-import org.eclipse.egerrit.internal.core.rest.AddReviewerResult;
 import org.junit.Test;
 
 /**
@@ -42,9 +41,8 @@ public class DeleteReviewerCommandTest extends CommandTestWithSimpleReview {
 
 		addCommand.setCommandInput(addreviewerInput);
 
-		AddReviewerResult reviewerCmdResult = null;
 		try {
-			reviewerCmdResult = addCommand.call();
+			addCommand.call();
 		} catch (EGerritException e) {
 			fail(e.getMessage());
 		}
