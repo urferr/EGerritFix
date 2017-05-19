@@ -200,6 +200,13 @@ public class ReplyDialog extends InputDialog {
 					//Re-layout the DRAFT AREA
 					scrolledDraftArea.layout();
 				}
+				//Position the reply dialog in the middle of the monitor
+				Rectangle parentRec = parent.getShell().getBounds();
+				Rectangle clientArea = parent.getClientArea();
+
+				Point centerPos = new Point(parentRec.x + parentRec.width - clientArea.width, parentRec.y);
+				parent.getShell().setLocation(centerPos);
+
 				parent.getShell().removeControlListener(this);
 			}
 
