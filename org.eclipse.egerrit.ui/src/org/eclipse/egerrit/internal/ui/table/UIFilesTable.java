@@ -144,8 +144,7 @@ public class UIFilesTable {
 		// Set the content sorter
 		ReviewTableSorter.bind(fViewer);
 		fViewer.setComparator(new ReviewTableSorter(2));
-		persistStorage = new PersistentStorage(fViewer, storageSectionName);
-		persistStorage.restoreDialogSettings();
+		getStorageSettings().restoreDialogSettings();
 		return fViewer;
 	}
 
@@ -280,6 +279,9 @@ public class UIFilesTable {
 		for (int index = 0; index < size; index++) {
 			createTableViewerColumn(tableInfo[index]);
 		}
+
+		//Restore the table persistent information
+		getStorageSettings().restoreDialogSettings();
 
 		GridData gribData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gribData.minimumWidth = tableInfo[0].getWidth();
@@ -453,6 +455,18 @@ public class UIFilesTable {
 			persistStorage = new PersistentStorage(fViewer, storageSectionName);
 		}
 		return persistStorage.getDialogSettings(storageSectionName);
+	}
+
+	/**
+	 * Get the persistent storage
+	 *
+	 * @return PersistentStorage
+	 */
+	public PersistentStorage getStorageSettings() {
+		if (persistStorage == null) {
+			persistStorage = new PersistentStorage(fViewer, storageSectionName);
+		}
+		return persistStorage;
 	}
 
 	/**

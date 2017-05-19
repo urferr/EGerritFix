@@ -107,7 +107,7 @@ public class ChangeDetailEditor extends EditorPart {
 	 */
 	public static final String EDITOR_ID = "org.eclipse.egerrit.ui.editors.ChangeDetailEditor"; //$NON-NLS-1$
 
-	private static int REFRESH_RATE = 60000;
+	private static final int REFRESH_RATE = 60000;
 
 	private DetailsTabView detailsTab = null;
 
@@ -980,7 +980,9 @@ public class ChangeDetailEditor extends EditorPart {
 
 	@Override
 	public void dispose() {
-		checkForUpdates.cancel();
+		if (checkForUpdates != null) {
+			checkForUpdates.cancel();
+		}
 		loader.dispose();
 		fChangeInfo.eAdapters().remove(subjectListener);
 		observableCollector.dispose();
