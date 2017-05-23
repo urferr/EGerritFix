@@ -419,7 +419,7 @@ class FilesDialog extends Dialog {
 		if (tableUIFiles == null) {
 			create();
 		}
-		String filepath = fFileInput.getFile().getFullPath().toString();
+		String filepath = fFileInput.getFile().getFullPath().toString().trim();
 		if (filepath.startsWith("/")) { //$NON-NLS-1$
 			filepath = filepath.substring(1, filepath.length());
 		}
@@ -427,7 +427,7 @@ class FilesDialog extends Dialog {
 		for (int index = 0; index < tableItems.length; index++) {
 			if (tableItems[index].getData() instanceof StringToFileInfoImpl) {
 				StringToFileInfoImpl entry = (StringToFileInfoImpl) tableItems[index].getData();
-				if (entry.getKey().endsWith(filepath)) {
+				if (filepath.endsWith(entry.getKey().trim())) {
 					return index;
 				}
 			}
@@ -472,7 +472,10 @@ class FilesDialog extends Dialog {
 		for (int i = 0; i < listFilter.size(); i++) {
 			arrayBoolean[i] = String.valueOf(listFilter.get(i).getSelection());
 		}
+		//Store specific data for the dialog
 		tableUIFiles.getDialogSettings().put(VIEW_FILTER, arrayBoolean);
+		//Store the table data
+		tableUIFiles.getStorageSettings().storeDialogSettings();
 	}
 
 	private void restoreDialogSettings() {
