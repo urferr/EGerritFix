@@ -37,21 +37,23 @@ public class UIRelatedChangesTable {
 	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
 
+	private Composite fParent;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public UIRelatedChangesTable() {
-
+	public UIRelatedChangesTable(Composite aParent) {
+		fParent = aParent;
 	}
 
 	// ------------------------------------------------------------------------
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent) {
+	public TableViewer createTableViewerSection() {
 		// Create the table viewer to maintain the list of reviews
-		fViewer = new TableViewer(aParent, TABLE_STYLE);
+		fViewer = new TableViewer(fParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
 		return fViewer;
@@ -104,7 +106,7 @@ public class UIRelatedChangesTable {
 
 	/**
 	 * return the table viewer
-	 * 
+	 *
 	 * @return
 	 */
 	public TableViewer getViewer() {

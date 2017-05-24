@@ -38,21 +38,23 @@ public class UISameTopicTable {
 	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
 
+	private Composite fParent;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public UISameTopicTable() {
-
+	public UISameTopicTable(Composite aParent) {
+		fParent = aParent;
 	}
 
 	// ------------------------------------------------------------------------
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent) {
+	public TableViewer createTableViewerSection() {
 		// Create the table viewer to maintain the list of reviews
-		fViewer = new TableViewer(aParent, TABLE_STYLE);
+		fViewer = new TableViewer(fParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
 		// Set the content sorter
