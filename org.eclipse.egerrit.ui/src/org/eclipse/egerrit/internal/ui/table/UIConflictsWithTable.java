@@ -38,20 +38,23 @@ public class UIConflictsWithTable {
 	// ------------------------------------------------------------------------
 	private TableViewer fViewer;
 
+	private Composite fParent;
+
 	// ------------------------------------------------------------------------
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public UIConflictsWithTable() {
+	public UIConflictsWithTable(Composite aParent) {
+		fParent = aParent;
 	}
 
 	// ------------------------------------------------------------------------
 	// Methods
 	// ------------------------------------------------------------------------
 
-	public TableViewer createTableViewerSection(Composite aParent) {
+	public TableViewer createTableViewerSection() {
 		// Create the table viewer
-		fViewer = new TableViewer(aParent, TABLE_STYLE);
+		fViewer = new TableViewer(fParent, TABLE_STYLE);
 		fViewer = buildAndLayoutTable(fViewer);
 
 		// Set the content sorter

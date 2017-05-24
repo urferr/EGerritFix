@@ -95,7 +95,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -104,7 +104,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -116,7 +115,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
@@ -134,8 +132,6 @@ import org.eclipse.ui.PartInitException;
 public class DetailsTabView {
 
 	private static final String TITLE = Messages.SummaryTabView_0;
-
-	private static Color RED;
 
 	private final SimpleDateFormat formatTimeOut = new SimpleDateFormat("MMM d, yyyy  hh:mm a"); //$NON-NLS-1$
 
@@ -243,69 +239,55 @@ public class DetailsTabView {
 	private void createContols(final TabFolder tabFolder) {
 		final int heightFirstRow = UIUtils.computeFontSize(tabFolder).y * 8;
 		final int heightLists = 150;
-		final int scrollAreaHeight = heightFirstRow + (heightLists * 2);
-
-		RED = tabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
 
 		TabItem tabSummary = new TabItem(tabFolder, SWT.NONE);
 		tabSummary.setText(Messages.SummaryTabView_1);
 
-		final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
-		scrolledComposite.setExpandHorizontal(false);
-		scrolledComposite.setExpandVertical(true);
-		scrolledComposite.setMinHeight(scrollAreaHeight);
-		scrolledComposite.setLayout(new FillLayout());
-		tabSummary.setControl(scrolledComposite);
+		SashForm sashFormGlobal = new SashForm(tabFolder, SWT.VERTICAL);
+		tabSummary.setControl(sashFormGlobal);
 
-		Composite composite = new Composite(scrolledComposite, SWT.NONE);
-		composite.setLayout(new GridLayout(6, false));
+		SashForm sashFormHorizonTop = new SashForm(sashFormGlobal, SWT.HORIZONTAL);
 
-		Composite general = summaryGeneral(composite);
-		GridData generalGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1);
-		generalGridData.heightHint = heightFirstRow;
+		Composite general = summaryGeneral(sashFormHorizonTop);
+		GridData generalGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+		generalGridData.minimumHeight = heightFirstRow * 4;
 		general.setLayoutData(generalGridData);
 
-		Composite reviewers = summaryReviewers(composite);
+		Composite reviewers = summaryReviewers(sashFormHorizonTop);
 		GridData reviewersGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
-		reviewersGridData.heightHint = heightFirstRow;
+		reviewersGridData.minimumHeight = heightFirstRow * 7;
+		reviewersGridData.heightHint = heightFirstRow * 7;
 		reviewers.setLayoutData(reviewersGridData);
 
-		Composite includedIn = summaryIncluded(composite);
+		//Set the % of display data.40% table and 60% for the reviewers
+		sashFormHorizonTop.setWeights(new int[] { 40, 60 });
+
+		SashForm sashFormHorizonMiddle = new SashForm(sashFormGlobal, SWT.HORIZONTAL);
+		GridData sashMiddleGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
+		sashMiddleGridData.minimumHeight = heightFirstRow * 6;
+		sashFormHorizonMiddle.setLayoutData(sashMiddleGridData);
+
+		Composite includedIn = summaryIncluded(sashFormHorizonMiddle);
 		includedIn.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
-		Composite sameTopic = summarySameTopic(composite);
-		GridData sameTopicGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2);
+		Composite sameTopic = summarySameTopic(sashFormHorizonMiddle);
+		GridData sameTopicGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		sameTopicGridData.heightHint = heightLists;
 		sameTopic.setLayoutData(sameTopicGridData);
 
-		Composite relatedChanges = summaryRelatedChanges(composite);
-		relatedChanges.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 2));
+		SashForm sashFormHorizonBottom = new SashForm(sashFormGlobal, SWT.HORIZONTAL);
 
-		Composite conflicts = summaryConflicts(composite);
+		Composite relatedChanges = summaryRelatedChanges(sashFormHorizonBottom);
+		relatedChanges.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+
+		Composite conflicts = summaryConflicts(sashFormHorizonBottom);
 		GridData conflictsGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		conflictsGridData.heightHint = heightLists;
 		conflicts.setLayoutData(conflictsGridData);
 
-		scrolledComposite.setContent(composite);
-		Listener l = event -> {
-			Point size = scrolledComposite.getSize();
-			Point cUnrestrainedSize = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			if (size.y >= cUnrestrainedSize.y && size.x >= cUnrestrainedSize.x) {
-				composite.setSize(size);
-				return;
-			}
-			// does not fit
-			Rectangle hostRect = scrolledComposite.getBounds();
-			int border = scrolledComposite.getBorderWidth();
-			if (scrolledComposite.getVerticalBar().isVisible() || size.y <= scrollAreaHeight) {
-				hostRect.width -= 2 * border;
-				hostRect.width -= scrolledComposite.getVerticalBar().getSize().x;
-			}
-			hostRect.height -= 2 * border;
-			composite.setSize(Math.max(cUnrestrainedSize.x, hostRect.width),
-					Math.max(cUnrestrainedSize.y, hostRect.height));
-		};
-		scrolledComposite.addListener(SWT.Resize, l);
+		//Set the % of display top.40% middle and bottom 30%
+		sashFormGlobal.setWeights(new int[] { 40, 30, 30 });
+
 	}
 
 	private Composite summaryGeneral(Composite parent) {
@@ -374,10 +356,12 @@ public class DetailsTabView {
 		GridData gdGenStrategyData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		genStrategyData.setLayoutData(gdGenStrategyData);
 
+		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
+
 		genMessageData = new Label(composite, SWT.NONE);
 		GridData gdGenMessageData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
 		genMessageData.setLayoutData(gdGenMessageData);
-		genMessageData.setForeground(RED);
+		genMessageData.setForeground(red);
 
 		//Updated line
 		Label lblUpdated = new Label(composite, SWT.NONE);
@@ -626,8 +610,8 @@ public class DetailsTabView {
 		grpSameTopic.setText(Messages.SummaryTabView_16);
 		grpSameTopic.setLayout(new FillLayout());
 
-		UISameTopicTable tableUISameTopic = new UISameTopicTable();
-		tableUISameTopic.createTableViewerSection(grpSameTopic);
+		UISameTopicTable tableUISameTopic = new UISameTopicTable(grpSameTopic);
+		tableUISameTopic.createTableViewerSection();
 
 		tableSameTopicViewer = tableUISameTopic.getViewer();
 		tableSameTopicViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
@@ -642,8 +626,8 @@ public class DetailsTabView {
 		grpRelatedChanges.setText(Messages.SummaryTabView_17);
 		grpRelatedChanges.setLayout(new FillLayout());
 
-		UIRelatedChangesTable tableUIRelatedChanges = new UIRelatedChangesTable();
-		tableUIRelatedChanges.createTableViewerSection(grpRelatedChanges);
+		UIRelatedChangesTable tableUIRelatedChanges = new UIRelatedChangesTable(grpRelatedChanges);
+		tableUIRelatedChanges.createTableViewerSection();
 
 		tableRelatedChangesViewer = tableUIRelatedChanges.getViewer();
 		tableRelatedChangesViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
@@ -658,8 +642,8 @@ public class DetailsTabView {
 		grpConflictsWith.setText(Messages.SummaryTabView_18);
 		grpConflictsWith.setLayout(new FillLayout());
 
-		UIConflictsWithTable tableUIConflictsWith = new UIConflictsWithTable();
-		tableUIConflictsWith.createTableViewerSection(grpConflictsWith);
+		UIConflictsWithTable tableUIConflictsWith = new UIConflictsWithTable(grpConflictsWith);
+		tableUIConflictsWith.createTableViewerSection();
 
 		tableConflictsWithViewer = tableUIConflictsWith.getViewer();
 		tableConflictsWithViewer.addDoubleClickListener(doubleClickSelectionChangeListener());
@@ -792,15 +776,22 @@ public class DetailsTabView {
 				try {
 					reviewerCmdResult = addReviewerCmd.call();
 				} catch (EGerritException e3) {
-					if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
-						String message = input.getReviewer() + Messages.SummaryTabView_21;
-						UIUtils.displayInformation(TITLE, message);
-					} else {
-						EGerritCorePlugin
-								.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-					}
+					handleAddReviewerException(input, e3);
 				}
 				return reviewerCmdResult;
+			}
+
+			/**
+			 * @param input
+			 * @param e3
+			 */
+			private void handleAddReviewerException(AddReviewerInput input, EGerritException e3) {
+				if (e3.getCode() == EGerritException.SHOWABLE_MESSAGE) {
+					String message = input.getReviewer() + Messages.SummaryTabView_21;
+					UIUtils.displayInformation(TITLE, message);
+				} else {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
+				}
 			}
 		};
 	}
@@ -818,40 +809,60 @@ public class DetailsTabView {
 				if (viewerCell != null && viewerCell.getColumnIndex() == 0) {
 					//Selected the first column, so we can send the delete option
 					//Otherwise, do not delete
-					ISelection selection = tableReviewersViewer.getSelection();
-					if (selection instanceof IStructuredSelection) {
+					selectReviewerToDelete();
+				}
+			}
 
-						IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			/**
+			 *
+			 */
+			private void selectReviewerToDelete() {
+				ISelection selection = tableReviewersViewer.getSelection();
+				if (selection instanceof IStructuredSelection) {
 
-						Object element = structuredSelection.getFirstElement();
+					IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 
-						if (element instanceof ReviewerInfo) {
+					Object element = structuredSelection.getFirstElement();
 
-							ReviewerInfo reviewerInfo = (ReviewerInfo) element;
-							//Verify is the current use can be deleted or not
-							if (reviewerInfo.isDeleteable()) {
-								//Add a safety dialog to confirm the deletion
+					if (element instanceof ReviewerInfo) {
 
-								if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
-										Messages.SummaryTabView_22, Messages.SummaryTabView_23 + reviewerInfo.getName()
-												+ Messages.SummaryTabView_24)) {
-									return;
-								}
-
-								DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(
-										fChangeInfo.getId(), String.valueOf(reviewerInfo.get_account_id()));
-
-								try {
-									deleteReviewerCmd.call();
-									fChangeInfo.getComputedReviewers().remove(reviewerInfo);
-									loader.reload(true);
-								} catch (EGerritException e3) {
-									EGerritCorePlugin.logError(
-											fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
-								}
-							}
-						}
+						deleteReviewerCommand((ReviewerInfo) element);
 					}
+				}
+			}
+
+			/**
+			 * @param element
+			 */
+			private void deleteReviewerCommand(ReviewerInfo reviewerInfo) {
+
+				//Verify is the current use can be deleted or not
+				if (reviewerInfo.isDeleteable()) {
+					//Add a safety dialog to confirm the deletion
+
+					if (!MessageDialog.openConfirm(tableReviewersViewer.getTable().getShell(),
+							Messages.SummaryTabView_22,
+							Messages.SummaryTabView_23 + reviewerInfo.getName() + Messages.SummaryTabView_24)) {
+						return;
+					}
+
+					execDeleteReviewerCommand(reviewerInfo);
+				}
+			}
+
+			/**
+			 * @param reviewerInfo
+			 */
+			private void execDeleteReviewerCommand(ReviewerInfo reviewerInfo) {
+				DeleteReviewerCommand deleteReviewerCmd = fGerritClient.deleteReviewer(fChangeInfo.getId(),
+						String.valueOf(reviewerInfo.get_account_id()));
+
+				try {
+					deleteReviewerCmd.call();
+					fChangeInfo.getComputedReviewers().remove(reviewerInfo);
+					loader.reload(true);
+				} catch (EGerritException e3) {
+					EGerritCorePlugin.logError(fGerritClient.getRepository().formatGerritVersion() + e3.getMessage());
 				}
 			}
 		};
@@ -1066,10 +1077,13 @@ public class DetailsTabView {
 			protected String calculate() {
 				Iterator<ReviewerInfo> it = observedTags.iterator();
 				String result = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
 				while (it.hasNext()) {
 					Object object = it.next();
-					result += object.toString() + ", "; //$NON-NLS-1$
+					sb.append(object.toString());
+					sb.append(", "); //$NON-NLS-1$
 				}
+				result = sb.toString();
 				if (!result.isEmpty()) {
 					int last = result.lastIndexOf(',');
 					result = result.substring(0, last);
@@ -1095,10 +1109,13 @@ public class DetailsTabView {
 			protected String calculate() {
 				Iterator<ReviewerInfo> it = observedBranches.iterator();
 				String result = ""; //$NON-NLS-1$
+				StringBuilder sb = new StringBuilder();
 				while (it.hasNext()) {
 					Object object = it.next();
-					result += object.toString() + ", "; //$NON-NLS-1$
+					sb.append(object.toString());
+					sb.append(", "); //$NON-NLS-1$
 				}
+				result = sb.toString();
 				if (!result.isEmpty()) {
 					int last = result.lastIndexOf(',');
 					result = result.substring(0, last);
