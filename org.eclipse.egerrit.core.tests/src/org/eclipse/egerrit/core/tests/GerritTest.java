@@ -91,7 +91,7 @@ public class GerritTest {
 		// Run test
 		GerritClient gerrit = null;
 		try {
-			gerrit = new MyGerrit(null);
+			new MyGerrit(null);
 			fail("Exception was not thrown");
 		} catch (EGerritException e) {
 		}

@@ -90,7 +90,7 @@ public class GerritFactoryTest {
 		// Run test
 		GerritClient gerrit = null;
 		try {
-			gerrit = GerritFactory.create(repo);
+			GerritFactory.create(repo);
 			fail("Exception should have been thrown");
 		} catch (EGerritException e) {
 		}
@@ -113,7 +113,7 @@ public class GerritFactoryTest {
 		// Run test
 		GerritClient gerrit = null;
 		try {
-			gerrit = GerritFactory.create(repo);
+			GerritFactory.create(repo);
 			fail("Exception should have been thrown");
 		} catch (EGerritException e) {
 		}

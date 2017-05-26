@@ -105,7 +105,6 @@ public class GitAccess {
 			fGit = Git.open(repo);
 			checkoutFolder = repo;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -134,7 +133,7 @@ public class GitAccess {
 			fileToAdd.delete();
 		}
 		try (Writer writer = new FileWriter(fileToAdd)) {
-			writer.write(content.toString());
+			writer.write(content);
 		}
 		fGit.add().addFilepattern(fileName).call();
 	}
@@ -301,8 +300,8 @@ public class GitAccess {
 		if (description != null) {
 			String projectName = description.getName();
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-			if (project.exists() == true) {
-				if (project.isOpen() == false) {
+			if (project.exists()) {
+				if (!project.isOpen()) {
 					project.open(IResource.BACKGROUND_REFRESH, new NullProgressMonitor());
 				}
 			} else {
@@ -380,7 +379,6 @@ public class GitAccess {
 		try {
 			branch = repoUtil.getShortBranch(fGit.getRepository());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return branch;
@@ -402,7 +400,10 @@ public class GitAccess {
 			command.setForce(false);
 			command.call();
 		} catch (Throwable t) {
-			CheckoutResult result = command.getResult();
+			if (command != null) {
+				CheckoutResult result = command.getResult();
+				fail(result.getStatus().toString());
+			}
 			fail(t.getMessage());
 		}
 		System.out.println("Branch c/o: " + branchName);

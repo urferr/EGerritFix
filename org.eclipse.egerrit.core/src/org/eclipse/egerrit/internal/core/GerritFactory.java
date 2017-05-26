@@ -64,9 +64,8 @@ public final class GerritFactory {
 			throw new EGerritException("Unsupported gerrit version (< " + MINIMAL_VERSION.toString() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
-		GerritClient gerrit = instantiateGerritClient(gerritRepository, version);
+		return instantiateGerritClient(gerritRepository, version);
 
-		return gerrit;
 	}
 
 	/**
