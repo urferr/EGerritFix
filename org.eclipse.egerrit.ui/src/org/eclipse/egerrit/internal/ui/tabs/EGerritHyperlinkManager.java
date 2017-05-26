@@ -130,13 +130,13 @@ class EGerritHyperlinkManager extends HyperlinkManager {
 	 */
 	@Override
 	public void setHyperlinkDetectors(IHyperlinkDetector[] hyperlinkDetectors) {
-		super.setHyperlinkDetectors(hyperlinkDetectors);
 		Assert.isTrue(hyperlinkDetectors != null && hyperlinkDetectors.length > 0);
+		super.setHyperlinkDetectors(hyperlinkDetectors.clone());
 		if (fHyperlinkDetectors == null) {
-			fHyperlinkDetectors = hyperlinkDetectors;
+			fHyperlinkDetectors = hyperlinkDetectors.clone();
 		} else {
 			synchronized (fHyperlinkDetectors) {
-				fHyperlinkDetectors = hyperlinkDetectors;
+				fHyperlinkDetectors = hyperlinkDetectors.clone();
 			}
 		}
 	}
@@ -183,9 +183,8 @@ class EGerritHyperlinkManager extends HyperlinkManager {
 
 				if (detector instanceof IHyperlinkDetectorExtension2) {
 					int stateMask = ((IHyperlinkDetectorExtension2) detector).getStateMask();
-					if (stateMask != -1 && stateMask != fActiveHyperlinkStateMask) {
-						continue;
-					} else if (stateMask == -1 && fActiveHyperlinkStateMask != fHyperlinkStateMask) {
+					if (stateMask != -1 && (stateMask != fActiveHyperlinkStateMask
+							|| fActiveHyperlinkStateMask != fHyperlinkStateMask)) {
 						continue;
 					}
 				} else if (fActiveHyperlinkStateMask != fHyperlinkStateMask) {
@@ -345,10 +344,9 @@ class EGerritHyperlinkManager extends HyperlinkManager {
 
 		synchronized (fHyperlinkDetectors) {
 			for (IHyperlinkDetector fHyperlinkDetector : fHyperlinkDetectors) {
-				if (fHyperlinkDetector instanceof IHyperlinkDetectorExtension2) {
-					if (stateMask == ((IHyperlinkDetectorExtension2) fHyperlinkDetector).getStateMask()) {
-						return true;
-					}
+				if ((fHyperlinkDetector instanceof IHyperlinkDetectorExtension2)
+						&& stateMask == ((IHyperlinkDetectorExtension2) fHyperlinkDetector).getStateMask()) {
+					return true;
 				}
 			}
 		}
