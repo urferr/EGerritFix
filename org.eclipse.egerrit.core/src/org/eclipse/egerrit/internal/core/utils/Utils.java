@@ -24,7 +24,7 @@ import org.eclipse.egerrit.internal.core.EGerritCorePlugin;
  * @author lmcbout
  * @since 1.0
  */
-public class Utils {
+public final class Utils {
 
 	private static final SimpleDateFormat formatTimeOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.http.HttpStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -282,8 +283,11 @@ public class GerritTableView extends ViewPart {
 	}
 
 	private void createReviewList(String[] voteColumns) {
+		String[] reviewVoteColumns;
 		if (voteColumns == null) {
-			voteColumns = new String[0];
+			reviewVoteColumns = new String[0];
+		} else {
+			reviewVoteColumns = voteColumns.clone();
 		}
 		removeExistingWidgets();
 		fTopComposite = new Composite(parentComposite, SWT.NONE);
@@ -291,7 +295,7 @@ public class GerritTableView extends ViewPart {
 
 		searchSection = createSearchSection(fTopComposite);
 		searchSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		createTable(voteColumns);
+		createTable(reviewVoteColumns);
 	}
 
 	private void createTable(String[] voteColumns) {
@@ -607,7 +611,7 @@ public class GerritTableView extends ViewPart {
 	public void processCommands(String aQuery) {
 		logger.debug("Process command :   " + aQuery); //$NON-NLS-1$
 		defaultServerInfo = null;
-		aQuery = handleHttpInQuery(aQuery);
+		String httpQuery = handleHttpInQuery(aQuery);
 		initializeDefaultServer();
 
 		//We should have a Gerrit Server here, otherwise, the user need to define one
@@ -628,8 +632,8 @@ public class GerritTableView extends ViewPart {
 		}
 
 		//At this point we have a server, execute the query if we can
-		if (aQuery != null && !"".equals(aQuery)) { //$NON-NLS-1$
-			updateTable(defaultServerInfo, aQuery);
+		if (httpQuery != null && !"".equals(httpQuery)) { //$NON-NLS-1$
+			updateTable(defaultServerInfo, httpQuery);
 		}
 	}
 
@@ -793,9 +797,8 @@ public class GerritTableView extends ViewPart {
 	/**
 	 * @param server
 	 * @param aQueryType
-	 * @return
 	 */
-	private Object updateTable(final GerritServerInformation server, final String aQueryType) {
+	private void updateTable(final GerritServerInformation server, final String aQueryType) {
 		createReviewList(null);
 		String cmdMessage = NLS.bind(Messages.GerritTableView_commandMessage, server.getServerURI(), aQueryType);
 		final Job job = new Job(cmdMessage) {
@@ -833,7 +836,6 @@ public class GerritTableView extends ViewPart {
 		job.setUser(true);
 		job.schedule();
 
-		return null;
 	}
 
 	//Display a query string in the search text.
@@ -1009,21 +1011,8 @@ public class GerritTableView extends ViewPart {
 
 			boolean connect = gerritRepository.connect();
 			if (connect) {
-				Version version = gerritRepository.getVersion();
-
-				if (version == null) {
-					UIUtils.showErrorDialog(Messages.Invalid_Credentials, "Server " + defaultServerInfo.getServerURI()); //$NON-NLS-1$
-					return false;
-				} else if (version.equals(GerritRepository.NO_VERSION)) {
-					UIUtils.showErrorDialog(Messages.Unsupported_server_version_title,
-							NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
-					return false;
-				} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
-					UIUtils.showErrorDialog(Messages.Unsupported_Server_Version,
-							NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
-					return false;
-				}
-			} else if (gerritRepository.getStatus() == 401) {
+				return showVersionError(gerritRepository);
+			} else if (gerritRepository.getStatus() == HttpStatus.SC_UNAUTHORIZED) {
 				UIUtils.showErrorDialog(Messages.Server_connection_401_title,
 						NLS.bind(Messages.Server_connection_401, gerritRepository.getPath()));
 				return false;
@@ -1031,6 +1020,27 @@ public class GerritTableView extends ViewPart {
 			return connect;
 		}
 		return false;
+	}
+
+	/**
+	 * @param gerritRepository
+	 */
+	private boolean showVersionError(GerritRepository gerritRepository) {
+		Version version = gerritRepository.getVersion();
+
+		if (version == null) {
+			UIUtils.showErrorDialog(Messages.Invalid_Credentials, "Server " + defaultServerInfo.getServerURI()); //$NON-NLS-1$
+			return false;
+		} else if (version.equals(GerritRepository.NO_VERSION)) {
+			UIUtils.showErrorDialog(Messages.Unsupported_server_version_title,
+					NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
+			return false;
+		} else if (version.compareTo(GerritFactory.MINIMAL_VERSION) < 0) {
+			UIUtils.showErrorDialog(Messages.Unsupported_Server_Version,
+					NLS.bind(Messages.Unsupported_server_version, GerritFactory.MINIMAL_VERSION));
+			return false;
+		}
+		return true;
 	}
 
 	private ChangeInfo[] getReviewList(String aQuery) throws GerritQueryException {
@@ -1139,10 +1149,6 @@ public class GerritTableView extends ViewPart {
 			}
 			defaultServerInfo = serverInfo; //Set the default server with the latest value
 
-			if (defaultServerInfo == null) {
-				logger.debug("No new server entered by the user."); //$NON-NLS-1$
-				return;
-			}
 			if (fSearchTextBox == null || fSearchTextBox.getText().isEmpty()) {
 				processCommands(ChangeStatus.OPEN.getValue());
 			} else {
@@ -1151,6 +1157,9 @@ public class GerritTableView extends ViewPart {
 		}
 	}
 
+	/**
+	 * Process a query to update the dashboard table.
+	 */
 	public void update() {
 		rtv.processCommands(fSearchTextBox.getText());
 	}

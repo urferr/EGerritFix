@@ -17,6 +17,12 @@ import org.eclipse.egerrit.internal.model.CommentInfo;
 //Helper class to pretty print a comment
 public class CommentPrettyPrinter {
 
+	/**
+	 * The default constructor. Do not allow to build an object of this class
+	 */
+	private CommentPrettyPrinter() {
+	}
+
 	static String printComment(CommentInfo comment) {
 		return CommentPrettyPrinter.printName(comment) + '\t' + comment.getMessage() + '\t' + printDate(comment);
 	}
