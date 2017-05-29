@@ -403,6 +403,11 @@ class FilesDialog extends Dialog {
 		if (e.keyCode == SWT.CR) {
 			buttonPressed(IDialogConstants.OK_ID);
 		}
+
+		//Key ESC
+		if (e.keyCode == SWT.ESC) {
+			buttonPressed(IDialogConstants.CANCEL_ID);
+		}
 	}
 
 	private ModifyListener modifyListener(Text textMsgFilter) {

@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _kE6NkLcsEeaIpME9A_z4Aw
 Runtime-Version: 2.1.0.201605312320
-Save-Time: 2/16/17 6:17 PM
+Save-Time: 5/29/17 3:02 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -42,6 +42,15 @@ with [get-window "Files from the active review"] {
     get-button "Show Commit_Msg" | uncheck
     assert-that-filename-in-dialog -atLine 0 -is "EGerritTestReviewFile.java - src"
     get-button Cancel | click
+}
+
+//Open the File Diaog
+get-eclipse-window | key-type "M1+5"
+//Check the content of the dialog, THEN PRESS ESC key
+with [get-window "Files from the active review"] {
+	assert-that-filename-in-dialog -atLine 0 -is "COMMIT_MSG.*"
+    assert-that-filename-in-dialog -atLine 1 -is "EGerritTestReviewFile.java - src"
+    key-type ESC
 }
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
