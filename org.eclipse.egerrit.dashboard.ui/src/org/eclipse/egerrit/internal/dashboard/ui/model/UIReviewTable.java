@@ -20,6 +20,7 @@ import org.eclipse.egerrit.internal.dashboard.ui.GerritUi;
 import org.eclipse.egerrit.internal.dashboard.ui.commands.table.AdjustMyStarredHandler;
 import org.eclipse.egerrit.internal.dashboard.ui.utils.UIUtils;
 import org.eclipse.egerrit.internal.dashboard.ui.views.GerritTableView;
+import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
@@ -152,6 +153,25 @@ public class UIReviewTable {
 		TableLayout tableLayout = new TableLayout();
 		table.setLayout(tableLayout);
 
+		handleTooltipNotOnWindow(aViewer, table);
+
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		MenuManager menuManager = new MenuManager();
+		Menu contextMenu = menuManager.createContextMenu(table);
+		table.setMenu(contextMenu);
+		GerritTableView.getActiveView(true).getSite().registerContextMenu(DASHBOARD_CONTEXT_MENU, menuManager, aViewer);
+		return aViewer;
+	}
+
+	/**
+	 * Handle the tooltip on a the dashboard table when the operating system is not a window environment
+	 *
+	 * @param aViewer
+	 * @param table
+	 */
+	private void handleTooltipNotOnWindow(final TableViewer aViewer, final Table table) {
 		String os = org.eclipse.core.runtime.Platform.getOS();
 		// nothing to do on windows
 		if (!Platform.OS_WIN32.equals(os)) {
@@ -163,24 +183,41 @@ public class UIReviewTable {
 			table.addListener(SWT.MouseHover, event -> {
 				ViewerCell viewerCell = UIUtils.getAdjustedViewerCell(event, aViewer);
 				if (viewerCell != null) {
+					String message = ""; //$NON-NLS-1$
 					int columnIndex = viewerCell.getColumnIndex();
+					message = adjustSubjectTooltip(viewerCell, columnIndex);
 					TableItem item = (TableItem) viewerCell.getViewerRow().getItem();
 					Rectangle rect = item.getBounds(columnIndex);
-					tip.setMessage(item.getText(columnIndex));
+					if (message.isEmpty()) {
+						message = item.getText(columnIndex);
+					}
+					tip.setMessage(message);
 					Point displayPos = item.getParent().toDisplay(rect.x, rect.y);
 					tip.setLocation(displayPos.x, displayPos.y);
 					tip.setVisible(true);
 				}
 			});
 		}
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+	}
 
-		MenuManager menuManager = new MenuManager();
-		Menu contextMenu = menuManager.createContextMenu(table);
-		table.setMenu(contextMenu);
-		GerritTableView.getActiveView(true).getSite().registerContextMenu(DASHBOARD_CONTEXT_MENU, menuManager, aViewer);
-		return aViewer;
+	/**
+	 * Use the commit message when hovering the subject column.
+	 *
+	 * @param viewerCell
+	 * @param columnIndex
+	 * @return String
+	 */
+	private String adjustSubjectTooltip(ViewerCell viewerCell, int columnIndex) {
+		String message = ""; //$NON-NLS-1$
+		if (columnIndex == ReviewTableDefinition.SUBJECT.ordinal()) {
+			Object obj = viewerCell.getElement();
+			if (obj instanceof ChangeInfo) {
+				ChangeInfo changeInfo = (ChangeInfo) obj;
+				message = changeInfo.getRevision() != null ? changeInfo.getRevision().getCommit().getMessage() : ""; //$NON-NLS-1$
+			}
+
+		}
+		return message;
 	}
 
 	/**
@@ -330,7 +367,7 @@ public class UIReviewTable {
 
 		fViewer.getTable().setColumnOrder(nextTableColumn);
 
-		restoreColumnWidth(columnOrderStored, columInTable, oldvalue, lastStoredColumnSize, nextTableColumn);
+		restoreColumnWidth(columnOrderStored, columInTable, oldvalue, lastStoredColumnSize - 1, nextTableColumn); //decrease by one to read the array
 
 	}
 
@@ -374,7 +411,6 @@ public class UIReviewTable {
 
 		//Read and adjust the last column defined before the dynamic labels
 		//Needs to be reset to allow to see the dynamic columns in the client area
-		lastStoredColumnSize--; //decrease by one to read the array
 		if (lastStoredColumnSize < fViewer.getTable().getColumnCount()) {
 			int defaultWidth = oldvalue[lastStoredColumnSize];//column before the new labels
 			int testCol = columnOrderStored[lastStoredColumnSize];
