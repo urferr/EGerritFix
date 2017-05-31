@@ -378,7 +378,7 @@ public class MessageTabView {
 	 */
 	private void bindCommitParents() {
 		//show commit parents
-		FeaturePath commitParents = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+		FeaturePath commitParents = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__PARENTS);
 		final IObservableList parents = EMFProperties.list(commitParents).observe(fChangeInfo);
 		ComputedValue<String> parentCommitsAsString = new ComputedValue<String>() {
@@ -402,7 +402,7 @@ public class MessageTabView {
 	 */
 	private void bindCommitId() {
 		//show commit id
-		final FeaturePath commitId = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+		final FeaturePath commitId = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMIT);
 		IObservableValue<String> msgCommitidDataValue = EMFProperties.value(commitId).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(msgCommitidData), msgCommitidDataValue, null,
