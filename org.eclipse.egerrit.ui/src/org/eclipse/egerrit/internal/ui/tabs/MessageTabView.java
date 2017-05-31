@@ -414,7 +414,7 @@ public class MessageTabView {
 	 */
 	private void bindCommitterDate() {
 		//Show committer date
-		final FeaturePath commiterDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+		final FeaturePath commiterDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER,
 				ModelPackage.Literals.GIT_PERSON_INFO__DATE);
 		IObservableValue<String> msgCommitterDateDataValue = EMFProperties.value(commiterDate).observe(fChangeInfo);
@@ -427,8 +427,9 @@ public class MessageTabView {
 	 */
 	private void bindCommitterName() {
 		//Show committer name
-		final FeaturePath committerName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__COMMITTER);
+		final FeaturePath committerName = FeaturePath.fromList(
+				ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION, ModelPackage.Literals.REVISION_INFO__COMMIT,
+				ModelPackage.Literals.COMMIT_INFO__COMMITTER);
 		IObservableValue<String> msgCommitterDataValue = EMFProperties.value(committerName).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(msgCommitterData), msgCommitterDataValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gitPersonConverter()));
@@ -438,7 +439,7 @@ public class MessageTabView {
 	 *
 	 */
 	private void bindCommitDate() {
-		final FeaturePath commitDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+		final FeaturePath commitDate = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR,
 				ModelPackage.Literals.GIT_PERSON_INFO__DATE);
 		IObservableValue<String> msgAuthorDateDataValue = EMFProperties.value(commitDate).observe(fChangeInfo);
@@ -451,7 +452,7 @@ public class MessageTabView {
 	 */
 	private void bindComitAuthor() {
 		//show commit author
-		final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
+		final FeaturePath authorName = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION,
 				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__AUTHOR);
 		IObservableValue<String> msgAuthorDataValue = EMFProperties.value(authorName).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(msgAuthorData), msgAuthorDataValue, null,
@@ -463,10 +464,12 @@ public class MessageTabView {
 	 */
 	private void bindCommitMessage() {
 		//the commit message
-		final FeaturePath commitMessage = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__REVISION,
-				ModelPackage.Literals.REVISION_INFO__COMMIT, ModelPackage.Literals.COMMIT_INFO__MESSAGE);
+		final FeaturePath commitMessage = FeaturePath.fromList(
+				ModelPackage.Literals.CHANGE_INFO__USER_SELECTED_REVISION, ModelPackage.Literals.REVISION_INFO__COMMIT,
+				ModelPackage.Literals.COMMIT_INFO__MESSAGE);
 		IObservableValue<String> msgTextDataValue = EMFProperties.value(commitMessage).observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(msgTextData), msgTextDataValue, null, null);
+
 	}
 
 	public void dispose() {
