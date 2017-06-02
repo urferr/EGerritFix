@@ -123,13 +123,22 @@ public interface ModelPackage extends EPackage {
 	int RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER = 4;
 
 	/**
+	 * The feature id for the '<em><b>Status</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RELATED_CHANGE_AND_COMMIT_INFO__STATUS = 5;
+
+	/**
 	 * The number of structural features of the '<em>Related Change And Commit Info</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int RELATED_CHANGE_AND_COMMIT_INFO_FEATURE_COUNT = 5;
+	int RELATED_CHANGE_AND_COMMIT_INFO_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>Related Change And Commit Info</em>' class.
@@ -3096,6 +3105,17 @@ public interface ModelPackage extends EPackage {
 	EAttribute getRelatedChangeAndCommitInfo__current_revision_number();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getStatus <em>Status</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Status</em>'.
+	 * @see org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getStatus()
+	 * @see #getRelatedChangeAndCommitInfo()
+	 * @generated
+	 */
+	EAttribute getRelatedChangeAndCommitInfo_Status();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.egerrit.internal.model.FetchInfo <em>Fetch Info</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -5781,6 +5801,14 @@ public interface ModelPackage extends EPackage {
 		 */
 		EAttribute RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER = eINSTANCE
 				.getRelatedChangeAndCommitInfo__current_revision_number();
+
+		/**
+		 * The meta object literal for the '<em><b>Status</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RELATED_CHANGE_AND_COMMIT_INFO__STATUS = eINSTANCE.getRelatedChangeAndCommitInfo_Status();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.egerrit.internal.model.impl.FetchInfoImpl <em>Fetch Info</em>}' class.

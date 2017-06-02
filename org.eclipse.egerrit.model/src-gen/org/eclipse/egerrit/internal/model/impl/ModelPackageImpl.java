@@ -458,6 +458,16 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * @generated
 	 */
 	@Override
+	public EAttribute getRelatedChangeAndCommitInfo_Status() {
+		return (EAttribute) relatedChangeAndCommitInfoEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getFetchInfo() {
 		return fetchInfoEClass;
 	}
@@ -2898,6 +2908,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEAttribute(relatedChangeAndCommitInfoEClass, RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_NUMBER);
 		createEAttribute(relatedChangeAndCommitInfoEClass, RELATED_CHANGE_AND_COMMIT_INFO__REVISION_NUMBER);
 		createEAttribute(relatedChangeAndCommitInfoEClass, RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER);
+		createEAttribute(relatedChangeAndCommitInfoEClass, RELATED_CHANGE_AND_COMMIT_INFO__STATUS);
 
 		fetchInfoEClass = createEClass(FETCH_INFO);
 		createEAttribute(fetchInfoEClass, FETCH_INFO__URL);
@@ -3228,6 +3239,9 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEAttribute(getRelatedChangeAndCommitInfo__current_revision_number(), ecorePackage.getEString(),
 				"_current_revision_number", null, 0, 1, RelatedChangeAndCommitInfo.class, !IS_TRANSIENT, !IS_VOLATILE, //$NON-NLS-1$
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRelatedChangeAndCommitInfo_Status(), ecorePackage.getEString(), "status", null, 0, 1, //$NON-NLS-1$
+				RelatedChangeAndCommitInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(fetchInfoEClass, FetchInfo.class, "FetchInfo", !IS_ABSTRACT, !IS_INTERFACE, //$NON-NLS-1$
 				IS_GENERATED_INSTANCE_CLASS);

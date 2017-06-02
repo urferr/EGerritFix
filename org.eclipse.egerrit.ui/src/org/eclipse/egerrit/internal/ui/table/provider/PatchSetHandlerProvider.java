@@ -17,6 +17,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Observables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.ChangeInfo;
 import org.eclipse.egerrit.internal.model.ModelPackage;
 import org.eclipse.egerrit.internal.model.RevisionInfo;
@@ -41,6 +42,8 @@ public class PatchSetHandlerProvider {
 
 	private ChangeInfo fChangeInfo;
 
+	private GerritClient fGerritClient;
+
 	private Label patchsetlabel;
 
 	private DataBindingContext bindingContext = new DataBindingContext();
@@ -52,10 +55,12 @@ public class PatchSetHandlerProvider {
 	 *
 	 * @param parent
 	 * @param changeInfo
+	 * @param fGerritClient
 	 * @return Button
 	 */
-	public Button create(Composite parent, ChangeInfo changeInfo) {
+	public Button create(Composite parent, ChangeInfo changeInfo, GerritClient gerritClient) {
 		this.fChangeInfo = changeInfo;
+		this.fGerritClient = gerritClient;
 		patchsetlabel = new Label(parent, SWT.NONE);
 
 		Button fButtonPatchSet = new Button(parent, SWT.DROP_DOWN | SWT.ARROW | SWT.DOWN);
@@ -87,14 +92,14 @@ public class PatchSetHandlerProvider {
 
 		bindingContext.bindValue(Observables.observeDelayedValue(1000, WidgetProperties.text().observe(patchsetlabel)),
 				Observables.observeDelayedValue(1000, observerValue), null,
-				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));
+				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo, fGerritClient)));
 
 		//See when a REBASE occurs, the current revision is updated
 		IObservableValue observerRevisionsValue = EMFProperties
 				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION).observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerRevisionsValue, null,
-				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo)));
+				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo, fGerritClient)));
 		observableCollector = new ObservableCollector(bindingContext);
 	}
 

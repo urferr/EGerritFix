@@ -34,6 +34,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RelatedChangeAndCommitInfoImpl#get_change_number <em>change number</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RelatedChangeAndCommitInfoImpl#get_revision_number <em>revision number</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.impl.RelatedChangeAndCommitInfoImpl#get_current_revision_number <em>current revision number</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.impl.RelatedChangeAndCommitInfoImpl#getStatus <em>Status</em>}</li>
  * </ul>
  *
  * @generated
@@ -128,6 +129,26 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 	 * @ordered
 	 */
 	protected String _current_revision_number = _CURRENT_REVISION_NUMBER_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getStatus() <em>Status</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getStatus()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String STATUS_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getStatus() <em>Status</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getStatus()
+	 * @generated
+	 * @ordered
+	 */
+	protected String status = STATUS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -304,6 +325,30 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 	 * @generated
 	 */
 	@Override
+	public String getStatus() {
+		return status;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setStatus(String newStatus) {
+		String oldStatus = status;
+		status = newStatus;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__STATUS,
+					oldStatus, status));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT:
@@ -330,6 +375,8 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 			return get_revision_number();
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER:
 			return get_current_revision_number();
+		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__STATUS:
+			return getStatus();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -357,6 +404,9 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER:
 			set_current_revision_number((String) newValue);
 			return;
+		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__STATUS:
+			setStatus((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -383,6 +433,9 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 			return;
 		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__CURRENT_REVISION_NUMBER:
 			set_current_revision_number(_CURRENT_REVISION_NUMBER_EDEFAULT);
+			return;
+		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__STATUS:
+			setStatus(STATUS_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -412,6 +465,8 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 			return _CURRENT_REVISION_NUMBER_EDEFAULT == null
 					? _current_revision_number != null
 					: !_CURRENT_REVISION_NUMBER_EDEFAULT.equals(_current_revision_number);
+		case ModelPackage.RELATED_CHANGE_AND_COMMIT_INFO__STATUS:
+			return STATUS_EDEFAULT == null ? status != null : !STATUS_EDEFAULT.equals(status);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -435,6 +490,8 @@ public class RelatedChangeAndCommitInfoImpl extends MinimalEObjectImpl.Container
 		result.append(_revision_number);
 		result.append(", _current_revision_number: "); //$NON-NLS-1$
 		result.append(_current_revision_number);
+		result.append(", status: "); //$NON-NLS-1$
+		result.append(status);
 		result.append(')');
 		return result.toString();
 	}

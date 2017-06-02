@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_change_number <em>change number</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_revision_number <em>revision number</em>}</li>
  *   <li>{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#get_current_revision_number <em>current revision number</em>}</li>
+ *   <li>{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getStatus <em>Status</em>}</li>
  * </ul>
  *
  * @see org.eclipse.egerrit.internal.model.ModelPackage#getRelatedChangeAndCommitInfo()
@@ -163,5 +164,31 @@ public interface RelatedChangeAndCommitInfo extends EObject {
 	 * @generated
 	 */
 	void set_current_revision_number(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Status</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Status</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Status</em>' attribute.
+	 * @see #setStatus(String)
+	 * @see org.eclipse.egerrit.internal.model.ModelPackage#getRelatedChangeAndCommitInfo_Status()
+	 * @model
+	 * @generated
+	 */
+	String getStatus();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.egerrit.internal.model.RelatedChangeAndCommitInfo#getStatus <em>Status</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Status</em>' attribute.
+	 * @see #getStatus()
+	 * @generated
+	 */
+	void setStatus(String value);
 
 } // RelatedChangeAndCommitInfo

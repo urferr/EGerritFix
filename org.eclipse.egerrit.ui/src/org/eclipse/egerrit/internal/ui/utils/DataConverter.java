@@ -235,10 +235,11 @@ public class DataConverter {
 	/**
 	 * Insert the tag for the link text
 	 *
+	 * @param fGerritClient
 	 * @param fChangeInfo
 	 * @return
 	 */
-	public static IConverter patchSetSelected(ChangeInfo changeInfo) {
+	public static IConverter patchSetSelected(ChangeInfo changeInfo, GerritClient gerritClient) {
 		return new Converter(String.class, String.class) {
 			@Override
 			public Object convert(Object fromObject) {
@@ -247,6 +248,9 @@ public class DataConverter {
 					return "                               "; //$NON-NLS-1$
 				}
 				RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
+				//initiate a request for the related changes  for the proper patch-set
+				QueryHelpers.loadRelatedChanges(gerritClient, changeInfo, revInfo.getId());
+
 				StringBuilder sb = new StringBuilder();
 				sb.append(Messages.DataConverter_5);
 				sb.append(revInfo.get_number());

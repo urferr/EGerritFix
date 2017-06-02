@@ -295,7 +295,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 		//Create the PatchSetButton
 		patchSetSelector = new PatchSetHandlerProvider();
-		patchSetSelector.create(groupHeader, fChangeInfo);
+		patchSetSelector.create(groupHeader, fChangeInfo, fGerritClient);
 
 		//Set the binding for this section
 		headerSectionDataBindings();

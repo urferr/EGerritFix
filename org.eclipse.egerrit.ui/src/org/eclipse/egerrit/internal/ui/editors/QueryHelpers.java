@@ -497,13 +497,19 @@ public class QueryHelpers {
 		}
 	}
 
-	private static void loadRelatedChanges(GerritClient gerritClient, ChangeInfo fChangeInfo) {
+	/**
+	 * Helpers to load the related changes according to the selected revision
+	 * 
+	 * @param gerritClient
+	 * @param fChangeInfo
+	 * @param revision
+	 */
+	public static void loadRelatedChanges(GerritClient gerritClient, ChangeInfo fChangeInfo, String revision) {
 		if (gerritClient.getRepository().getServerInfo().isAnonymous()) {
 			return;
 		}
 		try {
-			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(),
-					fChangeInfo.getCurrent_revision());
+			GetRelatedChangesCommand command = gerritClient.getRelatedChanges(fChangeInfo.getId(), revision);
 			RelatedChangesInfo res = command.call();
 			synchronized (fChangeInfo) {
 				fChangeInfo.setRelatedChanges(res);
@@ -551,7 +557,7 @@ public class QueryHelpers {
 		loadIncludedIn(gerritClient, toLoad);
 		loadMergeable(gerritClient, toLoad);
 		loadReviewers(gerritClient, toLoad);
-		loadRelatedChanges(gerritClient, toLoad);
+		loadRelatedChanges(gerritClient, toLoad, toLoad.getCurrent_revision());
 	}
 
 	static void deleteDraft(GerritClient gerritClient, CommentInfo toDelete) {

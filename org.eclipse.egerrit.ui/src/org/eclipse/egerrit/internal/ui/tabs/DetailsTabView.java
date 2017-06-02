@@ -64,6 +64,7 @@ import org.eclipse.egerrit.internal.ui.table.UIConflictsWithTable;
 import org.eclipse.egerrit.internal.ui.table.UIRelatedChangesTable;
 import org.eclipse.egerrit.internal.ui.table.UIReviewersTable;
 import org.eclipse.egerrit.internal.ui.table.UISameTopicTable;
+import org.eclipse.egerrit.internal.ui.table.provider.RelatedChangesTableLabelProvider;
 import org.eclipse.egerrit.internal.ui.table.provider.ReviewersTableLabelProvider;
 import org.eclipse.egerrit.internal.ui.utils.DataConverter;
 import org.eclipse.egerrit.internal.ui.utils.EGerritConstants;
@@ -1144,16 +1145,20 @@ public class DetailsTabView {
 	}
 
 	private void sumRelatedChangesDataBindings() {
-		final FeaturePath properties = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		tableRelatedChangesViewer.setContentProvider(contentProvider);
+
+		final IObservableMap[] watchedProperties = Properties.observeEach(contentProvider.getKnownElements(),
+				new IValueProperty[] {
+						EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT),
+						EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_NUMBER),
+						EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_ID),
+						EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__STATUS) });
+		tableRelatedChangesViewer.setLabelProvider(new RelatedChangesTableLabelProvider(watchedProperties));
+		final FeaturePath fpath = FeaturePath.fromList(ModelPackage.Literals.CHANGE_INFO__RELATED_CHANGES,
 				ModelPackage.Literals.RELATED_CHANGES_INFO__CHANGES);
-		IObservableList<ReviewerInfo> relatedChanges = EMFProperties.list(properties).observe(fChangeInfo);
-		final FeaturePath commitSubject = FeaturePath.fromList(
-				ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__COMMIT,
-				ModelPackage.Literals.COMMIT_INFO__SUBJECT);
-		final IValueProperty[] valuesPresented = new IValueProperty[] {
-				EMFProperties.value(ModelPackage.Literals.RELATED_CHANGE_AND_COMMIT_INFO__CHANGE_NUMBER),
-				EMFProperties.value(commitSubject) };
-		ViewerSupport.bind(tableRelatedChangesViewer, relatedChanges, valuesPresented);
+
+		tableRelatedChangesViewer.setInput(EMFProperties.list(fpath).observe(fChangeInfo));
 	}
 
 	private void sumConflictWithDataBindings() {
