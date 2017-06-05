@@ -125,6 +125,11 @@
           </command>
           <command
                 categoryId="org.eclipse.compare.ui.category.compare"
+                id="org.eclipse.egerrit.internal.ui.compare.showCommentedFile"
+                name="%showCommentedFile">
+          </command>
+          <command
+                categoryId="org.eclipse.compare.ui.category.compare"
                 id="org.eclipse.egerrit.internal.ui.compare.reply"
                 name="%reply">
           </command>
@@ -242,6 +247,12 @@
             contextId="org.eclipse.compare.compareEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+[">
+        </key>
+        <key
+              commandId="org.eclipse.egerrit.internal.ui.compare.showCommentedFile"
+              contextId="org.eclipse.compare.compareEditorScope"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+9">
         </key>
         <key
               commandId="org.eclipse.egerrit.internal.ui.compare.reply"
