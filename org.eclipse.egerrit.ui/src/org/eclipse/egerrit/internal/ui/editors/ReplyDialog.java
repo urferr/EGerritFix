@@ -623,10 +623,12 @@ public class ReplyDialog extends InputDialog {
 	 * @param radioComposite
 	 */
 	private void createFillerRadioButtons(int num, Composite radioComposite) {
-		Button[] emptyRadios = new Button[num];
-		for (int i = 0; i < num; i++) {
-			emptyRadios[i] = new Button(radioComposite, SWT.RADIO);
-			emptyRadios[i].setVisible(false);
+		if (num > 0) {
+			Button[] emptyRadios = new Button[num];
+			for (int i = 0; i < num; i++) {
+				emptyRadios[i] = new Button(radioComposite, SWT.RADIO);
+				emptyRadios[i].setVisible(false);
+			}
 		}
 	}
 
