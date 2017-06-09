@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
@@ -249,7 +250,9 @@ public class DataConverter {
 				}
 				RevisionInfo revInfo = changeInfo.getUserSelectedRevision();
 				//initiate a request for the related changes  for the proper patch-set
-				QueryHelpers.loadRelatedChanges(gerritClient, changeInfo, revInfo.getId());
+				CompletableFuture.runAsync(() -> {
+					QueryHelpers.loadRelatedChanges(gerritClient, changeInfo, revInfo.getId());
+				});
 
 				StringBuilder sb = new StringBuilder();
 				sb.append(Messages.DataConverter_5);
