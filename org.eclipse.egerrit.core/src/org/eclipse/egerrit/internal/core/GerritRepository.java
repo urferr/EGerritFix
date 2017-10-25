@@ -347,12 +347,14 @@ public class GerritRepository {
 		return version;
 	}
 
-	private static final Pattern MAJOR_MINOR_MICRO_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?"); //$NON-NLS-1$
+	private static final Pattern MAJOR_MINOR_MICRO_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)?(.*)"); //$NON-NLS-1$
 
 	private static final Pattern MAJOR_MINOR_QUALIFIER_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)-(\\w+).*"); //$NON-NLS-1$
 
 	private static final Pattern MAJOR_MINOR_MICRO_QUALIFIER_VERSION_PATTERN = Pattern
 			.compile("(\\d+)\\.(\\d+).(\\d+)-(\\w+).*"); //$NON-NLS-1$
+
+	private static final Pattern MAJOR_MINOR_RC_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(\\d+)?(.*)"); //$NON-NLS-1$
 
 	private Version parseVersion(String rawVersion) {
 
@@ -377,6 +379,14 @@ public class GerritRepository {
 					Integer.parseInt(matcher.group(3)), matcher.group(4));
 
 		}
+		//Try to math  a major-minor with any other string attach (2.15-rc1-577-g6b1fed0abe)
+		// "<major>.<minor>-<qualifier>"
+		matcher = MAJOR_MINOR_RC_VERSION_PATTERN.matcher(rawVersion);
+		if (matcher.matches()) {
+			return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)), 0,
+					matcher.group(4));
+		}
+
 		return Version.emptyVersion;
 	}
 
