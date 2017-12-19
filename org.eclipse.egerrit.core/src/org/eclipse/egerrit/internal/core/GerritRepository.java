@@ -363,7 +363,9 @@ public class GerritRepository {
 
 		Matcher matcher = MAJOR_MINOR_MICRO_VERSION_PATTERN.matcher(rawVersion);
 		if (matcher.matches()) {
-			return new Version(rawVersion);
+			// Try to math  a major-minor-micro  with any other string attach (2.14.6-54-ge539946) as qualifier
+			return new Version(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
+					Integer.parseInt(matcher.group(3)), matcher.group(4));
 		}
 
 		matcher = MAJOR_MINOR_QUALIFIER_VERSION_PATTERN.matcher(rawVersion);
@@ -418,7 +420,7 @@ public class GerritRepository {
 
 	/*
 	 * return the error code of the http connection
-	
+
 	 * @return
 	 */
 	public int getStatus() {
