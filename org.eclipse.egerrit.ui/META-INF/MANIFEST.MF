@@ -49,7 +49,8 @@ Export-Package: org.eclipse.egerrit.internal.process,
  org.eclipse.egerrit.internal.ui.table,
  org.eclipse.egerrit.internal.ui.table.model,
  org.eclipse.egerrit.internal.ui.tabs,
- org.eclipse.egerrit.internal.ui.utils
+ org.eclipse.egerrit.internal.ui.utils,
+ org.eclipse.egerrit.ui.extension
 Import-Package: org.apache.commons.codec.binary,
  org.apache.http;version="4.3.3",
  org.apache.http.client.utils;version="4.3.6",

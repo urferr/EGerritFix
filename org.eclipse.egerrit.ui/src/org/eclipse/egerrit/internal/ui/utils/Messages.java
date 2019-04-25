@@ -336,6 +336,8 @@ public class Messages extends NLS {
 
 	public static String UIFilesTable_3;
 
+	public static String UIFilesTable_4;
+
 	public static String UIFilesTable_clearReviewedFlag;
 
 	public static String UIUtils_EGerriTipShowAgain;

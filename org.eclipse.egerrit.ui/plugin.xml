@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.eclipse.egerrit.ui.extensionpoint.externalCmd" name="ExtCmd" schema="schema/org.eclipse.egerrit.ui.extensionpoint.externalCmd.exsd"/>
    <extension
          point="org.eclipse.ui.editors">
       <editor

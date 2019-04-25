@@ -17,6 +17,11 @@ import java.util.List;
 
 import org.eclipse.compare.structuremergeviewer.DiffTreeViewer;
 import org.eclipse.compare.structuremergeviewer.IDiffElement;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.egerrit.extensionpoint.definition.HandleExternalFileSelection;
 import org.eclipse.egerrit.internal.core.GerritClient;
 import org.eclipse.egerrit.internal.model.FileInfo;
 import org.eclipse.egerrit.internal.model.impl.StringToFileInfoImpl;
@@ -24,6 +29,7 @@ import org.eclipse.egerrit.internal.ui.compare.GerritDiffNode;
 import org.eclipse.egerrit.internal.ui.editors.ClearReviewedFlag;
 import org.eclipse.egerrit.internal.ui.table.model.ITableModel;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
+import org.eclipse.egerrit.ui.extension.IExternalCmd;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -88,6 +94,14 @@ public class DynamicMenuBuilder {
 
 				//Menu item: Show File name first
 				showFileNameFirstMenuItem(menu, viewer);
+			}
+
+			// Adding menu option for External point when available
+			boolean hasExtensionPoint = testEgerritExtensionpoint();
+			if (available && hasExtensionPoint) {
+
+				//Menu item: Open External file
+				openExternalFileMenuItem(menu, viewer, client);
 			}
 		}
 	}
@@ -190,4 +204,52 @@ public class DynamicMenuBuilder {
 			}
 		});
 	}
+
+	/**
+	 * @param menu
+	 * @param viewer
+	 * @param client
+	 */
+	private void openExternalFileMenuItem(Menu menu, ColumnViewer viewer, GerritClient client) {
+		final MenuItem openFile = new MenuItem(menu, SWT.PUSH);
+		openFile.setText(Messages.UIFilesTable_4);
+		if (viewer instanceof TableViewer) {
+			tableLabelProvider = (FileTableLabelProvider) viewer.getLabelProvider();
+			openFile.setSelection(tableLabelProvider.getFileOrder());
+		}
+
+		openFile.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				HandleExternalFileSelection handleSelection = new HandleExternalFileSelection(client, viewer);//Open the workspace file from the context menu
+				handleSelection.showFileSelection();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+	}
+
+	private boolean testEgerritExtensionpoint() {
+		Boolean hasExtensionPoint = false;
+		String IEXTERNALCOMMAND_ID = "org.eclipse.egerrit.ui.extensionpoint.externalCmd"; //$NON-NLS-1$
+
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+		IConfigurationElement[] config = registry.getConfigurationElementsFor(IEXTERNALCOMMAND_ID);
+		try {
+			for (IConfigurationElement e : config) {
+				final Object o = e.createExecutableExtension("class"); //$NON-NLS-1$
+				if (o instanceof IExternalCmd) {
+					hasExtensionPoint = true;
+				}
+			}
+		} catch (CoreException ex) {
+			System.out.println(ex.getMessage());
+		}
+		return hasExtensionPoint;
+	}
+
 }
