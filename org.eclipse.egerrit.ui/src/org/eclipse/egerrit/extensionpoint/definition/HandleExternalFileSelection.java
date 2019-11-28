@@ -11,10 +11,13 @@
 
 package org.eclipse.egerrit.extensionpoint.definition;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.egerrit.internal.core.GerritClient;
@@ -101,6 +104,30 @@ public class HandleExternalFileSelection {
 		ExternalInfo.reviewCommit = fileInfo.getRevision().getId();
 		ExternalInfo.patchSet = fileInfo.getRevision().getRef();
 		ExternalInfo.serverPath = this.fGerritClient.getRepository().getServerInfo().getServerURI();
+		ExternalInfo.listCommitFiles = this.listCommitFiles();
 
+	}
+
+	/**
+	 * Create a list of all files adjusted with this commit. The list filter the COMMIT_MSG.
+	 *
+	 * @return List<String> of files found in this commit
+	 */
+	private List<String> listCommitFiles() {
+		List<String> listFiles = new ArrayList<>();
+
+		if (fViewer instanceof TableViewer) {
+			Object obj = fViewer.getInput();
+			if (obj instanceof IObservableList) {
+				IObservableList<StringToFileInfoImpl> list = (IObservableList<StringToFileInfoImpl>) obj;
+				for (int i = 0; i < list.size(); i++) {
+					// Remove the commit msg from the list of files
+					if (!list.get(i).getKey().toUpperCase().endsWith("COMMIT_MSG")) { //$NON-NLS-1$
+						listFiles.add(list.get(i).getKey());
+					}
+				}
+			}
+		}
+		return listFiles;
 	}
 }

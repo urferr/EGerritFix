@@ -11,6 +11,8 @@
 
 package org.eclipse.egerrit.ui.extension;
 
+import java.util.List;
+
 /**
  * Interface returning some of the current review information to be used in an external plug-in
  */
@@ -30,6 +32,8 @@ public interface IExternalCmd {
 		public static String patchSet;
 
 		public static String reviewCommit;
+
+		public static List<String> listCommitFiles;
 
 	};
 
@@ -65,4 +69,7 @@ public interface IExternalCmd {
 		return ExternalInfo.reviewCommit;
 	};
 
+	public default List<String> getListCommitFiles() {
+		return ExternalInfo.listCommitFiles;
+	};
 }
