@@ -25,6 +25,8 @@ public interface IExternalCmd {
 
 		public static String project;
 
+		public static String branch;
+
 		public static String serverPath;
 
 		public static String serverName;
@@ -51,6 +53,10 @@ public interface IExternalCmd {
 
 	public default String getProject() {
 		return ExternalInfo.project;
+	};
+
+	public default String getBranch() {
+		return ExternalInfo.branch;
 	};
 
 	public default String getServerPath() {

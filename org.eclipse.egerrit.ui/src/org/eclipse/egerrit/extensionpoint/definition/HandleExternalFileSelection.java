@@ -100,12 +100,12 @@ public class HandleExternalFileSelection {
 		ExternalInfo.workspacePath = workspaceFile.getLocationURI().getRawPath();
 		ExternalInfo.filePath = fileInfo.getPath();
 		ExternalInfo.project = fileInfo.getRevision().getChangeInfo().getProject();
+		ExternalInfo.branch = fileInfo.getRevision().getChangeInfo().getBranch();
 		ExternalInfo.serverName = this.fGerritClient.getRepository().getHostname();
 		ExternalInfo.reviewCommit = fileInfo.getRevision().getId();
 		ExternalInfo.patchSet = fileInfo.getRevision().getRef();
 		ExternalInfo.serverPath = this.fGerritClient.getRepository().getServerInfo().getServerURI();
 		ExternalInfo.listCommitFiles = this.listCommitFiles();
-
 	}
 
 	/**
