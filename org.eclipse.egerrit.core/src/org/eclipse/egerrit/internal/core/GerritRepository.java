@@ -112,6 +112,9 @@ public class GerritRepository {
 		} else {
 			fHost = null;
 		}
+		if (path.isEmpty()) {
+			path += "/"; //$NON-NLS-1$
+		}
 		fPath = path;
 	}
 
@@ -128,7 +131,11 @@ public class GerritRepository {
 			fHostname = url.getHost();
 			fPort = url.getPort();
 			fHost = new HttpHost(fHostname, fPort, fScheme);
-			fPath = url.getPath();
+			if (url.getPath().isEmpty()) {
+				fPath = "/"; //$NON-NLS-1$
+			} else {
+				fPath = url.getPath();
+			}
 		} catch (MalformedURLException e) {
 			throw new EGerritException(e.getLocalizedMessage());
 		}
@@ -244,14 +251,17 @@ public class GerritRepository {
 	 * @return the generic URI to access the repository for REST operations
 	 */
 	public URIBuilder getURIBuilder(boolean requiresAuthentication) {
-
 		// Build the path
 		StringBuilder sb = new StringBuilder(fPath);
+
 		if (requiresAuthentication) {
-			sb.append("/a"); //$NON-NLS-1$
+			if (fPath.endsWith("/")) { //$NON-NLS-1$
+				sb.append("a"); //$NON-NLS-1$
+			} else {
+				sb.append("/a"); //$NON-NLS-1$
+			}
 		}
 		String path = sb.toString();
-
 		URIBuilder builder = new URIBuilder().setScheme(fScheme).setHost(fHostname).setPath(path);
 		if (fPort > 0) {
 			builder.setPort(fPort);
@@ -292,11 +302,14 @@ public class GerritRepository {
 		Version version = null;
 		try {
 			URIBuilder builder = getURIBuilder(false);
-			String path = new StringBuilder(builder.getPath()).append(VERSION_REQUEST).toString();
+			String builderPath = builder.getPath();
+			if (builderPath.endsWith("/")) { //$NON-NLS-1$
+				builderPath = builderPath.substring(0, builderPath.length() - 1);
+			}
+			String path = new StringBuilder(builderPath).append(VERSION_REQUEST).toString();
 			URI uri = builder.setPath(path).build();
 			HttpUriRequest request = new HttpGet(uri);
 			logger.debug("Request: " + uri.toString()); //$NON-NLS-1$
-
 			ResponseHandler<String> rh = new ResponseHandler<String>() {
 				@Override
 				public String handleResponse(final HttpResponse response) throws IOException {
