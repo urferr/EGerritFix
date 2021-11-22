@@ -29,7 +29,8 @@ import org.eclipse.egerrit.internal.ui.table.model.BranchMatch;
 import org.eclipse.egerrit.internal.ui.utils.ActiveWorkspaceRevision;
 import org.eclipse.egerrit.internal.ui.utils.Messages;
 import org.eclipse.egerrit.internal.ui.utils.UIUtils;
-import org.eclipse.egit.ui.internal.dialogs.CheckoutConflictDialog;
+import org.eclipse.egit.ui.internal.UIText;
+import org.eclipse.egit.ui.internal.dialogs.CleanupUncomittedChangesDialog;
 import org.eclipse.egit.ui.internal.fetch.FetchGerritChangeWizard;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -341,8 +342,10 @@ public class CheckoutRevision extends Action {
 			if (command != null) {
 				CheckoutResult result = command.getResult();
 				if (result != null) {
-					new CheckoutConflictDialog(Display.getDefault().getActiveShell(), repo, result.getConflictList())
-							.open();
+					new CleanupUncomittedChangesDialog(Display.getDefault().getActiveShell(),
+							UIText.BranchResultDialog_CheckoutConflictsTitle,
+							UIText.AbstractRebaseCommandHandler_cleanupDialog_text, repo, result.getConflictList(),
+							false).open();
 				} else {
 					EGerritCorePlugin.logError(gerritClient.getRepository().formatGerritVersion() + t.getMessage());
 				}
