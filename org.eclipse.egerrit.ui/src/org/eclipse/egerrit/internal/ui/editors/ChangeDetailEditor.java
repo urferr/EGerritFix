@@ -21,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.conversion.text.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -62,7 +62,7 @@ import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -253,7 +253,7 @@ public class ChangeDetailEditor extends EditorPart {
 
 		IObservableValue observeActiveRevisionStateForButtonEnablement = BeanProperties.value("activeRevision") //$NON-NLS-1$
 				.observe(ActiveWorkspaceRevision.getInstance());
-		bindingContext.bindValue(WidgetProperties.selection().observe(activeReview),
+		bindingContext.bindValue(WidgetProperties.buttonSelection().observe(activeReview),
 				observeActiveRevisionStateForButtonEnablement,
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), new UpdateValueStrategy() {
 					@Override
@@ -273,10 +273,11 @@ public class ChangeDetailEditor extends EditorPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (activeReview.getSelection()) {
 					CompletableFuture.runAsync(() -> {
-						ActiveWorkspaceRevision.getInstance().activateCurrentRevision(fGerritClient,
-								fChangeInfo.getUserSelectedRevision() != null
-										? fChangeInfo.getUserSelectedRevision()
-										: fChangeInfo.getRevision());
+						ActiveWorkspaceRevision.getInstance()
+								.activateCurrentRevision(fGerritClient,
+										fChangeInfo.getUserSelectedRevision() != null
+												? fChangeInfo.getUserSelectedRevision()
+												: fChangeInfo.getRevision());
 					});
 				} else {
 					ActiveWorkspaceRevision.getInstance().deactiveCurrentRevision();

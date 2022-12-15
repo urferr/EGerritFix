@@ -26,7 +26,7 @@ import org.eclipse.egerrit.internal.ui.utils.DataConverter;
 import org.eclipse.emf.databinding.EMFProperties;
 import org.eclipse.emf.databinding.FeaturePath;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -96,7 +96,8 @@ public class PatchSetHandlerProvider {
 
 		//See when a REBASE occurs, the current revision is updated
 		IObservableValue observerRevisionsValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__CURRENT_REVISION)
+				.observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(patchsetlabel), observerRevisionsValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.patchSetSelected(fChangeInfo, fGerritClient)));

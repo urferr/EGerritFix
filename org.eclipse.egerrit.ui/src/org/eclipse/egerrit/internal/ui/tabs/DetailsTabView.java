@@ -81,7 +81,7 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ViewerSupport;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -523,8 +523,9 @@ public class DetailsTabView {
 					proposals.add(idString);
 				}
 
-				Display.getDefault().asyncExec(
-						() -> reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()])));
+				Display.getDefault()
+						.asyncExec(
+								() -> reviewerProposal.setProposals(proposals.toArray(new String[proposals.size()])));
 
 				return Status.OK_STATUS;
 			}
@@ -922,36 +923,42 @@ public class DetailsTabView {
 	private DataBindingContext sumGenDataBindings() {
 		//Show project info
 		IObservableValue<String> projectbytesFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__PROJECT)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genProjectData), projectbytesFChangeInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show branch
 		IObservableValue<String> branchFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__BRANCH)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genBranchData), branchFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.linkText()));
 		//Show topic
 		IObservableValue<String> topicFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__TOPIC)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genTopicData), topicFChangeInfoObserveValue, null,
 				null);
 
 		//Show updated status
 		IObservableValue<String> updatedFChangeInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__UPDATED)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genUpdatedData), updatedFChangeInfoObserveValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.gerritTimeConverter(formatTimeOut)));
 
 		//Show mergeableinfo
 		IObservableValue<String> mergeSubmitValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE_INFO)
+				.observe(fChangeInfo);
 
 		bindingContext.bindValue(WidgetProperties.text().observe(genStrategyData), mergeSubmitValue, null,
 				new UpdateValueStrategy().setConverter(DataConverter.submitTypeConverter()));
 
 		//Show mergeable status
 		IObservableValue<String> mergeableMergeableInfoObserveValue = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__MERGEABLE)
+				.observe(fChangeInfo);
 		bindingContext.bindValue(WidgetProperties.text().observe(genMessageData), mergeableMergeableInfoObserveValue,
 				null, new UpdateValueStrategy().setConverter(DataConverter.cannotMergeConverter()));
 
@@ -976,7 +983,8 @@ public class DetailsTabView {
 			}
 		};
 		IObservableValue<String> observeChangeInfoStatus = EMFProperties
-				.value(ModelPackage.Literals.CHANGE_INFO__STATUS).observe(fChangeInfo);
+				.value(ModelPackage.Literals.CHANGE_INFO__STATUS)
+				.observe(fChangeInfo);
 		IObservableValue observeGenDataVisibility = WidgetProperties.visible().observe(genMessageData);
 		bindingContext.bindValue(observeGenDataVisibility, observeChangeInfoStatus, null, hideWidgetsStrategy);
 		IObservableValue observeGenStrategyDataVisibility = WidgetProperties.visible().observe(genStrategyData);

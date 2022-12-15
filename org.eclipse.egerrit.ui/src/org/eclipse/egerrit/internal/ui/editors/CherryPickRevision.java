@@ -59,7 +59,7 @@ import org.eclipse.ui.handlers.IHandlerService;
  * Code to cherry-pick a revision
  */
 public class CherryPickRevision extends Action {
-	private static final String EGIT_CHERRY_PICK = "org.eclipse.egit.ui.commit.CherryPick"; //$NON-NLS-1$
+	private static final String EGIT_CHERRY_PICK = "org.eclipse.egit.ui.team.CherryPick"; //$NON-NLS-1$
 
 	private RevCommit commit;
 

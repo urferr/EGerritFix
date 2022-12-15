@@ -262,7 +262,7 @@ public class GerritRepository {
 			}
 		}
 		String path = sb.toString();
-		URIBuilder builder = new URIBuilder().setScheme(fScheme).setHost(fHostname).setPath(path);
+		URIBuilder builder = new EGerritURIBuilder().setScheme(fScheme).setHost(fHostname).setPath(path);
 		if (fPort > 0) {
 			builder.setPort(fPort);
 		}
@@ -433,10 +433,20 @@ public class GerritRepository {
 
 	/*
 	 * return the error code of the http connection
-
+	
 	 * @return
 	 */
 	public int getStatus() {
 		return fStatus;
+	}
+
+	private static class EGerritURIBuilder extends URIBuilder {
+		@Override
+		public String getPath() {
+			String aPath = super.getPath();
+
+			return (aPath == null) ? "" : aPath;
+		}
+
 	}
 }
